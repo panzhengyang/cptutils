@@ -1,4 +1,9 @@
-Changes $Id: CHANGELOG,v 1.6 2004/02/24 18:41:01 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.7 2004/02/29 19:59:42 jjg Exp jjg $
+
+1.8 : (unreleased)
+  - corrected minor glitch in common/cpt.c, now whitespace   
+    at the start of the line does not cause a scan failure.
+  - cptinfo now reads the file size.
 
 1.7 : (unreleased)
   - added cptinfo program for the "cpt city" website  

@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id$
+  $Id: cptinfo.c,v 1.1 2004/02/29 20:04:38 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -9,6 +9,10 @@
 #include <string.h>
 #include <errno.h>
 #include <float.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "cpt.h"
 #include "colour.h"
@@ -47,6 +51,7 @@ static int output_csv(info_t,FILE*);
 
 extern int cptinfo(cptinfo_opt_t opt)
 {
+  struct stat sbuf;
   FILE  *stream;
   cpt_t *cpt;
   info_t info;
@@ -68,6 +73,21 @@ extern int cptinfo(cptinfo_opt_t opt)
       fprintf(stderr,"failed to analyse %s\n",NNSTR(opt.file.input));
       return 1;
     }
+
+  if (opt.file.input)
+    {
+      if (stat(opt.file.input,&sbuf) == 0)
+	info.size = sbuf.st_size;
+      else
+	{
+	  fprintf(stderr,
+		  "failed to stat %s : %s\n",
+		  opt.file.input,
+		  strerror(errno));
+	  return 1;
+	}
+    }
+  else info.size = 0;
 
   cpt_destroy(cpt);
 
@@ -225,6 +245,7 @@ static int output_plain(info_t info,FILE* stream)
   fprintf(stream,"  total     %i\n",info.segments.total);
   fprintf(stream,"z-range:    %.3f - %.3f\n",info.z.min,info.z.max);
   fprintf(stream,"rgb-length: %.3f\n",info.length);
+  fprintf(stream,"file size:  %i\n",info.size);
 
   return 0;
 }
@@ -246,7 +267,7 @@ static int output_csv(info_t info,FILE* stream)
       return 1;
     }
 	
-  fprintf(stream,"%s,%s,%s,%i,%i,%i,%i,%.3f,%.3f,%.3f\n",
+  fprintf(stream,"%s,%s,%s,%i,%i,%i,%i,%.3f,%.3f,%.3f,%i\n",
 	  modstr,
 	  BOOLSTR(info.type.continuous),
 	  BOOLSTR(info.type.discrete),
@@ -256,7 +277,8 @@ static int output_csv(info_t info,FILE* stream)
 	  info.segments.total,
 	  info.z.min,
 	  info.z.max,
-	  info.length);
+	  info.length,
+	  info.size);
 
   return 0;
 }
