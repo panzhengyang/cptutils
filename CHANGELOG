@@ -1,6 +1,18 @@
-Changes $Id: CHANGELOG,v 1.10 2004/04/12 00:42:41 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.11 2004/08/15 23:57:40 jjg Exp jjg $
 
-1.12 : (unreleased)
+1.13 : (unreleased)
+  - new input filter for photoshop pro gradients.
+    this is reverse engineered partial implementation
+    which at least gets the colour samples. it does
+    not extract
+    - repetition
+    - the alpha channel
+    - angles
+    - the smoothing parameter
+  - new program pspcpt, converts photoshop pro gradients
+    to cpt
+
+1.12 :
   - new program cpttext, prints text in the colours of
     a specified cpt-file (just html the moment)  
 
