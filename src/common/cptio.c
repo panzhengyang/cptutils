@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.2 2004/03/05 01:27:49 jjg Exp jjg $
+  $Id: cptio.c,v 1.3 2004/03/16 01:26:27 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "cptio.h"
+#include "bridge.h"
 #include "cptparse.h"
 #include "cptscan.h"
 #include "version.h"
@@ -65,6 +66,18 @@ extern int cpt_read(char* file,cpt_t* cpt)
       strncpy(cpt->name,"<stdin>",CPT_NAME_LEN);
     }
 
+  /* 
+     assign global cpt* acted upon by the bison parser, I'd like
+     this to be an argument for cptparse, but bison only allows 
+     one argument & that is used for the scanner
+  */
+
+  bridge = cpt;
+
+  /*
+    setup scanner
+  */
+
   if (cptlex_init(&cptscan) != 0)
     {
       fprintf(stderr,"problem initailising scanner : %s\n",strerror(errno));
@@ -72,8 +85,11 @@ extern int cpt_read(char* file,cpt_t* cpt)
     }
   
   cptset_in(stream,cptscan);
+  cptset_debug(0,cptscan);
 
-  cptset_debug(1,cptscan);
+  /*
+    do the parse
+  */
 
   if (cptparse(cptscan) != 0)
     {
@@ -82,207 +98,6 @@ extern int cpt_read(char* file,cpt_t* cpt)
     }
 
   cptlex_destroy(cptscan);
-
-#ifdef OLD_SCANNER
-
-  /* default rgb colour model */
-
-  cpt->model = rgb;
-  
-  for (n=1 ; fgets(lbuf,LBUF,stream) ; n++)
-    { 
-      /* check for comment lines */
-
-      if (*lbuf == '#')
-	{
-	  char cm[6];
-
-	  /* special comments specify the colour model */
-
-	  if (sscanf(lbuf,"# COLOR_MODEL = %5s",cm) == 1)
-	    {
-	      if (strcmp(cm,"RGB") == 0)
-		cpt->model = rgb;
-	      else if (strcmp(cm,"HSV") == 0)
-		cpt->model = hsv;
-	      else
-		{
-		  fprintf(stderr,"dont know model %s\n",cm);
-		  return 1;
-		}
-	    }
-	  
-	  continue;
-	}
-
-      /* check for segment line */
-      
-      switch (cpt->model)
-	{
-	  struct 
-	  {
-	    double val;
-	    rgb_t  rgb;
-	    hsv_t  hsv;
-	  } l,r;
-
-	case rgb:
-	  
-	  if (sscanf(lbuf,
-		     " %lf %u %u %u %lf %u %u %u",
-		     &l.val,
-		     &l.rgb.red,
-		     &l.rgb.green,
-		     &l.rgb.blue,
-		     &r.val,
-		     &r.rgb.red,
-		     &r.rgb.green,
-		     &r.rgb.blue
-		     ) == 8)
-	    {
-	      cpt_seg_t *seg;
-	      
-	      seg = cpt_seg_new();
-	      
-	      seg->lsmp.val     = l.val;
-	      seg->lsmp.col.rgb = l.rgb;
-
-	      seg->rsmp.val     = r.val;
-	      seg->rsmp.col.rgb = r.rgb;
-	      
-	      if (cpt_append(seg,cpt) != 0)
-		{
-		  fprintf(stderr,"failed seg append");
-		  return 1;
-		}
-
-	      continue;
-	    }
-	  break;
-
-	case hsv:
-
-	  if (sscanf(lbuf,
-		     " %lf %lf %lf %lf %lf %lf %lf %lf",
-		     &l.val,
-		     &l.hsv.hue,
-		     &l.hsv.sat,
-		     &l.hsv.val,
-		     &r.val,
-		     &r.hsv.hue,
-		     &r.hsv.sat,
-		     &r.hsv.val
-		     ) == 8)
-	    {
-	      cpt_seg_t *seg;
-	      
-	      seg = cpt_seg_new();
-	      
-	      seg->lsmp.val     = l.val;
-	      seg->lsmp.col.hsv = l.hsv;
-
-	      seg->rsmp.val     = r.val;
-	      seg->rsmp.col.hsv = r.hsv;
-	      
-	      if (cpt_append(seg,cpt) != 0)
-		{
-		  fprintf(stderr,"failed seg append");
-		  return 1;
-		}
-
-	      continue;
-	    }
-	  break;
-
-	default :
-
-	  fprintf(stderr,"bad colour model\n");
-	}
-	  
-      /* get background etc */
-
-      switch (cpt->model)
-	{
-	  colour_t c;
-	  char type;
-
-	case rgb:
-
-	  if (sscanf(lbuf,
-		     "%c %u %u %u",
-		     &type,
-		     &c.rgb.red,
-		     &c.rgb.green,
-		     &c.rgb.blue) == 4)
-	    {
-	      switch (type)
-		{
-		case 'F': case 'f':
-		  cpt->fg = c;
-		  break;
-		  
-		case 'B': case 'b':
-		  cpt->bg = c;
-		  break;
-		  
-		case 'N': case 'n':
-		  cpt->nan = c;
-		  break;
-		  
-		default:
-		  fprintf(stderr,"strange FBN at line %i\n",n);
-		  return 1;
-		}
-	      continue;
-	    }
-	  break;
-
-	case hsv:
-
-	  if (sscanf(lbuf,
-		     "%c %lf %lf %lf",
-		     &type,
-		     &c.hsv.hue,
-		     &c.hsv.sat,
-		     &c.hsv.val) == 4)
-	    {
-	      switch (type)
-		{
-		case 'F': case 'f':
-		  cpt->fg = c;
-		  break;
-		  
-		case 'B': case 'b':
-		  cpt->bg = c;
-		  break;
-		  
-		case 'N': case 'n':
-		  cpt->nan = c;
-		  break;
-		  
-		default:
-		  fprintf(stderr,"strange FBN at line %i\n",n);
-		  return 1;
-		}
-	      continue;
-	    }
-	  break;
-
-	default:
-
-	  return 1;
-	}
-
-      /* everthing else we ignore */
-
-      fprintf(stderr,"failed to scan line %i\n",n);
-    }
-
-#else
-
-  printf("newscanner\n");
-
-#endif
 
   if (!feof(stream))
     {
@@ -303,7 +118,8 @@ extern int cpt_read(char* file,cpt_t* cpt)
   return 0;
 }
 
-static int print_cpt_aux(FILE*,char,colour_t,model_t);
+static int fprintf_cpt_aux(FILE*,char,fill_t,model_t);
+static int fprintf_cpt_sample(FILE*,cpt_sample_t,model_t);
 
 extern int cpt_write(char* outfile,cpt_t* cpt)
 {
@@ -339,73 +155,90 @@ extern int cpt_write(char* outfile,cpt_t* cpt)
 
     while (seg)
     {
-	cpt_sample_t l,r;
+	fprintf_cpt_sample(stream,seg->lsmp,cpt->model);
+	fprintf(stream," ");
 
-	l = seg->lsmp;
-	r = seg->rsmp;
-	  
-	switch (cpt->model)
-	  {
-	  case rgb:
-  
-	    fprintf(stream,
-		    "%#7e %3i %3i %3i %#7e %3i %3i %3i\n",
-		    l.val,
-		    l.col.rgb.red,
-		    l.col.rgb.green,
-		    l.col.rgb.blue,
-		    r.val,
-		    r.col.rgb.red,
-		    r.col.rgb.green,
-		    r.col.rgb.blue);
-	    break;
-
-	  case hsv:
-	    fprintf(stream,
-		    "%#7e %7e %7e %7e %#7e %7e %7e %7e\n",
-		    l.val,
-		    l.col.hsv.hue,
-		    l.col.hsv.sat,
-		    l.col.hsv.val,
-		    r.val,
-		    r.col.hsv.hue,
-		    r.col.hsv.sat,
-		    r.col.hsv.val);
-	    break;
-
-	  default:
-	    return 1;
-	  }
+	fprintf_cpt_sample(stream,seg->rsmp,cpt->model);
+	fprintf(stream,"\n");
 
 	seg = seg->rseg;
     }
 
-    print_cpt_aux(stream,'B',cpt->bg,cpt->model);
-    print_cpt_aux(stream,'F',cpt->fg,cpt->model);
-    print_cpt_aux(stream,'N',cpt->nan,cpt->model);
+    fprintf_cpt_aux(stream,'B',cpt->bg, cpt->model);
+    fprintf_cpt_aux(stream,'F',cpt->fg, cpt->model);
+    fprintf_cpt_aux(stream,'N',cpt->nan,cpt->model);
 
     fclose(stream);
 
     return 0;
 }
 
-static int print_cpt_aux(FILE* stream,char c,colour_t col,model_t model)
+static int fprintf_cpt_fill(FILE*,fill_t,model_t);
+
+static int fprintf_cpt_sample(FILE* stream,cpt_sample_t smp,model_t model)
 {
-  switch (model)
+  int n = 0;
+
+  n += fprintf(stream,"%#7e ",smp.val);
+  n += fprintf_cpt_fill(stream,smp.fill,model);
+
+  return n;
+}
+
+static int fprintf_cpt_fill(FILE* stream,fill_t fill,model_t model)
+{
+  int n = 0;
+
+  switch (fill.type)
     {
-    case rgb:
-      fprintf(stream,"%c %3i %3i %3i\n",
-	      c, col.rgb.red, col.rgb.green, col.rgb.blue);
+    case empty:
+      n += fprintf(stream,"-");
       break;
-
-    case hsv:
-      fprintf(stream,"%c %2f %2f %3f\n",
-	      c, col.hsv.hue, col.hsv.val, col.hsv.sat);
+    case grey:
+      n += fprintf(stream,"%3i",fill.u.grey);
       break;
-
-    default:
-      return 1;
+    case hatch:
+      n += fprintf(stream,"%c%i/%i",
+		   (fill.u.hatch.sign == 1 ? 'p' : 'P' ), 
+		   fill.u.hatch.dpi,
+		   fill.u.hatch.n
+		   );
+      break;
+    case file:
+      n += fprintf(stream,"%s",fill.u.file);
+      break;
+    case colour:
+      switch (model)
+	{
+	case rgb:
+	  n += fprintf(stream,
+		       "%3i %3i %3i",
+		       fill.u.colour.rgb.red,
+		       fill.u.colour.rgb.green,
+		       fill.u.colour.rgb.blue);
+	    break;
+	case hsv:
+	  n += fprintf(stream,
+		       "%#7e %7e %7e\n",
+		       fill.u.colour.hsv.hue,
+		       fill.u.colour.hsv.sat,
+		       fill.u.colour.hsv.val);
+	  break;
+	default:
+	  break;
+	}
     }
+  
+  return n;
+}
 
-  return 0;
+static int fprintf_cpt_aux(FILE* stream,char c,fill_t fill,model_t model)
+{
+  int n=0;
+
+  n += fprintf(stream,"%c ",c);
+  n += fprintf_cpt_fill(stream,fill,model);
+  n += fprintf(stream,"\n");
+
+  return n;
 }

@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.8 2004/03/03 00:04:06 jjg Exp jjg $
+  $Id: cpt.c,v 1.9 2004/03/04 01:22:05 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -61,11 +61,7 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
 
   while (right)
     {    
-      if (colour_rgb_dist(
-			  left->rsmp.col,
-			  right->lsmp.col,
-			  cpt->model
-			  ) > tol)
+      if (! fill_eq(left->rsmp.fill,right->lsmp.fill))
 	{
 	  segos[n] = i;
 	  n++;

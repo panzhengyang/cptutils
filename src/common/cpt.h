@@ -5,18 +5,18 @@
   on them
 
   (c) J.J.Green 2001,2004
-  $Id: cpt.h,v 1.5 2004/02/24 18:37:27 jjg Exp jjg $
+  $Id: cpt.h,v 1.6 2004/03/04 01:22:09 jjg Exp jjg $
 */
 
 #ifndef CPT_H
 #define CPT_H
 
-#include "colour.h"
+#include "fill.h"
 
 typedef struct cpt_sample_t
 {
   double val;
-  colour_t col;
+  fill_t fill;
 } cpt_sample_t;
 
 typedef struct cpt_seg_t
@@ -31,7 +31,7 @@ typedef struct cpt_t
 {
   char       name[CPT_NAME_LEN];
   model_t    model;
-  colour_t   fg,bg,nan;
+  fill_t     fg,bg,nan;
   cpt_seg_t *segment;
 } cpt_t;
 

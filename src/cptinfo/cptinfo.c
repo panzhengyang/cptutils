@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.1 2004/02/29 20:04:38 jjg Exp jjg $
+  $Id: cptinfo.c,v 1.2 2004/03/03 00:28:39 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -14,8 +14,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "cpt.h"
-#include "colour.h"
+#include "cptio.h"
 
 #include "cptinfo.h"
 
@@ -162,7 +161,7 @@ static int cptinfo_analyse(cpt_t* cpt,info_t* info)
   /* z-range */
 
   info->z.min = DBL_MAX;
-  info->z.min = DBL_MIN;
+  info->z.max = DBL_MIN;
 
   /* length */
 
@@ -191,24 +190,45 @@ static int analyse_segment(cpt_seg_t* seg,info_t* info)
 
   info->segments.total++;  
 
+  switch (seg->lsmp.fill.type)
+    {
+    case empty : break;
+    case hatch :
+    case file :
+      info->segments.hatch++;
+      break;
+    case grey :
+      info->segments.grey++;
+      break;
+    case colour :
+      info->segments.colour++;
+      break;
+    }
+
   right = seg->rseg;
 
   if (right)
     {
-      if (colour_rgb_dist(seg->rsmp.col,
-			  right->lsmp.col,
-			  info->model) > 0)
+      switch (fill_eq(seg->rsmp.fill,right->lsmp.fill))
+	{
+	case 0 : break;
+	case 1 :
 	  info->type.continuous = 0;
+	  break;
+	default :
+	  return 1;
+	}
     }
 
-  len = colour_rgb_dist(seg->rsmp.col,
-			seg->lsmp.col,
-			info->model);
-
-  if (len > 0)
-    info->type.discrete = 0;
-
-  info->length += len;
+  switch (fill_eq(seg->rsmp.fill,seg->lsmp.fill))
+    {
+    case 0 :       
+      info->type.discrete = 0;
+      break;
+    case 1 : break;
+    default :
+      return 1;
+    }
 
   if (info->z.min > seg->lsmp.val) info->z.min = seg->lsmp.val;
   if (info->z.max < seg->rsmp.val) info->z.max = seg->rsmp.val;

@@ -1,8 +1,8 @@
 # Makefile for libgimpcpt
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.1 2004/02/09 01:15:02 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2004/03/04 01:21:29 jjg Exp jjg $
 
-OBJ      = colour.o cpt.o cptparse.o cptscan.o cptio.o files.o gradient.o
+OBJ      = bridge.o colour.o cpt.o cptparse.o cptscan.o cptio.o files.o fill.o gradient.o
 RUBBISH += $(OBJ) libgimpcpt.a
 
 default : all

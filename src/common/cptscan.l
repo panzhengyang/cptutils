@@ -2,10 +2,12 @@
    scanner for cpt files 
 
    (c) J.J.Green 2004
-   $Id: cptscan.l,v 1.2 2004/03/05 01:27:54 jjg Exp jjg $
+   $Id: cptscan.l,v 1.3 2004/03/16 01:26:57 jjg Exp jjg $
+   %option bison-bridge
 */
 
 %{
+#include "cpt.h"
 #include "cptparse.h"
 %}
 
@@ -13,6 +15,7 @@
 %option outfile="cptscan.c"
 %option prefix="cpt"
 %option bison-bridge
+
 %option reentrant 
 %option 8bit
 
@@ -37,8 +40,10 @@ NUM   ({D}+({E})?)|({D}*"."{D}+({E})?)|({D}+"."{D}*({E})?)
 
 [ \t]*
 \n                 return '\n';
-{NUM}              return NUM;
-[Pp]{D}+           return HATCH;
+{NUM}              yylval->d =  atof(yytext); return NUM;
+p                  return 'P';  
+P                  return 'p';
+\/                 return '/';
 -                  return '-';
 F                  return 'F';
 B                  return 'B';

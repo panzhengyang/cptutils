@@ -4,11 +4,10 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.2 2004/03/05 01:27:44 jjg Exp jjg $
+  $Id: cptparse.y,v 1.3 2004/03/16 01:26:21 jjg Exp jjg $
 */
 
 %{
-
 #include "cpt.h"
 
 #define YYLEX_PARAM scanner 
@@ -16,9 +15,8 @@
 
 #include "cptparse.h"
 #include "cptscan.h"
+#include "bridge.h"
 
-  static model_t model;
-  static filltype_t filltype;
   static void cpterror(char const*);
 
 %}
@@ -31,18 +29,19 @@
 
 %union {
   double       d;
-  double       d3[3];
-  int          i;
   colour_t     colour;
+  hatch_t      hatch;
   fill_t       fill;
+  cpt_seg_t   *seg;
   cpt_sample_t sample;
 } 
 
 %token NUM
 
-%type <d>    NUM z0 z1
-%type <fill> fill 
-%type <i>    HATCH
+%type <d>     NUM z0 z1
+%type <fill>  fill 
+%type <hatch> hatch
+%type <seg>   segment
 %nonassoc HATCH RGB HSV
 
 %%
@@ -51,15 +50,23 @@ input :
       | model segments extras
 ;
 
-model : 
-| HSV { model = hsv; }
-| RGB { model = rgb; }
+model : { bridge->model = rgb; }
+| RGB   { bridge->model = rgb; }
+| HSV   { bridge->model = hsv; }
 ;
 
-segments : segment
-         | segments segment
+segments : segment { cpt_append($1,bridge); }
+| segments segment { cpt_append($2,bridge); }
 
-segment : z0 fill z1 fill '\n'
+segment : z0 fill z1 fill '\n' {
+  $$ = cpt_seg_new();
+
+  $$->lsmp.val  = $1;
+  $$->lsmp.fill = $2;
+  
+  $$->rsmp.val  = $3;
+  $$->rsmp.fill = $4;
+}
 
 z0 : NUM
 z1 : NUM
@@ -68,28 +75,40 @@ extras :
        | extras extra
 ;
 
-extra : 'F' fill '\n'
-      | 'B' fill '\n'
-      | 'N' fill '\n'
+extra : 'F' fill '\n' { bridge->fg  = $2; }
+      | 'B' fill '\n' { bridge->bg  = $2; }
+      | 'N' fill '\n' { bridge->nan = $2; }
 ;
 
-fill  : '-'   { filltype = empty; }
-| HATCH       { filltype = hatch; $$.hatch = (int)$1; }
-| NUM         { filltype = grey;  $$.grey  = (int)$1; }
+fill  : '-'   { $$.type = empty; }
+| hatch       { $$.type = hatch; $$.u.hatch = $1; }
+| NUM         { $$.type = grey;  $$.u.grey  = (int)$1; }
 | NUM NUM NUM { 
-  filltype = colour;
-  switch (model)
+  $$.type = colour;
+  switch (bridge->model)
     {
     case hsv:
-      $$.colour.hsv.hue = $1;
-      $$.colour.hsv.sat = $2;
-      $$.colour.hsv.val = $3;
+      $$.u.colour.hsv.hue = $1;
+      $$.u.colour.hsv.sat = $2;
+      $$.u.colour.hsv.val = $3;
       break;
     case rgb:
-      $$.colour.rgb.red   = (int)$1;
-      $$.colour.rgb.green = (int)$2;
-      $$.colour.rgb.blue  = (int)$3;
+      $$.u.colour.rgb.red   = (int)$1;
+      $$.u.colour.rgb.green = (int)$2;
+      $$.u.colour.rgb.blue  = (int)$3;
     }
+}
+;
+
+hatch : 'p' NUM '/' NUM {
+  $$.sign = 1;
+  $$.dpi  = (int)$2;
+  $$.n    = (int)$4;
+}
+| 'P' NUM '/' NUM {
+  $$.sign = -1;
+  $$.dpi  = (int)$2;
+  $$.n    = (int)$4;
 }
 ;
 
