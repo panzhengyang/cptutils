@@ -1,8 +1,8 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2004/02/09 01:43:14 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2004/02/10 00:18:21 jjg Exp jjg $
 
-OBJ      = gimpcpt.o main.o findgrad.o options.o
+OBJ      = gimpcpt.o main.o dp-simplify.o findgrad.o options.o
 RUBBISH += $(OBJ) gimpcpt
 
 default : all

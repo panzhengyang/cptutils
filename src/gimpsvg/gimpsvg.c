@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.5 2004/02/12 13:25:30 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.6 2004/02/19 00:50:23 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -10,17 +10,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "gimpcpt.h"
 #include "gradient.h"
 #include "findgrad.h"
 #include "files.h"
 #include "cpt.h"
+#include "dp-simplify.h"
 
 #define  SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
 
 static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
-static int cpt_optimise(cpt_t*);
+static int cpt_optimise(double,cpt_t*);
+static int cpt_nseg(cpt_t*);
+
 static char* find_infile(char*);
 
 extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
@@ -90,10 +94,22 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 
     /* perform optimisation */
 
-    if (cpt_optimise(cpt) != 0)
+    if (opt.verbose) 
+      {
+	int n = cpt_nseg(cpt);
+	printf("transformed %i segment%s\n",n,(n-1 ? "s" : ""));
+      }
+
+    if (cpt_optimise(0.5,cpt) != 0)
       {
 	fprintf(stderr,"failed to optimise cpt\n");
 	return 1;
+      }
+
+    if (opt.verbose) 
+      {
+	int n = cpt_nseg(cpt);
+	printf("optimised to %i segment%s\n",n,(n-1 ? "s" : ""));
       }
     
     /* write the cpt file */
@@ -300,8 +316,187 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
   later
 */ 
 
-static int cpt_optimise(cpt_t* cpt)
+static cpt_seg_t* cpt_segment(cpt_t* cpt,int n)
 {
+  cpt_seg_t *seg;
+
+  seg = cpt->segment;
+
+  while (--n)
+    {
+      if ((seg = seg->rseg) == NULL) 
+	return NULL; 
+    }
+
+  return seg;
+}
+
+static int cpt_nseg(cpt_t* cpt)
+{
+  int n = 0;
+  cpt_seg_t *seg;
+
+  for (seg = cpt->segment ; seg ; seg = seg->rseg)
+    n++;
+
+  return n;
+}
+
+static double colour_rgb_dist(colour_t a,colour_t b,model_t model)
+{
+  double da[3],db[3],sum;
+  int i;
+
+  switch (model)
+    {
+
+    case rgb :
+      rgb_to_rgbD(a.rgb,da); 
+      rgb_to_rgbD(b.rgb,db); 
+      break;
+      
+    case hsv :
+      hsv_to_rgbD(a.hsv,da); 
+      hsv_to_rgbD(b.hsv,db); 
+      break;
+
+    default:
+
+      return -1.0;
+    }
+
+  for (sum=0.0,i=0 ; i<3 ; i++)
+    {
+      double d;
+
+      d = da[i]-db[i];
+      sum += d*d;
+    }
+
+  return sqrt(sum);
+}
+
+static int cpt_npc(cpt_t* cpt,int *segos)
+{
+  int i,n;
+  cpt_seg_t *left,*right;
+  double tol = 1e-6;
+
+  left=cpt->segment;
+
+  if (! left) return 0;
+
+  segos[0] = 0;
+
+  right = left->rseg;
+
+  if (! right) return 1;
+
+  n = 1;
+  i = 0;
+
+  while (right)
+    {    
+      if (colour_rgb_dist(
+			  left->rsmp.col,
+			  right->lsmp.col,
+			  cpt->model
+			  ) > tol)
+	{
+	  segos[n] = i;
+	  n++;
+	}
+
+      left  = right;
+      right = left->rseg;
+      i++;
+    }
+
+  return n;
+}
+
+static vertex_t smp_to_vertex(cpt_sample_t smp)
+{
+  vertex_t v;
+  
+  v.x[0] = smp.col.rgb.red; 
+  v.x[1] = smp.col.rgb.green;
+  v.x[2] = smp.col.rgb.blue; 
+  
+  return v;
+}
+
+static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
+{
+  int      k[len+1],i;
+  vertex_t pv[len+1];
+  cpt_seg_t* s;
+
+  s = seg;
+
+  pv[0] = smp_to_vertex(s->lsmp);
+
+  for (i=0 ; i<len ; i++)
+    {
+      pv[i+1] = smp_to_vertex(s->rsmp);
+      s = s->rseg;
+    }
+
+  if (poly_simplify(tol,pv,len+1,k) != 0)
+    return 1;
+
+  s = seg->rseg; 
+  
+  for (i=0 ; i<len-1 ; i++)
+    {
+      if (k[i+1] == 0)
+	{
+	  cpt_seg_t *left,*right;
+
+	  left  = s->lseg;
+	  right = s->rseg;
+	  
+	  left->rseg  = right;
+	  right->lseg = left;
+
+	  left->rsmp = right->lsmp;
+	    
+	  cpt_seg_destroy(s);
+
+	  s = left;
+	}
+
+      s = s->rseg;
+    }
+
+  return 0;
+}
+
+static int cpt_optimise(double tol,cpt_t* cpt)
+{
+  int n,m;
+
+  if ((n = cpt_nseg(cpt)) > 1)
+    {
+      int i,segos[n+1];
+
+      m = cpt_npc(cpt,segos);
+
+      segos[m] = n;
+
+      for (i=0 ; i<m ; i++)
+	{
+	  int os  = segos[i];
+	  int len = segos[i+1] - segos[i];
+	  cpt_seg_t *seg;
+
+	  /* FIXME */
+
+	  if ((seg = cpt_segment(cpt,os)) == NULL) return 1;
+	  if (cpt_optimise_segs(tol,seg,len) != 0) return 1;
+	}
+    }
+
   return 0;
 }
     
