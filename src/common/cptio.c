@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id$
+  $Id: cptio.c,v 1.1 2004/03/04 01:21:55 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -13,6 +13,8 @@
 #include <time.h>
 
 #include "cptio.h"
+#include "cptparse.h"
+#include "cptscan.h"
 #include "version.h"
 
 #define LBUF 1024
@@ -20,9 +22,10 @@
 
 extern int cpt_read(char* file,cpt_t* cpt)
 {
-  FILE *stream;
-  char  lbuf[LBUF];
-  int   n;
+  FILE    *stream;
+  char     lbuf[LBUF];
+  int      n,v,tok;
+  yyscan_t cptscan;
 
   if (file)
     {
@@ -57,6 +60,27 @@ extern int cpt_read(char* file,cpt_t* cpt)
       stream = stdin;
       strncpy(cpt->name,"<stdin>",CPT_NAME_LEN);
     }
+
+  if (cptlex_init(&cptscan) != 0)
+    {
+      fprintf(stderr,"problem initailising scanner : %s\n",strerror(errno));
+      return 1;
+    }
+  
+  cptset_in(stream,cptscan);
+
+  cptset_debug(1,cptscan);
+
+  if (cptparse(cptscan) != 0)
+    {
+      fprintf(stderr,"failed parse\n");
+      return 1;
+    }
+
+  while ((tok = cptlex(&v,cptscan)) > 0)
+    printf("tok=%d  yytext=%s\n", tok, cptget_text(cptscan));
+   
+  cptlex_destroy(cptscan);
 
 #ifdef OLD_SCANNER
 
