@@ -2,7 +2,7 @@
    scanner for cpt files 
 
    (c) J.J.Green 2004
-   $Id: cptscan.l,v 1.3 2004/03/16 01:26:57 jjg Exp jjg $
+   $Id: cptscan.l,v 1.4 2004/03/18 02:26:50 jjg Exp jjg $
    %option bison-bridge
 */
 
@@ -15,6 +15,7 @@
 %option outfile="cptscan.c"
 %option prefix="cpt"
 %option bison-bridge
+%option yylineno
 
 %option reentrant 
 %option 8bit
@@ -22,11 +23,11 @@
 %option noyywrap
 %option debug
 
-%x comment model
+%x comment model final
 
 D     [0-9]
 E     [DdEe][+-]?{D}+
-NUM   ({D}+({E})?)|({D}*"."{D}+({E})?)|({D}+"."{D}*({E})?)
+NUM   [+-]?(({D}+({E})?)|({D}*"."{D}+({E})?)|({D}+"."{D}*({E})?))
 
 %%
 
@@ -36,11 +37,11 @@ NUM   ({D}+({E})?)|({D}*"."{D}+({E})?)|({D}+"."{D}*({E})?)
 <comment>\n                            BEGIN(INITIAL);
 <model>RGB                             return RGB;
 <model>HSV                             return HSV;
-<model>\n                              BEGIN(INITIAL);
+<model>\n                              BEGIN(INITIAL); return '\n';
 
 [ \t]*
 \n                 return '\n';
-{NUM}              yylval->d =  atof(yytext); return NUM;
+{NUM}              yylval->d = atof(yytext); return NUM;
 p                  return 'P';  
 P                  return 'p';
 \/                 return '/';
@@ -48,5 +49,10 @@ P                  return 'p';
 F                  return 'F';
 B                  return 'B';
 N                  return 'N';
+L                  return 'L';
+U                  return 'U';
+<final><<EOF>>     yyterminate();  
+<<EOF>>            BEGIN(final) ; return '\n'; 
+.                  
 
 %%

@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.3 2004/03/16 01:26:21 jjg Exp jjg $
+  $Id: cptparse.y,v 1.4 2004/03/18 02:26:42 jjg Exp jjg $
 */
 
 %{
@@ -18,7 +18,10 @@
 #include "bridge.h"
 
   static void cpterror(char const*);
-
+  static cpt_sample_t sample3(double,double,double,double);
+  static cpt_sample_t sample1(double,double);
+  static cpt_sample_t sampleh(double,hatch_t);
+  static cpt_sample_t samplee(double);
 %}
 
 %output="cptparse.c"
@@ -29,6 +32,7 @@
 
 %union {
   double       d;
+  annote_t     annote;
   colour_t     colour;
   hatch_t      hatch;
   fill_t       fill;
@@ -38,46 +42,79 @@
 
 %token NUM
 
-%type <d>     NUM z0 z1
-%type <fill>  fill 
-%type <hatch> hatch
-%type <seg>   segment
-%nonassoc HATCH RGB HSV
+%type <d>      NUM 
+%type <fill>   fill 
+%type <hatch>  hatch
+%type <seg>    spline segment
+%type <annote> annote
+%nonassoc HATCH RGB HSV 
 
 %%
 
-input : 
-      | model segments extras
+input : lines 
 ;
 
-model : { bridge->model = rgb; }
-| RGB   { bridge->model = rgb; }
-| HSV   { bridge->model = hsv; }
+lines : line
+| lines line
 ;
 
-segments : segment { cpt_append($1,bridge); }
-| segments segment { cpt_append($2,bridge); }
+line : content '\n'
+| '\n'
+;
 
-segment : z0 fill z1 fill '\n' {
-  $$ = cpt_seg_new();
+content : segment { cpt_append($1,bridge); }
+| model
+| extra 
+;
 
-  $$->lsmp.val  = $1;
-  $$->lsmp.fill = $2;
-  
-  $$->rsmp.val  = $3;
-  $$->rsmp.fill = $4;
+model :  RGB { bridge->model = rgb; }
+| HSV { bridge->model = hsv; }
+;
+
+segment : spline {
+  $$ = $1;
+  $$->annote = none;
 }
-
-z0 : NUM
-z1 : NUM
-
-extras :
-       | extras extra
+| spline annote {
+  $$ = $1;
+  $$->annote = $2;
+}
 ;
 
-extra : 'F' fill '\n' { bridge->fg  = $2; }
-      | 'B' fill '\n' { bridge->bg  = $2; }
-      | 'N' fill '\n' { bridge->nan = $2; }
+annote : 'L' { $$ = lower; }
+| 'U' { $$ = upper; }
+;
+
+spline : NUM NUM NUM NUM NUM NUM NUM NUM {
+  $$ = cpt_seg_new();
+  $$->lsmp = sample3($1,$2,$3,$4);
+  $$->rsmp = sample3($5,$6,$7,$8);
+}
+| NUM NUM NUM NUM {
+  $$ = cpt_seg_new();
+  $$->lsmp = sample1($1,$2);
+  $$->rsmp = sample1($3,$4);
+}
+| NUM hatch NUM hatch {
+  $$ = cpt_seg_new();
+  $$->lsmp = sampleh($1,$2);
+  $$->rsmp = sampleh($3,$4);
+} 
+| NUM hatch NUM '-' {
+  $$ = cpt_seg_new();
+  $$->lsmp = sampleh($1,$2);
+  $$->rsmp = sampleh($3,$2);
+} 
+| NUM '-' NUM '-' {
+  $$ = cpt_seg_new();
+  $$->lsmp = samplee($1);
+  $$->rsmp = samplee($3);
+}
+; 
+
+extra : 'F' fill { bridge->fg  = $2; }
+      | 'B' fill { bridge->bg  = $2; }
+      | 'N' fill { bridge->nan = $2; }
 ;
 
 fill  : '-'   { $$.type = empty; }
@@ -116,6 +153,69 @@ hatch : 'p' NUM '/' NUM {
 
 static void cpterror(char const *s)
 {
-  fprintf (stderr, "%s\n", s);
+  fprintf (stderr, "%s\n",s);
 }
 
+static cpt_sample_t sample3(double z,double c1,double c2,double c3)
+{
+  cpt_sample_t s;
+  fill_t fill;
+
+  fill.type = colour;
+
+  switch (bridge->model)
+    {
+    case hsv:
+      fill.u.colour.hsv.hue = c1;
+      fill.u.colour.hsv.sat = c2;
+      fill.u.colour.hsv.val = c3;
+      break;
+    case rgb:
+      fill.u.colour.rgb.red   = (int)c1;
+      fill.u.colour.rgb.green = (int)c2;
+      fill.u.colour.rgb.blue  = (int)c3;
+    }
+
+  s.val  = z;
+  s.fill = fill;
+
+  return s;
+}
+
+static cpt_sample_t sample1(double z,double g)
+{
+  cpt_sample_t s;
+  fill_t fill;
+
+  fill.type   = grey;
+  fill.u.grey = (int)g;
+
+  s.val  = z;
+  s.fill = fill;
+
+  return s;
+}
+
+static cpt_sample_t sampleh(double z,hatch_t h)
+{
+  cpt_sample_t s;
+  fill_t fill;
+
+  fill.type    = hatch;
+  fill.u.hatch = h;
+
+  s.val  = z;
+  s.fill = fill;
+
+  return s;
+}
+
+static cpt_sample_t samplee(double z)
+{
+  cpt_sample_t s;
+
+  s.val = z;
+  s.fill.type = empty;
+
+  return s;
+}

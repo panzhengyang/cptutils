@@ -4,7 +4,7 @@
   colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.c,v 1.3 2004/02/17 00:32:00 jjg Exp jjg $
+  $Id: colour.c,v 1.4 2004/02/24 18:37:36 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -56,8 +56,6 @@ extern double colour_rgb_dist(colour_t a,colour_t b,model_t model)
   return sqrt(sum);
 }
 
-
-
 /*
   convert a gimp triple of [0..1] vals to/from an rgb_t struct
 */
@@ -82,6 +80,17 @@ extern int rgb_to_rgbD(rgb_t rgb,double* col)
     col[2] = colourD(rgb.blue);
 
     return 0;
+}
+
+extern int grey_to_rgbD(int g,double* col)
+{
+  rgb_t rgb;
+
+  rgb.red   = g;
+  rgb.green = g;
+  rgb.blue  = g;
+
+  return rgb_to_rgbD(rgb,col);
 }
 
 /*

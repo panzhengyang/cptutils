@@ -4,7 +4,7 @@
   simple GRB colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.5 2004/03/16 01:26:45 jjg Exp jjg $
+  $Id: colour.h,v 1.6 2004/03/18 02:27:41 jjg Exp jjg $
 */
 
 #ifndef COLOUR_H
@@ -53,6 +53,8 @@ extern int rgb_to_rgbD(rgb_t,double*);
 
 extern int rgbD_to_hsv(double*,hsv_t*);
 extern int hsv_to_rgbD(hsv_t,double*);
+
+extern int grey_to_rgbD(int,double*);
 
 extern int parse_rgb(char*,rgb_t*);
 extern double colour_rgb_dist(colour_t,colour_t,model_t);

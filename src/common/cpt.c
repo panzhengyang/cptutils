@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.9 2004/03/04 01:22:05 jjg Exp jjg $
+  $Id: cpt.c,v 1.10 2004/03/18 02:27:18 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -79,10 +79,10 @@ extern cpt_t* cpt_new(void)
 {
     cpt_t* cpt;
 
-    if ((cpt = malloc(sizeof(cpt_t))) != NULL)
-    {
-	cpt->segment=NULL;
-    }
+    if ((cpt = malloc(sizeof(cpt_t))) == NULL)
+      return NULL;
+
+    cpt->segment = NULL;
 
     return cpt;
 }
@@ -147,8 +147,9 @@ extern cpt_seg_t* cpt_seg_new(void)
     if ((seg = malloc(sizeof(cpt_seg_t))) == NULL) 
 	return NULL;
 
-    seg->lseg = NULL;
-    seg->rseg = NULL;
+    seg->lseg   = NULL;
+    seg->rseg   = NULL;
+    seg->annote = none;
 
     return seg;
 }

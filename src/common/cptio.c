@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.3 2004/03/16 01:26:27 jjg Exp jjg $
+  $Id: cptio.c,v 1.4 2004/03/18 02:26:38 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -27,7 +27,7 @@ extern int cptparse(void*);
 
 extern int cptdebug;
 
-extern int cpt_read(char* file,cpt_t* cpt)
+extern int cpt_read(char* file,cpt_t* cpt,int debug)
 {
   FILE    *stream;
   yyscan_t cptscan;
@@ -85,7 +85,7 @@ extern int cpt_read(char* file,cpt_t* cpt)
     }
   
   cptset_in(stream,cptscan);
-  cptset_debug(0,cptscan);
+  cptset_debug(debug,cptscan);
 
   /*
     do the parse
