@@ -1,6 +1,6 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.4 2004/09/08 21:10:07 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.5 2004/09/08 21:11:09 jjg Exp jjg $ 
 
 CC       = @CC@
 CFLAGS  += @CFLAGS@ @DEFS@
@@ -12,7 +12,6 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA    = @INSTALL_DATA@ 
 GGO             = @GGO@
 XML2C		= @XML2C@
-CROCO		= @CROCO@
 
 prefix      = @prefix@
 exec_prefix = @exec_prefix@
