@@ -7,36 +7,10 @@ This is the usual
   make
   make install
 
-configuration setup, which installs the gimpcpt binary
-and manpage. To see an example of gimpcpt output try
+configuration setup, which installs the binaries
+and manpages.
 
-  make check
-
-after the make step (you will need to have GMT and a ps 
-viewer installed). To see some other examples change into
-the src directory and try
-
-  make <gradient>.ps
-
-where <gradient> is the name of a gimp gradient 
-(eg, Nauseating_Headache). The suffix rules in the 
-Makefile defining this dependancy may prove useful 
-if you use gimpcpt in batch processing.
-
-If you have povray on your machine then have a look
-at the cptpov.pl script, which writes a povray scene
-diplaying the path of the palette in RGB space. 
-
-  ./gimpcpt <gradient> > path.inc 
-  make path.png  
-
-in src will do this, with luck (you may need to change the 
-$(POVINC) variable in the Makefile. The script was written
-for testing purposes, and so is not installed as part of
-the gimpcpt package.
-
-
-$Id$
+$Id: INSTALL,v 1.1 2002/06/18 21:57:22 jjg Exp jjg $
 
       Generic Instructions for Building Auto-Configured Packages
       ==========================================================

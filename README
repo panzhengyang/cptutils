@@ -1,14 +1,14 @@
-gimpcpt : Convert gimp gradients to GMT palettes
-------------------------------------------------
+cptutils : README
+-----------------
 
 For installation instructions, see the file INSTALL.
 
-1. Web Resources
-----------------
+Web Resources
+-------------
 
-Gimpcpt can be found at
+Cptutils can be found at
 
-  http://www.vindaloo.uklinux.net/jjg/code/gimpcpt.html
+  http://www.vindaloo.uklinux.net/jjg/code/cptutils.html
 
 The GIMP's home page is at:
 
@@ -16,10 +16,10 @@ The GIMP's home page is at:
 
 GMT's home page is at
 
-  http://www.gmt.soest.hawaii.edu
+  http://www.gmt.soest.hawaii.edu/
 
-2. Bugs
--------
+Bugs
+----
 
 Please report problems to j.j.green@shef.ac.uk
 
