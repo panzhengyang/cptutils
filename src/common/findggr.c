@@ -5,7 +5,7 @@
   files.
 
   (c) J.J.Geen 2001
-  $Id: findgrad.c,v 1.2 2001/06/02 18:35:09 jjg Exp $
+  $Id: findgrad.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -39,6 +39,11 @@ extern char* findgrad_explicit(char* name,char* dir)
     return (file_readable(explicit) ? strdup(explicit) : NULL);
 }
 
+/*
+  the glob expressions here are a bit rough, perhaps it could
+  be redone with proper regexps
+*/
+
 extern char* findgrad_implicit(char* name)
 {
     char  *home,
@@ -52,7 +57,7 @@ extern char* findgrad_implicit(char* name)
 
     if ((home = getenv("HOME")) != NULL)
     {
-	snprintf(buffer,BUFFSIZE,"%s/.gimp-*.*/gradients/%s",home,name);
+	snprintf(buffer,BUFFSIZE,"%s/.gimp-*.*/gradients/%s*",home,name);
 	glob(buffer,0,NULL,&globdata);
 
 	for (i=0 ; i<globdata.gl_pathc && !found ; i++)
@@ -75,7 +80,7 @@ extern char* findgrad_implicit(char* name)
     {
 	int j;
 
-	snprintf(buffer,BUFFSIZE,"%s/*.*/gradients/%s",dir,name);
+	snprintf(buffer,BUFFSIZE,"%s/*.*/gradients/%s*",dir,name);
 	glob(buffer,0,NULL,&globdata);
 
 	for (j=0 ; j<globdata.gl_pathc && !found; j++)

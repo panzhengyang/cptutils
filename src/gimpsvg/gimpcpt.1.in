@@ -1,4 +1,4 @@
-.TH GIMPCPT 1 "7 May 2001" Version @VERSION@ 
+.TH GIMPCPT 1 "Jan 2004" Version @VERSION@ 
 .SH NAME
 .I gimpcpt
 - convert 
@@ -147,7 +147,7 @@ colon separated directory in the variable will be
 searched for gradient files.
 
 .SH COPYRIGHT
-Copyright \(co  2001 J. J. Green
+Copyright \(co  2001,2004 J. J. Green
 
 Permission to use, copy, modify, and distribute this software and its
 documentation for any purpose and without fee is hereby granted,
@@ -156,7 +156,7 @@ both that copyright notice and this permission notice appear in
 supporting documentation. 
 
 .SH AUTHORS
-J. J. Green.
+J. J. Green (www.vindaloo.uklinux,net/jjg)
 
 .SH "SEE ALSO"
 .BR gimp (1), 

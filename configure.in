@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id$
+dnl $Id: configure.in,v 1.1 2002/06/18 21:59:07 jjg Exp jjg $
 
 AC_INIT(src/colour.c)
 
 MAJOR_VERSION=1
-MINOR_VERSION=00
+MINOR_VERSION=01
 VERSION="$MAJOR_VERSION.$MINOR_VERSION"
 
 dnl Checks for programs.

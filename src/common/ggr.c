@@ -40,12 +40,8 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.6 2001/06/02 18:35:02 jjg Exp $
+  $Id: gradient.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
 */
-
-/* use system V extensions (so that we can use strdup) */
-
-#define _SVID_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,7 +82,7 @@ extern gradient_t *grad_new_gradient(void)
   grad->last_visited = NULL;
 
   /*
-  grad->pixmap       = NULL;
+    grad->pixmap  = NULL;
   */
   	
   return grad;
@@ -134,18 +130,33 @@ extern gradient_t* grad_load_gradient(char* filename)
   if ((grad = grad_new_gradient()) == NULL)
      return NULL;
 
-  if (filename == NULL)
-    {
-      grad->filename = strdup("<stdin>");
-      grad->name     = strdup("gimpcpt-output");
-    }
-  else
-    {
-      grad->filename = strdup(filename);
-      grad->name     = basename(filename);
-    }
+  grad->filename = (filename ? strdup(filename) : strdup("<stdin>"));
 
   fgets(line, 1024, stream);
+
+  /*
+    In 1.3 gradients there is a line with the name of the 
+    gradient : if we find it then we use that name and read
+    another line, otherwise we use the filename (or the <stdin>
+    string>)
+  */
+
+  if (strncmp(line,"Name:",5) == 0)
+    {
+      char *s,*e;
+
+      for (s = line+5 ; *s && (*s == ' ') ; s++);
+      if ((e = strchr(s,'\n')) != NULL) *e = '\0';
+      
+      grad->name = strdup(s);
+
+      fgets(line, 1024, stream);
+    }
+  else
+    grad->name = (filename ?  basename(filename) : strdup("gimpcpt-output"));
+
+  /* next line specifies number of segments */
+
   num_segments = atoi(line);
 
   if (num_segments < 1)

@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001
-  $Id: gimpcpt.c,v 1.7 2001/05/25 01:55:10 jjg Exp $
+  $Id: gimpcpt.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
 */
 
 #define _SVID_SOURCE
@@ -143,6 +143,8 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
     double bg[3];
 
     if (!grad) return 1;
+
+    cpt->name = strdup(grad->name);
 
     rgb_to_colour(opt.trans,bg);
 
