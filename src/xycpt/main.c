@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2004/04/01 23:37:44 jjg Exp jjg $
+  $Id: main.c,v 1.2 2004/04/11 23:04:29 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -84,8 +84,60 @@ int main(int argc,char** argv)
   opt.file.input  = infile;
   opt.file.output = outfile;
 
-  opt.discrete = info.discrete_given;
-  opt.unital   = info.unital_given;
+  if (info.register_given)
+    {
+      if ((opt.discrete = info.discrete_given) != 0)
+	{
+	  switch (*info.register_arg)
+	    {
+	    case 'l': case 'L': 
+	      opt.reg = reg_lower;
+	      break;
+	    case 'm': case 'M':
+	      opt.reg = reg_middle;
+	      break;
+	    case 'u': case 'U': case 'h': case 'H':
+	      opt.reg = reg_upper;
+	      break;
+	    default:
+	      fprintf(stderr,
+		      "unknown registration type \"%s\"\n",
+		      info.register_arg);
+	      return EXIT_FAILURE;
+	    }
+	}
+      else
+	{
+	  fprintf(stderr,"registration only applies to discrete output!\n");
+	  fprintf(stderr,"(drop the -r option or use the -d option)\n");
+	  return EXIT_FAILURE;
+	}
+    }
+  else
+    {
+      if ((opt.discrete = info.discrete_given) != 0)
+	opt.reg = reg_middle;
+    }
+
+  if (opt.verbose)
+    {
+      if (opt.discrete)
+	{
+	  const char* regstr;
+	  
+	  switch (opt.reg)
+	    {
+	    case reg_lower  : regstr = "lower"  ; break;
+	    case reg_middle : regstr = "middle" ; break;
+	    case reg_upper  : regstr = "upper"  ; break;
+	    default:
+	      fprintf(stderr,"bad registration\n");
+	      return EXIT_FAILURE;
+	    }
+
+	  printf("converting to discrete palette (%s registration)\n",regstr);
+	}
+    }
 
   err = xycpt(opt);
 

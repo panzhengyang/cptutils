@@ -1,12 +1,12 @@
 # -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.2 2004/03/21 22:22:46 jjg Exp $
+# $Id: options.ggo,v 1.1 2004/04/01 23:37:53 jjg Exp jjg $
 package "xycpt"
 purpose "convert xy data to GMT colour palette table"
 option  "discrete"      d "output cpt is discrete"           flag    off
 option	"output"	o "output filename"	             string  no
-option	"unital"	u "unit range (0..1) for input"	     flag    off
+option  "register"      r "registration low|mid|up"          string  no
 option	"verbose"	v "verbose operation"	             flag    off
 
 

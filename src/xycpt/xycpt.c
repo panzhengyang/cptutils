@@ -1,10 +1,10 @@
 /*
   xycpt.c
 
-  discrete case still to do
+  convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.1 2004/04/01 23:37:57 jjg Exp jjg $
+  $Id: xycpt.c,v 1.2 2004/04/12 00:31:59 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -92,46 +92,159 @@ extern int xycpt(xycpt_opt_t opt)
   return 0;
 }
 
-static int xycpt_convert(fill_stack_t* fl,cpt_t *cpt,xycpt_opt_t opt)
+static cpt_seg_t* cpt_seg_new_err(void);
+static int cpt_append_err(cpt_seg_t*,cpt_t*);
+
+static int xycpt_convert(fill_stack_t* fstack,cpt_t *cpt,xycpt_opt_t opt)
 {
-  fill_stack_t* fr;
-  cpt_seg_t* seg;
+  fill_stack_t *f,*F;
+  cpt_seg_t *seg;
+  int n,i;
+
+  /* dump the linked list into an array */
+
+  for (f=fstack,n=0 ; f ; f=f->next,n++); 
+
+  if (n<2)
+    {
+      fprintf(stderr,"there is not enough data to make a palette!\n");
+      return 1;
+    }
+
+  if ((F = malloc(n*sizeof(fill_stack_t))) == NULL)
+    return 1;
+
+  for (f=fstack,i=0 ; f ; f=f->next,i++) F[i] = *f;
+
+  /* convert array to cpt structure */
 
   if (opt.discrete)
     {
-      fprintf(stderr,"not implemented\n");
-      return 1;
+      switch (opt.reg)
+	{
+	case reg_lower:
+
+	  for (i=0 ; i<n-1 ; i++)
+	    {
+	      if ((seg = cpt_seg_new_err()) == NULL) return 1;
+	      
+	      seg->lsmp.val  = F[i].val;
+	      seg->lsmp.fill = F[i+1].fill;
+	      
+	      seg->rsmp.val  = F[i+1].val;
+	      seg->rsmp.fill = F[i+1].fill;
+
+	      if (cpt_append_err(seg,cpt) != 0) return 1;
+	    }
+	  break;
+
+	case reg_middle:
+
+	  if ((seg = cpt_seg_new_err()) == NULL) return 1;
+
+	  seg->lsmp.val  = F[0].val;
+	  seg->lsmp.fill = F[0].fill;
+
+	  seg->rsmp.val  = (F[0].val + F[1].val)/2.0;
+	  seg->rsmp.fill = F[0].fill;
+
+	  if (cpt_append_err(seg,cpt) != 0) return 1;
+
+	  for (i=1 ; i<n-1 ; i++)
+	    {
+	      if ((seg = cpt_seg_new_err()) == NULL) return 1;
+
+	      seg->lsmp.val  = (F[i-1].val+F[i].val)/2.0;
+	      seg->lsmp.fill = F[i].fill;
+
+	      seg->rsmp.val  = (F[i].val+F[i+1].val)/2.0;
+	      seg->rsmp.fill = F[i].fill;
+
+	      if (cpt_append_err(seg,cpt) != 0) return 1;
+	    }
+
+	  if ((seg = cpt_seg_new_err()) == NULL) return 1;
+	  
+	  seg->lsmp.val  = (F[n-2].val+F[n-1].val)/2.0;
+	  seg->lsmp.fill = F[n-1].fill;
+	  
+	  seg->rsmp.val  = F[n-1].val;
+	  seg->rsmp.fill = F[n-1].fill;
+
+	  if (cpt_append_err(seg,cpt) != 0) return 1;
+
+	  break;
+
+	case reg_upper:
+
+	  for (i=0 ; i<n-1 ; i++)
+	    {
+	      if ((seg = cpt_seg_new_err()) == NULL) return 1;
+  	      
+	      seg->lsmp.val  = F[i].val;
+	      seg->lsmp.fill = F[i].fill;
+	      
+	      seg->rsmp.val  = F[i+1].val;
+	      seg->rsmp.fill = F[i].fill;
+
+	      if (cpt_append_err(seg,cpt) != 0) return 1;
+	    }
+	  break;
+
+	}
     }
   else
     {
-      while ((fr = fl->next) != NULL)
+      for (i=0 ; i<n-1 ; i++)
 	{
-	  if ((seg = cpt_seg_new()) == NULL)
-	    {
-	      fprintf(stderr,"error creating segment\n");
-	      return 1;
-	    }
+	  if ((seg = cpt_seg_new_err()) == NULL) return 1;
 	  
-	  seg->annote = none;
+	  seg->lsmp.val  = F[i].val;
+	  seg->lsmp.fill = F[i].fill;
 	  
-	  seg->lsmp.val  = fl->val;
-	  seg->lsmp.fill = fl->fill;
-	  
-	  seg->rsmp.val  = fr->val;
-	  seg->rsmp.fill = fr->fill;
-	  
-	  if (cpt_append(seg,cpt) != 0)
-	    {
-	      fprintf(stderr,"error adding segment\n");
-	      return 1;
-	    }
-	  
-	  fl = fr;
+	  seg->rsmp.val  = F[i+1].val;
+	  seg->rsmp.fill = F[i+1].fill;
+
+	  if (cpt_append_err(seg,cpt) != 0) return 1;
 	}
+    }
+
+  free(F);
+
+  return 0;
+}
+
+/* error message versions of functions used in xycpt_convert */
+
+static cpt_seg_t* cpt_seg_new_err(void)
+{
+  cpt_seg_t* seg;
+
+  if ((seg = cpt_seg_new()) == NULL) 
+    {
+      fprintf(stderr,"error creating segment\n");
+      return NULL;
+    }
+
+  seg->annote = none;
+
+  return seg;
+}
+
+static int cpt_append_err(cpt_seg_t* seg,cpt_t* cpt)
+{
+  if (cpt_append(seg,cpt) != 0)
+    {
+      fprintf(stderr,"error adding segment\n");
+      return 1;
     }
 
   return 0;
 }
+
+/*
+  handle stream choice
+*/ 
 
 static fill_stack_t* xyread_stream(FILE*);
 
@@ -153,10 +266,18 @@ static fill_stack_t* xyread(char* file)
       fclose(stream);
     }
   else
-    xy = xyread_stream(stderr);
+    xy = xyread_stream(stdin);
 
   return xy;
 }
+
+/* 
+   read the column data 
+
+   we read the first data line and work out how many
+   columns there are, then call a specific function
+   depending on the value found.
+*/
 
 #define BUFSIZE 1024
 #define NTOK 4
