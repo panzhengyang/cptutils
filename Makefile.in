@@ -1,6 +1,6 @@
 # Makefile.in for gimpcpt
 
-# $Id$
+# $Id: Makefile.in,v 1.1 2002/06/18 21:58:20 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -9,7 +9,7 @@
 
 VERSION   = @VERSION@
 RUBBISH   = *~
-CONFFILES = config.cache config.log config.status Makefile
+CONFFILES = config.cache config.log config.status configure Makefile
 
 DIST      = gimpcpt-$(VERSION)
 
@@ -32,6 +32,7 @@ clean :
 
 veryclean : clean
 	$(RM) $(CONFFILES)
+	autoconf
 	cd src ; $(MAKE) veryclean ; cd ..
 
 dist : veryclean
