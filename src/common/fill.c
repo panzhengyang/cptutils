@@ -1,10 +1,10 @@
 /*
   fill.h
   
-  fills for gimpcpt
+  fills for cpt stuctures
 
   (c) J.J.Green 2001,2004
-  $Id: fill.c,v 1.2 2004/03/22 23:22:05 jjg Exp jjg $
+  $Id: fill.c,v 1.3 2004/04/12 23:42:08 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -34,7 +34,7 @@ extern int fill_eq(fill_t a,fill_t b)
   return 1;
 }
 
-extern int fill_interpolate(double z,fill_t a,fill_t b,fill_t *f)
+extern int fill_interpolate(double z,fill_t a,fill_t b,model_t model,fill_t *f)
 {
   filltype_t type;
 
@@ -49,17 +49,69 @@ extern int fill_interpolate(double z,fill_t a,fill_t b,fill_t *f)
     {
     case empty : 
       break;
+
     case grey :
       f->u.grey = (a.u.grey*(1-z) + b.u.grey);
       break;
+
     case hatch :
     case file :
       *f = a;
       break;
+
     case colour :
-      /* fixme */
-      *f = a;
+      if (colour_interpolate(z,a.u.colour,b.u.colour,model,&(f->u.colour)) != 0)
+	{
+	  fprintf(stderr,"failed to interpolate colour\n");
+	  return 1;
+	}
+
       break;
+    }
+
+  return 0;
+}
+
+/*
+  convert a fill to an rgb triplet -- often a recieving 
+  program will only accept a colour.
+*/
+
+extern int fill_rgb(fill_t fill,model_t model,rgb_t *prgb)
+{
+  switch (fill.type)
+    {
+    case colour:
+      switch (model)
+	{
+	  double rgbD[3];
+
+	case hsv:
+	  hsv_to_rgbD(fill.u.colour.hsv,rgbD);
+	  rgbD_to_rgb(rgbD,prgb);
+	  break;
+
+	case rgb:
+	  *prgb = fill.u.colour.rgb;
+	  break;
+
+	default:
+	  fprintf(stderr,"bad colour model (%i)\n",model); 
+	  return 1;
+	}
+      break;
+
+    case grey:
+    case hatch:
+    case file:
+    case empty:
+
+      fprintf(stderr,"fill type not yet implemeted\n"); 
+      return 1;
+
+    default:
+      fprintf(stderr,"bad fill type (%i)\n",fill.type); 
+      return 1;
     }
 
   return 0;

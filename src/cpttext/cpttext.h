@@ -6,7 +6,7 @@
 #define CPTINFO_H
 
 typedef enum { false=0, true } bool_t;
-typedef enum { html } format_t;
+typedef enum { html,css } format_t;
 
 typedef struct
 {

@@ -1,10 +1,10 @@
 /*
   fill.h
   
-  simple GRB fills for gimpcpt
+  fill types for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: fill.h,v 1.1 2004/03/18 02:26:45 jjg Exp jjg $
+  $Id: fill.h,v 1.2 2004/04/12 23:42:14 jjg Exp jjg $
 */
 
 #ifndef FILL_H
@@ -34,7 +34,8 @@ typedef struct
 } fill_t;
 
 extern int fill_eq(fill_t,fill_t);
-extern int fill_interpolate(double,fill_t,fill_t,fill_t*);
+extern int fill_interpolate(double,fill_t,fill_t,model_t,fill_t*);
+extern int fill_rgb(fill_t,model_t,rgb_t*);
 
 #endif
 

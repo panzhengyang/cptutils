@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.12 2004/03/22 23:23:08 jjg Exp jjg $
+  $Id: cpt.c,v 1.13 2004/04/12 23:42:00 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -95,8 +95,10 @@ extern int cpt_zrange(cpt_t* cpt,double* z)
 extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 {
   cpt_seg_t *seg;
+  model_t    model;
 
-  seg = cpt->segment;
+  seg   = cpt->segment;
+  model = cpt->model;
 
   if (!seg) return 1;
 
@@ -119,7 +121,7 @@ extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 
 	  zp = (z-z0)/(z1-z0);
 
-	  if (fill_interpolate(zp,seg->lsmp.fill,seg->rsmp.fill,fill) != 0)
+	  if (fill_interpolate(zp,seg->lsmp.fill,seg->rsmp.fill,model,fill) != 0)
 	    {
 	      fprintf(stderr,"fill interpolation failed\n");
 	      return 1;
@@ -195,15 +197,16 @@ extern void cpt_destroy(cpt_t* cpt)
 
     if (!cpt) return;
     
-    if ((seg = cpt->segment) == NULL) return;
-
-    while (seg) 
-    {
-	next = seg->rseg;
-	cpt_seg_destroy(seg);
-	seg = next;
-    }
-	    
+    if ((seg = cpt->segment) != NULL)
+      {
+	while (seg) 
+	  {
+	    next = seg->rseg;
+	    cpt_seg_destroy(seg);
+	    seg = next;
+	  }
+      }
+ 
     free(cpt);
 
     return;

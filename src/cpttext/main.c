@@ -1,7 +1,7 @@
 /*
-  main.c 
+  main.c for cpttext
 
-  part of the gimpcpt package
+  part of the cptutils package
 
   This program is free software; you can redistribute it
   and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2004/03/21 22:22:31 jjg Exp $
+  $Id: main.c,v 1.1 2004/04/12 23:43:05 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -53,7 +53,7 @@ int main(int argc,char** argv)
   opt.verbose = (info.verbose_given ? true : false);
 
   if (opt.verbose)
-    printf("This is cptinfo (version %s)\n",VERSION);
+    printf("This is cpttext (version %s)\n",VERSION);
   
   switch (info.inputs_num)
     {
@@ -68,9 +68,11 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
-  opt.format = html;
-  opt.text   = info.text_arg;
+  opt.text = info.text_arg;
 
+  opt.format = html;
+  if (info.css_given) opt.format = css;
+      
   err = cpttext(opt);
   
   if (opt.verbose)

@@ -1,10 +1,10 @@
 /*
   colour.h
   
-  simple GRB colours for gimpcpt
+  simple RGB colours for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.7 2004/03/22 01:09:15 jjg Exp jjg $
+  $Id: colour.h,v 1.8 2004/06/17 23:18:06 jjg Exp jjg $
 */
 
 #ifndef COLOUR_H
@@ -61,8 +61,7 @@ extern int grey_to_rgbD(int,double*);
 
 extern int parse_rgb(char*,rgb_t*);
 extern double colour_rgb_dist(colour_t,colour_t,model_t);
-
-
+extern int colour_interpolate(double,colour_t,colour_t,model_t,colour_t*);
 
 #endif
 

@@ -4,7 +4,7 @@
   colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.c,v 1.4 2004/02/24 18:37:36 jjg Exp jjg $
+  $Id: colour.c,v 1.5 2004/03/22 01:09:22 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -323,7 +323,73 @@ extern int hsvD_to_rgbD(double* hsvD,double* rgbD)
   return 0;
 }
 
+/*
+  interpolate between two given colours
+*/
 
+static int double_interpolate(double z,double a,double b,double *c)
+{
+  *c = (1.0-z)*a + z*b;
+
+  return 0;
+}
+
+static int rgbD_interpolate(double z,double *aD,double *bD,double *cD)
+{
+  int i,err = 0;
+
+  for (i=0 ; i<3 ; i++)
+    err |= double_interpolate(z,aD[i],bD[i],cD+i);
+
+  return err;
+}
+
+static int rgb_interpolate(double z,rgb_t a,rgb_t b,rgb_t *c)
+{
+  double aD[3], bD[3], cD[3];
+  int err = 0;
+
+  err |= rgb_to_rgbD(a,aD);
+  err |= rgb_to_rgbD(b,bD);
+  err |= rgbD_interpolate(z,aD,bD,cD);
+  err |= rgbD_to_rgb(cD,c);
+
+  return err;
+}
+
+extern int hsv_interpolate(double z,hsv_t a,hsv_t b,hsv_t *c)
+{
+  double aD[3], bD[3], cD[3];
+  int err = 0;
+
+  err |=  hsv_to_rgbD(a,aD);
+  err |=  hsv_to_rgbD(b,bD);
+  err |=  rgbD_interpolate(z,aD,bD,cD);
+  err |=  rgbD_to_hsv(cD,c);
+  
+  return err;
+}
+
+extern int colour_interpolate(double z,colour_t a,colour_t b,model_t model,colour_t *c)
+{
+  int err;
+
+  switch (model)
+    {
+    case rgb: 
+      err = rgb_interpolate(z,a.rgb,b.rgb,&(c->rgb));
+      break;
+
+    case hsv:
+      err = hsv_interpolate(z,a.hsv,b.hsv,&(c->hsv));
+      break;
+
+    default:
+      return 1;
+    }
+
+  return err;
+}
 
 
 

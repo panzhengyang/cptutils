@@ -1,9 +1,11 @@
 # -*- sh -*-
 # gengetopt input for cpttext
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.2 2004/03/21 22:22:46 jjg Exp $
+# $Id: options.ggo,v 1.1 2004/04/12 23:43:12 jjg Exp jjg $
 package "cpttext"
 purpose "print text coloured by GMT colour palette"
+option  "css"           C "output CSS classes"   flag    off
+option  "html"          H "output in HTML"       flag    off
 option	"text"	        t "text to convert"	 string  default="some test text" no
 option	"verbose"	v "verbose operation"	 flag    off
 
