@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.4 2004/02/12 01:18:35 jjg Exp jjg $
+  $Id: cpt.c,v 1.5 2004/02/13 01:17:42 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -34,8 +34,14 @@ extern cpt_t* cpt_new(void)
 
 extern int cpt_prepend(cpt_seg_t* seg,cpt_t* cpt)
 {
+    cpt_seg_t* s;
+
+    s = cpt->segment;
+
     seg->lseg = NULL;
-    seg->rseg = cpt->segment;
+    seg->rseg = s;
+
+    if (s) s->lseg = seg;
 
     cpt->segment = seg;
 
