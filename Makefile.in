@@ -1,6 +1,6 @@
 # Makefile.in for gimpcpt
 
-# $Id: Makefile.in,v 1.2 2002/06/18 22:33:55 jjg Exp jjg $
+# $Id: Makefile.in,v 1.3 2002/06/18 22:46:36 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -30,7 +30,7 @@ clean :
 	$(RM) $(RUBBISH)
 	cd src ; $(MAKE) clean ; cd ..
 
-veryclean : clean
+veryclean spotless : clean
 	$(RM) $(CONFFILES)
 	autoconf
 	cd src ; $(MAKE) veryclean ; cd ..
