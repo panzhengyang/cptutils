@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.3 2004/03/18 02:27:23 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2004/04/01 21:32:20 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -8,7 +8,7 @@ OBJGGR  = gradient.o
 
 CPTULIBS = libfill.a libcpt.a libggr.a
 
-RUBBISH += $(OBJ) $(CPTULIBS)
+RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS)
 
 default : all
 

@@ -1,4 +1,10 @@
-Changes $Id: CHANGELOG,v 1.8 2004/03/03 00:32:20 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.9 2004/03/22 23:17:58 jjg Exp jjg $
+
+1.11 : (unreleased)
+  - new program xycpr, converts column data to cpr format
+ 
+1.10 : (unreleased)
+  - split libgimpcpt to libfill libcpt libggr
 
 1.9 : (unreleased)
   - replaced the cpt read function in cpt.c by the custom

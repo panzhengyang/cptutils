@@ -1,7 +1,7 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2004/03/18 02:26:05 jjg Exp $
+# $Id: Makefile,v 1.1 2004/04/01 23:31:37 jjg Exp jjg $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
@@ -10,11 +10,11 @@ LDLIBS +=
 
 default : all
 
-all :
+all : xycpt
 
 install :
 	$(INSTALL_DATA) xycpt.1 $(mandir)/man1/xycpt.1
-#	$(INSTALL_PROGRAM) xycpt $(bindir)/xycpt
+	$(INSTALL_PROGRAM) xycpt $(bindir)/xycpt
 
 clean :
 	$(RM) $(RUBBISH)
@@ -28,10 +28,14 @@ xycpt : $(OBJ)
 
 # for testing 
 
-CPT = /usr/share/gmt/GMT_rainbow.cpt
+TESTCPT  = test.1.cpt test.2.cpt test.3.cpt test.4.cpt
+RUBBISH += $(TESTCPT)
 
 test check : xycpt
-	./xycpt --plain $(CPT)
+	$(MAKE) $(TESTCPT)
+
+%.cpt : %.dat 
+	./xycpt -v -o $*.cpt $< 
 
 include ../Common.mk
 include ../Progs.mk
