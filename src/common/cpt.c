@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.6 2004/02/22 23:58:25 jjg Exp jjg $
+  $Id: cpt.c,v 1.7 2004/02/24 18:37:21 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -127,6 +127,8 @@ extern int cpt_append(cpt_seg_t* seg,cpt_t* cpt)
     return 0;
 }
 
+/* this would be better done with a proper lex parser */
+
 #define LBUF 1024
 #define SNM(x) ((x) ? (x) : "<stdin>")
 
@@ -210,11 +212,11 @@ extern int cpt_read(char* file,cpt_t* cpt)
 	    rgb_t  rgb;
 	    hsv_t  hsv;
 	  } l,r;
-	  
+
 	case rgb:
 	  
 	  if (sscanf(lbuf,
-		     "%lf %i %i %i %lf %i %i %i",
+		     " %lf %u %u %u %lf %u %u %u",
 		     &l.val,
 		     &l.rgb.red,
 		     &l.rgb.green,
@@ -248,7 +250,7 @@ extern int cpt_read(char* file,cpt_t* cpt)
 	case hsv:
 
 	  if (sscanf(lbuf,
-		     "%lf %lf %lf %lf %lf %lf %lf %lf",
+		     " %lf %lf %lf %lf %lf %lf %lf %lf",
 		     &l.val,
 		     &l.hsv.hue,
 		     &l.hsv.sat,
@@ -294,7 +296,7 @@ extern int cpt_read(char* file,cpt_t* cpt)
 	case rgb:
 
 	  if (sscanf(lbuf,
-		     "%c %i %i %i",
+		     "%c %u %u %u",
 		     &type,
 		     &c.rgb.red,
 		     &c.rgb.green,
@@ -360,7 +362,7 @@ extern int cpt_read(char* file,cpt_t* cpt)
 
       /* everthing else we ignore */
 
-      fprintf(stderr,"failed to scan line %i",n);
+      fprintf(stderr,"failed to scan line %i\n",n);
     }
 
   if (!feof(stream))
