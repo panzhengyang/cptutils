@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2004/03/21 22:22:31 jjg Exp $
+  $Id: main.c,v 1.1 2004/04/01 23:37:44 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -79,7 +79,7 @@ int main(int argc,char** argv)
     }
   
   if (opt.verbose)
-    printf("This is cptinfo (version %s)\n",VERSION);
+    printf("This is xycpt (version %s)\n",VERSION);
   
   opt.file.input  = infile;
   opt.file.output = outfile;
