@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.3 2004/02/11 00:58:48 jjg Exp jjg $
+  $Id: cpt.c,v 1.4 2004/02/12 01:18:35 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #include "cpt.h"
 #include "version.h"
 
-static int print_cpt_aux(FILE*,char,rgb_t);
+static int print_cpt_aux(FILE*,char,colour_t,model_t);
 
 extern cpt_t* cpt_new(void)
 {
@@ -102,16 +102,12 @@ extern int cpt_read(char* file,cpt_t* cpt)
       strncpy(cpt->name,"<stdin>",CPT_NAME_LEN);
     }
 
-  /* assume rgb colour model */
+  /* default rgb colour model */
 
   cpt->model = rgb;
   
   for (n=1 ; fgets(lbuf,LBUF,stream) ; n++)
     { 
-      int lr,lg,lb,rr,rg,rb,gr,gg,gb;
-      double lv,rv;
-      char gt;
-
       /* check for comment lines */
 
       if (*lbuf == '#')
@@ -138,68 +134,160 @@ extern int cpt_read(char* file,cpt_t* cpt)
 
       /* check for segment line */
       
-      if (sscanf(lbuf,
-		 "%lf %i %i %i %lf %i %i %i",
-		 &lv,&lr,&lg,&lb,
-		 &rv,&rr,&rg,&rb
-		 ) == 8)
+      switch (cpt->model)
 	{
-	  cpt_seg_t *seg;
-
-	  seg = cpt_seg_new();
-
-	  seg->lsmp.val       = lv;
-	  seg->lsmp.rgb.red   = lr;
-	  seg->lsmp.rgb.green = lg;
-	  seg->lsmp.rgb.blue  = lb;
-
-	  seg->rsmp.val       = rv;
-	  seg->rsmp.rgb.red   = rr;
-	  seg->rsmp.rgb.green = rg;
-	  seg->rsmp.rgb.blue  = rb;
-
-	  if (cpt_append(seg,cpt) != 0)
+	  struct 
+	  {
+	    double val;
+	    rgb_t  rgb;
+	    hsv_t  hsv;
+	  } l,r;
+	  
+	case rgb:
+	  
+	  if (sscanf(lbuf,
+		     "%lf %i %i %i %lf %i %i %i",
+		     &l.val,
+		     &l.rgb.red,
+		     &l.rgb.green,
+		     &l.rgb.blue,
+		     &r.val,
+		     &r.rgb.red,
+		     &r.rgb.green,
+		     &r.rgb.blue
+		     ) == 8)
 	    {
-	      fprintf(stderr,"failed seg append");
-	      return 1;
+	      cpt_seg_t *seg;
+	      
+	      seg = cpt_seg_new();
+	      
+	      seg->lsmp.val     = l.val;
+	      seg->lsmp.col.rgb = l.rgb;
+
+	      seg->rsmp.val     = r.val;
+	      seg->rsmp.col.rgb = r.rgb;
+	      
+	      if (cpt_append(seg,cpt) != 0)
+		{
+		  fprintf(stderr,"failed seg append");
+		  return 1;
+		}
+
+	      continue;
 	    }
+	  break;
 
-	  continue;
-	}	    
+	case hsv:
 
+	  if (sscanf(lbuf,
+		     "%lf %lf %lf %lf %lf %lf %lf %lf",
+		     &l.val,
+		     &l.hsv.hue,
+		     &l.hsv.sat,
+		     &l.hsv.val,
+		     &r.val,
+		     &r.hsv.hue,
+		     &r.hsv.sat,
+		     &r.hsv.val
+		     ) == 8)
+	    {
+	      cpt_seg_t *seg;
+	      
+	      seg = cpt_seg_new();
+	      
+	      seg->lsmp.val     = l.val;
+	      seg->lsmp.col.hsv = l.hsv;
+
+	      seg->rsmp.val     = r.val;
+	      seg->rsmp.col.hsv = r.hsv;
+	      
+	      if (cpt_append(seg,cpt) != 0)
+		{
+		  fprintf(stderr,"failed seg append");
+		  return 1;
+		}
+
+	      continue;
+	    }
+	  break;
+
+	default :
+
+	  fprintf(stderr,"bad colour model\n");
+	}
+	  
       /* get background etc */
 
-      if (sscanf(lbuf,"%c %i %i %i",&gt,&gr,&gg,&gb) == 4)
+      switch (cpt->model)
 	{
-	  switch (gt)
+	  colour_t c;
+	  char type;
+
+	case rgb:
+
+	  if (sscanf(lbuf,
+		     "%c %i %i %i",
+		     &type,
+		     &c.rgb.red,
+		     &c.rgb.green,
+		     &c.rgb.blue) == 4)
 	    {
-	    case 'F':
-	    case 'f':
-	      cpt->fg.red   = gr;
-	      cpt->fg.green = gg;
-	      cpt->fg.blue  = gb;
-	      break;
-
-	    case 'B':
-	    case 'b':
-	      cpt->bg.red   = gr;
-	      cpt->bg.green = gg;
-	      cpt->bg.blue  = gb;
-	      break;
-
-	    case 'N':
-	    case 'n':
-	      cpt->nan.red   = gr;
-	      cpt->nan.green = gg;
-	      cpt->nan.blue  = gb;
-	      break;
-
-	    default:
-	      fprintf(stderr,"strange FBN at line %i\n",n);
-	      return 1;
+	      switch (type)
+		{
+		case 'F': case 'f':
+		  cpt->fg = c;
+		  break;
+		  
+		case 'B': case 'b':
+		  cpt->bg = c;
+		  break;
+		  
+		case 'N': case 'n':
+		  cpt->nan = c;
+		  break;
+		  
+		default:
+		  fprintf(stderr,"strange FBN at line %i\n",n);
+		  return 1;
+		}
+	      continue;
 	    }
+	  break;
 
-	  continue;
+	case hsv:
+
+	  if (sscanf(lbuf,
+		     "%c %lf %lf %lf",
+		     &type,
+		     &c.hsv.hue,
+		     &c.hsv.sat,
+		     &c.hsv.val) == 4)
+	    {
+	      switch (type)
+		{
+		case 'F': case 'f':
+		  cpt->fg = c;
+		  break;
+		  
+		case 'B': case 'b':
+		  cpt->bg = c;
+		  break;
+		  
+		case 'N': case 'n':
+		  cpt->nan = c;
+		  break;
+		  
+		default:
+		  fprintf(stderr,"strange FBN at line %i\n",n);
+		  return 1;
+		}
+	      continue;
+	    }
+	  break;
+
+	default:
+
+	  return 1;
 	}
 
       /* everthing else we ignore */
@@ -264,36 +352,71 @@ extern int cpt_write(char* outfile,cpt_t* cpt)
 
 	l = seg->lsmp;
 	r = seg->rsmp;
-	    
-	fprintf(stream,
-		"%#7e %3i %3i %3i %#7e %3i %3i %3i\n",
-		l.val,
-		l.rgb.red,
-		l.rgb.green,
-		l.rgb.blue,
-		r.val,
-		r.rgb.red,
-		r.rgb.green,
-		r.rgb.blue);
-	
+	  
+	switch (cpt->model)
+	  {
+	  case rgb:
+  
+	    fprintf(stream,
+		    "%#7e %3i %3i %3i %#7e %3i %3i %3i\n",
+		    l.val,
+		    l.col.rgb.red,
+		    l.col.rgb.green,
+		    l.col.rgb.blue,
+		    r.val,
+		    r.col.rgb.red,
+		    r.col.rgb.green,
+		    r.col.rgb.blue);
+	    break;
+
+	  case hsv:
+	    fprintf(stream,
+		    "%#7e %7e %7e %7e %#7e %7e %7e %7e\n",
+		    l.val,
+		    l.col.hsv.hue,
+		    l.col.hsv.sat,
+		    l.col.hsv.val,
+		    r.val,
+		    r.col.hsv.hue,
+		    r.col.hsv.sat,
+		    r.col.hsv.val);
+	    break;
+
+	  default:
+	    return 1;
+	  }
+
 	seg = seg->rseg;
     }
 
-    print_cpt_aux(stream,'B',cpt->bg);
-    print_cpt_aux(stream,'F',cpt->fg);
-    print_cpt_aux(stream,'N',cpt->nan);
+    print_cpt_aux(stream,'B',cpt->bg,cpt->model);
+    print_cpt_aux(stream,'F',cpt->fg,cpt->model);
+    print_cpt_aux(stream,'N',cpt->nan,cpt->model);
 
     fclose(stream);
 
     return 0;
 }
 
-static int print_cpt_aux(FILE* stream,char c,rgb_t col)
+static int print_cpt_aux(FILE* stream,char c,colour_t col,model_t model)
 {
-    fprintf(stream,"%c %3i %3i %3i\n",
-	    c, col.red, col.green, col.blue);
+  switch (model)
+    {
+    case rgb:
+      fprintf(stream,"%c %3i %3i %3i\n",
+	      c, col.rgb.red, col.rgb.green, col.rgb.blue);
+      break;
 
-    return 1;
+    case hsv:
+      fprintf(stream,"%c %2f %2f %3f\n",
+	      c, col.hsv.hue, col.hsv.val, col.hsv.sat);
+      break;
+
+    default:
+      return 1;
+    }
+
+  return 0;
 }
 
 extern void cpt_destroy(cpt_t* cpt)

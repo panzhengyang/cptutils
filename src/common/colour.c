@@ -4,7 +4,7 @@
   simple GRB colours for gimpcpt
 
   (c) J.J.Green 2001
-  $Id: colour.c,v 1.4 2001/05/24 01:04:24 jjg Exp $
+  $Id: colour.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
 */
 
 #define _SVID_SOURCE
@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "colour.h"
 
@@ -43,6 +44,28 @@ extern int rgb_to_colour(rgb_t rgb,double* col)
     col[0] = colourD(rgb.red);
     col[1] = colourD(rgb.green);
     col[2] = colourD(rgb.blue);
+
+    return 0;
+}
+
+/*
+  this is fucked
+*/
+
+extern int colour_to_hsv(double* col,hsv_t* hsv)
+{
+    if (!col || !hsv) return 1;
+
+    rgb_to_hsv(col[0],col[1],col[2],&(hsv->hue),&(hsv->sat),&(hsv->val));
+
+    return 0;
+}
+
+extern int hsv_to_colour(hsv_t hsv,double* col)
+{
+    if (!col) return 1;
+
+    hsv_to_rgb(hsv.hue,hsv.sat,hsv.val,col,col+1,col+2);
 
     return 0;
 }
@@ -116,6 +139,7 @@ extern int parse_rgb(char* string,rgb_t* col)
 /*
   taken from libgimp/gimpcolorspace.c
 */
+
 extern int rgb_to_hsv(double r,double g,double b,
 		      double* ph,double* ps,double* pv)
 {

@@ -5,7 +5,7 @@
   on them
 
   (c) J.J.Green 2001,2004
-  $Id: cpt.h,v 1.2 2004/02/11 00:58:59 jjg Exp jjg $
+  $Id: cpt.h,v 1.3 2004/02/12 01:18:28 jjg Exp jjg $
 */
 
 #ifndef CPT_H
@@ -16,11 +16,11 @@
 typedef struct cpt_sample_t
 {
   double val;
-  rgb_t  rgb;
+  colour_t col;
 } cpt_sample_t;
 
 typedef struct cpt_seg_t
-{
+{ 
     struct cpt_seg_t *lseg,*rseg;
     cpt_sample_t      lsmp, rsmp;
 } cpt_seg_t;
@@ -31,9 +31,9 @@ typedef enum {rgb,hsv} model_t;
 
 typedef struct cpt_t
 {
-  char      name[CPT_NAME_LEN];
-  model_t   model;
-  rgb_t     fg,bg,nan;
+  char       name[CPT_NAME_LEN];
+  model_t    model;
+  colour_t   fg,bg,nan;
   cpt_seg_t *segment;
 } cpt_t;
 
