@@ -3,7 +3,7 @@
 
   read photoshop pro gradients.
   2005 (c) J.J. Green
-  $Id$
+  $Id: psp.c,v 1.1 2005/01/27 00:52:16 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -109,6 +109,15 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
 
   return 0;
 }
+
+extern int clean_psp(psp_grad_t* grad)
+{
+  free(grad->name);
+  free(grad->seg);
+
+  return 0;
+}
+
 
 /*
   In all but the first segment, the header seems to be
@@ -322,6 +331,8 @@ static int read_footer(FILE *s)
 
 #endif
 
+#ifdef TESTPROG
+
 /* test program */
 
 int main (int argc,char** argv)
@@ -365,3 +376,5 @@ int main (int argc,char** argv)
 
   return EXIT_SUCCESS;
 }
+
+#endif
