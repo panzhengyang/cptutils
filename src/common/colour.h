@@ -4,11 +4,23 @@
   simple GRB colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
+  $Id: colour.h,v 1.2 2004/02/13 01:17:49 jjg Exp jjg $
 */
 
 #ifndef COLOUR_H
 #define COLOUR_H
+
+/*
+  these are the GMT colour types : 
+
+  rgb_t : rgb triple of integers in the range 0-255
+  hsv_t : hsv triple of doubles, hue in the range 0-360.
+          saturation & value in the range of 0-1. The hue
+	  rotates clockwise (ie, corresponds to a gimp
+	  GRAD_HSV_CW type gradient)
+
+  these correspond to colours as interpreted in cpt files.
+*/
 
 #define RGB_MODEL 
 #define HSV_MODEL
@@ -31,14 +43,19 @@ typedef union colour_t
 
 extern int parse_rgb(char*,rgb_t*);
 
-extern int hsv_to_rgb(double,double,double,double*,double*,double*);
-extern int rgb_to_hsv(double,double,double,double*,double*,double*);
+/*
+  gimp colour types rgbD and hsvD are triples of doubles
+  int the range 0-1
+*/
 
-extern int colour_to_rgb(double*,rgb_t*);
-extern int rgb_to_colour(rgb_t,double*);
+extern int hsvD_to_rgbD(double*,double*);
+extern int rgbD_to_hsvD(double*,double*);
 
-extern int colour_to_hsv(double*,hsv_t*);
-extern int hsv_to_colour(hsv_t,double*);
+extern int rgbD_to_rgb(double*,rgb_t*);
+extern int rgb_to_rgbD(rgb_t,double*);
+
+extern int rgbD_to_hsv(double*,hsv_t*);
+extern int hsv_to_rgbD(hsv_t,double*);
 
 
 #endif

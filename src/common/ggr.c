@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.2 2004/01/29 02:28:10 jjg Exp jjg $
+  $Id: gradient.c,v 1.3 2004/02/12 01:18:15 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -314,23 +314,39 @@ extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double*
 	    return 1;
     }
 
-
     /* Calculate color components */
 
     a = seg->a0 + (seg->a1 - seg->a0)*factor;
 
-    if (seg->color == GRAD_RGB)
-    {
+    if (seg->color == GRAD_RGB)    {
 	col[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
 	col[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
 	col[2] = seg->b0 + (seg->b1 - seg->b0)*factor;
     }
     else
-    {
+      {
 	double  h0,s0,v0,h1,s1,v1;
+	double rgbD[3],hsvD[3];
 
-	rgb_to_hsv(seg->r0,seg->g0,seg->b0,&h0,&s0,&v0);
-	rgb_to_hsv(seg->r1,seg->g1,seg->b1,&h1,&s1,&v1);
+	rgbD[0] = seg->r0;
+	rgbD[1] = seg->g0;
+	rgbD[2] = seg->b0;
+	
+	rgbD_to_hsvD(rgbD,hsvD);
+
+	h0 = hsvD[0];
+	s0 = hsvD[1];
+	v0 = hsvD[2];
+
+	rgbD[0] = seg->r1;
+	rgbD[1] = seg->g1;
+	rgbD[2] = seg->b1;
+	
+	rgbD_to_hsvD(rgbD,hsvD);
+
+	h1 = hsvD[0];
+	s1 = hsvD[1];
+	v1 = hsvD[2];
 
 	s0 = s0 + (s1 - s0)*factor;
 	v0 = v0 + (v1 - v0)*factor;
@@ -362,7 +378,11 @@ extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double*
 		return 1;
 	}
 	  
-	hsv_to_rgb(h0,s0,v0,col,col+1,col+2);
+	hsvD[0] = h0;
+	hsvD[1] = s0;
+	hsvD[2] = v0;
+
+	hsvD_to_rgbD(hsvD,col);
     }
 
     for (i=0 ; i<3 ; i++) col[i] = a*col[i] + (1-a)*bg[i];

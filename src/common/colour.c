@@ -1,13 +1,13 @@
 /*
   colours.c
   
-  simple GRB colours for gimpcpt
+  colours for gimpcpt
 
-  (c) J.J.Green 2001
-  $Id: colour.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
+  (c) J.J.Green 2001,2004
+  $Id: colour.c,v 1.2 2004/02/13 01:17:37 jjg Exp jjg $
 */
 
-#define _SVID_SOURCE
+#define _GNU_SOURCE
 
 #define MAX(a,b) (((a)>(b)) ? (a) : (b))
 #define MIN(a,b) (((a)>(b)) ? (b) : (a))
@@ -23,10 +23,10 @@ static double colourD(int);
 static int colour8(double);
 
 /*
-  convert a triple of [0..1] vals to/from an rgb_t struct
+  convert a gimp triple of [0..1] vals to/from an rgb_t struct
 */
 
-extern int colour_to_rgb(double* col,rgb_t* rgb)
+extern int rgbD_to_rgb(double* col,rgb_t* rgb)
 {
     if (!col || !rgb) return 1;
 
@@ -37,7 +37,7 @@ extern int colour_to_rgb(double* col,rgb_t* rgb)
     return 0;
 }
 
-extern int rgb_to_colour(rgb_t rgb,double* col)
+extern int rgb_to_rgbD(rgb_t rgb,double* col)
 {
     if (!col) return 1;
 
@@ -49,25 +49,43 @@ extern int rgb_to_colour(rgb_t rgb,double* col)
 }
 
 /*
-  this is fucked
+  convert gimp rgbD to/from gmt hsv type -- this is
+  needed since gmt stores its hsv format as hsv triples,
+  whereas gimp converts them to rgb, reflecting the format's
+  purpose  : the former is easier for hand-crafting, the
+  latter for automated processing of GUI generation.
 */
 
-extern int colour_to_hsv(double* col,hsv_t* hsv)
+extern int rgbD_to_hsv(double* rgbD,hsv_t* hsv)
 {
-    if (!col || !hsv) return 1;
+  double hsvD[3];
 
-    rgb_to_hsv(col[0],col[1],col[2],&(hsv->hue),&(hsv->sat),&(hsv->val));
+  if (!rgbD || !hsv) return 1;
+  
+  if (rgbD_to_hsvD(rgbD,hsvD) != 0)
+    return 1;
+  
+  hsv->hue = hsvD[0] * 360.0;
+  hsv->sat = hsvD[1];
+  hsv->val = hsvD[2];
 
-    return 0;
+  return 0;
 }
 
-extern int hsv_to_colour(hsv_t hsv,double* col)
+extern int hsv_to_rgbD(hsv_t hsv,double* rgbD)
 {
-    if (!col) return 1;
+  double hsvD[3];
+  
+  hsvD[0] = hsv.hue/360.0;
+  hsvD[1] = hsv.sat;
+  hsvD[2] = hsv.val;
 
-    hsv_to_rgb(hsv.hue,hsv.sat,hsv.val,col,col+1,col+2);
+  if (!rgbD) return 1;
 
-    return 0;
+  if (hsvD_to_rgbD(hsvD,rgbD) != 0)
+    return 1;
+  
+  return 0;
 }
 
 /*
@@ -135,17 +153,19 @@ extern int parse_rgb(char* string,rgb_t* col)
     return 0;
 }
 
-
 /*
-  taken from libgimp/gimpcolorspace.c
+  taken from libgimp/gimpcolorspace.c with minor modifications
 */
 
-extern int rgb_to_hsv(double r,double g,double b,
-		      double* ph,double* ps,double* pv)
+extern int rgbD_to_hsvD(double *rgbD,double* hsvD)
 {
     double min, max;
-    double delta,h,s,v;
+    double delta,r,g,b,h,s,v;
     
+    r = rgbD[0];
+    g = rgbD[1];
+    b = rgbD[2];
+
     h = 0.0;
 
     if (r > g)
@@ -188,23 +208,26 @@ extern int rgb_to_hsv(double r,double g,double b,
 	    h -= 1.0;
     }
 
-    *ph = h;
-    *ps = s;
-    *pv = v;
+    hsvD[0] = h;
+    hsvD[1] = s;
+    hsvD[2] = v;
 
     return 0;
 }
 
-extern int hsv_to_rgb(double h,double s,double v,
-		      double* r,double* g,double* b)
+extern int hsvD_to_rgbD(double* hsvD,double* rgbD)
 {
-  double f,p,q,t;
+  double f,p,q,t,h,s,v;
+
+  h = hsvD[0];
+  s = hsvD[1];
+  v = hsvD[2];
 
   if (s == 0.0)
     {
-      *r  = v;
-      *g  = v;
-      *b  = v;
+      rgbD[0] = v;
+      rgbD[1] = v;
+      rgbD[2] = v;
 
       return 1;
     }
@@ -221,34 +244,34 @@ extern int hsv_to_rgb(double h,double s,double v,
   switch ((int)h)
   {
       case 0:
-	  *r  = v;
-	  *g  = t;
-	  *b  = p;
+	  rgbD[0] = v;
+	  rgbD[1] = t;
+	  rgbD[2] = p;
 	  break;
       case 1:
-	  *r  = q;
-	  *g  = v;
-	  *b  = p;
+	  rgbD[0] = q;
+	  rgbD[1] = v;
+	  rgbD[2] = p;
 	  break;
       case 2:
-	  *r  = p;
-	  *g  = v;
-	  *b  = t;
+	  rgbD[0] = p;
+	  rgbD[1] = v;
+	  rgbD[2] = t;
 	  break;	      
       case 3:
-	  *r  = p;
-	  *g  = q;
-	  *b  = v;
+	  rgbD[0] = p;
+	  rgbD[1] = q;
+	  rgbD[2] = v;
 	  break;
       case 4:
-	  *r  = t;
-	  *g  = p;
-	  *b  = v;
+	  rgbD[0] = t;
+	  rgbD[1] = p;
+	  rgbD[2] = v;
 	  break;
       case 5:
-	  *r  = v;
-	  *g  = p;
-	  *b  = q;
+	  rgbD[0] = v;
+	  rgbD[1] = p;
+	  rgbD[2] = q;
 	  break;
   }
 
