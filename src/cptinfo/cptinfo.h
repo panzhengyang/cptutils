@@ -5,7 +5,7 @@
 #ifndef CPTINFO_H
 #define CPTINFO_H
 
-typedef enum { true, false } bool_t;
+typedef enum { false=0, true } bool_t;
 typedef enum { plain, html, csv } format_t;
 
 typedef struct
@@ -14,7 +14,7 @@ typedef struct
   {
     char *input,*output;
   } file;
-  bool_t verbose;
+  bool_t verbose,debug;
   format_t format;
 } cptinfo_opt_t;
 

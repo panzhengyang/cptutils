@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.2 2004/03/03 00:28:39 jjg Exp jjg $
+  $Id: cptinfo.c,v 1.3 2004/03/18 02:26:00 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -22,7 +22,6 @@ typedef struct
 {
   int     size;
   model_t model;
-  double  length;
   struct
   {
     int total;
@@ -61,7 +60,7 @@ extern int cptinfo(cptinfo_opt_t opt)
       return 1;
     }
 
-  if (cpt_read(opt.file.input,cpt) != 0)
+  if (cpt_read(opt.file.input,cpt,(opt.debug == true ? 1 : 0)) != 0)
     {
       fprintf(stderr,"failed to read %s\n",NNSTR(opt.file.input));
       return 1;
@@ -163,10 +162,6 @@ static int cptinfo_analyse(cpt_t* cpt,info_t* info)
   info->z.min = DBL_MAX;
   info->z.max = DBL_MIN;
 
-  /* length */
-
-  info->length = 0.0;
-
   s = cpt->segment;
 
   while (s)
@@ -186,7 +181,6 @@ static int cptinfo_analyse(cpt_t* cpt,info_t* info)
 static int analyse_segment(cpt_seg_t* seg,info_t* info)
 {
   cpt_seg_t *right;
-  double     len;
 
   info->segments.total++;  
 
@@ -211,10 +205,10 @@ static int analyse_segment(cpt_seg_t* seg,info_t* info)
     {
       switch (fill_eq(seg->rsmp.fill,right->lsmp.fill))
 	{
-	case 0 : break;
-	case 1 :
+	case 0 :
 	  info->type.continuous = 0;
 	  break;
+	case 1 : break;
 	default :
 	  return 1;
 	}
@@ -264,7 +258,6 @@ static int output_plain(info_t info,FILE* stream)
   fprintf(stream,"  colour    %i\n",info.segments.colour);
   fprintf(stream,"  total     %i\n",info.segments.total);
   fprintf(stream,"z-range:    %.3f - %.3f\n",info.z.min,info.z.max);
-  fprintf(stream,"rgb-length: %.3f\n",info.length);
   fprintf(stream,"file size:  %i\n",info.size);
 
   return 0;
@@ -287,7 +280,7 @@ static int output_csv(info_t info,FILE* stream)
       return 1;
     }
 	
-  fprintf(stream,"%s,%s,%s,%i,%i,%i,%i,%.3f,%.3f,%.3f,%i\n",
+  fprintf(stream,"%s,%s,%s,%i,%i,%i,%i,%.3f,%.3f,%i\n",
 	  modstr,
 	  BOOLSTR(info.type.continuous),
 	  BOOLSTR(info.type.discrete),
@@ -297,7 +290,6 @@ static int output_csv(info_t info,FILE* stream)
 	  info.segments.total,
 	  info.z.min,
 	  info.z.max,
-	  info.length,
 	  info.size);
 
   return 0;

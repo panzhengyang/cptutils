@@ -1,10 +1,11 @@
 # -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.1 2004/02/11 00:58:38 jjg Exp $
+# $Id: options.ggo,v 1.1 2004/02/29 20:04:58 jjg Exp jjg $
 package "cptinfo"
 purpose "print summary information on GMT colour palette"
 option  "csv"           c "output in comma separated value format" flag    off
+option  "debug"         d "scan-trace debugging"                   flag    off
 option  "html"          H "output in html format"                  flag    off
 option	"output"	o "output filename"		           string  no
 option  "plain"         p "output in plain format"                 flag    off

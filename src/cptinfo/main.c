@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2004/02/13 01:18:15 jjg Exp $
+  $Id: main.c,v 1.1 2004/02/29 20:04:49 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -51,7 +51,7 @@ int main(int argc,char** argv)
 
   /* check arguments & transfer to opt structure */ 
 
-  opt.verbose = info.verbose_given;
+  opt.verbose = (info.verbose_given ? true : false);
 
   /* null outfile for stdout */
 
@@ -87,6 +87,8 @@ int main(int argc,char** argv)
   opt.format = plain;
   if (info.html_given) opt.format = html;
   if (info.csv_given)  opt.format = csv;
+
+  opt.debug = (info.debug_given ? true : false);
 
   err = cptinfo(opt);
   
