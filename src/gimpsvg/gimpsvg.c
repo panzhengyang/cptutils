@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.6 2004/02/19 00:50:23 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.7 2004/02/23 00:19:32 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -19,7 +19,9 @@
 #include "cpt.h"
 #include "dp-simplify.h"
 
-#define  SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
+#define DEBUG
+
+#define SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
 
 static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
 static int cpt_optimise(double,cpt_t*);
@@ -100,7 +102,7 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 	printf("transformed %i segment%s\n",n,(n-1 ? "s" : ""));
       }
 
-    if (cpt_optimise(0.5,cpt) != 0)
+    if (cpt_optimise(0.4,cpt) != 0)
       {
 	fprintf(stderr,"failed to optimise cpt\n");
 	return 1;
@@ -131,39 +133,38 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 
 static char* find_infile(char* infile)
 {
+  char  *gimp_grads,*found;
 
-    char  *gimp_grads,*found;
+  /* try just the name */
+  
+  found = findgrad_explicit(infile);
 
-    /* try just the name */
-    
-    found = findgrad_explicit(infile);
-
-    if (found) return found;
-    else if (absolute_filename(infile)) return NULL;
-	
-    /* check the GIMP_GRADIENTS directories */
-
-    if ((gimp_grads = getenv("GIMP_GRADIENTS")) != NULL)
-      {
-	char* dir;
-		
-	if ((gimp_grads = strdup(gimp_grads)) == NULL)
-	  return NULL;
-	
-	dir = strtok(gimp_grads,":");
-	while (dir && !found)
-	  {
-	    found = findgrad_indir(infile,dir);
-	    dir = strtok(NULL,":");
-	  } 
-	free(gimp_grads);
-	
-	if (found) return found;
-      }
-    
-    /* now try the usual places */
-
-    return findgrad_implicit(infile);
+  if (found) return found;
+  else if (absolute_filename(infile)) return NULL;
+  
+  /* check the GIMP_GRADIENTS directories */
+  
+  if ((gimp_grads = getenv("GIMP_GRADIENTS")) != NULL)
+    {
+      char* dir;
+      
+      if ((gimp_grads = strdup(gimp_grads)) == NULL)
+	return NULL;
+      
+      dir = strtok(gimp_grads,":");
+      while (dir && !found)
+	{
+	  found = findgrad_indir(infile,dir);
+	  dir = strtok(NULL,":");
+	} 
+      free(gimp_grads);
+      
+      if (found) return found;
+    }
+  
+  /* now try the usual places */
+  
+  return findgrad_implicit(infile);
 }
 
 static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
@@ -322,11 +323,9 @@ static cpt_seg_t* cpt_segment(cpt_t* cpt,int n)
 
   seg = cpt->segment;
 
-  while (--n)
-    {
-      if ((seg = seg->rseg) == NULL) 
-	return NULL; 
-    }
+  while (n--)
+    if ((seg = seg->rseg) == NULL) 
+      return NULL; 
 
   return seg;
 }
@@ -336,8 +335,7 @@ static int cpt_nseg(cpt_t* cpt)
   int n = 0;
   cpt_seg_t *seg;
 
-  for (seg = cpt->segment ; seg ; seg = seg->rseg)
-    n++;
+  for (seg = cpt->segment ; seg ; seg = seg->rseg)  n++;
 
   return n;
 }
@@ -415,14 +413,32 @@ static int cpt_npc(cpt_t* cpt,int *segos)
   return n;
 }
 
+/*
+  this is where we convert the cpt to a path in 4-space,
+  the rgb components and the path parameter. We'll need to
+  test the scaling here: map everything into [0,1]^4 in
+  the first instance
+*/
+
 static vertex_t smp_to_vertex(cpt_sample_t smp)
 {
   vertex_t v;
-  
-  v.x[0] = smp.col.rgb.red; 
-  v.x[1] = smp.col.rgb.green;
-  v.x[2] = smp.col.rgb.blue; 
-  
+
+#ifdef DEBUG
+  int i;
+#endif
+
+  v.x[0] = smp.col.rgb.red/255.0; 
+  v.x[1] = smp.col.rgb.green/255.0;
+  v.x[2] = smp.col.rgb.blue/255.0; 
+  v.x[3] = smp.val;
+
+#ifdef DEBUG
+  for (i=0 ; i<4 ; i++)
+    printf("  %f",v.x[i]);
+  printf("\n");
+#endif
+
   return v;
 }
 
@@ -445,28 +461,27 @@ static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
   if (poly_simplify(tol,pv,len+1,k) != 0)
     return 1;
 
-  s = seg->rseg; 
+  s = seg; 
   
-  for (i=0 ; i<len-1 ; i++)
+  for (i=0 ; i<len ; i++)
     {
       if (k[i+1] == 0)
 	{
 	  cpt_seg_t *left,*right;
 
-	  left  = s->lseg;
+	  left  = s;
 	  right = s->rseg;
 	  
-	  left->rseg  = right;
-	  right->lseg = left;
+	  left->rsmp = right->rsmp;
+	  left->rseg = right->rseg;
 
-	  left->rsmp = right->lsmp;
+	  if (left->rseg)
+	    left->rseg->lseg = left;
 	    
-	  cpt_seg_destroy(s);
-
-	  s = left;
+	  cpt_seg_destroy(right);
 	}
-
-      s = s->rseg;
+      else 
+	s = s->rseg;
     }
 
   return 0;
@@ -489,8 +504,6 @@ static int cpt_optimise(double tol,cpt_t* cpt)
 	  int os  = segos[i];
 	  int len = segos[i+1] - segos[i];
 	  cpt_seg_t *seg;
-
-	  /* FIXME */
 
 	  if ((seg = cpt_segment(cpt,os)) == NULL) return 1;
 	  if (cpt_optimise_segs(tol,seg,len) != 0) return 1;

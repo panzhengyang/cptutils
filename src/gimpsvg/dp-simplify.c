@@ -23,7 +23,7 @@
   Users of this code must verify correctness for their application.
   ---
 
-  $Id: dp-simplify.c,v 1.2 2004/01/26 00:25:19 jjg Exp $
+  $Id: dp-simplify.c,v 1.1 2004/02/23 00:19:36 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -107,7 +107,7 @@ static int simplify_dp(double,vertex_t*,int,int,int*);
 
 extern int poly_simplify(double t,vertex_t* pv,int n,int* mk)
 {
-  int       i,k,m,l;
+  int       i,k,l;
   vertex_t  v[n];
   float     t2 = t*t;
 
