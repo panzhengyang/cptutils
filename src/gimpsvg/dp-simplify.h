@@ -23,7 +23,7 @@
   Users of this code must verify correctness for their application.
   ---
 
-  $Id: dp-simplify.c,v 1.2 2004/01/26 00:25:19 jjg Exp $
+  $Id: dp-simplify.h,v 1.1 2004/02/23 00:19:40 jjg Exp jjg $
 */
 
 #ifndef DPSIMPLIFY_H 
@@ -33,7 +33,7 @@
   the dimension of the verticies
 */
 
-#define VDIM 3
+#define VDIM 4
 
 typedef struct
 {
