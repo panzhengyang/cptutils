@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.h,v 1.2 2001/05/21 00:28:06 jjg Exp $
+  $Id: cpt.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
 */
 
 #ifndef CPT_H
@@ -33,10 +33,12 @@ typedef struct cpt_t
 } cpt_t;
 
 extern cpt_t* cpt_new();
+extern void cpt_destroy(cpt_t*);
+
 extern int cpt_prepend(cpt_seg_t*,cpt_t* cpt);
 extern int cpt_append(cpt_seg_t*,cpt_t* cpt);
 extern int cpt_write(char* name,cpt_t* cpt);
-extern void cpt_destroy(cpt_t*);
+extern int cpt_read(char* name,cpt_t* cpt);
 
 extern cpt_seg_t* cpt_seg_new();
 extern void cpt_seg_destroy(cpt_seg_t*);
