@@ -5,23 +5,29 @@
 
   This file contains code derived from from gradiant.c
   gradient.h and gradient_header.h, part of the Gimp
-  distribution. Thanks to the Gimp people for making
+  distribution (v1.2). Thanks to the gimp people for making
   this available under the GPL.
 
-  The file give access to the Gimp gradient structures
+  The file give access to the gimp gradient structures
   and some io functionality. I have made a couple of
   changes from the original:
+
   * structs are now public
   * I removed the glib function calls
-  * the pixmap field is missing (I'll look at this later)
+  * the pixmap field is removed
+  * some cosmetic changes
+  * adapted to use the "Name:" line in v1.3 gradients
+
+  It may be useful as a standalone C interface to the gimp
+  gradient format.
 
   gimp/app/gradient.c,gradient.h,gradient_header.h,
   are copyright
     (c) 1995 Spencer Kimball andPeter Mattis,
     with modifications to the gradient editor
     module (c) 1996-1997 Federico Mena Quintero.
-  The rest of this program is
-    (c) 2001 J.J.Green (j.j.green@shef.ac.uk)
+  The modifications are
+    (c) 2001,2004 J.J.Green (j.j.green@shef.ac.uk)
 
   This program is free software; you can redistribute it
   and/or modify it under the terms of the GNU General
@@ -40,7 +46,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.4 2004/02/17 00:32:05 jjg Exp jjg $
+  $Id: gradient.c,v 1.5 2004/06/16 20:56:44 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -78,10 +84,6 @@ extern gradient_t *grad_new_gradient(void)
   grad->filename     = NULL;
   grad->segments     = NULL;
   grad->last_visited = NULL;
-
-  /*
-    grad->pixmap  = NULL;
-  */
   	
   return grad;
 }
@@ -93,10 +95,6 @@ extern void grad_free_gradient(gradient_t *grad)
   if (grad->name) free(grad->name);
   if (grad->filename) free(grad->filename);
   if (grad->segments) seg_free_segments(grad->segments);
-
-  /*
-  if (grad->pixmap) gdk_pixmap_unref(grad->pixmap);
-  */
 
   free(grad);
 }
@@ -262,18 +260,6 @@ extern int grad_save_gradient(gradient_t *grad,char* filename)
   return 0;
 }
 
-/* not used
-static gradient_t * grad_create_default_gradient(void)
-{
-  gradient_t *grad;
-
-  grad = grad_new_gradient();
-  grad->segments = seg_new_segment();
-
-  return grad;
-}
-*/
-
 extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double* col)
 {
     double          factor=0.0;
@@ -375,7 +361,7 @@ extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double*
 	      }
 	    break;
 	  default:
-	    fprintf(stderr,"unknown colour model\n");
+	    fprintf(stderr,"unknown colour model %i\n",seg->color);
 	    return 1;
 	  }
 	
@@ -549,6 +535,7 @@ static double calc_sphere_decreasing_factor(double middle,double pos)
   pos = calc_linear_factor (middle, pos);
 
  /* Works for convex decreasing and concave increasing */
+
   return 1.0 - sqrt(1.0 - pos*pos);
 }
 
