@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.2 2004/04/12 00:31:59 jjg Exp jjg $
+  $Id: xycpt.c,v 1.3 2004/04/12 15:21:52 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -440,7 +440,7 @@ static fill_stack_t* xyread3(FILE* stream,char* buf,int n)
       return NULL;
   while (skipline(buf));
   
-  if (sscanf(buf,"%i %i %i",&r,&b,&g) != 3)
+  if (sscanf(buf,"%i %i %i",&r,&g,&b) != 3)
     {
       fprintf(stderr,"bad line\n  %s",buf);
       return NULL;
@@ -472,7 +472,7 @@ static fill_stack_t* xyread4(FILE* stream,char* buf)
       return NULL;
   while (skipline(buf));
   
-  if (sscanf(buf,"%lf %i %i %i",&z,&r,&b,&g) != 4)
+  if (sscanf(buf,"%lf %i %i %i",&z,&r,&g,&b) != 4)
     {
       fprintf(stderr,"bad line\n  %s",buf);
       return NULL;
