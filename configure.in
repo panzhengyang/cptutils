@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.1 2002/06/18 21:59:07 jjg Exp jjg $
+dnl $Id: configure.in,v 1.2 2004/01/29 02:27:52 jjg Exp jjg $
 
-AC_INIT(src/colour.c)
+AC_INIT(src/Common.mk.in)
 
 MAJOR_VERSION=1
-MINOR_VERSION=01
+MINOR_VERSION=02
 VERSION="$MAJOR_VERSION.$MINOR_VERSION"
 
 dnl Checks for programs.
@@ -43,11 +43,11 @@ AC_SUBST(VERSION)
 
 dnl Make a config.h
 
-AC_CONFIG_HEADER(src/config.h)
+AC_CONFIG_HEADER(src/common/config.h)
 
 dnl Create Makefiles
 
-AC_OUTPUT([Makefile src/Makefile src/version.h src/gimpcpt.1])
+AC_OUTPUT([Makefile src/Common.mk src/common/version.h])
 
 
 

@@ -1,12 +1,9 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2001
-# $Id: Makefile.in,v 1.2 2002/07/23 00:09:53 jjg Exp $
+# $Id: Makefile,v 1.1 2004/02/09 01:34:28 jjg Exp jjg $
 
 OBJ      = gimpcpt.o main.o findgrad.o
 RUBBISH  = $(OBJ) gimpcpt
-CFLAGS  += -Wall -I../common/
-LDFLAGS += -L../common/ 
-LDLIBS  += -lgimpcpt
 
 default : all
 
@@ -29,7 +26,7 @@ gimpcpt : $(OBJ)
 .PHONEY : all test doc
 
 include ../Common.mk
-
+include ../Progs.mk
 
 
 

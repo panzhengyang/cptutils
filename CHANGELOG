@@ -1,6 +1,27 @@
-Changes $Id$
+Changes $Id: CHANGELOG,v 1.1 2002/06/18 21:51:28 jjg Exp jjg $
 
-1.0 :
+1.02 :
+  some reorganiation prior to coding up cptgimp:
+  - split code between common & gimpcpt diretcories
+  - added Common.mk
+  - tidied up Makefiles a bit
+
+1.01 :
+  minor modification to handle the change to the
+  gimp's gradient file format: an additional line
+	
+     Name: <name>
+
+  has been added to the files, and they are given
+  the .grd extension. 
+  - we now check the second line of the file to see
+    if it a name line, and if so save that to print
+    in the output cpt file
+  - we search for gradients (still with typeglobs) 
+    with names <name> and <name>.grd
+  - header in output cpt file tidied a little
+
+1.00 :
   minor documentation changes 
 
 0.94 :
