@@ -3,7 +3,7 @@
 
   read photoshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.1 2005/01/27 00:52:16 jjg Exp jjg $
+  $Id: psp.c,v 1.2 2005/01/27 21:32:11 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -136,8 +136,8 @@ extern int clean_psp(psp_grad_t* grad)
   segment is 4096 (16,0)
 */
 
-static int read_segment_h1(FILE*);
-static int read_segment_h2(FILE*);
+static int read_segment_h1(FILE*,psp_seg_t*);
+static int read_segment_h2(FILE*,psp_seg_t*);
 static int read_segment_pos(FILE*,psp_seg_t*);
 static int read_segment_data(FILE*,psp_seg_t*);
 
@@ -145,8 +145,8 @@ static int read_first_segment(FILE *s,psp_seg_t* seg)
 {
   int err = 0;
 
-  err += read_segment_h1(s);
-  err += read_segment_h2(s);
+  err += read_segment_h1(s,seg);
+  err += read_segment_h2(s,seg);
   err += read_segment_data(s,seg);
 
   if (err) return err;
@@ -160,62 +160,63 @@ static int read_segment(FILE *s,psp_seg_t* seg)
 {
   int err = 0;
 
-  err += read_segment_h1(s);
+  err += read_segment_h1(s,seg);
   err += read_segment_pos(s,seg);
-  err += read_segment_h2(s);
+  err += read_segment_h2(s,seg);
   err += read_segment_data(s,seg);
 
   return err;
 }
 
-/* expect 0 0 0 0 */ 
-
-static int read_segment_h1(FILE *s)
+static int print_array(unsigned char* b,int n,FILE* s,const char* fmt)
 {
   int i;
-  unsigned char b[4],h1[4] = {0,0,0,0};
+  
+  for (i=0 ; i<n ; i++) fprintf(s,fmt,(int)b[i]);
+
+  return 1;
+}
+
+/* usually 0 0 0 0 -- smoothness parameter? */ 
+
+static int read_segment_h1(FILE *s,psp_seg_t* seg)
+{
+  unsigned char b[4];
 
   fread(b,1,4,s);
 
-  for (i=0 ; i<4 ; i++)
+  if ((b[0] != 0) || (b[1] != 0))
     {
-      if (b[i] != h1[i])
-	{
-	  int j;
+      fprintf(stderr,"unusual h1 found : ");
+      print_array(b,4,stderr," %i");
+      fprintf(stderr,"\n");
 
-	  fprintf(stderr,"unusual h1 found : ");
-	  for (j=0 ; j<4 ; j++) fprintf(stderr," %i",(int)b[j]);
-	  fprintf(stderr,"\n");
-
-	  return 1;
-	}
+      return 1;
     }
+
+  seg->h1 = 256*b[2]+b[3];
 
   return 0;
 }
 
 /* expect 0 0 0 50 */
 
-static int read_segment_h2(FILE *s)
+static int read_segment_h2(FILE *s,psp_seg_t* seg)
 {
-  int i;
-  unsigned char b[4],h2[4] = {0,0,0,50};
+  unsigned char b[4];
 
   fread(b,1,4,s);
 
-  for (i=0 ; i<4 ; i++)
+  if ((b[0] != 0) || (b[1] != 0) || (b[2] != 0))
     {
-      if (b[i] != h2[i])
-	{
-	  int j;
-	  
-	  fprintf(stderr,"unusual h2 found : ");
-	  for (j=0 ; j<4 ; j++) fprintf(stderr," %i",(int)b[j]);
-	  fprintf(stderr,"\n");
+      fprintf(stderr,"unusual h2 found : ");
+      print_array(b,4,stderr," %i");
+      fprintf(stderr,"\n");
 
-	  return 1;
-	}
+      return 1;
     }
+
+  seg->h2 = b[3];
   
   return 0;
 }
