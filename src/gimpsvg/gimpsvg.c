@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.8 2004/02/24 02:13:45 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.9 2004/02/24 18:36:02 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -16,7 +16,7 @@
 #include "gradient.h"
 #include "findgrad.h"
 #include "files.h"
-#include "cpt.h"
+#include "cptio.h"
 #include "dp-simplify.h"
 
 /*
@@ -84,9 +84,11 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 
     cpt->model = rgb;
 
-    cpt->fg.rgb  = opt.fg;
-    cpt->bg.rgb  = opt.bg;
-    cpt->nan.rgb = opt.nan;
+    cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+
+    cpt->fg.u.colour.rgb  = opt.fg;
+    cpt->bg.u.colour.rgb  = opt.bg;
+    cpt->nan.u.colour.rgb = opt.nan;
 
     strncpy(cpt->name,(infile ? infile : "<stdin>"),CPT_NAME_LEN);
     
@@ -232,28 +234,32 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    grad_segment_colour(gseg->right,gseg,bg,col);
 	    rgbD_to_rgb(col,&rgb);
 
-	    rseg->rsmp.col.rgb = rgb; 
-	    rseg->rsmp.val     = SCALE(gseg->right,opt);
+	    rseg->rsmp.fill.type         = colour; 
+	    rseg->rsmp.fill.u.colour.rgb = rgb; 
+	    rseg->rsmp.val               = SCALE(gseg->right,opt);
 
 	    grad_segment_colour(gseg->middle,gseg,bg,col);
 	    rgbD_to_rgb(col,&rgb);
 
-	    rseg->lsmp.col.rgb = rgb; 
-	    rseg->lsmp.val     = SCALE(gseg->middle,opt);
+	    rseg->lsmp.fill.type         = colour; 
+	    rseg->lsmp.fill.u.colour.rgb = rgb; 
+	    rseg->lsmp.val               = SCALE(gseg->middle,opt);
 
 	    if (rseg->lsmp.val < rseg->rsmp.val)
 		err |= cpt_prepend(rseg,cpt);
 
 	    /* the left */
 
-	    lseg->rsmp.col.rgb = rgb; 
-	    lseg->rsmp.val = SCALE(gseg->middle,opt);
+	    lseg->rsmp.fill.type         = colour; 
+	    lseg->rsmp.fill.u.colour.rgb = rgb; 
+	    lseg->rsmp.val               = SCALE(gseg->middle,opt);
 
 	    grad_segment_colour(gseg->left,gseg,bg,col);
 	    rgbD_to_rgb(col,&rgb);
 
-	    lseg->lsmp.col.rgb = rgb; 
-	    lseg->lsmp.val = SCALE(gseg->left,opt);
+	    lseg->lsmp.fill.type         = colour; 
+	    lseg->lsmp.fill.u.colour.rgb = rgb; 
+	    lseg->lsmp.val               = SCALE(gseg->left,opt);
 
 	    if (lseg->lsmp.val < lseg->rsmp.val)
 		err |= cpt_prepend(lseg,cpt);
@@ -284,17 +290,19 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    
 	    grad_segment_colour(x,gseg,bg,col);
 	    rgbD_to_rgb(col,&rgb);
-	    
-	    rseg->rsmp.col.rgb = rgb; 
-	    rseg->rsmp.val     = SCALE(x,opt);
+
+	    rseg->rsmp.fill.type         = colour;
+	    rseg->rsmp.fill.u.colour.rgb = rgb; 
+	    rseg->rsmp.val               = SCALE(x,opt);
 
 	    x = gseg->right-width/n;
 	    
 	    grad_segment_colour(x,gseg,bg,col);
 	    rgbD_to_rgb(col,&rgb);
 	    
-	    rseg->lsmp.col.rgb = rgb; 
-	    rseg->lsmp.val     = SCALE(x,opt);
+	    rseg->lsmp.fill.type         = colour;
+	    rseg->lsmp.fill.u.colour.rgb = rgb; 
+	    rseg->lsmp.val               = SCALE(x,opt);
 	    
 	    cpt_prepend(rseg,cpt);
 	    
@@ -302,16 +310,18 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	      {
 		lseg = cpt_seg_new();
 		
-		lseg->rsmp.col.rgb = rseg->lsmp.col.rgb;
-		lseg->rsmp.val     = rseg->lsmp.val;
+		lseg->rsmp.fill.type         = rseg->lsmp.fill.type;
+		lseg->rsmp.fill.u.colour.rgb = rseg->lsmp.fill.u.colour.rgb;
+		lseg->rsmp.val               = rseg->lsmp.val;
 		
 		x = gseg->right-width*i/n;
 
 		grad_segment_colour(x,gseg,bg,col);
 		rgbD_to_rgb(col,&rgb);
 		
-		lseg->lsmp.col.rgb = rgb; 
-		lseg->lsmp.val     = SCALE(x,opt);
+		lseg->lsmp.fill.type         = colour;
+		lseg->lsmp.fill.u.colour.rgb = rgb; 
+		lseg->lsmp.val               = SCALE(x,opt);
 		
 		cpt_prepend(lseg,cpt);
 		
@@ -342,15 +352,18 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 static vertex_t smp_to_vertex(cpt_sample_t smp)
 {
   vertex_t v;
+  rgb_t rgb;
 
 #ifdef DEBUG
   int i;
 #endif
 
+  rgb = smp.fill.u.colour.rgb;
+
   v.x[0] = smp.val;
-  v.x[1] = smp.col.rgb.red/255.0; 
-  v.x[2] = smp.col.rgb.green/255.0;
-  v.x[3] = smp.col.rgb.blue/255.0; 
+  v.x[1] = rgb.red/255.0; 
+  v.x[2] = rgb.green/255.0;
+  v.x[3] = rgb.blue/255.0; 
 
 #ifdef DEBUG
   for (i=0 ; i<4 ; i++)

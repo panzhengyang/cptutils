@@ -1,6 +1,6 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.5 2004/02/24 02:13:51 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2004/02/24 18:35:46 jjg Exp jjg $
 
 OBJ      = gimpcpt.o main.o dp-simplify.o findgrad.o options.o
 RUBBISH += $(OBJ) gimpcpt
@@ -26,7 +26,7 @@ main.o : options.h
 
 # for testing 
 
-GRAD     = Blinds
+GRAD     = Sunrise
 RUBBISH += $(GRAD).cpt $(GRAD).ps $(GRAD).png
 TOL      = 1.0
 
