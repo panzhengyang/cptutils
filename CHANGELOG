@@ -1,4 +1,17 @@
-Changes $Id: CHANGELOG,v 1.7 2004/02/29 19:59:42 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.8 2004/03/03 00:32:20 jjg Exp jjg $
+
+1.9 : (unreleased)
+  - replaced the cpt read function in cpt.c by the custom
+    bison/flex parser, which now seems to be able to 
+    completely capture the contents of a cpt file. 
+    New files cptparse.y cptscan.l cptio.c cptio.h
+  - the cpt type in cpt.h has been extended to hold
+    the extra data (annotations, hatchures etc). New 
+    file fill.h defines a fill type, which could be 
+    colour, greyscale, hatchure or file. 
+  - all programs now compile with the new cpt type, 
+    all cpt files in cpt-city are parsed by the new
+    parser.    
 
 1.8 : (unreleased)
   - corrected minor glitch in common/cpt.c, now whitespace   

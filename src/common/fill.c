@@ -4,9 +4,10 @@
   fills for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: fill.h,v 1.5 2004/03/16 01:26:45 jjg Exp $
+  $Id: fill.c,v 1.1 2004/03/18 02:26:28 jjg Exp jjg $
 */
 
+#include <stdio.h>
 #include "fill.h"
 
 extern int fill_eq(fill_t a,fill_t b)
@@ -27,4 +28,8 @@ extern int fill_eq(fill_t a,fill_t b)
     case colour :
       return colour_rgb_dist(a.u.colour,b.u.colour,rgb)<1e-8;
     }
+
+  fprintf(stderr,"no such fill type\n");
+
+  return 1;
 }

@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.10 2004/03/18 02:27:18 jjg Exp jjg $
+  $Id: cpt.c,v 1.11 2004/03/22 01:09:36 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -44,7 +44,6 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
 {
   int i,n;
   cpt_seg_t *left,*right;
-  double tol = 1e-6;
 
   left=cpt->segment;
 
