@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001
-  $Id: gimpcpt.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.2 2004/01/29 02:26:20 jjg Exp jjg $
 */
 
 #define _SVID_SOURCE
@@ -107,7 +107,7 @@ static char* find_infile(char* infile)
 
     /* try just the name */
     
-    found = findgrad_explicit(infile,NULL);
+    found = findgrad_explicit(infile);
 
     if (found) return found;
     else if (absolute_filename(infile)) return NULL;
@@ -124,9 +124,9 @@ static char* find_infile(char* infile)
 	dir = strtok(gimp_grads,":");
 	while (dir && !found)
 	{
-	    found = findgrad_explicit(infile,dir);
+	    found = findgrad_indir(infile,dir);
 	    dir = strtok(NULL,":");
-	}
+	} 
 	free(gimp_grads);
 
 	if (found) return found;

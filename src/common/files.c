@@ -5,7 +5,7 @@
   files are moved to this directory.
 
   (c) J.J.Green 2001
-  $Id: files.c,v 1.1 2001/05/17 02:14:42 jjg Exp $
+  $Id: files.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
 */
 
 #include <unistd.h>
@@ -18,5 +18,5 @@ extern int file_readable(char* name)
 
 extern  int absolute_filename(char* name)
 {
-    return (*name == DIRSEP);
+    return (*name == '/');
 }

@@ -5,43 +5,57 @@
   files.
 
   (c) J.J.Geen 2001
-  $Id: findgrad.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
+  $Id: findgrad.c,v 1.2 2004/01/29 02:28:03 jjg Exp jjg $
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <glob.h>
 
 #include "files.h"
 #include "findgrad.h"
 
-#define BUFFSIZE 500
+#define BUFFSIZE 512
 
-char buffer [BUFFSIZE];
- 
-extern char* findgrad_explicit(char* name,char* dir)
+char buffer[BUFFSIZE];
+
+/*
+  find gradient specified explicitly - dont try .ggr
+*/
+
+extern char* findgrad_explicit(char* name)
 {
-    char* explicit;
-
-    if (!name) return NULL;
-
-    if (dir)
-    {
-	if (snprintf(buffer,BUFFSIZE,"%s%c%s",dir,DIRSEP,name) == -1)
-	    return NULL;
-
-	explicit = buffer;
-    }
-    else 
-	explicit = name;
-
-    return (file_readable(explicit) ? strdup(explicit) : NULL);
+  if (!name) return NULL;
+     
+  return (file_readable(name) ? strdup(name) : NULL);
 }
 
 /*
-  the glob expressions here are a bit rough, perhaps it could
-  be redone with proper regexps
+  find gradient in specified directory, with .ggr test
+*/
+
+extern char* findgrad_indir(char* name,char* dir)
+{
+  if ((!name) || (!dir)) return NULL;
+  
+  if (snprintf(buffer,BUFFSIZE,"%s/%s.ggr",dir,name) == -1)
+    return NULL;
+  
+  if (file_readable(buffer)) return strdup(buffer);
+    
+  if (snprintf(buffer,BUFFSIZE,"%s/%s",dir,name) == -1)
+    return NULL;
+    
+  if (file_readable(buffer)) return strdup(buffer);
+  
+  return NULL;
+}
+
+/*
+  the glob expressions here are a bit inelegant, perhaps this 
+  could all be redone with regexps
 */
 
 extern char* findgrad_implicit(char* name)
@@ -53,12 +67,14 @@ extern char* findgrad_implicit(char* name)
     glob_t globdata;
     int    i;
 
-    /* check the home directory */
+    /* check the home gimp directories */
 
     if ((home = getenv("HOME")) != NULL)
     {
-	snprintf(buffer,BUFFSIZE,"%s/.gimp-*.*/gradients/%s*",home,name);
+	snprintf(buffer,BUFFSIZE,"%s/.gimp-*.*/gradients/%s",home,name);
 	glob(buffer,0,NULL,&globdata);
+	snprintf(buffer,BUFFSIZE,"%s/.gimp-*.*/gradients/%s.ggr",home,name);
+	glob(buffer,GLOB_APPEND,NULL,&globdata);
 
 	for (i=0 ; i<globdata.gl_pathc && !found ; i++)
 	{
@@ -80,8 +96,10 @@ extern char* findgrad_implicit(char* name)
     {
 	int j;
 
-	snprintf(buffer,BUFFSIZE,"%s/*.*/gradients/%s*",dir,name);
+	snprintf(buffer,BUFFSIZE,"%s/*.*/gradients/%s",dir,name);
 	glob(buffer,0,NULL,&globdata);
+	snprintf(buffer,BUFFSIZE,"%s/*.*/gradients/%s.ggr",dir,name);
+	glob(buffer,GLOB_APPEND,NULL,&globdata);
 
 	for (j=0 ; j<globdata.gl_pathc && !found; j++)
 	{
