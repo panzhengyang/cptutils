@@ -1,4 +1,17 @@
-Changes $Id: CHANGELOG,v 1.2 2004/02/09 01:47:41 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.3 2004/02/10 00:23:18 jjg Exp jjg $
+
+1.4 : (unreleased)
+  cptgimp implemented
+  - extended colour.h to handle the hsv & rgb colour types in 
+    cpt files
+  - cptgimp is lossless since the ggr format can easily capture
+    any cpt rgb/hsv linear spline, natively. 
+  - got confused by the myriad colour types in colour.c, so 
+    reorganised the naming convertions, and standardised the 
+    interface.
+  - all the GMT standard palettes now seem to be converted
+    correctly, sent of a tarball to some hungry beta testers
+  - this all breaks gimpcpt
 
 1.3 :
   converted gimpcpt to use gengetopt, which lead
