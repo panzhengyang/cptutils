@@ -1,0 +1,44 @@
+# Makefile.in for gimpcpt
+
+# $Id$
+# help older versions make
+
+@SET_MAKE@
+
+# Macros
+
+VERSION   = @VERSION@
+RUBBISH   = *~
+CONFFILES = config.cache config.log config.status Makefile
+
+DIST      = gimpcpt-$(VERSION)
+
+# targets
+
+default : all
+
+all : 
+	cd src ; $(MAKE) all ; cd ..
+
+install : all
+	cd src ; $(MAKE) install ; cd ..
+
+check test show : all
+	cd src ; $(MAKE) test ; cd ..
+
+clean :
+	$(RM) $(RUBBISH)
+	cd src ; $(MAKE) clean ; cd ..
+
+veryclean : clean
+	$(RM) $(CONFFILES)
+	cd src ; $(MAKE) veryclean ; cd ..
+
+dist : veryclean
+	cd .. ; tar --exclude=RCS -zcvf $(DIST).tar.gz gimpcpt ; cd gimpcpt
+
+maint-dist : clean
+	cd .. ; tar -zcvf $(DIST)-maintain.tar.gz gimpcpt ; cd gimpcpt
+
+
+
