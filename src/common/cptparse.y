@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.4 2004/03/18 02:26:42 jjg Exp jjg $
+  $Id: cptparse.y,v 1.5 2004/03/22 01:09:02 jjg Exp jjg $
 */
 
 %{
@@ -29,6 +29,7 @@
 %defines
 %pure-parser
 %verbose
+%debug
 
 %union {
   double       d;
@@ -82,7 +83,8 @@ segment : spline {
 ;
 
 annote : 'L' { $$ = lower; }
-| 'U' { $$ = upper; }
+|        'U' { $$ = upper; }
+|        'B' { $$ = both ; }
 ;
 
 spline : NUM NUM NUM NUM NUM NUM NUM NUM {

@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.6 2005/01/27 21:32:19 jjg Exp jjg $
+  $Id: cptio.c,v 1.7 2005/03/30 22:49:51 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -18,14 +18,19 @@
 #include "cptscan.h"
 #include "version.h"
 
-/* defined in cptparse.c but not exported */
+/* 
+   defined in cptparse.c but declared here -
+   cptparse() is the main parser, cptdebug the
+   parser debug flag
+*/
 
 extern int cptparse(void*);
+extern int cptdebug;
+
+/* utility defines */
 
 #define LBUF 1024
 #define SNM(x) ((x) ? (x) : "<stdin>")
-
-extern int cptdebug;
 
 extern int cpt_read(char* file,cpt_t* cpt,int debug)
 {
@@ -90,6 +95,8 @@ extern int cpt_read(char* file,cpt_t* cpt,int debug)
   /*
     do the parse
   */
+
+  cptdebug = debug;
 
   if (cptparse(cptscan) != 0)
     {

@@ -5,7 +5,7 @@
   on them
 
   (c) J.J.Green 2001,2004
-  $Id: cpt.h,v 1.8 2004/03/22 01:09:08 jjg Exp jjg $
+  $Id: cpt.h,v 1.9 2004/04/12 23:42:20 jjg Exp jjg $
 */
 
 #ifndef CPT_H
@@ -19,7 +19,7 @@ typedef struct cpt_sample_t
   fill_t fill;
 } cpt_sample_t;
 
-typedef enum {lower,upper,none} annote_t;
+typedef enum {both,lower,upper,none} annote_t;
 
 typedef struct cpt_seg_t
 { 

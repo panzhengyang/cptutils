@@ -1,4 +1,9 @@
-Changes $Id: CHANGELOG,v 1.12 2005/01/27 21:38:44 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.13 2005/02/08 21:31:07 jjg Exp jjg $
+
+1.15 : (unrelased)
+  - added 'B' to the possible annotation types in
+    cptparse.y
+  - enabled debug output for cpt parser
 
 1.14 : (unreleased)
   - fixed bug in pspcpt which gave zero-length 
