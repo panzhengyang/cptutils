@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.5 2004/03/22 01:09:52 jjg Exp jjg $
+  $Id: cptio.c,v 1.6 2005/01/27 21:32:19 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -152,6 +152,8 @@ extern int cpt_write(char* outfile,cpt_t* cpt)
     fprintf(stream,"# COLOR_MODEL = %s\n",model);
 
     seg = cpt->segment;
+
+    /* needs to write annotation too */
 
     while (seg)
     {
