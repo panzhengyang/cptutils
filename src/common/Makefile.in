@@ -1,0 +1,85 @@
+# Makefile for gimpcpt
+# (c) J.J.Green 2001
+# $Id: Makefile.in,v 1.7 2001/06/10 19:23:07 jjg Exp $
+
+RUBBISH = *~ *.o gimpcpt $(TESTGRAD).cpt $(TESTGRAD).ps \
+	path.inc path.png .gmtcommands
+CONFIGFILES = Makefile config.h version.h gimpcpt.1
+
+SOURCES = main.c gimpcpt.h gimpcpt.c gradient.h gradient.c \
+	  findgrad.c findgrad.h colour.c colour.h cpt.c cpt.h
+
+TESTGRAD = Sunrise
+
+INSTALL     = @INSTALL@
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+mandir      = @mandir@
+
+CC      = @CC@
+CFLAGS  = @CFLAGS@ @DEFS@
+LDFLAGS = @LIBS@
+POVRAY  = x-povray
+
+
+# change this to where you have you include files
+
+POVINC  = /acms22_p3/share/povray3/include
+
+default : all
+
+all : gimpcpt
+
+install :
+	@INSTALL_PROGRAM@ gimpcpt $(bindir)/gimpcpt
+	@INSTALL_DATA@ gimpcpt.1 $(mandir)/man1/gimpcpt.1
+
+test: $(TESTGRAD).ps
+	gv $(TESTGRAD).ps
+
+
+lint :
+	lclint $(SOURCES)
+
+doc:
+
+clean :
+	$(RM) $(RUBBISH)
+
+veryclean : 
+	$(RM) $(CONFIGFILES)
+
+# explicit
+
+path.inc : $(TESTGRAD).cpt
+	cat $(TESTGRAD).cpt | perl cptpov.pl > path.inc
+
+gimpcpt : gimpcpt.o main.o gradient.o findgrad.o files.o \
+	colour.o cpt.o
+
+# implicit
+
+%.gif : %.cpt
+	cat $< | perl cptpov.pl > path.inc
+	$(POVRAY) anim.ini
+	convert path*.png $@
+
+%.png : %.cpt path.pov 
+	cat $< | perl cptpov.pl > path.inc
+	$(POVRAY) +a2 +d +v +x +q9 +qr +p -w640 -h480 +o$@ +ipath.pov
+
+%.cpt :
+	$(MAKE) gimpcpt
+	./gimpcpt -v -t 200/200/200 -r 0/100 -o $@ $*  	
+
+%.ps : %.cpt defaults
+	psscale +defaults -D1/6/10/0.5 -Bf5a10 -C$< -E   > $@
+
+.PHONEY : all test doc
+
+
+
+
+
+
