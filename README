@@ -1,0 +1,32 @@
+gimpcpt : Convert gimp gradients to GMT palettes
+------------------------------------------------
+
+For installation instructions, see the file INSTALL.
+
+1. Web Resources
+----------------
+
+Gimpcpt can be found at
+
+  http://www.vindaloo.uklinux.net/jjg/code/gimpcpt.html
+
+The GIMP's home page is at:
+
+  http://www.gimp.org/
+
+GMT's home page is at
+
+  http://www.gmt.soest.hawaii.edu
+
+2. Bugs
+-------
+
+Please report problems to j.j.green@shef.ac.uk
+
+Enjoy!
+
+  J.J.Green, 
+  Dept. Applied Mathematics, 
+  University of Sheffield, UK.
+
+
