@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.11 2004/03/22 01:09:36 jjg Exp jjg $
+  $Id: cpt.c,v 1.12 2004/03/22 23:23:08 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -45,7 +45,7 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
   int i,n;
   cpt_seg_t *left,*right;
 
-  left=cpt->segment;
+  left = cpt->segment;
 
   if (! left) return 0;
 
@@ -72,6 +72,76 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
     }
 
   return n;
+}
+
+extern int cpt_zrange(cpt_t* cpt,double* z)
+{
+  cpt_seg_t *seg;
+
+  seg = cpt->segment;
+
+  if (!seg) return 1;
+
+  z[0] = seg->lsmp.val;
+
+  while (seg->rseg) 
+    seg = seg->rseg;
+
+  z[1] = seg->rsmp.val;
+
+  return 0;
+}
+
+extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
+{
+  cpt_seg_t *seg;
+
+  seg = cpt->segment;
+
+  if (!seg) return 1;
+
+  if (z < seg->lsmp.val)
+    {
+      *fill = cpt->bg;
+      return 0;
+    }
+
+  do
+    {
+      double z0,z1;
+
+      z0 = seg->lsmp.val;
+      z1 = seg->rsmp.val;
+
+      if ((z0 <= z) && (z <= z1))
+	{
+	  double zp;
+
+	  zp = (z-z0)/(z1-z0);
+
+	  if (fill_interpolate(zp,seg->lsmp.fill,seg->rsmp.fill,fill) != 0)
+	    {
+	      fprintf(stderr,"fill interpolation failed\n");
+	      return 1;
+	    }
+
+	  return 0;
+	}
+
+      if (seg->rseg == NULL)
+	{
+	  if (z1<=z)
+	    {
+	      *fill = cpt->fg;
+	      return 0;
+	    }
+	}
+    }
+  while ((seg = seg->rseg) != NULL);
+
+  fprintf(stderr,"odd error - attempt to sample empty z-slice?\n");
+
+  return 1;
 }
 
 extern cpt_t* cpt_new(void)
