@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.3 2004/04/12 15:22:03 jjg Exp $
+  $Id: main.c,v 1.1 2004/09/07 15:53:03 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -67,14 +67,12 @@ int main(int argc,char** argv)
 
   switch (info.inputs_num)
     {
-    case 0:
-      infile = NULL;
-      break;
     case 1:
       infile = info.inputs[0];
       break;
     default:
-      fprintf(stderr,"Sorry, only one file at a time\n");
+      fprintf(stderr,"Exactly one SVG file must be specified\n");
+      options_print_help();
       return EXIT_FAILURE;
     }
   

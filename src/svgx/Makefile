@@ -1,10 +1,10 @@
 # Makefile for svgcpt
-# $Id: Makefile,v 1.2 2004/09/06 23:18:52 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2004/09/07 15:52:38 jjg Exp jjg $
 
 OBJ      = svgcpt.o main.o options.o
 GRAD     = gradient-pastel-blue.svg
 CFLAGS  += `$(XML2C) --cflags`
-LDFLAGS += `$(XML2C) --libs`
+LDLIBS  += `$(XML2C) --libs`
 RUBBISH += svgcpt $(OBJ)
 
 default : all
