@@ -5,7 +5,7 @@
   on them
 
   (c) J.J.Green 2001,2004
-  $Id: cpt.h,v 1.3 2004/02/12 01:18:28 jjg Exp jjg $
+  $Id: cpt.h,v 1.4 2004/02/13 01:17:56 jjg Exp jjg $
 */
 
 #ifndef CPT_H
@@ -24,8 +24,6 @@ typedef struct cpt_seg_t
     struct cpt_seg_t *lseg,*rseg;
     cpt_sample_t      lsmp, rsmp;
 } cpt_seg_t;
-
-typedef enum {rgb,hsv} model_t;
 
 #define CPT_NAME_LEN 128
 
@@ -47,6 +45,10 @@ extern int cpt_read(char*,cpt_t*);
 
 extern cpt_seg_t* cpt_seg_new();
 extern void cpt_seg_destroy(cpt_seg_t*);
+
+extern cpt_seg_t* cpt_segment(cpt_t*,int);
+extern int cpt_nseg(cpt_t*);
+extern int cpt_npc(cpt_t*,int*);
 
 #endif
 

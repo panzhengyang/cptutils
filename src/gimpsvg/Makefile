@@ -1,6 +1,6 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2004/02/23 00:19:46 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2004/02/24 02:13:51 jjg Exp jjg $
 
 OBJ      = gimpcpt.o main.o dp-simplify.o findgrad.o options.o
 RUBBISH += $(OBJ) gimpcpt
@@ -22,17 +22,19 @@ veryclean :
 .SECONDARY : options.c options.h
 
 gimpcpt : $(OBJ)
+main.o : options.h
 
 # for testing 
 
-GRAD     = gray
+GRAD     = Blinds
 RUBBISH += $(GRAD).cpt $(GRAD).ps $(GRAD).png
+TOL      = 1.0
 
 $(GRAD).cpt : gimpcpt
-	./gimpcpt -o $(GRAD).cpt -v $(GRAD)
+	./gimpcpt -o $(GRAD).cpt -T $(TOL) -v $(GRAD)
 
 $(GRAD).ps : $(GRAD).cpt defaults
-	psscale +defaults -D1/6/10/0.5 -Bf5a10 -C$< -E > $@
+	psscale +defaults -D6/1/10/0.7h -Ba0.2 -C$< -E > $@
 
 $(GRAD).png : $(GRAD).ps
 	convert -trim -border 5x5 -bordercolor white $(GRAD).ps $(GRAD).png

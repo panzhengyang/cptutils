@@ -4,7 +4,7 @@
   simple GRB colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.2 2004/02/13 01:17:49 jjg Exp jjg $
+  $Id: colour.h,v 1.3 2004/02/17 00:32:12 jjg Exp jjg $
 */
 
 #ifndef COLOUR_H
@@ -22,14 +22,13 @@
   these correspond to colours as interpreted in cpt files.
 */
 
-#define RGB_MODEL 
-#define HSV_MODEL
+typedef enum {rgb,hsv} model_t;
 
 typedef struct rgb_t
 {
     int red,green,blue;
 } rgb_t;
-
+ 
 typedef struct hsv_t
 {
     double hue,sat,val;
@@ -40,8 +39,6 @@ typedef union colour_t
   rgb_t rgb;
   hsv_t hsv;
 } colour_t;
-
-extern int parse_rgb(char*,rgb_t*);
 
 /*
   gimp colour types rgbD and hsvD are triples of doubles
@@ -57,6 +54,8 @@ extern int rgb_to_rgbD(rgb_t,double*);
 extern int rgbD_to_hsv(double*,hsv_t*);
 extern int hsv_to_rgbD(hsv_t,double*);
 
+extern int parse_rgb(char*,rgb_t*);
+extern double colour_rgb_dist(colour_t,colour_t,model_t);
 
 #endif
 

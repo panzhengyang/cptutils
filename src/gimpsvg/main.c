@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
+  $Id: main.c,v 1.2 2004/02/10 00:18:49 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -93,6 +93,12 @@ int main(int argc,char** argv)
     {
       fprintf(stderr,"at least %i samples required\n",SAMPLES_MIN);
       opt.samples = SAMPLES_MIN;
+    }
+
+  if ((opt.tol = info.tolerance_arg) < 0)
+    {
+      fprintf(stderr,"negative tolerance %f will be taken as zero\n",opt.tol);
+      opt.tol = 0.0;
     }
 
   /* null outfile for stdout */

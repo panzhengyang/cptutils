@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.5 2004/02/13 01:17:42 jjg Exp jjg $
+  $Id: cpt.c,v 1.6 2004/02/22 23:58:25 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -18,7 +18,69 @@
 #include "cpt.h"
 #include "version.h"
 
-static int print_cpt_aux(FILE*,char,colour_t,model_t);
+extern cpt_seg_t* cpt_segment(cpt_t* cpt,int n)
+{
+  cpt_seg_t *seg;
+
+  seg = cpt->segment;
+
+  while (n--)
+    {
+      if ((seg = seg->rseg) == NULL) 
+	return NULL; 
+    }
+
+  return seg;
+}
+
+extern int cpt_nseg(cpt_t* cpt)
+{
+  int n = 0;
+  cpt_seg_t *seg;
+
+  for (seg = cpt->segment ; seg ; seg = seg->rseg)  n++;
+
+  return n;
+}
+
+extern int cpt_npc(cpt_t* cpt,int *segos)
+{
+  int i,n;
+  cpt_seg_t *left,*right;
+  double tol = 1e-6;
+
+  left=cpt->segment;
+
+  if (! left) return 0;
+
+  segos[0] = 0;
+
+  right = left->rseg;
+
+  if (! right) return 1;
+
+  n = 1;
+  i = 0;
+
+  while (right)
+    {    
+      if (colour_rgb_dist(
+			  left->rsmp.col,
+			  right->lsmp.col,
+			  cpt->model
+			  ) > tol)
+	{
+	  segos[n] = i;
+	  n++;
+	}
+
+      left  = right;
+      right = left->rseg;
+      i++;
+    }
+
+  return n;
+}
 
 extern cpt_t* cpt_new(void)
 {
@@ -319,6 +381,8 @@ extern int cpt_read(char* file,cpt_t* cpt)
 
   return 0;
 }
+
+static int print_cpt_aux(FILE*,char,colour_t,model_t);
 
 extern int cpt_write(char* outfile,cpt_t* cpt)
 {

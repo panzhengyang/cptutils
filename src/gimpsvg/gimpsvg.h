@@ -2,7 +2,7 @@
   gimpcpt.h
 
   (c) J.J.Green 2001
-  $Id: gimpcpt.h,v 1.5 2001/05/24 01:04:17 jjg Exp $
+  $Id: gimpcpt.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
 */
 
 #ifndef GIMPCPT_H
@@ -12,15 +12,17 @@
 
 typedef struct cptopt_t
 {
-    unsigned int verbose    : 1;
-    unsigned int reverse    : 1;
-
-    rgb_t  fg,bg,nan,trans;
-
-    int samples;
-
-    double min;
-    double max;
+  unsigned int verbose    : 1;
+  unsigned int reverse    : 1;
+  
+  rgb_t  fg,bg,nan,trans;
+  
+  int samples;
+  
+  double min;
+  double max;
+  
+  double tol;
 
 } cptopt_t;
 

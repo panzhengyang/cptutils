@@ -1,4 +1,8 @@
-Changes $Id: CHANGELOG,v 1.4 2004/02/17 00:49:18 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.5 2004/02/19 00:52:27 jjg Exp jjg $
+
+1.6 : (unreleased)
+  - added cpt simplification to gimpcpt, with some extra
+    code needed in common/cpt.c and  common/colour.c
 
 1.5 : (unreleased)
   - gimpcpt repaired to work with the changes in colour.c

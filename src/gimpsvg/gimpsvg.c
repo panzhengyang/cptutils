@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.7 2004/02/23 00:19:32 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.8 2004/02/24 02:13:45 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -19,13 +19,14 @@
 #include "cpt.h"
 #include "dp-simplify.h"
 
+/*
 #define DEBUG
+*/
 
 #define SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
 
 static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
 static int cpt_optimise(double,cpt_t*);
-static int cpt_nseg(cpt_t*);
 
 static char* find_infile(char*);
 
@@ -76,7 +77,10 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     /* create a cpt struct */
 
     if ((cpt = cpt_new()) == NULL)
+      {
+	fprintf(stderr,"failed to get new cpt strcture\n");
 	return 1;
+      }
 
     cpt->model = rgb;
 
@@ -94,26 +98,37 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 	return 1;
       }
 
+    if (opt.verbose) 
+      {
+	int n = cpt_nseg(cpt);
+	printf("converted to %i segment rgb-spline\n",n);
+      }
+
     /* perform optimisation */
 
-    if (opt.verbose) 
+    if (opt.tol > 0.0)
       {
-	int n = cpt_nseg(cpt);
-	printf("transformed %i segment%s\n",n,(n-1 ? "s" : ""));
+	if (opt.verbose) 
+	  printf("optimising spline with tolerance %.2f pixels\n",opt.tol);
+    	
+	if (cpt_optimise(opt.tol/255.0,cpt) != 0)
+	  {
+	    fprintf(stderr,"failed to optimise cpt\n");
+	    return 1;
+	  }
+
+	if (opt.verbose) 
+	  {
+	    int n = cpt_nseg(cpt);
+	    printf("optimised to %i segment%s\n",n,(n-1 ? "s" : ""));
+	  }
+      }    
+    else
+      {
+	if (opt.verbose)
+	  printf("skipping optimisation\n");
       }
 
-    if (cpt_optimise(0.4,cpt) != 0)
-      {
-	fprintf(stderr,"failed to optimise cpt\n");
-	return 1;
-      }
-
-    if (opt.verbose) 
-      {
-	int n = cpt_nseg(cpt);
-	printf("optimised to %i segment%s\n",n,(n-1 ? "s" : ""));
-      }
-    
     /* write the cpt file */
     
     if (cpt_write(outfile,cpt) != 0)
@@ -301,7 +316,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 		cpt_prepend(lseg,cpt);
 		
 		rseg = lseg;
-	    }
+	      }
 	  }
 	
 	gseg = gseg->prev;
@@ -316,102 +331,6 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
   it should, perhaps, be in common/cpt -- put it there 
   later
 */ 
-
-static cpt_seg_t* cpt_segment(cpt_t* cpt,int n)
-{
-  cpt_seg_t *seg;
-
-  seg = cpt->segment;
-
-  while (n--)
-    if ((seg = seg->rseg) == NULL) 
-      return NULL; 
-
-  return seg;
-}
-
-static int cpt_nseg(cpt_t* cpt)
-{
-  int n = 0;
-  cpt_seg_t *seg;
-
-  for (seg = cpt->segment ; seg ; seg = seg->rseg)  n++;
-
-  return n;
-}
-
-static double colour_rgb_dist(colour_t a,colour_t b,model_t model)
-{
-  double da[3],db[3],sum;
-  int i;
-
-  switch (model)
-    {
-
-    case rgb :
-      rgb_to_rgbD(a.rgb,da); 
-      rgb_to_rgbD(b.rgb,db); 
-      break;
-      
-    case hsv :
-      hsv_to_rgbD(a.hsv,da); 
-      hsv_to_rgbD(b.hsv,db); 
-      break;
-
-    default:
-
-      return -1.0;
-    }
-
-  for (sum=0.0,i=0 ; i<3 ; i++)
-    {
-      double d;
-
-      d = da[i]-db[i];
-      sum += d*d;
-    }
-
-  return sqrt(sum);
-}
-
-static int cpt_npc(cpt_t* cpt,int *segos)
-{
-  int i,n;
-  cpt_seg_t *left,*right;
-  double tol = 1e-6;
-
-  left=cpt->segment;
-
-  if (! left) return 0;
-
-  segos[0] = 0;
-
-  right = left->rseg;
-
-  if (! right) return 1;
-
-  n = 1;
-  i = 0;
-
-  while (right)
-    {    
-      if (colour_rgb_dist(
-			  left->rsmp.col,
-			  right->lsmp.col,
-			  cpt->model
-			  ) > tol)
-	{
-	  segos[n] = i;
-	  n++;
-	}
-
-      left  = right;
-      right = left->rseg;
-      i++;
-    }
-
-  return n;
-}
 
 /*
   this is where we convert the cpt to a path in 4-space,
@@ -428,10 +347,10 @@ static vertex_t smp_to_vertex(cpt_sample_t smp)
   int i;
 #endif
 
-  v.x[0] = smp.col.rgb.red/255.0; 
-  v.x[1] = smp.col.rgb.green/255.0;
-  v.x[2] = smp.col.rgb.blue/255.0; 
-  v.x[3] = smp.val;
+  v.x[0] = smp.val;
+  v.x[1] = smp.col.rgb.red/255.0; 
+  v.x[2] = smp.col.rgb.green/255.0;
+  v.x[3] = smp.col.rgb.blue/255.0; 
 
 #ifdef DEBUG
   for (i=0 ; i<4 ; i++)
@@ -450,6 +369,10 @@ static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
 
   s = seg;
 
+#ifdef DEBUG
+  printf("length = %i\n",len);
+#endif
+
   pv[0] = smp_to_vertex(s->lsmp);
 
   for (i=0 ; i<len ; i++)
@@ -459,7 +382,10 @@ static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
     }
 
   if (poly_simplify(tol,pv,len+1,k) != 0)
-    return 1;
+    {
+      fprintf(stderr,"failed polyline simpification\n");
+      return 1;
+    }
 
   s = seg; 
   
@@ -497,16 +423,32 @@ static int cpt_optimise(double tol,cpt_t* cpt)
 
       m = cpt_npc(cpt,segos);
 
-      segos[m] = n;
-
-      for (i=0 ; i<m ; i++)
+      if (m>0)
 	{
-	  int os  = segos[i];
-	  int len = segos[i+1] - segos[i];
-	  cpt_seg_t *seg;
+	  cpt_seg_t *seg[m];
+	  int        len[m];
 
-	  if ((seg = cpt_segment(cpt,os)) == NULL) return 1;
-	  if (cpt_optimise_segs(tol,seg,len) != 0) return 1;
+	  segos[m] = n;
+
+	  for (i=0 ; i<m ; i++)
+	    {
+	      if ((seg[i] = cpt_segment(cpt,segos[i])) == NULL)
+		{
+		  fprintf(stderr,"got null segment %i in section %i!\n",segos[i],i);
+		  return 1;
+		}
+	      
+	      len[i] = segos[i+1] - segos[i];
+	    }
+
+	  for (i=0 ; i<m ; i++)
+	    {
+	      if (cpt_optimise_segs(tol,seg[i],len[i]) != 0)
+		{
+		  fprintf(stderr,"failed optimise for section %i!\n",i);
+		  return 1;
+		}
+	    }
 	}
     }
 
