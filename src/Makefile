@@ -1,8 +1,8 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.2 2004/02/11 01:00:43 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2004/02/29 16:39:59 jjg Exp jjg $
 
-SRC      = common gimpcpt cptgimp cptinfo
+SRC      = common gimpcpt cptgimp cptinfo xycpt
 RUBBISH += *~
 COBFIG  += Common.mk
 
