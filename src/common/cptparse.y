@@ -4,23 +4,46 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id$
+  $Id: cptparse.y,v 1.2 2004/03/05 01:27:44 jjg Exp jjg $
 */
 
 %{
-#include "cptparse-noauto.h"
+
+#include "cpt.h"
+
+#define YYLEX_PARAM scanner 
+#define YYPARSE_PARAM scanner 
+
+#include "cptparse.h"
 #include "cptscan.h"
 
-static void cpterror(char const*);
+  static model_t model;
+  static filltype_t filltype;
+  static void cpterror(char const*);
+
 %}
 
 %output="cptparse.c"
 %name-prefix="cpt"
-%pure-parser
 %defines
+%pure-parser
 %verbose
 
-%nonassoc HATCH RGB HSV NUM
+%union {
+  double       d;
+  double       d3[3];
+  int          i;
+  colour_t     colour;
+  fill_t       fill;
+  cpt_sample_t sample;
+} 
+
+%token NUM
+
+%type <d>    NUM z0 z1
+%type <fill> fill 
+%type <i>    HATCH
+%nonassoc HATCH RGB HSV
 
 %%
 
@@ -29,14 +52,14 @@ input :
 ;
 
 model : 
-      | HSV
-      | RGB
+| HSV { model = hsv; }
+| RGB { model = rgb; }
 ;
 
 segments : segment
          | segments segment
 
-segment : z0 val z1 val '\n'
+segment : z0 fill z1 fill '\n'
 
 z0 : NUM
 z1 : NUM
@@ -45,15 +68,29 @@ extras :
        | extras extra
 ;
 
-extra : 'F' val '\n'
-      | 'B' val '\n'
-      | 'N' val '\n'
+extra : 'F' fill '\n'
+      | 'B' fill '\n'
+      | 'N' fill '\n'
 ;
 
-val  : '-'
-     | HATCH
-     | NUM
-     | NUM NUM NUM
+fill  : '-'   { filltype = empty; }
+| HATCH       { filltype = hatch; $$.hatch = (int)$1; }
+| NUM         { filltype = grey;  $$.grey  = (int)$1; }
+| NUM NUM NUM { 
+  filltype = colour;
+  switch (model)
+    {
+    case hsv:
+      $$.colour.hsv.hue = $1;
+      $$.colour.hsv.sat = $2;
+      $$.colour.hsv.val = $3;
+      break;
+    case rgb:
+      $$.colour.rgb.red   = (int)$1;
+      $$.colour.rgb.green = (int)$2;
+      $$.colour.rgb.blue  = (int)$3;
+    }
+}
 ;
 
 %%

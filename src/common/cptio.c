@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.1 2004/03/04 01:21:55 jjg Exp jjg $
+  $Id: cptio.c,v 1.2 2004/03/05 01:27:49 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -17,14 +17,18 @@
 #include "cptscan.h"
 #include "version.h"
 
+/* defined in cptparse.c but not exported */
+
+extern int cptparse(void*);
+
 #define LBUF 1024
 #define SNM(x) ((x) ? (x) : "<stdin>")
+
+extern int cptdebug;
 
 extern int cpt_read(char* file,cpt_t* cpt)
 {
   FILE    *stream;
-  char     lbuf[LBUF];
-  int      n,v,tok;
   yyscan_t cptscan;
 
   if (file)
@@ -77,9 +81,6 @@ extern int cpt_read(char* file,cpt_t* cpt)
       return 1;
     }
 
-  while ((tok = cptlex(&v,cptscan)) > 0)
-    printf("tok=%d  yytext=%s\n", tok, cptget_text(cptscan));
-   
   cptlex_destroy(cptscan);
 
 #ifdef OLD_SCANNER

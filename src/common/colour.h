@@ -4,7 +4,7 @@
   simple GRB colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.3 2004/02/17 00:32:12 jjg Exp jjg $
+  $Id: colour.h,v 1.4 2004/02/24 18:37:31 jjg Exp jjg $
 */
 
 #ifndef COLOUR_H
@@ -23,6 +23,7 @@
 */
 
 typedef enum {rgb,hsv} model_t;
+typedef enum {colour,grey,hatch,file,empty} filltype_t;
 
 typedef struct rgb_t
 {
@@ -36,9 +37,17 @@ typedef struct hsv_t
 
 typedef union colour_t
 {
-  rgb_t rgb;
-  hsv_t hsv;
+  rgb_t  rgb;
+  hsv_t  hsv;
 } colour_t;
+
+typedef union fill_t
+{
+  colour_t colour;
+  int      grey;
+  int      hatch;
+  char*    file;
+} fill_t;
 
 /*
   gimp colour types rgbD and hsvD are triples of doubles

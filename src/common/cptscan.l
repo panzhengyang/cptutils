@@ -2,7 +2,7 @@
    scanner for cpt files 
 
    (c) J.J.Green 2004
-   $Id$
+   $Id: cptscan.l,v 1.2 2004/03/05 01:27:54 jjg Exp jjg $
 */
 
 %{
@@ -15,7 +15,7 @@
 %option bison-bridge
 %option reentrant 
 %option 8bit
-%option yylineno
+
 %option noyywrap
 %option debug
 
