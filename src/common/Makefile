@@ -1,13 +1,18 @@
-# Makefile for libgimpcpt
+# Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.2 2004/03/04 01:21:29 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2004/03/18 02:27:23 jjg Exp jjg $
 
-OBJ      = bridge.o colour.o cpt.o cptparse.o cptscan.o cptio.o files.o fill.o gradient.o
-RUBBISH += $(OBJ) libgimpcpt.a
+OBJFILL = colour.o fill.o
+OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
+OBJGGR  = gradient.o
+
+CPTULIBS = libfill.a libcpt.a libggr.a
+
+RUBBISH += $(OBJ) $(CPTULIBS)
 
 default : all
 
-all : libgimpcpt.a
+all : $(CPTULIBS)
 
 install :
 
@@ -26,8 +31,14 @@ cptparse.c : cptparse.y
 
 .SECONDARY : cptscan.c cptscan.h cptparse.c  
 
-libgimpcpt.a : $(OBJ)
-	ar r libgimpcpt.a $(OBJ)
+libfill.a : $(OBJFILL)
+	ar r libfill.a $(OBJFILL)
+
+libcpt.a : $(OBJCPT)
+	ar r libcpt.a $(OBJCPT)
+
+libggr.a : $(OBJGGR)
+	ar r libggr.a $(OBJGGR)
 
 include ../Common.mk
 
