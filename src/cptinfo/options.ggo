@@ -1,0 +1,14 @@
+# -*- sh -*-
+# gengetopt input for cptgimp
+# (c) J. J. Green 2004
+# $Id: options.ggo,v 1.1 2004/02/11 00:58:38 jjg Exp $
+package "cptinfo"
+purpose "print summary information on GMT colour palette"
+option  "csv"           c "output in comma separated value format" flag    off
+option  "html"          H "output in html format"                  flag    off
+option	"output"	o "output filename"		           string  no
+option  "plain"         p "output in plain format"                 flag    off
+option	"verbose"	v "verbose operation"		           flag    off
+
+
+
