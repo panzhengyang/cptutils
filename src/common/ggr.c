@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.1 2002/06/18 22:25:32 jjg Exp jjg $
+  $Id: gradient.c,v 1.2 2004/01/29 02:28:10 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -53,11 +53,9 @@
 #define EPSILON 1e-10
 #define PI 3.141592653
 
-
 #define MAX(a,b) (((a)>(b)) ? (a) : (b))
 #define MIN(a,b) (((a)>(b)) ? (b) : (a))
 
-static grad_segment_t* seg_new_segment(void);
 static void            seg_free_segment(grad_segment_t*);
 static void            seg_free_segments(grad_segment_t*);
 static char*           basename(char*);
@@ -131,7 +129,7 @@ extern gradient_t* grad_load_gradient(char* filename)
      return NULL;
 
   grad->filename = (filename ? strdup(filename) : strdup("<stdin>"));
-
+ 
   fgets(line, 1024, stream);
 
   /*
@@ -153,7 +151,7 @@ extern gradient_t* grad_load_gradient(char* filename)
       fgets(line, 1024, stream);
     }
   else
-    grad->name = (filename ?  basename(filename) : strdup("gimpcpt-output"));
+    grad->name = (filename ?  basename(filename) : strdup("libgimpcpt-output"));
 
   /* next line specifies number of segments */
 
@@ -223,17 +221,20 @@ extern int grad_save_gradient(gradient_t *grad,char* filename)
 	      filename);
       return 1;
     }
-
-  /* File format is:
-   *
-   *   GIMP Gradient
-   *   number_of_segments
-   *   left middle right r0 g0 b0 a0 r1 g1 b1 a1 type coloring
-   *   left middle right r0 g0 b0 a0 r1 g1 b1 a1 type coloring
-   *   ...
-   */
+  
+  /* 
+     File format is:
+   
+     GIMP Gradient
+     Name: <name>
+     number_of_segments
+     left middle right r0 g0 b0 a0 r1 g1 b1 a1 type coloring
+     left middle right r0 g0 b0 a0 r1 g1 b1 a1 type coloring
+     ...
+  */
 
   fprintf (stream,"GIMP Gradient\n");
+  fprintf (stream,"Name: %s\n",grad->name);
 
   /* Count number of segments */
 
@@ -396,7 +397,7 @@ extern int gradient_colour(double pos,gradient_t *gradient,
 }
 
 
-static grad_segment_t* seg_new_segment(void)
+extern grad_segment_t* seg_new_segment(void)
 {
   grad_segment_t *seg;
 

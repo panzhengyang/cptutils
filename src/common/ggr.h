@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.h,v 1.4 2001/05/24 01:04:38 jjg Exp $
+  $Id: gradient.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
 */
 
 #ifndef GRADIENT_H
@@ -83,6 +83,8 @@ typedef struct gradient_t
   grad_segment_t *segments;
   grad_segment_t *last_visited;
 } gradient_t;
+
+extern grad_segment_t* seg_new_segment(void);
 
 extern gradient_t*     grad_new_gradient(void);
 extern void            grad_free_gradient(gradient_t*);
