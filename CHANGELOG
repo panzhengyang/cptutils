@@ -1,0 +1,28 @@
+Changes $Id$
+
+1.0 :
+  minor documentation changes 
+
+0.94 :
+  src/gradient.c now handles gradients which lie 
+  about the number of segments they contain (but 
+  issues a warning if the declared number differs 
+  from th number found). All of the AG gradients
+  can now be converted.
+
+0.93 :
+  animation target prettified
+  target <gradient>.png (make a povray rendering) added
+  Makefile tidied
+
+0.92 :
+  src/anim.ini added
+  src/Makefile.in extra target *.gif added, makes
+    a gif animation of the gradient in RGB space, mmm.
+
+0.91 : 
+  src/Makefile corrections
+  INSTALL corrections     
+
+0.90 : 
+  initial public release
