@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.3 2004/02/12 01:18:15 jjg Exp jjg $
+  $Id: gradient.c,v 1.4 2004/02/17 00:32:05 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -318,11 +318,12 @@ extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double*
 
     a = seg->a0 + (seg->a1 - seg->a0)*factor;
 
-    if (seg->color == GRAD_RGB)    {
+    if (seg->color == GRAD_RGB)    
+      {
 	col[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
 	col[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
 	col[2] = seg->b0 + (seg->b1 - seg->b0)*factor;
-    }
+      }
     else
       {
 	double  h0,s0,v0,h1,s1,v1;
@@ -352,38 +353,38 @@ extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double*
 	v0 = v0 + (v1 - v0)*factor;
       
 	switch (seg->color)
-	{
-	    case GRAD_HSV_CCW:
-		if (h0 < h1)
-		    h0 = h0 + (h1 - h0)*factor;
-		else
-		{
-		    h0 = h0 + (1.0 - (h0 - h1))*factor;
-		    if (h0 > 1.0)
-			h0 -= 1.0;
-		}
-		break;
-	    case GRAD_HSV_CW:
-		if (h1 < h0)
-		    h0 = h0 - (h0 - h1)*factor;
-		else
-		{
-		    h0 = h0 - (1.0 - (h1 - h0))*factor;
-		    if (h0 < 0.0)
-			h0 += 1.0;
-		}
-		break;
-	    default:
-		fprintf(stderr,"unknown colur model\n");
-		return 1;
-	}
-	  
+	  {
+	  case GRAD_HSV_CCW:
+	    if (h0 < h1)
+	      h0 = h0 + (h1 - h0)*factor;
+	    else
+	      {
+		h0 = h0 + (1.0 - (h0 - h1))*factor;
+		if (h0 > 1.0)
+		  h0 -= 1.0;
+	      }
+	    break;
+	  case GRAD_HSV_CW:
+	    if (h1 < h0)
+	      h0 = h0 - (h0 - h1)*factor;
+	    else
+	      {
+		h0 = h0 - (1.0 - (h1 - h0))*factor;
+		if (h0 < 0.0)
+		  h0 += 1.0;
+	      }
+	    break;
+	  default:
+	    fprintf(stderr,"unknown colour model\n");
+	    return 1;
+	  }
+	
 	hsvD[0] = h0;
 	hsvD[1] = s0;
 	hsvD[2] = v0;
-
+	
 	hsvD_to_rgbD(hsvD,col);
-    }
+      }
 
     for (i=0 ; i<3 ; i++) col[i] = a*col[i] + (1-a)*bg[i];
 
