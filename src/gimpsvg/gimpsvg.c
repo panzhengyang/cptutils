@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.3 2004/01/30 00:08:33 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.4 2004/02/10 00:18:38 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -75,7 +75,7 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     cpt->bg  = opt.bg;
     cpt->nan = opt.nan;
 
-    cpt->name = (infile ? infile : "<stdin>");
+    strncpy(cpt->name,(infile ? infile : "<stdin>"),CPT_NAME_LEN);
     
     /* transfer the gradient data to the cpt_t struct */
 
@@ -146,7 +146,8 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
   
   if (!grad) return 1;
   
-  cpt->name = strdup(grad->name);
+  strncpy(cpt->name,grad->name,CPT_NAME_LEN);
+  cpt->model = rgb;
   
   rgb_to_colour(opt.trans,bg);
   
