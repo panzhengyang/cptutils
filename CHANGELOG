@@ -1,4 +1,8 @@
-Changes $Id: CHANGELOG,v 1.3 2004/02/10 00:23:18 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.4 2004/02/17 00:49:18 jjg Exp jjg $
+
+1.5 : (unreleased)
+  - gimpcpt repaired to work with the changes in colour.c
+  - first version of the cptgimp manual page
 
 1.4 : (unreleased)
   cptgimp implemented

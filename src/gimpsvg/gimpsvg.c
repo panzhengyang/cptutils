@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.4 2004/02/10 00:18:38 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.5 2004/02/12 13:25:30 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -20,6 +20,7 @@
 #define  SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
 
 static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
+static int cpt_optimise(cpt_t*);
 static char* find_infile(char*);
 
 extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
@@ -71,9 +72,11 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     if ((cpt = cpt_new()) == NULL)
 	return 1;
 
-    cpt->fg  = opt.fg;
-    cpt->bg  = opt.bg;
-    cpt->nan = opt.nan;
+    cpt->model = rgb;
+
+    cpt->fg.rgb  = opt.fg;
+    cpt->bg.rgb  = opt.bg;
+    cpt->nan.rgb = opt.nan;
 
     strncpy(cpt->name,(infile ? infile : "<stdin>"),CPT_NAME_LEN);
     
@@ -82,6 +85,14 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     if (gradcpt(gradient,cpt,opt) != 0)
       {
 	fprintf(stderr,"failed to convert gradient\n");
+	return 1;
+      }
+
+    /* perform optimisation */
+
+    if (cpt_optimise(cpt) != 0)
+      {
+	fprintf(stderr,"failed to optimise cpt\n");
 	return 1;
       }
     
@@ -149,7 +160,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
   strncpy(cpt->name,grad->name,CPT_NAME_LEN);
   cpt->model = rgb;
   
-  rgb_to_colour(opt.trans,bg);
+  rgb_to_rgbD(opt.trans,bg);
   
   gseg = grad->segments;
   
@@ -173,7 +184,11 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	       but will cause an error in a cpt files)
 	    */
 	    
-	    /* create 2 cpt segments */
+	    /* 
+	       create 2 cpt segments -- we dont check whether these are
+	       colinear, since we will be performing a cpt_optimise() at 
+	       the end anyway.
+	    */
 	    
 	    lseg =  cpt_seg_new();
 	    rseg =  cpt_seg_new();
@@ -183,29 +198,29 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    /* the right (we work from right to left) */
 	    
 	    grad_segment_colour(gseg->right,gseg,bg,col);
-	    colour_to_rgb(col,&rgb);
+	    rgbD_to_rgb(col,&rgb);
 
-	    rseg->rsmp.rgb = rgb; 
-	    rseg->rsmp.val = SCALE(gseg->right,opt);
+	    rseg->rsmp.col.rgb = rgb; 
+	    rseg->rsmp.val     = SCALE(gseg->right,opt);
 
 	    grad_segment_colour(gseg->middle,gseg,bg,col);
-	    colour_to_rgb(col,&rgb);
+	    rgbD_to_rgb(col,&rgb);
 
-	    rseg->lsmp.rgb = rgb; 
-	    rseg->lsmp.val = SCALE(gseg->middle,opt);
+	    rseg->lsmp.col.rgb = rgb; 
+	    rseg->lsmp.val     = SCALE(gseg->middle,opt);
 
 	    if (rseg->lsmp.val < rseg->rsmp.val)
 		err |= cpt_prepend(rseg,cpt);
 
 	    /* the left */
 
-	    lseg->rsmp.rgb = rgb; 
+	    lseg->rsmp.col.rgb = rgb; 
 	    lseg->rsmp.val = SCALE(gseg->middle,opt);
 
 	    grad_segment_colour(gseg->left,gseg,bg,col);
-	    colour_to_rgb(col,&rgb);
+	    rgbD_to_rgb(col,&rgb);
 
-	    lseg->lsmp.rgb = rgb; 
+	    lseg->lsmp.col.rgb = rgb; 
 	    lseg->lsmp.val = SCALE(gseg->left,opt);
 
 	    if (lseg->lsmp.val < lseg->rsmp.val)
@@ -222,7 +237,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    /* 
 	       when the segment is non-linear and/or is not RGB, we
 	       divide the segment up into small subsegments and write
-	       the linear approximations
+	       the linear approximations. 
 	    */
 	    
 	    int n,i;
@@ -231,40 +246,40 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    width = gseg->right - gseg->left;
 	    n = (int)(opt.samples*(gseg->right - gseg->left)) + 1;
 	    
-	    rseg =  cpt_seg_new();
+	    rseg = cpt_seg_new();
 	    
 	    x = gseg->right;
 	    
 	    grad_segment_colour(x,gseg,bg,col);
-	    colour_to_rgb(col,&rgb);
+	    rgbD_to_rgb(col,&rgb);
 	    
-	    rseg->rsmp.rgb = rgb; 
-	    rseg->rsmp.val = SCALE(x,opt);
+	    rseg->rsmp.col.rgb = rgb; 
+	    rseg->rsmp.val     = SCALE(x,opt);
 
 	    x = gseg->right-width/n;
 	    
 	    grad_segment_colour(x,gseg,bg,col);
-	    colour_to_rgb(col,&rgb);
+	    rgbD_to_rgb(col,&rgb);
 	    
-	    rseg->lsmp.rgb = rgb; 
-	    rseg->lsmp.val = SCALE(x,opt);
+	    rseg->lsmp.col.rgb = rgb; 
+	    rseg->lsmp.val     = SCALE(x,opt);
 	    
 	    cpt_prepend(rseg,cpt);
 	    
 	    for (i=2 ; i<=n ; i++)
 	      {
-		lseg =  cpt_seg_new();
+		lseg = cpt_seg_new();
 		
-		lseg->rsmp.rgb = rseg->lsmp.rgb;
-		lseg->rsmp.val = rseg->lsmp.val;
+		lseg->rsmp.col.rgb = rseg->lsmp.col.rgb;
+		lseg->rsmp.val     = rseg->lsmp.val;
 		
 		x = gseg->right-width*i/n;
 
 		grad_segment_colour(x,gseg,bg,col);
-		colour_to_rgb(col,&rgb);
+		rgbD_to_rgb(col,&rgb);
 		
-		lseg->lsmp.rgb = rgb; 
-		lseg->lsmp.val = SCALE(x,opt);
+		lseg->lsmp.col.rgb = rgb; 
+		lseg->lsmp.val     = SCALE(x,opt);
 		
 		cpt_prepend(lseg,cpt);
 		
@@ -278,7 +293,17 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
   return 0;
 }
 
-    
+/*
+  cpt_optimise tries to merge linear splines of the cpt
+  path, and so reduce the size of the cpt file.
+  it should, perhaps, be in common/cpt -- put it there 
+  later
+*/ 
+
+static int cpt_optimise(cpt_t* cpt)
+{
+  return 0;
+}
     
 
 
