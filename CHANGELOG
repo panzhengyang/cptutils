@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.5 2004/02/19 00:52:27 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.6 2004/02/24 18:41:01 jjg Exp jjg $
+
+1.7 : (unreleased)
+  - added cptinfo program for the "cpt city" website  
 
 1.6 : (unreleased)
   - added cpt simplification to gimpcpt, with some extra
