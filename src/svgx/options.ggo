@@ -1,0 +1,12 @@
+# -*- sh -*-
+# gengetopt input for svgcpt
+# (c) J. J. Green 2004
+# $Id: options.ggo,v 1.2 2004/04/12 15:22:09 jjg Exp $
+package "svgcpt"
+purpose "convert SVD gradient to GMT colour palette table"
+option	"output"	o "output filename"	             string  no
+option	"verbose"	v "verbose operation"	             flag    off
+
+
+
+
