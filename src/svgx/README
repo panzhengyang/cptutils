@@ -1,7 +1,7 @@
 README
 ------
 
-experimental svg -> cpt conversion by XSLT, not ready
-for use yet
+experimental svg -> cpt conversion by XSLT, and using
+libxml : not ready for use yet
 
-$Id$
+$Id: README,v 1.1 2004/09/06 19:54:51 jjg Exp jjg $

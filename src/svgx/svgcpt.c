@@ -5,7 +5,7 @@
   distributed with the libxml2 library. The modifications are 
 
     Copyright (c) J.J. Green 2004.
-    $Id$
+    $Id: svgcpt.c,v 1.2 2004/09/07 23:04:30 jjg Exp jjg $
 
   The original file header follows (retained for reference : the information
   below is mostly wrong/inapproriate
@@ -33,6 +33,8 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include "colour.h"
+
 #include "svgcpt.h"
 
 typedef int (*mapfn_t)(xmlNodeSetPtr,void*);
@@ -41,6 +43,10 @@ typedef struct mapfn_arg_t
 {
   FILE *stream;
 }  mapfn_arg_t;
+
+typedef struct state_t
+{
+} state_t;
 
 static int map_xpath(const char*,const xmlChar*,mapfn_t,void*);
 static int xpath_nodes(xmlNodeSetPtr,mapfn_arg_t*);
@@ -140,10 +146,17 @@ static int map_xpath(const char* name, const xmlChar* xpe,mapfn_t f,void *arg)
   return err;
 }
 
+static int parse_offset(const char*,double*); 
+
+static int parse_style_ini(state_t*);
+static int parse_style(state_t*,const char*,rgb_t*);
+static int parse_style_free(state_t*);
+
 static int xpath_nodes(xmlNodeSetPtr nodes, mapfn_arg_t *arg) 
 {
   int   size,i;
   FILE *stream;
+  state_t state;
     
   assert(arg);
 
@@ -153,12 +166,20 @@ static int xpath_nodes(xmlNodeSetPtr nodes, mapfn_arg_t *arg)
 
   size = (nodes ? nodes->nodeNr : 0);
 
+  if (parse_style_ini(&state) != 0)
+    {
+      fprintf(stderr,"failed to initialise parse state\n");
+      return 1;
+    }
+
   fprintf(stream, "# svgcpt output (%d nodes)\n", size);
 
   for (i = 0; i < size; ++i) 
     {
       xmlChar *po,*ps;
       xmlNodePtr cur;
+      double z;
+      rgb_t rgb;
 
       assert(nodes->nodeTab[i]);
 	
@@ -176,12 +197,73 @@ static int xpath_nodes(xmlNodeSetPtr nodes, mapfn_arg_t *arg)
 	  continue; 
 	} 
 	      
-      po = xmlGetProp(cur,"offset");
-      ps = xmlGetProp(cur,"style");
-	      
-      fprintf(stream, "%s %s\n",po,ps);
+      if ((po = xmlGetProp(cur,"offset")) == NULL)
+	{
+	  fprintf(stderr,"node has no offset attribute\n");
+	  continue; 
+	}
+      
+      if ((ps = xmlGetProp(cur,"style")) == NULL)
+	{
+	  fprintf(stderr,"node has no style attribute\n");
+	  continue; 
+	}
+	
+      if (parse_offset(po,&z) != 0)
+	{
+	  fprintf(stderr,"failed to parse offset \"%s\"\n",po);
+	  continue; 
+	}      
+
+      if (parse_style(&state,ps,&rgb) != 0)
+	{
+	  fprintf(stderr,"failed to parse style \"%s\"\n",ps);
+	  continue; 
+	}      
+
+      fprintf(stream, "%s -> %f, %s\n",po,z,ps);
+    }
+
+  if (parse_style_free(&state) != 0)
+    {
+      fprintf(stderr,"failed to free parse state\n");
+      return 1;
     }
 
   return 0;
 }
 
+static int parse_offset(const char *po,double *z)
+{
+  double x; 
+
+  x = atof(po);
+
+  *z = ((po[strlen(po)-1] == '%') ? x/100.0 : x);
+
+  return 0;
+}
+
+static int parse_style_ini(state_t* state)
+{
+  return 0;
+}
+
+static int parse_style(state_t* state,const char *po,rgb_t* rgb)
+{
+  size_t sz = strlen(po);
+  char buf[sz];
+
+  /* 
+     copy the cost string to a modifiable buffer
+  */
+
+  strcpy(buf,po);
+
+  return 0;
+}
+
+static int parse_style_free(state_t* state)
+{
+  return 0;
+}
