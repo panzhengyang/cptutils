@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
+  $Id: gradient.h,v 1.2 2004/02/12 01:18:20 jjg Exp jjg $
 */
 
 #ifndef GRADIENT_H
@@ -59,9 +59,11 @@ typedef enum
 
 typedef enum
 {
-  GRAD_RGB = 0,  /* normal RGB */
-  GRAD_HSV_CCW,  /* counterclockwise hue */
-  GRAD_HSV_CW    /* clockwise hue */
+  GRAD_RGB = 0,   /* normal RGB */
+  GRAD_HSV_CCW,   /* counterclockwise hue */
+  GRAD_HSV_CW,    /* clockwise hue */
+  GRAD_HSV_SHORT, /* shorter of cw & ccw hue */
+  GRAD_HSV_LONG   /* longer of cw & ccw hue */
 } grad_color_t;
 
 typedef struct grad_segment_t

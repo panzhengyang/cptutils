@@ -46,7 +46,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.5 2004/06/16 20:56:44 jjg Exp jjg $
+  $Id: gradient.c,v 1.6 2004/06/16 22:37:42 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -66,6 +66,7 @@ static void            seg_free_segment(grad_segment_t*);
 static void            seg_free_segments(grad_segment_t*);
 static char*           basename(char*);
 static grad_segment_t* seg_get_segment_at(gradient_t*,double);
+static grad_color_t    grad_hsv_type(grad_color_t,double,double);
 
 static double calc_linear_factor            (double middle, double pos);
 static double calc_curved_factor            (double middle, double pos);
@@ -92,7 +93,7 @@ extern void grad_free_gradient(gradient_t *grad)
 {
   if (grad == NULL) return;
 
-  if (grad->name) free(grad->name);
+  if (grad->name)     free(grad->name);
   if (grad->filename) free(grad->filename);
   if (grad->segments) seg_free_segments(grad->segments);
 
@@ -189,8 +190,53 @@ extern gradient_t* grad_load_gradient(char* filename)
 	}
       else
 	{
+	  int err = 0;
+
           seg->type  = (grad_type_t)type;
-	  seg->color = (grad_color_t)color;
+
+	  /* determine colour model (see below) */
+
+	  switch (color)
+	    {
+	      double rgb0[3],rgb1[3],hsv0[3],hsv1[3];
+
+	    case GRAD_RGB:
+	    case GRAD_HSV_CW:
+	    case GRAD_HSV_CCW:
+
+	      seg->color = (grad_color_t)color;
+	      break;
+
+	    case GRAD_HSV_SHORT:
+	    case GRAD_HSV_LONG:
+
+	      rgb0[0] = seg->r0;
+	      rgb0[1] = seg->g0;
+	      rgb0[2] = seg->b0;
+
+	      err != rgbD_to_hsvD(rgb0,hsv0);
+
+	      rgb1[0] = seg->r1;
+	      rgb1[1] = seg->g1;
+	      rgb1[2] = seg->b1;
+
+	      err != rgbD_to_hsvD(rgb1,hsv1);
+
+	      if (err)
+		{
+		  fprintf(stderr,"error converting rgb->hsv !\n");
+		  return NULL;
+		}
+
+	      seg->color = grad_hsv_type(color,hsv0[0],hsv1[0]);
+
+	      break;
+
+	    default:
+
+	      fprintf(stderr,"unknown colour model (%i)\n",color);
+	      return NULL;
+	    }
 	}      
       prev = seg;
     }
@@ -198,6 +244,56 @@ extern gradient_t* grad_load_gradient(char* filename)
   if (stream != stdin) fclose(stream);
 
   return grad;
+}
+
+/*
+  this function handles an extension to the gimp gradient colour-arc
+  type: the GRAD_HSV_CW and GRAD_HSV_CW are joined by GRAD_HSV_SHORT
+  which is an HSV path, either CW or CCW depending on which is 
+  shorter. Similarly GRAD_HSV_LONG.
+
+  This has been proposed by Neota, who provided the following function
+  for its implementation. It should make it into the gimp in 2004.
+
+  If the argument color is GRAD_HSV_SHORT then this function 
+  returns GRAD_HSV_CW or GRAD_HSV_CCW depending on which hue path
+  from x to y is shorter. If the argument is GRAD_HSV_LONG the 
+  behaviour is reversed.
+*/
+
+static grad_color_t grad_hsv_type(grad_color_t color,double x,double y)
+{
+  double midlen,rndlen,min,max;
+  int shorter,result;
+  
+  min = MIN(x,y);
+  max = MAX(x,y);
+  
+  midlen = max - min;
+  rndlen = min + (1.0 - max);
+
+  /* find shorter path */
+  
+  if (rndlen < midlen)
+    shorter = (max==y ? GRAD_HSV_CW : GRAD_HSV_CCW);
+  else
+    shorter = (max==y ? GRAD_HSV_CCW : GRAD_HSV_CW);
+  
+  switch (color)
+    {
+    case GRAD_HSV_SHORT:
+      result = shorter;
+      break;
+    case GRAD_HSV_LONG:
+      result = (shorter == GRAD_HSV_CW ? GRAD_HSV_CCW : GRAD_HSV_CW);
+      break;
+    default :
+      result = color;
+    }
+
+  /*  printf("(%f,%f)  %i -> %i\n",x,y,color,result); */
+
+  return result;
 }
 
 extern int grad_save_gradient(gradient_t *grad,char* filename)
