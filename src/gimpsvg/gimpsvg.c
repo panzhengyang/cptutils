@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.9 2004/02/24 18:36:02 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.10 2004/03/22 22:58:34 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -25,6 +25,10 @@
 
 #define SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
 
+#define ERR_CMOD   1
+#define ERR_NULL   2
+#define ERR_INSERT 3
+
 static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
 static int cpt_optimise(double,cpt_t*);
 
@@ -34,6 +38,7 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 {
     gradient_t* gradient;
     cpt_t*      cpt;
+    int         err;
 
     /* get the full filename */
     
@@ -94,9 +99,22 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     
     /* transfer the gradient data to the cpt_t struct */
 
-    if (gradcpt(gradient,cpt,opt) != 0)
+    if ((err = gradcpt(gradient,cpt,opt)) != 0)
       {
-	fprintf(stderr,"failed to convert gradient\n");
+	switch (err)
+	  {
+	  case ERR_CMOD:
+	    fprintf(stderr,"bad colour model\n");
+	    break;
+	  case ERR_NULL:
+	    fprintf(stderr,"null structure\n");
+	    break;
+	  case ERR_INSERT:
+	    fprintf(stderr,"failed structure insert\n");
+	    break;
+	  default:
+	    fprintf(stderr,"unknown error\n");
+	  }
 	return 1;
       }
 
@@ -205,7 +223,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
       cpt_seg_t *lseg,*rseg;
       rgb_t rgb;
       double col[3];
-      int err = 0;
+      int inserr = 0;
       
 	if (gseg->type == GRAD_LINEAR && gseg->color == GRAD_RGB)
 	  {
@@ -227,18 +245,18 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    lseg =  cpt_seg_new();
 	    rseg =  cpt_seg_new();
 	    
-	    if (lseg == NULL || rseg == NULL) return 1;
+	    if (lseg == NULL || rseg == NULL) return ERR_NULL;
 
 	    /* the right (we work from right to left) */
 	    
-	    grad_segment_colour(gseg->right,gseg,bg,col);
+	    if (grad_segment_colour(gseg->right,gseg,bg,col) != 0) return ERR_CMOD;
 	    rgbD_to_rgb(col,&rgb);
 
 	    rseg->rsmp.fill.type         = colour; 
 	    rseg->rsmp.fill.u.colour.rgb = rgb; 
 	    rseg->rsmp.val               = SCALE(gseg->right,opt);
 
-	    grad_segment_colour(gseg->middle,gseg,bg,col);
+	    if (grad_segment_colour(gseg->middle,gseg,bg,col) != 0) return ERR_CMOD;
 	    rgbD_to_rgb(col,&rgb);
 
 	    rseg->lsmp.fill.type         = colour; 
@@ -246,7 +264,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    rseg->lsmp.val               = SCALE(gseg->middle,opt);
 
 	    if (rseg->lsmp.val < rseg->rsmp.val)
-		err |= cpt_prepend(rseg,cpt);
+		inserr |= cpt_prepend(rseg,cpt);
 
 	    /* the left */
 
@@ -254,7 +272,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    lseg->rsmp.fill.u.colour.rgb = rgb; 
 	    lseg->rsmp.val               = SCALE(gseg->middle,opt);
 
-	    grad_segment_colour(gseg->left,gseg,bg,col);
+	    if (grad_segment_colour(gseg->left,gseg,bg,col) != 0) return ERR_CMOD;
 	    rgbD_to_rgb(col,&rgb);
 
 	    lseg->lsmp.fill.type         = colour; 
@@ -262,13 +280,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    lseg->lsmp.val               = SCALE(gseg->left,opt);
 
 	    if (lseg->lsmp.val < lseg->rsmp.val)
-		err |= cpt_prepend(lseg,cpt);
-
-	    if (err)
-	      {
-		fprintf(stderr,"error converting segment\n");
-		return 1;
-	      }
+		inserr |= cpt_prepend(lseg,cpt);
 	  }
 	else
 	  {
@@ -284,11 +296,11 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    width = gseg->right - gseg->left;
 	    n = (int)(opt.samples*(gseg->right - gseg->left)) + 1;
 	    
-	    rseg = cpt_seg_new();
+	    if ((rseg = cpt_seg_new()) == NULL) return ERR_NULL;
 	    
 	    x = gseg->right;
 	    
-	    grad_segment_colour(x,gseg,bg,col);
+	    if (grad_segment_colour(x,gseg,bg,col) != 0) return ERR_CMOD;
 	    rgbD_to_rgb(col,&rgb);
 
 	    rseg->rsmp.fill.type         = colour;
@@ -297,18 +309,18 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 
 	    x = gseg->right-width/n;
 	    
-	    grad_segment_colour(x,gseg,bg,col);
+	    if (grad_segment_colour(x,gseg,bg,col) != 0) return ERR_CMOD;
 	    rgbD_to_rgb(col,&rgb);
 	    
 	    rseg->lsmp.fill.type         = colour;
 	    rseg->lsmp.fill.u.colour.rgb = rgb; 
 	    rseg->lsmp.val               = SCALE(x,opt);
 	    
-	    cpt_prepend(rseg,cpt);
+	    inserr != cpt_prepend(rseg,cpt);
 	    
 	    for (i=2 ; i<=n ; i++)
 	      {
-		lseg = cpt_seg_new();
+		if ((lseg = cpt_seg_new()) == NULL) return ERR_NULL;
 		
 		lseg->rsmp.fill.type         = rseg->lsmp.fill.type;
 		lseg->rsmp.fill.u.colour.rgb = rseg->lsmp.fill.u.colour.rgb;
@@ -316,19 +328,21 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 		
 		x = gseg->right-width*i/n;
 
-		grad_segment_colour(x,gseg,bg,col);
+		if (grad_segment_colour(x,gseg,bg,col) != 0) return ERR_CMOD;
 		rgbD_to_rgb(col,&rgb);
 		
 		lseg->lsmp.fill.type         = colour;
 		lseg->lsmp.fill.u.colour.rgb = rgb; 
 		lseg->lsmp.val               = SCALE(x,opt);
 		
-		cpt_prepend(lseg,cpt);
+		inserr != cpt_prepend(lseg,cpt);
 		
 		rseg = lseg;
 	      }
 	  }
 	
+	if (inserr) return ERR_INSERT;
+
 	gseg = gseg->prev;
     } 
   
