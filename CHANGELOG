@@ -1,6 +1,6 @@
-Changes $Id: CHANGELOG,v 1.13 2005/02/08 21:31:07 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.14 2005/03/30 23:18:58 jjg Exp jjg $
 
-1.15 : (unrelased)
+1.15 : (17 April 2005)
   - added 'B' to the possible annotation types in
     cptparse.y
   - enabled debug output for cpt parser
