@@ -1,0 +1,11 @@
+# -*- sh -*-
+# gengetopt input for cptgimp
+# (c) J. J. Green 2004
+# $Id: options.ggo,v 1.1 2004/02/11 00:58:38 jjg Exp $
+package "cptsvg"
+purpose "convert GMT colour palette to SVG gradient"
+option	"output"	o "output filename"		string	no
+option	"verbose"	v "verbose operation"		flag	off
+
+
+
