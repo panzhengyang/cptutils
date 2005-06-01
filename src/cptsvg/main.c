@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2004/02/13 01:18:15 jjg Exp $
+  $Id: main.c,v 1.1 2005/05/30 23:14:31 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -60,14 +60,8 @@ int main(int argc,char** argv)
 
   if (!outfile && opt.verbose)
     {
-      fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
+      fprintf(stderr,"verbosity suppressed (<stdout> is used for results)\n");
       opt.verbose = 0;
-    }
-
-  if (outfile == NULL)
-    {
-      fprintf(stderr,"output to stdout not working yet\n");
-      return EXIT_FAILURE;
     }
 
   /* null infile for stdin */
@@ -77,9 +71,11 @@ int main(int argc,char** argv)
     case 0:
       infile = NULL;
       break;
+
     case 1:
       infile = info.inputs[0];
       break;
+
     default:
       fprintf(stderr,"Sorry, only one file at a time\n");
       return EXIT_FAILURE;

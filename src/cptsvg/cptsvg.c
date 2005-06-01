@@ -2,7 +2,7 @@
   cptgimp.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptgimp.c,v 1.6 2004/03/22 01:05:44 jjg Exp $
+  $Id: cptsvg.c,v 1.1 2005/05/30 23:16:38 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
@@ -22,64 +23,108 @@
 
 #define ENCODING "utf-8"
 
-static int cptsvg_write(cpt_t*,xmlTextWriter*,cptsvg_opt_t);
+static int cptsvg_convert(cpt_t*,xmlTextWriter*,cptsvg_opt_t);
 
 extern int cptsvg(char* infile,char* outfile,cptsvg_opt_t opt)
 {
     cpt_t* cpt;
-    xmlTextWriter* writer;
+    int err=0;
 
     LIBXML_TEST_VERSION
 
-    /* load the cpt */
-    
-    if ((cpt = cpt_new()) == NULL)
+    if ((cpt = cpt_new()) != NULL)
       {
-	fprintf(stderr,"failed to create cpt struct\n");
-	return 1;
-      }
-
-    if (cpt_read(infile,cpt,0) != 0)
-      {
-	fprintf(stderr,"failed to load cpt from ");
-	if (infile)
+ 	if (cpt_read(infile,cpt,0) == 0)
 	  {
-	    fprintf(stderr,"%s\n",infile);
-	    free(infile);
+	    xmlBuffer* buffer;
+	    
+	    if ((buffer = xmlBufferCreate()) != NULL)
+	      {
+		xmlTextWriter* writer;
+
+		if ((writer = xmlNewTextWriterMemory(buffer,0)) != NULL) 
+		  {
+		    /*
+		      we free the writer at the start of each of
+		      these branches since this must be done before
+		      using the buffer
+		    */
+
+		    if (cptsvg_convert(cpt,writer,opt) == 0)
+		      {
+			const char *content = buffer->content;
+
+			xmlFreeTextWriter(writer);
+
+			if (outfile)
+			  {
+			    FILE* fp;
+			    
+			    if ((fp = fopen(outfile, "w")) != NULL) 
+			      {
+				fprintf(fp,"%s",content);
+				
+				if (fclose(fp) != 0)
+				  {
+				    fprintf(stderr,"error closing file %s\n",outfile);
+				    err = 1;
+				  }
+			      }
+			    else
+			      {
+				fprintf(stderr,"error opening file %s\n",outfile);
+				err = 1;
+			      }
+			  }
+			else
+			  fprintf(stdout,"%s",content);
+		      }
+		    else
+		      {
+			xmlFreeTextWriter(writer);
+
+			fprintf(stderr,"failed to convert cpt\n");
+			err = 1;
+		      }
+		  }
+		else
+		  {
+		    fprintf(stderr,"error creating the xml writer\n");
+		    err = 1;
+		  }
+	      }		
+	    else
+	      {
+		fprintf(stderr,"error creating xml writer buffer\n");
+		err = 1;
+	      }
+
+	    xmlBufferFree(buffer);
 	  }
 	else
-	  fprintf(stderr,"<stdin>\n");
-	
-	return 1;
-      }
-    
-    /* load the writer */
+	  {
+	    fprintf(stderr,"failed to load cpt from %s\n",(infile ? infile : "<stdin>"));
+	    err = 1;
+	  }
 
-    if ((writer = xmlNewTextWriterFilename(outfile,0)) == NULL) 
+	cpt_destroy(cpt);    
+      }	
+    else
       {
-	fprintf(stderr,"error creating the xml writer\n");
-	return 1;
+	fprintf(stderr,"failed to create cpt struct\n");
+	err = 1;
       }
 
-    /* write cpt */
+    if (err)
+      fprintf(stderr,"failed to create %s\n",(outfile ? outfile : "<stdout>"));
 
-    if (cptsvg_write(cpt,writer,opt) != 0)
-      {
-	fprintf(stderr,"failed to convert cpt\n");
-	return 1;
-      }
-
-    /* tidy */
-
-    xmlFreeTextWriter(writer);    
-    cpt_destroy(cpt);    
-
-    return 0;
+    return err;
 }
 
-static int cptsvg_write_stop(xmlTextWriter*,double,rgb_t,double);
+static int cptsvg_convert_stop(xmlTextWriter*,double,rgb_t,double);
+static const char* timestring(void);
 
-static int cptsvg_write(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
+static int cptsvg_convert(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
 {
   cpt_seg_t* seg;
   double min,max;
@@ -127,6 +172,16 @@ static int cptsvg_write(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
       fprintf(stderr,"error from open svg\n");
       return 1;
     }
+
+  if (
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "version",BAD_CAST "1.1") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "xmlns",BAD_CAST  "http://www.w3.org/2000/svg") < 0
+      )
+    {
+      fprintf(stderr,"error from svg attribute\n");
+      return 1;
+    }
+
 
   if (xmlTextWriterStartElement(writer,BAD_CAST "linearGradient") < 0)
     {
@@ -186,7 +241,7 @@ static int cptsvg_write(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
               break;
             case hsv:
 	      /* fixme */
-	      fprintf(stderr,"hsv not implemeted yet\n");
+	      fprintf(stderr,"conversion of hsv not yet implemeted\n");
               return 1;
             default:
               return 1;
@@ -206,8 +261,8 @@ static int cptsvg_write(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
           return 1;
         }
 
-      cptsvg_write_stop(writer,100*(lsmp.val-min)/(max-min),lcol,1.0);
-      cptsvg_write_stop(writer,100*(rsmp.val-min)/(max-min),rcol,1.0);
+      cptsvg_convert_stop(writer,100*(lsmp.val-min)/(max-min),lcol,1.0);
+      cptsvg_convert_stop(writer,100*(rsmp.val-min)/(max-min),rcol,1.0);
 
       n++;
     }
@@ -224,13 +279,43 @@ static int cptsvg_write(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
       return 1;
     }
 
+  if (xmlTextWriterStartElement(writer,BAD_CAST "creator") < 0)
+    {
+      fprintf(stderr,"error from open creator\n");
+      return 1;
+    }
+
   if (
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "creator",BAD_CAST "cptsvg") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "name",BAD_CAST "cptsvg") < 0 ||
       xmlTextWriterWriteAttribute(writer,BAD_CAST "version",BAD_CAST VERSION) < 0
       )
     {
 
+      fprintf(stderr,"error from creator attribute\n");
+      return 1;
+    }
+
+  if (xmlTextWriterEndElement(writer) < 0)
+    {
+      fprintf(stderr,"error from close creator\n");
+      return 1;
+    }
+
+  if (xmlTextWriterStartElement(writer,BAD_CAST "created") < 0)
+    {
       fprintf(stderr,"error from open metadata\n");
+      return 1;
+    }
+
+  if (xmlTextWriterWriteAttribute(writer,BAD_CAST "date",BAD_CAST timestring()) < 0)
+    {
+      fprintf(stderr,"error from created attribute\n");
+      return 1;
+    }
+
+  if (xmlTextWriterEndElement(writer) < 0)
+    {
+      fprintf(stderr,"error from close created\n");
       return 1;
     }
 
@@ -258,9 +343,23 @@ static int cptsvg_write(cpt_t* cpt,xmlTextWriter* writer,cptsvg_opt_t opt)
   return 0;
 }
 
+static const char* timestring(void)
+{
+  time_t  tm;
+  char* tmstr;
+  static char ts[25]; 
+
+  time(&tm);
+  tmstr = ctime(&tm);
+
+  sprintf(ts,"%.24s",tmstr);
+
+  return ts;
+}
+
 #define BUFSZ 128
 
-static int cptsvg_write_stop(xmlTextWriter* writer,double val,rgb_t col,double opacity)
+static int cptsvg_convert_stop(xmlTextWriter* writer,double val,rgb_t col,double opacity)
 {
   char obuf[BUFSZ],scbuf[BUFSZ],sobuf[BUFSZ];
 

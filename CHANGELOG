@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.14 2005/03/30 23:18:58 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.15 2005/04/17 22:57:37 jjg Exp jjg $
+
+1.16 : (1 June 2005)
+  - new program cptsvg
 
 1.15 : (17 April 2005)
   - added 'B' to the possible annotation types in
