@@ -1,15 +1,19 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.6 2005/01/27 21:32:27 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2005/01/28 22:56:05 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
 OBJGGR  = gradient.o
 OBJPSP  = psp.o
+OBJSVG  = svg.o svgio.o
 
-CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a
+CFLAGS += `$(XML2C) --cflags`
+LDLIBS += `$(XML2C) --libs`
 
-RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP)
+CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a
+
+RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG)
 
 default : all
 
@@ -43,6 +47,13 @@ libggr.a : $(OBJGGR)
 
 libpsp.a : $(OBJPSP)
 	ar r libpsp.a $(OBJPSP)
+
+libsvg.a : $(OBJSVG)
+	ar r libsvg.a $(OBJSVG)
+
+RUBBISH += svgio arse.svg
+
+svgio : svgio.o svg.o colour.o
 
 include ../Common.mk
 
