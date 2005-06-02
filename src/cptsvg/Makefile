@@ -1,12 +1,12 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2004/02/13 01:18:19 jjg Exp $
+# $Id: Makefile,v 1.1 2005/05/30 23:17:12 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
 
 CFLAGS  += `$(XML2C) --cflags`
-LDFLAGS += `$(XML2C) --libs`
+LDLIBS  += `$(XML2C) --libs` -lsvg
 
 default : all
 
