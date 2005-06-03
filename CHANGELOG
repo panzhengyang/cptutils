@@ -1,5 +1,10 @@
-Changes $Id: CHANGELOG,v 1.15 2005/04/17 22:57:37 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.16 2005/06/01 22:48:55 jjg Exp jjg $
 
+1.17 (3 June 2005)
+  - removed redundant (but harmless) stops in cptsvg,
+    which is now finshed apart from support for hsv & 
+    non-colour fill types
+     
 1.16 : (1 June 2005)
   - new program cptsvg
 

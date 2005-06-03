@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.1 2005/05/30 23:17:12 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2005/06/02 23:26:43 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
@@ -28,7 +28,7 @@ cptsvg : $(OBJ)
 
 # for testing 
 
-BASE       = GMT_gebco
+BASE       = subtle
 CPT        = $(BASE).cpt
 SVG        = $(BASE).svg 
 RUBBISH   += $(SVG)

@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.2 2005/06/01 22:40:18 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.3 2005/06/02 23:26:36 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -80,7 +80,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
   cpt_seg_t *seg;
   svg_stop_t lstop,rstop;
   double min,max;
-  int n;
+  int n,m=0;
 
   /* check we have at least one cpt segment */
 
@@ -169,25 +169,44 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
           return 1;
         }
 
+      /* always insert the left colour */
+
       lstop.value   = 100*(lsmp.val-min)/(max-min);
       lstop.colour  = lcol;
       lstop.opacity = 1.0; 
 
-      rstop.value   = 100*(rsmp.val-min)/(max-min);
-      rstop.colour  = rcol;
-      rstop.opacity = 1.0; 
-
-      if ((svg_append(lstop,svg) != 0) || (svg_append(rstop,svg) != 0))
+      if (svg_append(lstop,svg) == 0) m++;
+      else 
 	{
-	  fprintf(stderr,"error adding stop for segment %i\n",n);
+	  fprintf(stderr,"error adding stop for segment %i left\n",n);
 	  return 1;
+	}
+
+      /*
+	if there is a segment to the right, and if its left
+	segment is the same colour at the our right segment
+	then dont insert it. Otherwise do.
+      */
+
+      if ( ! ((seg->rseg) && fill_eq(rsmp.fill, seg->rseg->lsmp.fill)))
+	{
+	  rstop.value   = 100*(rsmp.val-min)/(max-min);
+	  rstop.colour  = rcol;
+	  rstop.opacity = 1.0; 
+
+	  if (svg_append(rstop,svg) == 0) m++;
+	  else
+	    {
+	      fprintf(stderr,"error adding stop for segment %i right\n",n);
+	      return 1;
+	    }
 	}
 
       n++;
     }
 
   if (opt.verbose)
-    printf("converted %i segments\n",n);
+    printf("converted %i segments to %i stops\n",n,m);
 
   return 0;
 }
