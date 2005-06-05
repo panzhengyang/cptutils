@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.7 2005/01/28 22:56:05 jjg Exp jjg $
+# $Id: Makefile,v 1.8 2005/06/02 22:14:45 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -8,8 +8,8 @@ OBJGGR  = gradient.o
 OBJPSP  = psp.o
 OBJSVG  = svg.o svgio.o
 
-CFLAGS += `$(XML2C) --cflags`
-LDLIBS += `$(XML2C) --libs`
+CFLAGS +=
+LDLIBS +=
 
 CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a
 
