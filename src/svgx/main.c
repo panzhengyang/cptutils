@@ -20,10 +20,8 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2004/09/07 15:53:03 jjg Exp jjg $
+  $Id: main.c,v 1.2 2004/09/07 23:04:39 jjg Exp jjg $
 */
-
-#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,12 +50,14 @@ int main(int argc,char** argv)
   /* check arguments & transfer to opt structure */ 
 
   opt.verbose = info.verbose_given;
+  opt.list    = info.list_given;
+  opt.n       = (info.nth_given ? info.nth_arg : 0);
 
   /* null outfile for stdout */
 
   outfile = (info.output_given ? info.output_arg : NULL);
 
-  if (!outfile && opt.verbose)
+  if (!opt.list && !outfile && opt.verbose)
     {
       fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
       opt.verbose = 0;
@@ -77,20 +77,18 @@ int main(int argc,char** argv)
     }
   
   if (opt.verbose)
-    printf("This is xycpt (version %s)\n",VERSION);
+    printf("This is svgcpt (version %s)\n",VERSION);
   
   opt.file.input  = infile;
   opt.file.output = outfile;
 
   err = svgcpt(opt);
 
-  if (opt.verbose)
-    {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
+  if (err != 0)
+    fprintf(stderr,"failed (error %i)\n",err);
 
-      printf("done.\n");
-    }
+  if (opt.verbose)
+    printf("done.\n");
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

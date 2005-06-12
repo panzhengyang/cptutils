@@ -5,7 +5,7 @@
   distributed with the libxml2 library. The modifications are 
 
     Copyright (c) J.J. Green 2004.
-    $Id: svgcpt.c,v 1.2 2004/09/07 23:04:30 jjg Exp jjg $
+    $Id: svgcpt.c,v 1.3 2004/09/08 22:54:15 jjg Exp jjg $
 
   The original file header follows (retained for reference : the information
   below is mostly wrong/inapproriate
@@ -37,83 +37,90 @@
 
 #include "svgcpt.h"
 
-typedef int (*mapfn_t)(xmlNodeSetPtr,void*);
-
-typedef struct mapfn_arg_t 
-{
-  FILE *stream;
-}  mapfn_arg_t;
-
 typedef struct state_t
 {
 } state_t;
 
-static int map_xpath(const char*,const xmlChar*,mapfn_t,void*);
-static int xpath_nodes(xmlNodeSetPtr,mapfn_arg_t*);
+static int lg_map(svgcpt_opt_t opt);
 
 extern int svgcpt(svgcpt_opt_t opt)
 {
   int err=0;
-  FILE *stream;
-  mapfn_arg_t arg;
-  const char xpath[] = "/svg/linearGradient/stop";
 
-  xmlInitParser();
   LIBXML_TEST_VERSION;
-  
-  if (opt.file.output)
-    {
-      stream = fopen(opt.file.output,"w");
-      if (stream == NULL)
-	{
-	  fprintf(stderr,"error opening file %s : %s\n",
-		  opt.file.output,
-		  strerror(errno));
-	  err = 1;
-	}
-      else
-	{
-	  arg.stream = stream;
-	  err = map_xpath(opt.file.input, 
-			  BAD_CAST xpath,
-			  (mapfn_t)xpath_nodes,
-			  (void*)&arg); 
 
-	  fclose(stream);
-	}
+  if (opt.list)
+    {
+      err = lg_map(opt); 
     }
   else
     {
-      arg.stream = stdout;
-      err = map_xpath(opt.file.input, 
-		      BAD_CAST xpath,
-		      (mapfn_t)xpath_nodes,
-		      (void*)&arg);
-    } 
+      if (opt.file.output)
+	{
+	  FILE *stream;
+	  
+	  stream = fopen(opt.file.output,"w");
+	  
+	  if (stream == NULL)
+	    {
+	      fprintf(stderr,"error opening file %s : %s\n",
+		      opt.file.output,
+		      strerror(errno));
+	      err = 1;
+	    }
+	  else
+	    {
+	      opt.stream.output = stream;
+	      err = lg_map(opt); 
+	      fclose(stream);
+	    }
+	}
+      else
+	{
+	  opt.stream.output = stdout;
+	  err = lg_map(opt); 
+	} 
+    }
 
   xmlCleanupParser();
 
   return err;
 }
 
-static int map_xpath(const char* name, const xmlChar* xpe,mapfn_t f,void *arg) 
+static int lg_nodes(xmlNodeSetPtr,svgcpt_opt_t);
+static int lg_list(xmlNodeSetPtr,svgcpt_opt_t); 
+
+/*
+  very odd, if the svg element has attribute
+
+    xmlns="http://www.w3.org/2000/svg"
+
+  then the xpath find no gradients! 
+*/
+
+static int lg_map(svgcpt_opt_t opt)
 {
   int err = 0;
   xmlDocPtr doc;
-  
-  assert(name);
-  assert(xpe);
-  
+  const xmlChar xpe[] = "//linearGradient";
+
+  xmlInitParser();
+
   /* Load XML document */
 
-  if ((doc = xmlParseFile(name)) == NULL)
+  if ((doc = xmlParseFile(opt.file.input)) == NULL)
     {
-      fprintf(stderr, "error: unable to parse file \"%s\"\n",name);
+      fprintf(stderr, "error: unable to parse file %s\n",opt.file.input);
       err = 1;
     }
   else
     {
       xmlXPathContextPtr xpc; 
+
+      if (opt.verbose)
+	{
+	  printf("parsed %s\n",opt.file.input);
+	}
 
       /* Create xpath evaluation context */
    
@@ -135,7 +142,15 @@ static int map_xpath(const char* name, const xmlChar* xpe,mapfn_t f,void *arg)
 	    }
 	  else
 	    {
-	      err = f(xpo->nodesetval,arg);
+	      if (opt.list)
+		{
+		  err = lg_list(xpo->nodesetval,opt);
+		}
+	      else
+		{
+		  err = lg_nodes(xpo->nodesetval,opt);
+		}
+
 	      xmlXPathFreeObject(xpo);
 	    }
 	  xmlXPathFreeContext(xpc); 
@@ -152,16 +167,118 @@ static int parse_style_ini(state_t*);
 static int parse_style(state_t*,const char*,rgb_t*);
 static int parse_style_free(state_t*);
 
-static int xpath_nodes(xmlNodeSetPtr nodes, mapfn_arg_t *arg) 
+static int lg_list(xmlNodeSetPtr nodes,svgcpt_opt_t opt) 
 {
   int   size,i;
-  FILE *stream;
   state_t state;
     
-  assert(arg);
+  size = (nodes ? nodes->nodeNr : 0);
 
-  stream = arg->stream;
+  if (opt.verbose)
+    printf("file contains %i gradient%s\n",size,(size == 1 ? "" : "s"));
+      
+  for (i=0 ; i<size ; i++) 
+    {
+      xmlChar *pi;
+      xmlNodePtr cur;
 
+      assert(nodes->nodeTab[i]);
+	
+      if (nodes->nodeTab[i]->type != XML_ELEMENT_NODE)
+	{
+	  fprintf(stderr,"not a node!\n");
+	  continue; 
+	}
+
+      cur = nodes->nodeTab[i];   	    
+      if (cur->ns)
+	{ 
+	  fprintf(stderr,"element node %s:%s!\n", 
+		  cur->ns->href, cur->name); 
+	  continue; 
+	} 
+	      
+      pi = xmlGetProp(cur,"id");
+
+      printf("%i %s\n",i+1,(pi ? pi : "none"));
+    }
+
+  return 0;
+}
+
+static int lg_nodes(xmlNodeSetPtr nodes,svgcpt_opt_t opt) 
+{
+  int   size,i;
+  state_t state;
+    
+  size = (nodes ? nodes->nodeNr : 0);
+
+  fprintf(opt.stream.output, "# svgcpt output (%d nodes)\n", size);
+
+  for (i = 0; i < size; ++i) 
+    {
+      xmlChar *po,*ps;
+      xmlNodePtr cur;
+      double z;
+      rgb_t rgb;
+
+      assert(nodes->nodeTab[i]);
+	
+      if (nodes->nodeTab[i]->type != XML_ELEMENT_NODE)
+	{
+	  fprintf(stderr,"not a node!\n");
+	  continue; 
+	}
+
+      cur = nodes->nodeTab[i];   	    
+      if (cur->ns)
+	{ 
+	  fprintf(stderr,"element node %s:%s!\n", 
+		  cur->ns->href, cur->name); 
+	  continue; 
+	} 
+	      
+      if ((po = xmlGetProp(cur,"offset")) == NULL)
+	{
+	  fprintf(stderr,"node has no offset attribute\n");
+	  continue; 
+	}
+      
+      if ((ps = xmlGetProp(cur,"style")) == NULL)
+	{
+	  fprintf(stderr,"node has no style attribute\n");
+	  continue; 
+	}
+	
+      if (parse_offset(po,&z) != 0)
+	{
+	  fprintf(stderr,"failed to parse offset \"%s\"\n",po);
+	  continue; 
+	}      
+
+      if (parse_style(&state,ps,&rgb) != 0)
+	{
+	  fprintf(stderr,"failed to parse style \"%s\"\n",ps);
+	  continue; 
+	}      
+
+      fprintf(opt.stream.output, "%s -> %f, %s\n",po,z,ps);
+    }
+
+  if (parse_style_free(&state) != 0)
+    {
+      fprintf(stderr,"failed to free parse state\n");
+      return 1;
+    }
+
+  return 0;
+}
+
+static int stop_nodes(xmlNodeSetPtr nodes, FILE* stream) 
+{
+  int   size,i;
+  state_t state;
+    
   assert(stream);
 
   size = (nodes ? nodes->nodeNr : 0);
