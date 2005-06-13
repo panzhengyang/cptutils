@@ -5,7 +5,7 @@
   distributed with the libxml2 library. The modifications are 
 
     Copyright (c) J.J. Green 2004.
-    $Id: svgcpt.c,v 1.3 2004/09/08 22:54:15 jjg Exp jjg $
+    $Id: svgcpt.c,v 1.4 2005/06/12 23:17:58 jjg Exp jjg $
 
   The original file header follows (retained for reference : the information
   below is mostly wrong/inapproriate
@@ -82,27 +82,16 @@ extern int svgcpt(svgcpt_opt_t opt)
 	} 
     }
 
-  xmlCleanupParser();
-
   return err;
 }
 
 static int lg_nodes(xmlNodeSetPtr,svgcpt_opt_t);
 static int lg_list(xmlNodeSetPtr,svgcpt_opt_t); 
 
-/*
-  very odd, if the svg element has attribute
-
-    xmlns="http://www.w3.org/2000/svg"
-
-  then the xpath find no gradients! 
-*/
-
 static int lg_map(svgcpt_opt_t opt)
 {
   int err = 0;
   xmlDocPtr doc;
-  const xmlChar xpe[] = "//linearGradient";
 
   xmlInitParser();
 
@@ -131,32 +120,64 @@ static int lg_map(svgcpt_opt_t opt)
 	}
       else
 	{
-	  xmlXPathObjectPtr xpo; 
+	  /*
+	    register the svg namespace -- often svg images use the default
+	    svg namespace
 
-	  /* Evaluate xpath expression */
+              <svg xmlns="http://www.w3.org/2000/svg" ...> 
+
+	    so that each unprefixed child element has an implicit svg: prefix,
+	    and this needs to be accounted for in the xpath specification.
+
+	    This means we need to register the namespace with the xpath
+	    context.
+	  */
+
+	  const char 
+	    prefix[] = "svg",
+	    href[]   = "http://www.w3.org/2000/svg";
 	  
-	  if ((xpo = xmlXPathEvalExpression(xpe, xpc)) == NULL) 
+	  if (xmlXPathRegisterNs(xpc,prefix,href) != 0)
 	    {
-	      fprintf(stderr,"error: unable to evaluate xpath expression \"%s\"\n", xpe);
+	      fprintf(stderr,"namespace error for %s:%s\n", prefix, href);
 	      err = 1;
 	    }
 	  else
 	    {
-	      if (opt.list)
+	      /*
+		handle both linearGradient nodes in the svg namespace (common
+		with images containing gradients) and in no namespace (usual
+		in stand-alone gradients).
+	      */
+
+	      const xmlChar xpe[] = "//linearGradient | //svg:linearGradient";
+	      xmlXPathObjectPtr xpo; 
+
+	      /* evaluate xpath expression */
+	  
+	      if ((xpo = xmlXPathEvalExpression(xpe, xpc)) == NULL) 
 		{
-		  err = lg_list(xpo->nodesetval,opt);
+		  fprintf(stderr,"unable to evaluate xpath expression %s\n",xpe);
+		  err = 1;
 		}
 	      else
 		{
-		  err = lg_nodes(xpo->nodesetval,opt);
-		}
+		  /* process results */
 
-	      xmlXPathFreeObject(xpo);
+		  if (opt.list)
+		    err = lg_list(xpo->nodesetval,opt);
+		  else
+		    err = lg_nodes(xpo->nodesetval,opt);
+		  
+		  xmlXPathFreeObject(xpo);
+		}
 	    }
-	  xmlXPathFreeContext(xpc); 
+	  xmlXPathFreeContext(xpc);  
 	}
       xmlFreeDoc(doc); 
     }
+
+  xmlCleanupParser();
     
   return err;
 }
@@ -191,16 +212,10 @@ static int lg_list(xmlNodeSetPtr nodes,svgcpt_opt_t opt)
 	}
 
       cur = nodes->nodeTab[i];   	    
-      if (cur->ns)
-	{ 
-	  fprintf(stderr,"element node %s:%s!\n", 
-		  cur->ns->href, cur->name); 
-	  continue; 
-	} 
 	      
       pi = xmlGetProp(cur,"id");
 
-      printf("%i %s\n",i+1,(pi ? pi : "none"));
+      printf("%i %s\n",i+1,(pi ? (char*)pi : "none"));
     }
 
   return 0;

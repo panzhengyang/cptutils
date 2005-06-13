@@ -1,15 +1,19 @@
 # Makefile for svgcpt
-# $Id: Makefile,v 1.4 2004/09/07 23:04:48 jjg Exp jjg $
+# 
+# J.J. Green 2005
+# $Id: Makefile,v 1.5 2005/06/12 23:18:12 jjg Exp jjg $
 
 OBJ      = svgcpt.o main.o options.o
-GRAD     = gradient-pastel-blue.svg
+GRAD     = test/gradient-pastel-blue.svg
+IMAGE    = test/eyes.svg
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgcpt $(OBJ)
+RUBBISH += svgcpt test.cpt $(OBJ)
 
 default : all
 
 check test : svgcpt
+	./svgcpt -v -l $(IMAGE)
 	./svgcpt -v -l $(GRAD)
 	./svgcpt -v -n1 -o test.cpt $(GRAD)
 
