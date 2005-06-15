@@ -11,10 +11,8 @@
 #ifndef SVGREAD_H
 #define SVGREAD_H
 
-#include <stdlib.h>
-
 #include "svglist.h"
 
-extern int svg_read(FILE*,svg_list_t*);
+extern int svg_read(const char*,svg_list_t*);
 
 #endif
