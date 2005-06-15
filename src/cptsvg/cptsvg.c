@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.3 2005/06/02 23:26:36 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.4 2005/06/03 23:41:24 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -11,7 +11,7 @@
 #include <time.h>
 
 #include "cptio.h"
-#include "svgio.h"
+#include "svgwrite.h"
 
 #include "cptsvg.h"
 
