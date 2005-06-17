@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id$
+  $Id: svgread.c,v 1.1 2005/06/15 22:41:45 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -23,10 +23,6 @@
 #include "colour.h"
 
 #include "svgread.h"
-
-typedef struct state_t
-{
-} state_t;
 
 static int svg_read_lingrads(xmlNodeSetPtr,svg_list_t*);
 
@@ -118,12 +114,6 @@ extern int svg_read(const char* file,svg_list_t* list)
 
 static int svg_read_lingrad(xmlNodePtr,svg_t*); 
 
-static int parse_offset(const char*,double*); 
-
-static int parse_style_ini(state_t*);
-static int parse_style(state_t*,const char*,rgb_t*);
-static int parse_style_free(state_t*);
-
 /*
   the first argument is a list of pointers to svg linearGradient
   nodes, the second our svg_list_t struct.
@@ -142,7 +132,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
   for (i = 0 ; i<size ; ++i) 
     {
       int err;
-      xmlChar *po;
+      xmlChar *id,*href;
       xmlNodePtr cur;
       svg_t *svg;
 
@@ -152,27 +142,54 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 	
       if (cur->type != XML_ELEMENT_NODE)
 	{
-	  fprintf(stderr,"not a node!\n");
-	  continue; 
+	  fprintf(stderr,"bad svg: gradient is not a node!\n");
+	  return 1;
 	}
 
-      if ((po = xmlGetProp(cur,"id")) == NULL)
+      /*
+	we dont do references
+      */
+
+      if ((href = xmlGetProp(cur,"href")) != NULL)
 	{
-	  fprintf(stderr,"node has no id attribute\n");
+	  /* this needs testing */
+
+	  fprintf(stderr,"gradient has references, skipping\n");
+	  xmlFree(href);
+
 	  continue; 
 	}
 
-      printf(" - %s\n",po);
- 
+      /*
+	just about the only thing we require in the gradient
+	is the name, so we check for it before fetching the
+	svg from the svg_list
+      */
+
+      if ((id = xmlGetProp(cur,"id")) == NULL)
+	{
+	  fprintf(stderr,"gradient has no id attribute, skipping\n");
+	  continue; 
+	}
+
       if ((svg = svg_list_svg(list)) == NULL)
 	{
 	  fprintf(stderr,"failed to get svg object from list\n");
 	  return 1;
 	}
 
-      err = svg_read_lingrad(cur,svg);
+      /* so we might as well write it to the svg_t */
 
-      xmlFree(po);
+      if (snprintf(svg->name,SVG_NAME_LEN,"%s",id) >= SVG_NAME_LEN)
+	{
+	  fprintf(stderr,"long gradient name truncated!\n");
+	}
+
+      xmlFree(id);
+
+      /* now process the gradient */
+
+      err = svg_read_lingrad(cur,svg);
 
       if (err) return err;
     }
@@ -180,80 +197,94 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
   return 0;
 }
 
-static int svg_read_lingrad(xmlNodePtr node,svg_t* svg) 
+static int parse_style(const char*,rgb_t*,double*);
+static int parse_offset(const char*,double*);
+
+static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg) 
 {
-  return 0;
+  xmlNode *nodes,*node;
 
   /*
-  int   size,i;
-  state_t state;
+    here is where you would read the relevant attributes 
+    from the gradient, but we are not interested in them,
+    we just want the nodes.
+  */
 
-  size = (nodes ? nodes->nodeNr : 0);
+  nodes = lgrad->children;
 
-  if (parse_style_ini(&state) != 0)
+  for (node = nodes ; node ; node = node->next)
     {
-      fprintf(stderr,"failed to initialise parse state\n");
-      return 1;
-    }
+      xmlNode *stop;
+      xmlChar *offset;
 
-  for (i = 0; i < size; ++i) 
-    {
-      xmlChar *po,*ps;
-      xmlNodePtr cur;
-      double z;
-      rgb_t rgb;
-
-      assert(nodes->nodeTab[i]);
+      if (node->type != XML_ELEMENT_NODE) continue;
 	
-      if (nodes->nodeTab[i]->type != XML_ELEMENT_NODE)
+      if (strcmp(node->name,"stop") != 0)
 	{
-	  fprintf(stderr,"not a node!\n");
-	  continue; 
+	  fprintf(stderr,"unexpected %s node\n",node->name);
+	  continue;	  
 	}
 
-      cur = nodes->nodeTab[i];   	    
-      if (cur->ns)
-	{ 
-	  fprintf(stderr,"element node %s:%s!\n", 
-		  cur->ns->href, cur->name); 
-	  continue; 
-	} 
-	      
-      if ((po = xmlGetProp(cur,"offset")) == NULL)
+      /* we have a stop node */
+
+      stop = node;
+
+      /* get offset */
+
+      if ((offset = xmlGetProp(stop,"offset")) == NULL)
 	{
-	  fprintf(stderr,"node has no offset attribute\n");
-	  continue; 
+	  fprintf(stderr,"gradient has no id attribute, skipping\n");
 	}
-      
-      if ((ps = xmlGetProp(cur,"style")) == NULL)
+      else
 	{
-	  fprintf(stderr,"node has no style attribute\n");
-	  continue; 
-	}
+	  double z,op;
+	  rgb_t rgb;
+
+	  if (parse_offset(offset,&z) != 0)
+	    {
+	      fprintf(stderr,"failed to parse offset \"%s\"\n",offset);
+	    }      
+	  else
+	    {
+	      xmlChar *colour,*opacity,*style;
+
+	      printf("offset %f\n",z);
+
+	      if ((colour = xmlGetProp(stop,"stop-color")) != NULL)
+		{
+		  /* parse colour */
+
+		  xmlFree(colour);
+		}
+
+	      if ((opacity = xmlGetProp(stop,"stop-opacity")) != NULL)
+		{
+		  /* parse opacity */
+
+		  xmlFree(opacity);
+		}
+
+	      if ((style = xmlGetProp(stop,"style")) != NULL)
+		{
+		  printf("style %s\n",style);
+
+		  if (parse_style(style,&rgb,&op) != 0)
+		    {
+		      fprintf(stderr,"error parsing stop style %s\n",style);
+		      return 1;
+		    }
+
+		  xmlFree(style);
+		}
+
+	      printf("opacity = %.5f\n",op);
+	    }
 	
-      if (parse_offset(po,&z) != 0)
-	{
-	  fprintf(stderr,"failed to parse offset \"%s\"\n",po);
-	  continue; 
-	}      
-
-      if (parse_style(&state,ps,&rgb) != 0)
-	{
-	  fprintf(stderr,"failed to parse style \"%s\"\n",ps);
-	  continue; 
-	}      
-
-      printf("%s -> %f, %s\n",po,z,ps);
-    }
-
-  if (parse_style_free(&state) != 0)
-    {
-      fprintf(stderr,"failed to free parse state\n");
-      return 1;
+	  xmlFree(offset);
+	}
     }
 
   return 0;
- */
 }
 
 static int parse_offset(const char *po,double *z)
@@ -267,26 +298,95 @@ static int parse_offset(const char *po,double *z)
   return 0;
 }
 
-static int parse_style_ini(state_t* state)
+/*
+  for some crackerjack reason loads of applications write
+
+    <stop offset="0%" style="stop-color:white;stop-opacity:1">
+
+  when
+
+    <stop offset="0%" stop-color="white" stop-opacity="1">
+
+  seems the obvious thing to do. ho hum. 
+
+  This function writes the values in a style string into its
+  rgb and opacity argument if they are there, but does not touch 
+  them otherwise. Neither case is an error.
+
+  We do a simple tokenisation with strtok_r, rather than 
+  introduce a dependancy on a css paring library
+*/
+
+static int parse_style_statement(const char*,rgb_t*,double*);
+
+static int parse_style(const char *style,rgb_t* rgb,double* opacity)
+{
+  size_t sz = strlen(style);
+  char buf[sz],*st,*state;
+
+  strcpy(buf,style);
+
+  if ((st = strtok_r(buf,";",&state)) != NULL)
+    {
+      if (parse_style_statement(st,rgb,opacity) != 0) return 1;
+
+      while ((st = strtok_r(NULL,";",&state)) != NULL)
+	{
+	  if (parse_style_statement(st,rgb,opacity) != 0) return 1;
+	}
+    }
+
+  return 0;
+}
+
+static int parse_colour(char*,rgb_t*);
+static int parse_opacity(char*,double*);
+
+static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
+{
+  size_t sz = strlen(stmnt);
+  char buf[sz],*key,*val,*state;
+
+  strcpy(buf,stmnt);
+
+  if ((key = strtok_r(buf,":",&state)) != NULL)
+    {
+      if ((val = strtok_r(NULL,":",&state)) != NULL)
+	{
+	  if (strcmp(key,"stop-color") == 0)
+	    {
+	      if (parse_colour(val,rgb) != 0) 
+		return 1;
+	    }
+	  else if (strcmp(key,"stop-opacity") == 0)
+	    {
+	      if (parse_opacity(val,opacity) != 0) 
+		return 1;
+	    }
+
+	  printf("  %s => %s\n",key,val);
+	}
+    }
+
+  return 0;
+}
+
+/* this one will take some work */
+
+static int parse_colour(char *st,rgb_t *rgb)
 {
   return 0;
 }
 
-static int parse_style(state_t* state,const char *po,rgb_t* rgb)
+static int parse_opacity(char *st,double *opacity)
 {
-  size_t sz = strlen(po);
-  char buf[sz];
+  if (st == NULL) return 1;
 
-  /* 
-     copy the cost string to a modifiable buffer
-  */
+  *opacity = strtod(st,NULL);
 
-  strcpy(buf,po);
+  if (errno) return 1;
 
   return 0;
 }
 
-static int parse_style_free(state_t* state)
-{
-  return 0;
-}
+
