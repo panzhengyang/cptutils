@@ -1,7 +1,7 @@
 /*
   svgcpt.c : convert svg file to cpt file
  
-  $Id$
+  $Id: svgcpt.c,v 1.6 2005/06/15 22:42:32 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -50,21 +50,49 @@ extern int svgcpt(svgcpt_opt_t opt)
   return err;
 }
 
+static int svg_id(svg_t*,const char*);
+
 static int svgcpt_stream(svgcpt_opt_t opt)
 {
-  int err;
+  int err = 0;
   svg_list_t *list;
 
   if ((list = svg_list_new()) == NULL)
     {
       fprintf(stderr,"error creating new list\n");
-      return 1;
+      err++;
     }
+  else
+    {
+      if (svg_read(opt.file.input,list) != 0)
+	{
+	  fprintf(stderr,"error reading svg\n");
+	  err++;
+	}
+      else
+	{
+	  const char 
+	    vfmt[] = " - %s\n", 
+	    pfmt[] = "%s\n";
 
-  err = svg_read(opt.file.input,list);
-    
-  svg_list_destroy(list);
+	  if (svg_list_iterate(list,
+			       (int (*)(svg_t*,void*))svg_id,
+			       (void*)(opt.verbose ? vfmt : pfmt)) != 0)
+	    { 
+	      fprintf(stderr,"error converting svg\n");
+	      err++;
+	    }
+	}
+
+      svg_list_destroy(list);
+    }
 
   return err;
 }
 
+static int svg_id(svg_t* svg,const char* fmt)
+{
+  printf(fmt,svg->name);
+
+  return 0;
+}
