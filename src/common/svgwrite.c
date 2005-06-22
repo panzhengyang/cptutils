@@ -180,7 +180,7 @@ static int svg_write_mem(xmlTextWriter* writer,svg_t* svg)
     }
 
   if (
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "name",BAD_CAST "cptsvg") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "name",BAD_CAST "cptutils") < 0 ||
       xmlTextWriterWriteAttribute(writer,BAD_CAST "version",BAD_CAST VERSION) < 0
       )
     {
