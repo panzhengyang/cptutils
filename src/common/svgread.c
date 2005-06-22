@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.1 2005/06/15 22:41:45 jjg Exp jjg $
+  $Id: svgread.c,v 1.2 2005/06/17 00:30:30 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -199,6 +199,8 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 
 static int parse_style(const char*,rgb_t*,double*);
 static int parse_offset(const char*,double*);
+static int parse_colour(char*,rgb_t*);
+static int parse_opacity(char*,double*);
 
 static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg) 
 {
@@ -233,7 +235,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 
       if ((offset = xmlGetProp(stop,"offset")) == NULL)
 	{
-	  fprintf(stderr,"gradient has no id attribute, skipping\n");
+	  fprintf(stderr,"stop has no offset attribute, skipping\n");
 	}
       else
 	{
@@ -247,12 +249,16 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 	  else
 	    {
 	      xmlChar *colour,*opacity,*style;
-
-	      printf("offset %f\n",z);
+	      svg_stop_t svgstop;
 
 	      if ((colour = xmlGetProp(stop,"stop-color")) != NULL)
 		{
 		  /* parse colour */
+
+		  if (parse_colour(colour,&rgb) != 0)
+		    {
+		      fprintf(stderr,"failed on bad colour : %s\n",colour);
+		    }
 
 		  xmlFree(colour);
 		}
@@ -261,13 +267,16 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		{
 		  /* parse opacity */
 
+		  if (parse_opacity(opacity,&op) != 0)
+		    {
+		      fprintf(stderr,"problem parsing opacity %s\n",opacity);
+		    }
+
 		  xmlFree(opacity);
 		}
 
 	      if ((style = xmlGetProp(stop,"style")) != NULL)
 		{
-		  printf("style %s\n",style);
-
 		  if (parse_style(style,&rgb,&op) != 0)
 		    {
 		      fprintf(stderr,"error parsing stop style %s\n",style);
@@ -277,7 +286,17 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		  xmlFree(style);
 		}
 
-	      printf("opacity = %.5f\n",op);
+	      /* need to check we have everything, assume it for now */
+
+	      svgstop.value   = z;
+	      svgstop.opacity = op;
+	      svgstop.colour  = rgb;
+	      
+	      if (svg_append(svgstop,svg) != 0)
+		{
+		  fprintf(stderr,"failed to insert stop\n");
+		  return 1;
+		}
 	    }
 	
 	  xmlFree(offset);
@@ -293,7 +312,7 @@ static int parse_offset(const char *po,double *z)
 
   x = atof(po);
 
-  *z = ((po[strlen(po)-1] == '%') ? x/100.0 : x);
+  *z = ((po[strlen(po)-1] == '%') ? x : x*100);
 
   return 0;
 }
@@ -339,9 +358,6 @@ static int parse_style(const char *style,rgb_t* rgb,double* opacity)
   return 0;
 }
 
-static int parse_colour(char*,rgb_t*);
-static int parse_opacity(char*,double*);
-
 static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 {
   size_t sz = strlen(stmnt);
@@ -363,8 +379,6 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 	      if (parse_opacity(val,opacity) != 0) 
 		return 1;
 	    }
-
-	  printf("  %s => %s\n",key,val);
 	}
     }
 
@@ -373,9 +387,94 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 
 /* this one will take some work */
 
+static int parse_colour_numeric1(const char*);
+static int parse_colour_numeric2(const char*);
+
 static int parse_colour(char *st,rgb_t *rgb)
 {
-  return 0;
+  int n;
+
+  if (st == NULL) return 1;
+
+  n = strlen(st);
+
+  if (n == 0) return 1;
+
+  if (st[0] == '#')
+    {
+      int r,g,b;
+  
+      switch (n)
+	{
+	case 4:
+
+	  r = parse_colour_numeric1(st+1);
+	  g = parse_colour_numeric1(st+2);
+	  b = parse_colour_numeric1(st+3);
+	  
+	  break;
+
+	case 7:
+
+	  r = parse_colour_numeric2(st+1);
+	  g = parse_colour_numeric2(st+3);
+	  b = parse_colour_numeric2(st+5);
+
+	  break;
+
+	default:
+
+	  return 1;
+	}
+
+      if (r<0 || b<0 || g<0) return 1;
+
+      rgb->red   = r;
+      rgb->green = g;
+      rgb->blue  = b;
+
+      return 0;
+    }
+
+  /* handle rgb(R,G,B) */
+
+  /* handle standard colours */
+
+  return 1;
+}
+
+static int parse_hex(char);
+
+static int parse_colour_numeric1(const char* st)
+{
+  int p;
+
+  if ((p = parse_hex(st[0])) < 0) return -1;
+
+  return p*17;
+}
+
+static int parse_colour_numeric2(const char* st)
+{
+  int p,q,v;
+
+  p = parse_hex(st[0]);
+  q = parse_hex(st[1]);
+
+  if (p<0 || q<0) return -1;
+
+  v = p*16+q;
+
+  return v;
+}
+
+static int parse_hex(char c)
+{
+  if ('0' <= c && c <= '9') return c - '0';
+  if ('a' <= c && c <= 'f') return c - 'a' + 10;
+  if ('A' <= c && c <= 'F') return c - 'A' + 10;
+
+  return -1;
 }
 
 static int parse_opacity(char *st,double *opacity)
