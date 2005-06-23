@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2004/09/07 23:04:39 jjg Exp jjg $
+  $Id: main.c,v 1.3 2005/06/12 23:18:06 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -51,17 +51,12 @@ int main(int argc,char** argv)
 
   opt.verbose = info.verbose_given;
   opt.list    = info.list_given;
-  opt.n       = (info.nth_given ? info.nth_arg : 0);
+  opt.all     = info.all_given;
+  opt.name    = (info.name_given ? info.name_arg : NULL);
 
   /* null outfile for stdout */
 
   outfile = (info.output_given ? info.output_arg : NULL);
-
-  if (!opt.list && !outfile && opt.verbose)
-    {
-      fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
-      opt.verbose = 0;
-    }
 
   /* null infile for stdin */
 
@@ -76,11 +71,22 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
   
+  opt.input.file  = infile;
+  opt.output.file = outfile;
+
+  /* 
+     we write the translation of the svg gradient <name> to stdout 
+     if <name> is specified, so then we suppress verbosity
+  */
+
+  if (opt.name && !outfile && opt.verbose)
+    {
+      fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
+      opt.verbose = 0;
+    }
+
   if (opt.verbose)
     printf("This is svgcpt (version %s)\n",VERSION);
-  
-  opt.file.input  = infile;
-  opt.file.output = outfile;
 
   err = svgcpt(opt);
 

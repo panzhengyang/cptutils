@@ -42,4 +42,12 @@ extern int svg_list_size(svg_list_t*);
 
 extern int svg_list_iterate(svg_list_t*,int (*)(svg_t*,void*),void*);
 
+/*
+  applies the function to each svg_t until it returns 
+  nonzero, in that case returns it. If non match then
+  it returns NULL
+*/
+
+extern svg_t* svg_list_select(svg_list_t*,int (*)(svg_t*,void*),void*);
+
 #endif

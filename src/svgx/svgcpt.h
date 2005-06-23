@@ -2,7 +2,7 @@
   svgcpt.h
 
   (c) J.J.Green 2004
-  $Id: svgcpt.h,v 1.1 2004/09/07 15:53:12 jjg Exp jjg $
+  $Id: svgcpt.h,v 1.2 2005/06/12 23:18:20 jjg Exp jjg $
 */
 
 #ifndef SVGCPT_H
@@ -12,16 +12,14 @@ typedef struct
 {
   int verbose;
   int debug;
-  int n;
+  int all;
   int list;
+  char *name;
   struct
   {
-    char *input,*output;
-  } file;
-  struct
-  {
-    FILE *input,*output;
-  } stream;
+    char *file;
+    FILE *stream;;
+  } input,output;
 } svgcpt_opt_t;
 
 extern int svgcpt(svgcpt_opt_t);

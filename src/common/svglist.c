@@ -61,6 +61,21 @@ extern int svg_list_iterate(svg_list_t* list,int (*f)(svg_t*,void*),void* opt)
   return 0;
 }
 
+extern svg_t* svg_list_select(svg_list_t* list,int (*f)(svg_t*,void*),void* opt)
+{
+  int i,n;
+  svg_t* svg;
+  
+  n = list->n;
+  
+  for (i=0,svg=list->svg ; i<n ; i++,svg++)
+    {
+      if (f(svg,opt) != 0)  return svg;
+    }
+
+  return NULL;
+}
+
 extern svg_t* svg_list_svg(svg_list_t* list)
 {
   int n,a;

@@ -1,7 +1,7 @@
 /*
   svgcpt.c : convert svg file to cpt file
  
-  $Id: svgcpt.c,v 1.7 2005/06/17 00:25:27 jjg Exp jjg $
+  $Id: svgcpt.c,v 1.8 2005/06/22 23:08:05 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -11,11 +11,17 @@
 #include <string.h>
 
 #include "colour.h"
+
 #include "svgread.h"
+
+#include "cpt.h"
+#include "cptio.h"
 
 #include "svgcpt.h"
 
 static int svgcpt_list(svgcpt_opt_t,svg_list_t*);
+static int svgcpt_named(svgcpt_opt_t,svg_list_t*);
+static int svgcpt_translate(svg_t*,cpt_t*);
 
 extern int svgcpt(svgcpt_opt_t opt)
 {
@@ -29,19 +35,17 @@ extern int svgcpt(svgcpt_opt_t opt)
     }
   else
     {
-      if (svg_read(opt.file.input,list) != 0)
+      if (svg_read(opt.input.file,list) != 0)
 	{
 	  fprintf(stderr,"error reading svg\n");
 	  err++;
 	}
       else
 	{
-	  if (opt.list) err += svgcpt_list(opt,list);
+	  /* run the job */
 
-	  /* select by id here */ 
-
-	  /* select first here */
-
+	  err += svgcpt_list(opt,list);
+	  err += svgcpt_named(opt,list);
 	}
 
       svg_list_destroy(list);
@@ -57,6 +61,8 @@ static int svg_id(svg_t*,const char*);
 static int svgcpt_list(svgcpt_opt_t opt,svg_list_t* list)
 {
   int n,err=0;
+
+  if (!opt.list) return 0;
 
   n = svg_list_size(list);
 
@@ -87,43 +93,45 @@ static int svgcpt_list(svgcpt_opt_t opt,svg_list_t* list)
 static int svg_id(svg_t* svg,const char* fmt)
 {
   printf(fmt,svg->name);
+  return 0;
+}
+
+/* convert a named gradient */
+
+static int svg_select_name(svg_t*,char*);
+
+static int svgcpt_named(svgcpt_opt_t opt,svg_list_t* list)
+{
+  svg_t* svg;
+  cpt_t cpt;
+
+  if (!opt.name) return 0;
+
+  svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
+
+  if (!svg)
+    {
+      fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
+      return 1;
+    }
+
+  if (svgcpt_translate(svg,&cpt) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to cpt\n",opt.name);
+      return 1;
+    }
 
   return 0;
 }
 
-
-
-     /*
+static int svg_select_name(svg_t* svg,char* name)
 {
-  int err=0;
-
-  if (opt.file.output)
-    {
-      FILE *stream;
-      
-      stream = fopen(opt.file.output,"w");
-      
-      if (stream == NULL)
-	{
-	  fprintf(stderr,"error opening file %s : %s\n",
-		  opt.file.output,
-		  strerror(errno));
-	  err = 1;
-	}
-      else
-	{
-	  opt.stream.output = stream;
-	  err = svgcpt_stream(opt); 
-	  fclose(stream);
-	}
-    }
-  else
-    {
-      opt.stream.output = stdout;
-      err = svgcpt_stream(opt); 
-    } 
-
-  return err;
+  return (strcmp(svg->name,name) == 0 ? 1 : 0);
 }
 
-*/
+/* coonvert an svg_t to a cpt_t */
+
+static int svgcpt_translate(svg_t* svg,cpt_t* cpt)
+{
+  return 1;
+}
