@@ -1,27 +1,31 @@
-# Makefile for svgcpt
+# Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.6 2005/06/13 22:36:00 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2005/06/23 23:14:06 jjg Exp jjg $
 
-OBJ      = svgcpt.o main.o options.o
+OBJ      = svgx.o main.o options.o
 GRAD     = test/gradient-pastel-blue.svg
 IMAGE    = test/eyes.svg
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgcpt test.cpt $(OBJ)
+RUBBISH += svgx test.cpt linearGradient*.cpt $(OBJ)
 
 default : all
 
-check test : svgcpt
-	./svgcpt -v -l $(IMAGE)
-	./svgcpt -v -n linearGradient1612 $(IMAGE)
-	./svgcpt -v -l $(GRAD)
-	./svgcpt -v -n pastel-blue -o test.cpt $(GRAD)
+SVGCPT = ./svgx -t cpt
+SVGGGR = ./svgx -t ggr
+
+check test : svgx
+	$(SVGCPT) -v -l $(IMAGE)
+	$(SVGCPT) -v -n linearGradient1612 $(IMAGE)
+	$(SVGCPT) -v -a $(IMAGE)
+	$(SVGCPT) -v -l $(GRAD)
+	$(SVGCPT) -v -n pastel-blue -o test.cpt $(GRAD)
 
 clean :
 	$(RM) $(RUBBISH)
 
-svgcpt : $(OBJ)
+svgx : $(OBJ)
 
 include ../Common.mk
 include ../Progs.mk
@@ -30,8 +34,12 @@ include ../Progs.mk
 
 ifneq (no,$(XML2C))
 
-all : svgcpt
-install :
+all : svgx
+install : all
+	$(INSTALL) -m755 svgx $(bindir)/svgx
+	$(INSTALL) -m755 svgcpt.sh $(bindir)/svgcpt
+	$(INSTALL) -m755 svggimp.sh $(bindir)/svggimp
+	$(INSTALL) -m644 svgx.1 $(mandir)/man1/svgx.1 
 
 else
 
