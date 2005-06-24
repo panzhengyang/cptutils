@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.3 2005/06/12 23:18:06 jjg Exp jjg $
+  $Id: main.c,v 1.4 2005/06/23 23:14:52 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -30,12 +30,12 @@
 #include <unistd.h>
 
 #include "options.h"
-#include "svgcpt.h"
+#include "svgx.h"
 
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  svgcpt_opt_t opt;
+  svgx_opt_t opt;
   char *infile,*outfile;
   int err;
 
@@ -53,6 +53,23 @@ int main(int argc,char** argv)
   opt.list    = info.list_given;
   opt.all     = info.all_given;
   opt.name    = (info.name_given ? info.name_arg : NULL);
+
+  if (info.type_given)
+    {
+      const char* tstr = info.type_arg;
+
+      if (strcmp("cpt",tstr) == 0)
+	opt.type = type_cpt;
+      else if (strcmp("ggr",tstr) == 0)
+	opt.type = type_ggr;
+      else
+	{
+	  fprintf(stderr,"no such type %s\n",tstr);
+	  return EXIT_FAILURE;
+	}
+    }
+  else
+    opt.type = type_cpt;
 
   /* null outfile for stdout */
 
@@ -86,9 +103,27 @@ int main(int argc,char** argv)
     }
 
   if (opt.verbose)
-    printf("This is svgcpt (version %s)\n",VERSION);
+    {
+      printf("This is svgx (version %s)\n",VERSION);
 
-  err = svgcpt(opt);
+      if (opt.name || opt.all)
+	{
+	  const char* tstr;
+
+	  switch (opt.type)
+	    {
+	    case type_cpt : tstr = "cpt"; break;
+	    case type_ggr : tstr = "gimp"; break;
+	    default:
+	      fprintf(stderr,"wierd output format!\n");
+	      return EXIT_FAILURE;
+	    }
+	  
+	  printf("mode is svg%s\n",tstr);
+	}
+    }
+
+  err = svgx(opt);
 
   if (err != 0)
     fprintf(stderr,"failed (error %i)\n",err);
