@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.1 2005/06/24 23:50:30 jjg Exp jjg $
+  $Id: svgx.c,v 1.2 2005/06/26 17:50:29 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -114,9 +114,25 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   /* get svg with this name */
 
   if (opt.name)
-    svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
+    {
+      svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
+
+      if (!svg)
+	{
+	  fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
+	  return 1;
+	}
+    }
   else if (opt.first)
-    svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_first,NULL);
+    {
+      svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_first,NULL);
+
+      if (!svg)
+	{
+	  fprintf(stderr,"couldn't find first gradient!\n");
+	  return 1;
+	}
+    }
   else 
     return 0;
 
@@ -176,7 +192,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
       
       grad_free_gradient(ggr);
 
-      return 0;
+      break;
 
     default:
 
@@ -185,7 +201,9 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
     }
 
   if (opt.verbose)
-    printf("wrote %s to %s\n",opt.name,(file ? file : "<stdout>"));
+    printf("wrote %s to %s\n",
+	   (opt.name ? opt.name : "gradient"),
+	   (file ? file : "<stdout>"));
 
   return 0;
 }
@@ -355,6 +373,42 @@ static int svgcpt(svg_t* svg,cpt_t* cpt)
   node = svg->nodes;
   next = node->r; 
 
+  /* handle implicit first segment */
+
+  if (node->stop.value > 0.0)
+    {
+      double z1,z2;
+      rgb_t c;
+      cpt_seg_t* seg;
+
+      z1 = 0.0;
+      z2 = node->stop.value;
+      c  = node->stop.colour;
+
+      if ((seg = cpt_seg_new()) == NULL)
+	{
+	  fprintf(stderr,"failed to create cpt segment\n");
+	  return 1;
+	}
+
+      seg->lsmp.val = z1;
+      seg->rsmp.val = z2;
+      
+      seg->lsmp.fill.type         = colour;
+      seg->lsmp.fill.u.colour.rgb = c;
+
+      seg->rsmp.fill.type         = colour;
+      seg->rsmp.fill.u.colour.rgb = c;
+
+      if (cpt_append(seg,cpt) != 0)
+	{
+	  fprintf(stderr,"failed to append segment\n");
+	  return 1;
+	}
+    }
+
+  /* middle segments */
+
   while (next)
     {
       double z1,z2;
@@ -396,6 +450,40 @@ static int svgcpt(svg_t* svg,cpt_t* cpt)
       next = node->r;
     } 
 
+  /* handle implicit final segment */
+
+  if (node->stop.value < 100.0)
+    {
+      double z1,z2;
+      rgb_t c;
+      cpt_seg_t* seg;
+
+      z1 = node->stop.value;
+      z2 = 100.0;
+      c  = node->stop.colour;
+
+      if ((seg = cpt_seg_new()) == NULL)
+	{
+	  fprintf(stderr,"failed to create cpt segment\n");
+	  return 1;
+	}
+
+      seg->lsmp.val = z1;
+      seg->rsmp.val = z2;
+      
+      seg->lsmp.fill.type         = colour;
+      seg->lsmp.fill.u.colour.rgb = c;
+
+      seg->rsmp.fill.type         = colour;
+      seg->rsmp.fill.u.colour.rgb = c;
+
+      if (cpt_append(seg,cpt) != 0)
+	{
+	  fprintf(stderr,"failed to append segment\n");
+	  return 1;
+	}
+    }
+
   return 0;
 }
 
@@ -405,13 +493,63 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 {
   svg_node_t *node,*next;
   grad_segment_t *gseg,*prev=NULL; 
-  double min=0.0, max=100.0;
   int n=0;
 
   ggr->name = strdup(svg->name);
 
   node = svg->nodes;
   next = node->r; 
+
+  /* implicit first segment */
+
+  if (node->stop.value > 0.0)
+    {
+      double z1,z2;
+      rgb_t c;
+      double o;
+      double col[3];
+
+      z1 = 0.0;
+      z2 = node->stop.value;
+
+      c = node->stop.colour;
+      o = node->stop.opacity;
+
+      if ((gseg = seg_new_segment()) == NULL) return 1;
+
+      gseg->prev = prev;
+      
+      if (prev) prev->next = gseg;
+      else ggr->segments = gseg;
+
+      gseg->left   = z1/100.0; 
+      gseg->middle = (z1+z2)/200.0;
+      gseg->right  = z2/100.0; 
+
+      col[0] = col[1] = col[2] = 0.0;
+
+      gseg->a0 = o;
+      gseg->a1 = o;
+
+      rgb_to_rgbD(c,col);
+
+      gseg->r0 = col[0];
+      gseg->g0 = col[1];
+      gseg->b0 = col[2];
+	  
+      gseg->r1 = col[0];
+      gseg->g1 = col[1];
+      gseg->b1 = col[2];
+
+      gseg->type  = GRAD_LINEAR;
+      gseg->color = GRAD_RGB;
+      
+      prev = gseg;
+
+      n++;
+    } 
+
+  /* main segments */
 
   while (next)
     {
@@ -441,9 +579,9 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 	  else
 	    ggr->segments = gseg;
 
-	  gseg->left   = (z1-min)/(max-min); 
-	  gseg->right  = (z2-min)/(max-min); 
-	  gseg->middle = ((z1+z2)/2.0 - min)/(max-min); 
+	  gseg->left   = z1/100.0; 
+	  gseg->middle = (z1+z2)/200.0; 
+	  gseg->right  = z2/100.0; 
 
 	  lcol[0] = lcol[1] = lcol[2] = 0.0;
 	  rcol[0] = rcol[1] = rcol[2] = 0.0;
@@ -472,6 +610,53 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 
       node = next;
       next = node->r;
+    } 
+
+  if (node->stop.value < 100.0)
+    {
+      double z1,z2;
+      rgb_t c;
+      double o;
+      double col[3];
+
+      z1 = node->stop.value;
+      z2 = 100.0;
+
+      c = node->stop.colour;
+      o = node->stop.opacity;
+
+      if ((gseg = seg_new_segment()) == NULL) return 1;
+
+      gseg->prev = prev;
+      
+      if (prev) prev->next = gseg;
+      else ggr->segments = gseg;
+
+      gseg->left   = z1/100.0; 
+      gseg->middle = (z1+z2)/200.0;
+      gseg->right  = z2/100.0; 
+
+      col[0] = col[1] = col[2] = 0.0;
+
+      gseg->a0 = o;
+      gseg->a1 = o;
+
+      rgb_to_rgbD(c,col);
+
+      gseg->r0 = col[0];
+      gseg->g0 = col[1];
+      gseg->b0 = col[2];
+	  
+      gseg->r1 = col[0];
+      gseg->g1 = col[1];
+      gseg->b1 = col[2];
+
+      gseg->type  = GRAD_LINEAR;
+      gseg->color = GRAD_RGB;
+      
+      prev = gseg;
+
+      n++;
     } 
 
   return 0;

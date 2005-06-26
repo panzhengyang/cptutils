@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.3 2005/06/22 23:06:43 jjg Exp jjg $
+  $Id: svgread.c,v 1.4 2005/06/26 15:39:03 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -82,9 +82,17 @@ extern int svg_read(const char* file,svg_list_t* list)
 		handle both linearGradient nodes in the svg namespace (common
 		with images containing gradients) and in no namespace (usual
 		in stand-alone gradients).
+
+		in fact we do radialGradient at the same time since all we
+		are looking for are the stops
 	      */
 
-	      const xmlChar xpe[] = "//linearGradient | //svg:linearGradient";
+	      const xmlChar xpe[] = 
+		"//linearGradient | "
+		"//svg:linearGradient | "
+		"//radialGradient | "
+		"//svg:radialGradient";
+
 	      xmlXPathObjectPtr xpo; 
 
 	      /* evaluate xpath expression */
@@ -338,17 +346,25 @@ static int parse_style_statement(const char*,rgb_t*,double*);
 static int parse_style(const char *style,rgb_t* rgb,double* opacity)
 {
   size_t sz = strlen(style);
-  char buf[sz],*st,*state;
+  char buf[sz+1],*st,*state;
 
   strcpy(buf,style);
 
   if ((st = strtok_r(buf,";",&state)) != NULL)
     {
-      if (parse_style_statement(st,rgb,opacity) != 0) return 1;
+      if (parse_style_statement(st,rgb,opacity) != 0)
+	{
+	  fprintf(stderr,"failed on clause %s\n",st);
+	  return 1;
+	}
 
       while ((st = strtok_r(NULL,";",&state)) != NULL)
 	{
-	  if (parse_style_statement(st,rgb,opacity) != 0) return 1;
+	  if (parse_style_statement(st,rgb,opacity) != 0)
+	    {
+	      fprintf(stderr,"failed on clause %s\n",st);
+	      return 1;
+	    }
 	}
     }
 
@@ -358,7 +374,7 @@ static int parse_style(const char *style,rgb_t* rgb,double* opacity)
 static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 {
   size_t sz = strlen(stmnt);
-  char buf[sz],*key,*val,*state;
+  char buf[sz+1],*key,*val,*state;
 
   strcpy(buf,stmnt);
 
@@ -368,11 +384,19 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 	{
 	  if (strcmp(key,"stop-color") == 0)
 	    {
-	      if (parse_colour(val,rgb,opacity) != 0) return 1;
+	      if (parse_colour(val,rgb,opacity) != 0)
+		{
+		  fprintf(stderr,"failed on %s [%s]\n",val,stmnt);
+		  return 1;
+		}
 	    }
 	  else if (strcmp(key,"stop-opacity") == 0)
 	    {
-	      if (parse_opacity(val,opacity) != 0) return 1;
+	      if (parse_opacity(val,opacity) != 0)
+		{
+		  fprintf(stderr,"failed on %s\n",val);
+		  return 1;
+		}
 	    }
 	}
     }
