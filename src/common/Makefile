@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.10 2005/06/15 22:41:51 jjg Exp jjg $
+# $Id: Makefile,v 1.11 2005/06/26 15:39:23 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -34,7 +34,7 @@ cptscan.c cptscan.h : cptscan.l
 cptparse.c : cptparse.y 
 	bison cptparse.y
 
-.SECONDARY : cptscan.c cptscan.h cptparse.c  
+.SECONDARY : cptscan.c cptscan.h cptparse.c stdcol.c
 
 libfill.a : $(OBJFILL)
 	ar r libfill.a $(OBJFILL)
@@ -51,12 +51,12 @@ libpsp.a : $(OBJPSP)
 libsvg.a : $(OBJSVG)
 	ar r libsvg.a $(OBJSVG)
 
+stdcol.c : stdcol.gperf
+	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
+
 RUBBISH += svgio arse.svg
 
 svgio : svgio.o svg.o colour.o
-
-stdcol.c : stdcol.gperf
-	gperf -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
 
 
 include ../Common.mk
