@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.4 2005/06/23 23:14:52 jjg Exp jjg $
+  $Id: main.c,v 1.5 2005/06/24 23:50:45 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -52,7 +52,15 @@ int main(int argc,char** argv)
   opt.verbose = info.verbose_given;
   opt.list    = info.list_given;
   opt.all     = info.all_given;
+  opt.first   = info.first_given;
   opt.name    = (info.name_given ? info.name_arg : NULL);
+
+  if (opt.first && opt.all)
+    {
+      fprintf(stderr,"can't specify all and first!\n");
+      options_print_help();
+      return EXIT_FAILURE;
+    }
 
   if (info.type_given)
     {
@@ -65,6 +73,7 @@ int main(int argc,char** argv)
       else
 	{
 	  fprintf(stderr,"no such type %s\n",tstr);
+	  options_print_help();
 	  return EXIT_FAILURE;
 	}
     }
@@ -83,7 +92,7 @@ int main(int argc,char** argv)
       infile = info.inputs[0];
       break;
     default:
-      fprintf(stderr,"Exactly one SVG file must be specified\n");
+      fprintf(stderr,"Exactly one SVG file must be specified!\n");
       options_print_help();
       return EXIT_FAILURE;
     }

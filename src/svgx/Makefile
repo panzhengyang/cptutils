@@ -1,14 +1,12 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.7 2005/06/23 23:14:06 jjg Exp jjg $
+# $Id: Makefile,v 1.8 2005/06/24 22:20:35 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
-GRAD     = test/gradient-pastel-blue.svg
-IMAGE    = test/eyes.svg
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgx test.cpt linearGradient*.cpt $(OBJ)
+RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt
 
 default : all
 
@@ -16,11 +14,14 @@ SVGCPT = ./svgx -t cpt
 SVGGGR = ./svgx -t ggr
 
 check test : svgx
-	$(SVGCPT) -v -l $(IMAGE)
-	$(SVGCPT) -v -n linearGradient1612 $(IMAGE)
-	$(SVGCPT) -v -a $(IMAGE)
-	$(SVGCPT) -v -l $(GRAD)
-	$(SVGCPT) -v -n pastel-blue -o test.cpt $(GRAD)
+	for file in `ls test/*.svg` ; do \
+	  echo $$file ; \
+	  for name in `$(SVGCPT) -l $$file` ; do \
+	    echo "  $$name" ; \
+	    $(SVGCPT) -n $$name -o test/$$name.cpt $$file ; \
+	    $(SVGGGR) -n $$name -o test/$$name.ggr $$file ; \
+	  done ;\
+	done
 
 clean :
 	$(RM) $(RUBBISH)
@@ -40,6 +41,8 @@ install : all
 	$(INSTALL) -m755 svgcpt.sh $(bindir)/svgcpt
 	$(INSTALL) -m755 svggimp.sh $(bindir)/svggimp
 	$(INSTALL) -m644 svgx.1 $(mandir)/man1/svgx.1 
+	ln -f -s svgx.1 $(mandir)/man1/svgcpt.1
+	ln -f -s svgx.1 $(mandir)/man1/svggimp.1
 
 else
 

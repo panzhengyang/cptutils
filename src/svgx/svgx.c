@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.9 2005/06/23 23:13:56 jjg Exp jjg $
+  $Id: svgx.c,v 1.1 2005/06/24 23:50:30 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -11,11 +11,10 @@
 #include <string.h>
 
 #include "colour.h"
-
 #include "svgread.h"
-
 #include "cpt.h"
 #include "cptio.h"
+#include "gradient.h"
 
 #include "svgx.h"
 
@@ -24,6 +23,7 @@ static int svgx_named(svgx_opt_t,svg_list_t*);
 static int svgx_all(svgx_opt_t,svg_list_t*);
 
 static int svgcpt(svg_t*,cpt_t*);
+static int svgggr(svg_t*,gradient_t*);
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -102,18 +102,23 @@ static int svg_id(svg_t* svg,const char* fmt)
 /* convert a named gradient */
 
 static int svg_select_name(svg_t*,char*);
+static int svg_select_first(svg_t*,char*);
 
 static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 {
   svg_t *svg;
   cpt_t *cpt;
+  gradient_t *ggr;
   char *file;
 
   /* get svg with this name */
 
-  if (!opt.name) return 0;
-
-  svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
+  if (opt.name)
+    svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
+  else if (opt.first)
+    svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_first,NULL);
+  else 
+    return 0;
 
   if (!svg)
     {
@@ -151,8 +156,27 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
     case type_ggr:
 
-      fprintf(stderr,"ggr output not yet supported\n");
-      return 1;
+      if ((ggr = grad_new_gradient()) == NULL)
+	{
+	  fprintf(stderr,"failed to create ggr structure\n");
+	  return 1;
+	}
+      
+      if (svgggr(svg,ggr) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to ggr\n",opt.name);
+	  return 1;
+	}
+            
+      if (grad_save_gradient(ggr,file) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
+      
+      grad_free_gradient(ggr);
+
+      return 0;
 
     default:
 
@@ -166,12 +190,18 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   return 0;
 }
 
+static int svg_select_first(svg_t* svg,char* name)
+{
+  return 1;
+}
+
 static int svg_select_name(svg_t* svg,char* name)
 {
   return (strcmp(svg->name,name) == 0 ? 1 : 0);
 }
 
 static int svgcpt_dump(svg_t*,svgx_opt_t*);
+static int svgggr_dump(svg_t*,svgx_opt_t*);
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 {
@@ -186,8 +216,8 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
       break;
 
     case type_ggr:
-      fprintf(stderr,"ggr not working yet!\n");
-      return 1;
+      dump = (int (*)(svg_t*,void*))svgggr_dump;
+      break;
 
     default:
 
@@ -246,6 +276,52 @@ static int svgcpt_dump(svg_t* svg,svgx_opt_t* opt)
     }
 
   cpt_destroy(cpt);
+
+  if (opt->verbose)  
+    printf("  %s\n",file);
+
+  return 0;
+}
+
+static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
+{
+  int  n = SVG_NAME_LEN+5;
+  char file[n],*name;
+  gradient_t* ggr;
+
+  if (!svg) return 1;
+
+  name = svg->name;
+
+  if (snprintf(file,n,"%s.ggr",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+
+  if ((ggr = grad_new_gradient()) == NULL)
+    {
+      fprintf(stderr,"failed to create ggr structure\n");
+      return 1;
+    }
+
+  /* translate */
+
+  if (svgggr(svg,ggr) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to cpt\n",name);
+      return 1;
+    }
+
+  /* write */
+
+  if (grad_save_gradient(ggr,file) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
+
+  grad_free_gradient(ggr);
 
   if (opt->verbose)  
     printf("  %s\n",file);
@@ -314,6 +390,84 @@ static int svgcpt(svg_t* svg,cpt_t* cpt)
 	      fprintf(stderr,"failed to append segment\n");
 	      return 1;
 	    }
+	}
+
+      node = next;
+      next = node->r;
+    } 
+
+  return 0;
+}
+
+/* coonvert an svg_t to a gradient_t */
+
+static int svgggr(svg_t* svg,gradient_t* ggr)
+{
+  svg_node_t *node,*next;
+  grad_segment_t *gseg,*prev=NULL; 
+  double min=0.0, max=100.0;
+  int n=0;
+
+  ggr->name = strdup(svg->name);
+
+  node = svg->nodes;
+  next = node->r; 
+
+  while (next)
+    {
+      double z1,z2;
+
+      z1 = node->stop.value;
+      z2 = next->stop.value;
+
+      if (z1 < z2)
+	{
+	  rgb_t c1,c2;
+	  double o1,o2;
+	  double lcol[3],rcol[3];
+
+	  c1 = node->stop.colour;
+	  c2 = next->stop.colour;
+
+	  o1 = node->stop.opacity;
+	  o2 = next->stop.opacity;
+
+	  if ((gseg = seg_new_segment()) == NULL) return 1;
+
+	  gseg->prev = prev;
+
+	  if (prev)
+	    prev->next = gseg;
+	  else
+	    ggr->segments = gseg;
+
+	  gseg->left   = (z1-min)/(max-min); 
+	  gseg->right  = (z2-min)/(max-min); 
+	  gseg->middle = ((z1+z2)/2.0 - min)/(max-min); 
+
+	  lcol[0] = lcol[1] = lcol[2] = 0.0;
+	  rcol[0] = rcol[1] = rcol[2] = 0.0;
+
+	  gseg->a0 = o1;
+	  gseg->a1 = o2;
+
+	  rgb_to_rgbD(c1, lcol);
+	  rgb_to_rgbD(c2, rcol);
+
+	  gseg->r0 = lcol[0];
+	  gseg->g0 = lcol[1];
+	  gseg->b0 = lcol[2];
+	  
+	  gseg->r1 = rcol[0];
+	  gseg->g1 = rcol[1];
+	  gseg->b1 = rcol[2];
+
+	  gseg->type  = GRAD_LINEAR;
+	  gseg->color = GRAD_RGB;
+
+	  prev = gseg;
+
+	  n++;
 	}
 
       node = next;
