@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.2 2005/06/17 00:30:30 jjg Exp jjg $
+  $Id: svgread.c,v 1.3 2005/06/22 23:06:43 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -21,6 +21,7 @@
 #include <libxml/xpathInternals.h>
 
 #include "colour.h"
+#include "stdcol.h"
 
 #include "svgread.h"
 
@@ -147,16 +148,14 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 	}
 
       /*
-	we dont do references
+	references are used in gradients to share a set of
+	stops, and since we are only interested in the stops
+	we skip anything with a reference
       */
 
       if ((href = xmlGetProp(cur,"href")) != NULL)
 	{
-	  /* this needs testing */
-
-	  fprintf(stderr,"gradient has references, skipping\n");
 	  xmlFree(href);
-
 	  continue; 
 	}
 
@@ -199,7 +198,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 
 static int parse_style(const char*,rgb_t*,double*);
 static int parse_offset(const char*,double*);
-static int parse_colour(char*,rgb_t*);
+static int parse_colour(char*,rgb_t*,double*);
 static int parse_opacity(char*,double*);
 
 static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg) 
@@ -231,7 +230,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 
       stop = node;
 
-      /* get offset */
+      /* offset is required */
 
       if ((offset = xmlGetProp(stop,"offset")) == NULL)
 	{
@@ -253,26 +252,13 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 
 	      if ((colour = xmlGetProp(stop,"stop-color")) != NULL)
 		{
-		  /* parse colour */
-
-		  if (parse_colour(colour,&rgb) != 0)
+		  if (parse_colour(colour,&rgb,&op) != 0)
 		    {
 		      fprintf(stderr,"failed on bad colour : %s\n",colour);
+		      return 1;
 		    }
 
 		  xmlFree(colour);
-		}
-
-	      if ((opacity = xmlGetProp(stop,"stop-opacity")) != NULL)
-		{
-		  /* parse opacity */
-
-		  if (parse_opacity(opacity,&op) != 0)
-		    {
-		      fprintf(stderr,"problem parsing opacity %s\n",opacity);
-		    }
-
-		  xmlFree(opacity);
 		}
 
 	      if ((style = xmlGetProp(stop,"style")) != NULL)
@@ -284,6 +270,17 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		    }
 
 		  xmlFree(style);
+		}
+
+	      if ((opacity = xmlGetProp(stop,"stop-opacity")) != NULL)
+		{
+		  if (parse_opacity(opacity,&op) != 0)
+		    {
+		      fprintf(stderr,"problem parsing opacity %s\n",opacity);
+		      return 1;
+		    }
+
+		  xmlFree(opacity);
 		}
 
 	      /* need to check we have everything, assume it for now */
@@ -371,13 +368,11 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 	{
 	  if (strcmp(key,"stop-color") == 0)
 	    {
-	      if (parse_colour(val,rgb) != 0) 
-		return 1;
+	      if (parse_colour(val,rgb,opacity) != 0) return 1;
 	    }
 	  else if (strcmp(key,"stop-opacity") == 0)
 	    {
-	      if (parse_opacity(val,opacity) != 0) 
-		return 1;
+	      if (parse_opacity(val,opacity) != 0) return 1;
 	    }
 	}
     }
@@ -390,8 +385,10 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 static int parse_colour_numeric1(const char*);
 static int parse_colour_numeric2(const char*);
 
-static int parse_colour(char *st,rgb_t *rgb)
+static int parse_colour(char *st,rgb_t *rgb,double *opacity)
 {
+  struct stdcol_t *p;
+  int r,g,b;
   int n;
 
   if (st == NULL) return 1;
@@ -402,8 +399,6 @@ static int parse_colour(char *st,rgb_t *rgb)
 
   if (st[0] == '#')
     {
-      int r,g,b;
-  
       switch (n)
 	{
 	case 4:
@@ -424,10 +419,17 @@ static int parse_colour(char *st,rgb_t *rgb)
 
 	default:
 
+	  fprintf(stderr,"bad hex colour %s\n",st);
+
 	  return 1;
 	}
 
-      if (r<0 || b<0 || g<0) return 1;
+      if (r<0 || b<0 || g<0)
+	{
+	  fprintf(stderr,"bad hex colour %s\n",st);
+
+	  return 1;
+	}
 
       rgb->red   = r;
       rgb->green = g;
@@ -436,9 +438,25 @@ static int parse_colour(char *st,rgb_t *rgb)
       return 0;
     }
 
-  /* handle rgb(R,G,B) */
+  if (sscanf(st,"rgb(%i,%i,%i)",&r,&g,&b) == 3)
+    {
+      rgb->red   = r;
+      rgb->green = g;
+      rgb->blue  = b;
 
-  /* handle standard colours */
+      return 0;
+    }
+
+  if ((p = stdcol(st)) != NULL)
+    {
+      rgb->red   = p->r;
+      rgb->green = p->g;
+      rgb->blue  = p->b;
+
+      *opacity = (1.0 - p->t);
+
+      return 0;
+    }
 
   return 1;
 }
