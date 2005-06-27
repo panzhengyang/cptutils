@@ -1,6 +1,6 @@
 # Makefile for cpttext
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2004/03/18 02:26:05 jjg Exp $
+# $Id: Makefile,v 1.1 2004/04/12 23:42:50 jjg Exp jjg $
 
 OBJ      = main.o options.o cpttext.o
 RUBBISH += $(OBJ) cpttext
@@ -21,7 +21,6 @@ clean :
 veryclean : 
 
 .PHONEY    : all install clean veryclean
-.SECONDARY : options.c options.h
 
 cpttext : $(OBJ)
 

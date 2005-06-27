@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.3 2005/06/03 23:41:29 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2005/06/05 13:09:51 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
@@ -22,7 +22,6 @@ clean :
 veryclean : 
 
 .PHONEY    : all install clean veryclean
-.SECONDARY : options.c options.h
 
 cptsvg : $(OBJ)
 

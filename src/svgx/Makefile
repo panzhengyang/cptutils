@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.9 2005/06/26 17:50:11 jjg Exp jjg $
+# $Id: Makefile,v 1.10 2005/06/27 10:11:51 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
@@ -27,8 +27,6 @@ clean :
 	$(RM) $(RUBBISH)
 
 svgx : $(OBJ)
-
-.SECONDARY : options.c options.h
 
 include ../Common.mk
 include ../Progs.mk

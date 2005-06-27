@@ -1,6 +1,6 @@
 # Makefile for cptgimp
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.1 2004/02/29 20:04:54 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2004/03/18 02:26:05 jjg Exp jjg $
 
 OBJ      = main.o options.o cptinfo.o
 RUBBISH += $(OBJ) cptinfo
@@ -21,7 +21,6 @@ clean :
 veryclean : 
 
 .PHONEY    : all install clean veryclean
-.SECONDARY : options.c options.h
 
 cptinfo : $(OBJ)
 

@@ -1,7 +1,7 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.1 2004/04/01 23:31:37 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2004/04/12 00:39:00 jjg Exp jjg $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
@@ -22,7 +22,6 @@ clean :
 veryclean : 
 
 .PHONEY    : all install clean veryclean
-.SECONDARY : options.c options.h
 
 xycpt : $(OBJ)
 
