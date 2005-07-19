@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.7 2005/03/30 22:49:51 jjg Exp jjg $
+  $Id: cptio.c,v 1.8 2005/03/30 23:13:48 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -32,7 +32,7 @@ extern int cptdebug;
 #define LBUF 1024
 #define SNM(x) ((x) ? (x) : "<stdin>")
 
-extern int cpt_read(char* file,cpt_t* cpt,int debug)
+extern int cpt_read(const char* file,cpt_t* cpt,int debug)
 {
   FILE    *stream;
   yyscan_t cptscan;
@@ -128,7 +128,7 @@ extern int cpt_read(char* file,cpt_t* cpt,int debug)
 static int fprintf_cpt_aux(FILE*,char,fill_t,model_t);
 static int fprintf_cpt_sample(FILE*,cpt_sample_t,model_t);
 
-extern int cpt_write(char* outfile,cpt_t* cpt)
+extern int cpt_write(const char* outfile,cpt_t* cpt)
 {
     FILE       *stream;
     cpt_seg_t  *seg;

@@ -4,7 +4,7 @@
   read/write GMT cpt files 
 
   (c) J.J.Green 2001,2004
-  $Id: cptio.h,v 1.1 2004/03/04 01:22:13 jjg Exp jjg $
+  $Id: cptio.h,v 1.2 2004/03/22 01:09:43 jjg Exp jjg $
 */
 
 #ifndef CPTIO_H
@@ -12,7 +12,7 @@
 
 #include "cpt.h"
 
-extern int cpt_write(char*,cpt_t*);
-extern int cpt_read(char*,cpt_t*,int);
+extern int cpt_write(const char*,cpt_t*);
+extern int cpt_read(const char*,cpt_t*,int);
 
 #endif
