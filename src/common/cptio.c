@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.8 2005/03/30 23:13:48 jjg Exp jjg $
+  $Id: cptio.c,v 1.9 2005/07/19 22:22:15 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -51,7 +51,7 @@ extern int cpt_read(const char* file,cpt_t* cpt,int debug)
 
       name = cpt->name;
 
-      if ((s = strrchr(file,'/')) == NULL) 
+      if ((s = strrchr((char*)file,'/')) == NULL) 
 	s = file;
       else
 	s++;
