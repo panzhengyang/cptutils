@@ -1,4 +1,12 @@
-Changes $Id: CHANGELOG,v 1.16 2005/06/01 22:48:55 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.17 2005/06/03 23:45:24 jjg Exp jjg $
+
+1.18 (20 July 2005)
+  - added new program cptcss which writes the colours
+    from a discrete cpt file to a fragment of CSS (for
+    colouring the cells in a table). The original plan
+    was to put this functionality into cpttext, but the
+    output is a bit different in that there is no idea
+    of a z-value in the css, just an order.     
 
 1.17 (3 June 2005)
   - removed redundant (but harmless) stops in cptsvg,
@@ -18,7 +26,7 @@ Changes $Id: CHANGELOG,v 1.16 2005/06/01 22:48:55 jjg Exp jjg $
     z-slices for some files
 
 1.13 : (unreleased)
-  - new input filter for photoshop pro gradients.
+  - new input filter for paintshop pro gradients.
     this is reverse engineered partial implementation
     which at least gets the colour samples. it does
     not extract
@@ -78,7 +86,7 @@ Changes $Id: CHANGELOG,v 1.16 2005/06/01 22:48:55 jjg Exp jjg $
     reorganised the naming convertions, and standardised the 
     interface.
   - all the GMT standard palettes now seem to be converted
-    correctly, sent a tarball to some hungry alph testers
+    correctly, sent a tarball to some hungry alpha testers
   - this all breaks gimpcpt
 
 1.3 :
