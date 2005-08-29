@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.3 2005/06/26 20:34:34 jjg Exp jjg $
+  $Id: svgx.c,v 1.4 2005/08/29 21:27:25 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -694,6 +694,12 @@ static int svgpov(svg_t* svg,pov_t* pov)
       rgb_t rgb;
       double c[3],t,z;
 
+      if (n >= POV_STOP_MAX)
+	{
+	  fprintf(stderr,"svg too big to convert\n");
+	  return 1;
+	}
+
       rgb = node->stop.colour;
 
       if (rgb_to_rgbD(rgb,c) != 0)
@@ -706,7 +712,7 @@ static int svgpov(svg_t* svg,pov_t* pov)
       
       if ((t < 0.0) || (t > 1.0))
 	{
-	  fprintf(stderr,"bad value for opacity\n");
+	  fprintf(stderr,"bad value for transparency : %f\n",t);
 	  return 1;
 	}
       
