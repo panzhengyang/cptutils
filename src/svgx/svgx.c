@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.2 2005/06/26 17:50:29 jjg Exp jjg $
+  $Id: svgx.c,v 1.3 2005/06/26 20:34:34 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -12,9 +12,11 @@
 
 #include "colour.h"
 #include "svgread.h"
+
 #include "cpt.h"
 #include "cptio.h"
 #include "gradient.h"
+#include "povwrite.h"
 
 #include "svgx.h"
 
@@ -24,6 +26,7 @@ static int svgx_all(svgx_opt_t,svg_list_t*);
 
 static int svgcpt(svg_t*,cpt_t*);
 static int svgggr(svg_t*,gradient_t*);
+static int svgpov(svg_t*,pov_t*);
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -146,6 +149,8 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
   switch (opt.type)
     {
+      pov_t pov;
+
     case type_cpt:
 
       if ((cpt = cpt_new()) == NULL)
@@ -191,6 +196,22 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	}
       
       grad_free_gradient(ggr);
+
+      break;
+
+    case type_pov:
+      
+      if (svgpov(svg,&pov) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to pov\n",opt.name);
+	  return 1;
+	}
+            
+      if (pov_write(file,&pov) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
 
       break;
 
@@ -658,6 +679,67 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 
       n++;
     } 
+
+  return 0;
+}
+
+static int svgpov(svg_t* svg,pov_t* pov)
+{
+  int n;
+  svg_node_t *node;
+
+  for (n=0,node = svg->nodes ; node ; n++,node = node->r)
+    {
+      pov_stop_t stop;
+      rgb_t rgb;
+      double c[3],t,z;
+
+      rgb = node->stop.colour;
+
+      if (rgb_to_rgbD(rgb,c) != 0)
+	{
+	  fprintf(stderr,"failed conversion to rgbD\n");
+	  return 1;
+	}
+      
+      t = 1.0 - node->stop.opacity;
+      
+      if ((t < 0.0) || (t > 1.0))
+	{
+	  fprintf(stderr,"bad value for opacity\n");
+	  return 1;
+	}
+      
+      z = node->stop.value/100.0;
+
+      if ((z < 0.0) || (z > 1.0))
+	{
+	  fprintf(stderr,"bad z value : %f\n",t);
+	  return 1;
+	}
+      
+      stop.z = z;
+
+      stop.rgbt[0] = c[0];
+      stop.rgbt[1] = c[1];
+      stop.rgbt[2] = c[2];
+      stop.rgbt[3] = t;
+
+      pov->stop[n] = stop;
+    }
+  
+  if ((n<2) || (n>POV_STOP_MAX))
+    {
+      fprintf(stderr,"bad number of stops : %i\n",n);
+      return 1;
+    }
+
+  pov->n = n;
+
+  if (snprintf(pov->name,POV_NAME_LEN,"%s",svg->name) >= POV_NAME_LEN)
+    {
+      fprintf(stderr,"cpt name truncated\n");
+    }
 
   return 0;
 }

@@ -1,12 +1,12 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.11 2005/06/27 17:51:39 jjg Exp jjg $
+# $Id: Makefile,v 1.12 2005/08/29 21:23:27 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc
+RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test.png
 
 default : all
 
