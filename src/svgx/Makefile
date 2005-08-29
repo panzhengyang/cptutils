@@ -1,17 +1,18 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.10 2005/06/27 10:11:51 jjg Exp jjg $
+# $Id: Makefile,v 1.11 2005/06/27 17:51:39 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt
+RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc
 
 default : all
 
 SVGCPT = ./svgx -t cpt
 SVGGGR = ./svgx -t ggr
+SVGPOV = ./svgx -t pov
 
 check test : svgx
 	for file in `ls test/*.svg` ; do \
@@ -20,8 +21,12 @@ check test : svgx
 	    echo "  $$name" ; \
 	    $(SVGCPT) -n $$name -o test/$$name.cpt $$file ; \
 	    $(SVGGGR) -n $$name -o test/$$name.ggr $$file ; \
+	    $(SVGPOV) -n $$name -o test/$$name.inc $$file ; \
 	  done ;\
 	done
+
+test.png : test.pov
+	povray  +L, +Itest.pov
 
 clean :
 	$(RM) $(RUBBISH)
@@ -40,9 +45,11 @@ install : all
 	$(INSTALL) -m755 svgx $(bindir)/svgx
 	$(INSTALL) -m755 svgcpt.sh $(bindir)/svgcpt
 	$(INSTALL) -m755 svggimp.sh $(bindir)/svggimp
+	$(INSTALL) -m755 svgpov.sh $(bindir)/svgpov
 	$(INSTALL) -m644 svgx.1 $(mandir)/man1/svgx.1 
 	ln -f -s svgx.1 $(mandir)/man1/svgcpt.1
 	ln -f -s svgx.1 $(mandir)/man1/svggimp.1
+	ln -f -s svgx.1 $(mandir)/man1/svgpov.1
 
 else
 
