@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.5 2005/06/24 23:50:45 jjg Exp jjg $
+  $Id: main.c,v 1.6 2005/06/26 17:50:44 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -70,6 +70,8 @@ int main(int argc,char** argv)
 	opt.type = type_cpt;
       else if (strcmp("ggr",tstr) == 0)
 	opt.type = type_ggr;
+      else if (strcmp("pov",tstr) == 0)
+	opt.type = type_pov;
       else
 	{
 	  fprintf(stderr,"no such type %s\n",tstr);
@@ -123,6 +125,7 @@ int main(int argc,char** argv)
 	    {
 	    case type_cpt : tstr = "cpt"; break;
 	    case type_ggr : tstr = "gimp"; break;
+	    case type_pov : tstr = "pov"; break;
 	    default:
 	      fprintf(stderr,"wierd output format!\n");
 	      return EXIT_FAILURE;
