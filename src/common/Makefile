@@ -1,19 +1,20 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.11 2005/06/26 15:39:23 jjg Exp jjg $
+# $Id: Makefile,v 1.12 2005/06/26 15:45:30 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
 OBJGGR  = gradient.o
 OBJPSP  = psp.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o 
+OBJPOV  = povwrite.o
 
 CFLAGS +=
 LDLIBS +=
 
-CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a
+CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a
 
-RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG)
+RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG) $(OBJPOV)
 
 default : all
 
@@ -50,6 +51,9 @@ libpsp.a : $(OBJPSP)
 
 libsvg.a : $(OBJSVG)
 	ar r libsvg.a $(OBJSVG)
+
+libpov.a : $(OBJPOV)
+	ar r libpov.a $(OBJPOV)
 
 stdcol.c : stdcol.gperf
 	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
