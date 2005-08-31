@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.4 2005/06/26 15:39:03 jjg Exp jjg $
+  $Id: svgread.c,v 1.5 2005/06/26 20:33:58 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -67,7 +67,7 @@ extern int svg_read(const char* file,svg_list_t* list)
 	    context.
 	  */
 
-	  const char 
+	  const unsigned char 
 	    prefix[] = "svg",
 	    href[]   = "http://www.w3.org/2000/svg";
 	  
@@ -161,7 +161,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 	we skip anything with a reference
       */
 
-      if ((href = xmlGetProp(cur,"href")) != NULL)
+      if ((href = xmlGetProp(cur,(unsigned char*)"href")) != NULL)
 	{
 	  xmlFree(href);
 	  continue; 
@@ -173,7 +173,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 	svg from the svg_list
       */
 
-      if ((id = xmlGetProp(cur,"id")) == NULL)
+      if ((id = xmlGetProp(cur,(unsigned char*)"id")) == NULL)
 	{
 	  fprintf(stderr,"gradient has no id attribute, skipping\n");
 	  continue; 
@@ -228,7 +228,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 
       if (node->type != XML_ELEMENT_NODE) continue;
 	
-      if (strcmp(node->name,"stop") != 0)
+      if (strcmp((const char*)node->name,"stop") != 0)
 	{
 	  fprintf(stderr,"unexpected %s node\n",node->name);
 	  continue;	  
@@ -240,7 +240,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 
       /* offset is required */
 
-      if ((offset = xmlGetProp(stop,"offset")) == NULL)
+      if ((offset = xmlGetProp(stop,(const unsigned char*)"offset")) == NULL)
 	{
 	  fprintf(stderr,"stop has no offset attribute, skipping\n");
 	}
@@ -249,7 +249,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 	  double z,op;
 	  rgb_t rgb;
 
-	  if (parse_offset(offset,&z) != 0)
+	  if (parse_offset((char*)offset,&z) != 0)
 	    {
 	      fprintf(stderr,"failed to parse offset \"%s\"\n",offset);
 	    }      
@@ -258,9 +258,9 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 	      xmlChar *colour,*opacity,*style;
 	      svg_stop_t svgstop;
 
-	      if ((colour = xmlGetProp(stop,"stop-color")) != NULL)
+	      if ((colour = xmlGetProp(stop,(const unsigned char*)"stop-color")) != NULL)
 		{
-		  if (parse_colour(colour,&rgb,&op) != 0)
+		  if (parse_colour((char*)colour,&rgb,&op) != 0)
 		    {
 		      fprintf(stderr,"failed on bad colour : %s\n",colour);
 		      return 1;
@@ -269,9 +269,9 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		  xmlFree(colour);
 		}
 
-	      if ((style = xmlGetProp(stop,"style")) != NULL)
+	      if ((style = xmlGetProp(stop,(const unsigned char*)"style")) != NULL)
 		{
-		  if (parse_style(style,&rgb,&op) != 0)
+		  if (parse_style((char*)style,&rgb,&op) != 0)
 		    {
 		      fprintf(stderr,"error parsing stop style %s\n",style);
 		      return 1;
@@ -280,9 +280,9 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		  xmlFree(style);
 		}
 
-	      if ((opacity = xmlGetProp(stop,"stop-opacity")) != NULL)
+	      if ((opacity = xmlGetProp(stop,(const unsigned char*)"stop-opacity")) != NULL)
 		{
-		  if (parse_opacity(opacity,&op) != 0)
+		  if (parse_opacity((char*)opacity,&op) != 0)
 		    {
 		      fprintf(stderr,"problem parsing opacity %s\n",opacity);
 		      return 1;
