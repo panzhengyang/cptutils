@@ -38,8 +38,16 @@ extern int svg_write(const char* file,svg_t* svg)
 	  
 	  if (svg_write_mem(writer,svg) == 0)
 	    {
-	      const char *content = buffer->content;
-	      
+	      /*
+		don't take a 
+
+		  const char *buffer = buffer->content
+
+		to use in place of buffer->content here,
+		that trips some wierd behaviour in gcc
+		and leads to corruped xml!
+	      */
+
 	      xmlFreeTextWriter(writer);
 	      
 	      if (file)
@@ -48,7 +56,7 @@ extern int svg_write(const char* file,svg_t* svg)
 		  
 		  if ((fp = fopen(file, "w")) != NULL) 
 		    {
-		      fprintf(fp,"%s",content);
+		      fprintf(fp,"%s",buffer->content);
 		      
 		      if (fclose(fp) != 0)
 			{
@@ -63,7 +71,7 @@ extern int svg_write(const char* file,svg_t* svg)
 		    }
 		}
 	      else
-		fprintf(stdout,"%s",content);
+		fprintf(stdout,"%s",buffer->content);
 	    }
 	  else
 	    {
