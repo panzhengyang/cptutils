@@ -3,7 +3,7 @@
   structures for povray colour maps
 
   J.J.Green 2005
-  $Id: pov.h,v 1.1 2005/08/29 21:14:05 jjg Exp jjg $
+  $Id: pov.h,v 1.2 2005/09/20 22:16:01 jjg Exp jjg $
 */
 
 #ifndef POV_H
@@ -25,5 +25,8 @@ typedef struct pov_t
   int n;
   pov_stop_t *stop;
 } pov_t;
+
+extern pov_t* pov_new(int,const char*);
+extern void pov_destroy(pov_t*);
 
 #endif
