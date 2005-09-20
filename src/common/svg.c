@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.1 2005/06/02 22:38:36 jjg Exp jjg $
+  $Id: svg.c,v 1.2 2005/06/02 22:39:50 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -132,6 +132,19 @@ extern void svg_destroy(svg_t* svg)
     return;
 }
 
+static int inc(svg_stop_t stop,int* n)
+{
+  (*n)++;
 
+  return 0;
+}
 
+extern int svg_num_stops(svg_t* svg)
+{
+  int n = 0;
+
+  if (svg_each_stop(svg,(int (*)(svg_stop_t,void*))inc,&n) != 0) return -1;
+
+  return n;
+}
 
