@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.4 2005/08/29 21:27:25 jjg Exp jjg $
+  $Id: svgx.c,v 1.5 2005/08/29 22:15:23 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -111,13 +111,17 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 {
   svg_t *svg;
   cpt_t *cpt;
+  pov_t *pov;
   gradient_t *ggr;
   char *file;
+  char *name = NULL;
+  int n;
 
   /* get svg with this name */
 
   if (opt.name)
     {
+      name = opt.name;
       svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
 
       if (!svg)
@@ -128,6 +132,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
     }
   else if (opt.first)
     {
+      name = "arse";
       svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_first,NULL);
 
       if (!svg)
@@ -145,12 +150,16 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
       return 1;
     }
 
+  if ((n = svg_num_stops(svg)) < 2) 
+    {
+      fprintf(stderr,"svg hasn't enough stops (%i)\n",n);
+      return 1;
+    }
+
   file = opt.output.file;
 
   switch (opt.type)
     {
-      pov_t pov;
-
     case type_cpt:
 
       if ((cpt = cpt_new()) == NULL)
@@ -201,17 +210,25 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
     case type_pov:
       
-      if (svgpov(svg,&pov) != 0)
+      if ((pov = pov_new(n,(name ? name : "<unnamed>"))) == NULL)
+	{
+	  fprintf(stderr,"failed to create ggr structure\n");
+	  return 1;
+	}
+
+      if (svgpov(svg,pov) != 0)
 	{
 	  fprintf(stderr,"failed to convert %s to pov\n",opt.name);
 	  return 1;
 	}
             
-      if (pov_write(file,&pov) != 0)
+      if (pov_write(file,pov) != 0)
 	{
 	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
 	  return 1;
 	}
+
+      pov_destroy(pov);
 
       break;
 
@@ -694,12 +711,6 @@ static int svgpov(svg_t* svg,pov_t* pov)
       rgb_t rgb;
       double c[3],t,z;
 
-      if (n >= POV_STOP_MAX)
-	{
-	  fprintf(stderr,"svg too big to convert\n");
-	  return 1;
-	}
-
       rgb = node->stop.colour;
 
       if (rgb_to_rgbD(rgb,c) != 0)
@@ -734,7 +745,7 @@ static int svgpov(svg_t* svg,pov_t* pov)
       pov->stop[n] = stop;
     }
   
-  if ((n<2) || (n>POV_STOP_MAX))
+  if (n<2)
     {
       fprintf(stderr,"bad number of stops : %i\n",n);
       return 1;

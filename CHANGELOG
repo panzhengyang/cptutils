@@ -1,4 +1,9 @@
-Changes $Id: CHANGELOG,v 1.18 2005/07/20 10:56:41 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.19 2005/08/29 21:18:19 jjg Exp jjg $
+
+  - povray output now has abitrarily many stops (even
+    though 20 is the max in the specification). 
+
+	*** svgpov now broken
 
 1.19 (29 Aug 2005)
   - added a povray colour-map output format for svgx,
