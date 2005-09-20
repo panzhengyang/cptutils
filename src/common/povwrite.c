@@ -5,7 +5,7 @@
   a file or stream.
 
   J.J.Green 2005
-  $Id$
+  $Id: povwrite.c,v 1.1 2005/08/29 21:13:53 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -23,7 +23,7 @@ extern int pov_write(const char* file,pov_t* pov)
 
   n = pov->n;
 
-  if ( ! ((2 < n) || (n < POV_STOP_MAX)) )
+  if ( n<2 )
     {
       fprintf(stderr,"povray does not support %i stops\n",n);
       return 1;
