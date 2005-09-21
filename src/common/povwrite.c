@@ -5,7 +5,7 @@
   a file or stream.
 
   J.J.Green 2005
-  $Id: povwrite.c,v 1.1 2005/08/29 21:13:53 jjg Exp jjg $
+  $Id: povwrite.c,v 1.2 2005/09/20 22:18:04 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -51,7 +51,7 @@ extern int pov_write(const char* file,pov_t* pov)
     {
       pov_stop_t stop = pov->stop[i];
 
-      fprintf(st,"  [%5.3f color rgbf <%.4f,%.4f,%.4f,%.4f>]\n",
+      fprintf(st,"  [%7.5f color rgbf <%.4f,%.4f,%.4f,%.4f>]\n",
 	      stop.z,
 	      stop.rgbt[0],
 	      stop.rgbt[1],
