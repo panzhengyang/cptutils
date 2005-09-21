@@ -3,7 +3,7 @@
   structures for povray colour maps
 
   J.J.Green 2005
-  $Id: pov.h,v 1.3 2005/09/20 23:00:58 jjg Exp jjg $
+  $Id: pov.h,v 1.4 2005/09/21 10:32:47 jjg Exp jjg $
 */
 
 #ifndef POV_H
@@ -12,6 +12,7 @@
 /* piss poor limitatation! */
 
 #define POV_NAME_LEN 256
+#define POV_STOPS_MAX 20
 
 typedef struct pov_stop_t
 {
