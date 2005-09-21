@@ -1,7 +1,7 @@
 /*
   main.c 
 
-  part of the gimpcpt package
+  part of the cptutils package
 
   This program is free software; you can redistribute it
   and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.6 2005/06/26 17:50:44 jjg Exp jjg $
+  $Id: main.c,v 1.7 2005/08/29 18:28:17 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -49,11 +49,12 @@ int main(int argc,char** argv)
 
   /* check arguments & transfer to opt structure */ 
 
-  opt.verbose = info.verbose_given;
-  opt.list    = info.list_given;
-  opt.all     = info.all_given;
-  opt.first   = info.first_given;
-  opt.name    = (info.name_given ? info.name_arg : NULL);
+  opt.verbose    = info.verbose_given;
+  opt.permissive = info.permissive_given;
+  opt.list       = info.list_given;
+  opt.all        = info.all_given;
+  opt.first      = info.first_given;
+  opt.name       = (info.name_given ? info.name_arg : NULL);
 
   if (opt.first && opt.all)
     {
@@ -66,10 +67,16 @@ int main(int argc,char** argv)
     {
       const char* tstr = info.type_arg;
 
+      /* sometimes I think I'm too nice */
+
       if (strcmp("cpt",tstr) == 0)
 	opt.type = type_cpt;
       else if (strcmp("ggr",tstr) == 0)
 	opt.type = type_ggr;
+      else if (strcmp("gimp",tstr) == 0)
+	opt.type = type_ggr;
+      else if (strcmp("inc",tstr) == 0)
+	opt.type = type_pov;
       else if (strcmp("pov",tstr) == 0)
 	opt.type = type_pov;
       else
@@ -132,6 +139,8 @@ int main(int argc,char** argv)
 	    }
 	  
 	  printf("mode is svg%s\n",tstr);
+	  printf("%s format limits\n",
+		 (opt.permissive ? "ignoring" : "respecting"));
 	}
     }
 

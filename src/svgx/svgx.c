@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.6 2005/09/20 23:33:15 jjg Exp jjg $
+  $Id: svgx.c,v 1.7 2005/09/21 10:27:29 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -102,6 +102,38 @@ static int svg_id(svg_t* svg,const char* fmt)
   return 0;
 }
 
+/*
+  check limits for povray
+*/
+
+static int svgpov_valid(svg_t* svg,int permissive,int verbose)
+{
+  int m = svg_num_stops(svg);
+
+  if (m > POV_STOPS_MAX)
+    {
+      if (permissive)
+	{
+	  if (verbose)
+	    printf("warning : format limit broken %i stops (max is %i)\n",m,POV_STOPS_MAX);
+	}
+      else
+	{
+	  fprintf(stderr,"format limit : POV-ray allows no more than %i stops,\n",POV_STOPS_MAX);
+	  fprintf(stderr,"but this gradient has %i (use -p to ignore format limits)\n",m);
+	  return 0;
+	}
+    }
+
+  if (m < 2)
+    {
+        fprintf(stderr,"sanity check : found %i stops, but at least 2 required\n",m);
+	return 0;
+    }
+
+  return 1;
+}
+
 /* convert a named gradient */
 
 static int svg_select_name(svg_t*,char*);
@@ -200,6 +232,12 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
     case type_pov:
       
+      if (! svgpov_valid(svg, opt.verbose, opt.permissive))
+	{
+	  fprintf(stderr,"cannot create valid povray filen");
+	  return 1;
+	}
+
       if ((pov = pov_new()) == NULL)
 	{
 	  fprintf(stderr,"failed to create ggr structure\n");
@@ -248,6 +286,7 @@ static int svg_select_name(svg_t* svg,char* name)
 
 static int svgcpt_dump(svg_t*,svgx_opt_t*);
 static int svgggr_dump(svg_t*,svgx_opt_t*);
+static int svgpov_dump(svg_t*,svgx_opt_t*);
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 {
@@ -258,11 +297,18 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
   switch (opt.type)
     {
     case type_cpt:
+
       dump = (int (*)(svg_t*,void*))svgcpt_dump;
       break;
 
     case type_ggr:
+
       dump = (int (*)(svg_t*,void*))svgggr_dump;
+      break;
+
+    case type_pov:
+
+      dump = (int (*)(svg_t*,void*))svgpov_dump;
       break;
 
     default:
@@ -368,6 +414,58 @@ static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
     }
 
   grad_free_gradient(ggr);
+
+  if (opt->verbose)  
+    printf("  %s\n",file);
+
+  return 0;
+}
+
+static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
+{
+  int  n = SVG_NAME_LEN+5;
+  char file[n],*name;
+  pov_t* pov;
+
+  if (!svg) return 1;
+
+  if (! svgpov_valid(svg, opt->verbose, opt->permissive))
+    {
+      fprintf(stderr,"cannot create valid povray filen");
+      return 1;
+    }
+
+  name = svg->name;
+
+  if (snprintf(file,n,"%s.inc",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+
+  if ((pov = pov_new()) == NULL)
+    {
+      fprintf(stderr,"failed to create pov structure\n");
+      return 1;
+    }
+
+  /* translate */
+
+  if (svgpov(svg,pov) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to pov\n",name);
+      return 1;
+    }
+
+  /* write */
+
+  if (pov_write(file,pov) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
+
+  pov_destroy(pov);
 
   if (opt->verbose)  
     printf("  %s\n",file);
@@ -690,6 +788,11 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
   return 0;
 }
 
+/*
+  this funtion ignores the silly 20 stop limit in the povray format,
+  that needs to be handled by the calling funtion
+*/
+
 static int svgpov(svg_t* svg,pov_t* pov)
 {
   int n,m;
@@ -698,6 +801,12 @@ static int svgpov(svg_t* svg,pov_t* pov)
   /* count & allocate */
 
   m = svg_num_stops(svg);
+  
+  if (m < 2)
+    {
+      fprintf(stderr,"bad number of stops : %i\n",m);
+      return 1;
+    }
 
   if (pov_stops_alloc(pov,m) != 0)
     {
@@ -707,7 +816,7 @@ static int svgpov(svg_t* svg,pov_t* pov)
 
   /* convert */
 
-  for (n=0,node = svg->nodes ; node ; n++,node = node->r)
+  for (n=0, node = svg->nodes ; node ; n++,node = node->r)
     {
       pov_stop_t stop;
       rgb_t rgb;
@@ -745,12 +854,6 @@ static int svgpov(svg_t* svg,pov_t* pov)
       stop.rgbt[3] = t;
 
       pov->stop[n] = stop;
-    }
-  
-  if (n<2)
-    {
-      fprintf(stderr,"bad number of stops : %i\n",n);
-      return 1;
     }
 
   if (n != m)
