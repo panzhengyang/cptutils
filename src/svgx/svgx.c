@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.5 2005/08/29 22:15:23 jjg Exp jjg $
+  $Id: svgx.c,v 1.6 2005/09/20 23:33:15 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -114,14 +114,11 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   pov_t *pov;
   gradient_t *ggr;
   char *file;
-  char *name = NULL;
-  int n;
 
   /* get svg with this name */
 
   if (opt.name)
     {
-      name = opt.name;
       svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
 
       if (!svg)
@@ -132,7 +129,6 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
     }
   else if (opt.first)
     {
-      name = "arse";
       svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_first,NULL);
 
       if (!svg)
@@ -147,12 +143,6 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   if (!svg)
     {
       fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
-      return 1;
-    }
-
-  if ((n = svg_num_stops(svg)) < 2) 
-    {
-      fprintf(stderr,"svg hasn't enough stops (%i)\n",n);
       return 1;
     }
 
@@ -210,7 +200,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
     case type_pov:
       
-      if ((pov = pov_new(n,(name ? name : "<unnamed>"))) == NULL)
+      if ((pov = pov_new()) == NULL)
 	{
 	  fprintf(stderr,"failed to create ggr structure\n");
 	  return 1;
@@ -702,8 +692,20 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 
 static int svgpov(svg_t* svg,pov_t* pov)
 {
-  int n;
+  int n,m;
   svg_node_t *node;
+
+  /* count & allocate */
+
+  m = svg_num_stops(svg);
+
+  if (pov_stops_alloc(pov,m) != 0)
+    {
+      fprintf(stderr,"failed alloc for %i stops\n",m);
+      return 1;
+    }
+
+  /* convert */
 
   for (n=0,node = svg->nodes ; node ; n++,node = node->r)
     {
@@ -751,11 +753,22 @@ static int svgpov(svg_t* svg,pov_t* pov)
       return 1;
     }
 
+  if (n != m)
+    {
+      fprintf(stderr,
+	      "missmatch between stops expected (%i) and found (%i)\n",
+	      m,n);
+      return 1;
+    }
+
   pov->n = n;
 
-  if (snprintf(pov->name,POV_NAME_LEN,"%s",svg->name) >= POV_NAME_LEN)
+  if (pov_set_name(pov,(svg->name ? svg->name : "(unnamed)")) != 0)
     {
-      fprintf(stderr,"cpt name truncated\n");
+      fprintf(stderr,
+	      "failed to assign povray name (%s)\n",
+	      (svg->name ? svg->name : "(null)"));
+      return 1;
     }
 
   return 0;
