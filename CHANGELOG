@@ -1,9 +1,11 @@
-Changes $Id: CHANGELOG,v 1.19 2005/08/29 21:18:19 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.20 2005/09/20 23:32:54 jjg Exp jjg $
 
-  - povray output now has abitrarily many stops (even
-    though 20 is the max in the specification). 
-
-	*** svgpov now broken
+1.20 (21 Sep 2005)
+  - svgx povray output now works when extraction of all  
+    gradients (-a) is specified
+  - svgx povray output now has abitrarily many stops (even
+    though 20 is the max in the specification) if the
+    new -p (permissive) flag is given 
 
 1.19 (29 Aug 2005)
   - added a povray colour-map output format for svgx,

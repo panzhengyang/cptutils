@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.14 2005/09/20 23:19:57 jjg Exp jjg $
+# $Id: Makefile,v 1.15 2005/09/21 10:27:35 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
@@ -10,6 +10,7 @@ RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test.png
 
 default : all
 
+SVGX   = ./svgx
 SVGCPT = ./svgx -t cpt
 SVGGGR = ./svgx -t ggr
 SVGPOV = ./svgx -t pov
@@ -17,7 +18,7 @@ SVGPOV = ./svgx -t pov
 check test : svgx
 	for file in `ls test/*.svg` ; do \
 	  echo $$file ; \
-	  for name in `$(SVGCPT) -l $$file` ; do \
+	  for name in `$(SVGX) -l $$file` ; do \
 	    echo "  $$name" ; \
 	    $(SVGCPT) -n $$name -o test/$$name.cpt $$file ; \
 	    $(SVGGGR) -n $$name -o test/$$name.ggr $$file ; \
@@ -40,7 +41,7 @@ include ../Progs.mk
 
 ifneq (no,$(XML2C))
 
-all : svgx
+all : svgx  
 install : all
 	$(INSTALL) -m755 svgx $(bindir)/svgx
 	$(INSTALL) -m755 svgcpt.sh $(bindir)/svgcpt
