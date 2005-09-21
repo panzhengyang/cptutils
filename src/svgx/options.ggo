@@ -1,15 +1,16 @@
 # -*- sh -*-
 # gengetopt input for svgcpt
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.5 2005/06/24 23:59:50 jjg Exp jjg $
+# $Id: options.ggo,v 1.6 2005/06/26 17:19:22 jjg Exp jjg $
 package "svgx"
-purpose "convert SVD gradient to GMT colour palette table"
+purpose "convert SVD gradient to other formats"
 option	"all"	        a "convert all gradients"           	flag    off
 option  "first"         1 "convert first gradient in the file"  flag    off
 option	"list"	        l "list gradients in file"           	flag    off
 option	"name"	        n "convert gradient with specifed name"	string  no
 option	"output"	o "output filename"	             	string  no
-option  "type"          t "output file type, cpt or ggr"        string  no
+option  "permissive"    p "ignore format limits on output"      flag    off
+option  "type"          t "output file type, cpt, ggr or inc"   string  no
 option	"verbose"	v "verbose operation"	             	flag    off
 
 
