@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.7 2005/09/21 10:27:29 jjg Exp jjg $
+  $Id: svgx.c,v 1.8 2005/09/21 20:08:37 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -232,9 +232,9 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
     case type_pov:
       
-      if (! svgpov_valid(svg, opt.verbose, opt.permissive))
+      if (! svgpov_valid(svg, opt.permissive, opt.verbose))
 	{
-	  fprintf(stderr,"cannot create valid povray filen");
+	  fprintf(stderr,"cannot create valid povray file\n");
 	  return 1;
 	}
 
