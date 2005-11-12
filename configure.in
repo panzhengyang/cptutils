@@ -1,10 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.26 2005/08/29 22:16:30 jjg Exp jjg $
+dnl $Id: configure.in,v 1.27 2005/09/21 20:15:22 jjg Exp jjg $
 
 AC_INIT(src/Common.mk.in)
 
 MAJOR_VERSION=1
-MINOR_VERSION=20
+MINOR_VERSION=21
 VERSION="$MAJOR_VERSION.$MINOR_VERSION"
 CFXTRA="-Wall"
 
