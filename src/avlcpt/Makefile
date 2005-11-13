@@ -1,9 +1,9 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.3 2005/06/27 17:51:16 jjg Exp $
+# $Id: Makefile,v 1.1 2005/11/13 17:15:26 jjg Exp jjg $
 
-OBJ      =  avlcpt.o main.o options.o avl.o
+OBJ      =  avlcpt.o main.o options.o avl.o odb_bridge.o odbscan.o odbparse.o
 RUBBISH += $(OBJ) avlcpt
 
 LDLIBS += 
@@ -25,12 +25,20 @@ veryclean :
 
 avlcpt : $(OBJ)
 
+.SECONDARY : odbscan.c odbscan.h odbparse.c
+
+odbscan.c odbscan.h : odbscan.l 
+	flex odbscan.l 
+
+odbparse.c : odbparse.y 
+	bison odbparse.y
+
 # for testing 
 
 RUBBISH += ddvelev9c.cpt
 
 %.cpt : %.avl
-	./avlcpt -v -o $*.cpt $< 
+	./avlcpt -v -d -o $*.cpt $< 
 
 test check : avlcpt ddvelev9c.cpt
 
