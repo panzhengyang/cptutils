@@ -4,7 +4,7 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.6 2005/03/30 23:10:08 jjg Exp $
+  $Id: odbparse.y,v 1.1 2005/11/13 23:50:02 jjg Exp jjg $
 */
 
 %{
@@ -12,6 +12,8 @@
 
 #define YYLEX_PARAM scanner 
 #define YYPARSE_PARAM scanner 
+
+#define YYSTYPE odb_value_t
 
 #include "odbparse.h"
 #include "odbscan.h"
@@ -27,18 +29,17 @@
 %verbose
 %debug
 
+%token UINT INT FLOAT HEX2 HEX4
+%token IDENT STRING
+
 %union {
-  double d;
-  int    i;
+  odb_value_t value;
+  odb_field_list_t* field;
+  odb_recordlist_t* record;
 } 
 
-%token UINT
-%token HEX2
-%token HEX4
-%token IDENT
-%token STRING
-
-%type <d> UINT 
+%type <value> UINT INT FLOAT HEX4 HEX2 STRING value
+%type <field> field fields
 
 %%
 
@@ -69,18 +70,12 @@ id : UINT
 field : attribute ':' value
 ;
 
-value : inttype 
-| floattype 
+value : UINT
+| INT 
+| FLOAT
 | STRING
 | HEX4 
 | HEX2 
-;
-
-inttype : UINT
-| '-' UINT
-;
-
-floattype : inttype '.' UINT
 ;
 
 class : IDENT

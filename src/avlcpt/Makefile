@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.1 2005/11/13 17:15:26 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2005/11/13 23:50:25 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avl.o odb_bridge.o odbscan.o odbparse.o
 RUBBISH += $(OBJ) avlcpt
@@ -38,9 +38,11 @@ odbparse.c : odbparse.y
 RUBBISH += ddvelev9c.cpt
 
 %.cpt : %.avl
-	./avlcpt -v -d -o $*.cpt $< 
+	./avlcpt -v -o $*.cpt $< 
 
-test check : avlcpt ddvelev9c.cpt
+ddvelev9c.cpt : avlcpt
+
+test check : ddvelev9c.cpt
 
 include ../Common.mk
 include ../Progs.mk
