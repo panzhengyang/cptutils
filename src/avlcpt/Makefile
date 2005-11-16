@@ -1,9 +1,9 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2005/11/13 23:50:25 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2005/11/15 00:45:31 jjg Exp jjg $
 
-OBJ      =  avlcpt.o main.o options.o avl.o odb_bridge.o odbscan.o odbparse.o
+OBJ      =  avlcpt.o main.o options.o avl.o odb_bridge.o odb.o ident.o identtab.o odbscan.o odbparse.o
 RUBBISH += $(OBJ) avlcpt
 
 LDLIBS += 

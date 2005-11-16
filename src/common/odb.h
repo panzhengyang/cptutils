@@ -2,13 +2,15 @@
   odb.h
   structures for obd data
   J.J. Green 2005
-  $Id: odb.h,v 1.1 2005/11/13 23:50:33 jjg Exp jjg $
+  $Id: odb.h,v 1.2 2005/11/15 00:46:15 jjg Exp jjg $
 */
 
 #ifndef ODB_H
 #define ODB_H
 
-typedef unsigned int odb_identifier_t;
+#include "identtab.h"
+
+typedef int odb_ident_t;
 
 /* value types */
 
@@ -17,8 +19,7 @@ typedef unsigned int     odb_hex4_t;
 typedef unsigned int     odb_uint_t;
 typedef signed int       odb_int_t;
 typedef double           odb_float_t;
-typedef unsigned int     odb_xref_t;
-typedef odb_identifier_t odb_string_t;
+typedef odb_ident_t      odb_string_t;
 
 /* union of possible values */
 
@@ -29,8 +30,8 @@ typedef enum
     odb_uint,
     odb_int,
     odb_float,
-    odb_xref,
-    odb_string
+    odb_string,
+    odb_ident
   } odb_value_type_t;
 	       
 typedef union
@@ -40,46 +41,31 @@ typedef union
   odb_uint_t   u;
   odb_int_t    i;
   odb_float_t  f;
-  odb_xref_t   xref;
   odb_string_t s;
+  odb_ident_t  ident;
 } odb_value_t;
 
 /* odb in linked list format */
 
 typedef struct odb_field_list_t
 {
-  odb_identifier_t         attribute;
+  odb_ident_t              attribute;
   odb_value_type_t         type;
   odb_value_t              value;
   struct odb_field_list_t *next;
 } odb_field_list_t;
 
+extern odb_field_list_t* odb_create_field_list(odb_ident_t,odb_value_t);
+
 typedef struct odb_record_list_t
 {
-  odb_identifier_t          class;
+  odb_ident_t               class;
   odb_uint_t                id;
   odb_field_list_t         *fields;
   struct odb_record_list_t *next;
 } odb_record_list_t;
 
-typedef struct
-{
-  struct 
-  {
-    odb_uint_t minor,major;  
-  } version;
-  odb_record_list_t* records;
-} odb_list_t;
-
-/* odb serialised, for later */
-
-typedef struct
-{
-  struct 
-  {
-    odb_uint_t minor,major;  
-  } version;
-} odb_serial_t;
+extern odb_record_list_t* odb_create_record_list(odb_ident_t,odb_uint_t,odb_field_list_t*);
 
 /* odb structure */
 
@@ -87,12 +73,18 @@ typedef enum {odb_list,odb_serial} odb_struct_t;
 
 typedef struct
 {
+  struct { odb_uint_t minor,major; } version;
   odb_struct_t type;
   union
   {
-    odb_serial_t serial;
-    odb_list_t   list;
-  } u;
+    odb_record_list_t* list;
+  } records;
 } odb_t;
+
+extern odb_t* odb_create_list(odb_uint_t,odb_uint_t,odb_record_list_t*);
+
+extern int odb_serialise(odb_t*,identtab_t*);
+
+extern void odb_destroy(odb_t*);
 
 #endif

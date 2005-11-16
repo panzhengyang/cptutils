@@ -4,7 +4,7 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: odbparse.y,v 1.1 2005/11/13 23:50:02 jjg Exp jjg $
+  $Id: odbparse.y,v 1.2 2005/11/15 00:45:15 jjg Exp jjg $
 */
 
 %{
@@ -13,13 +13,12 @@
 #define YYLEX_PARAM scanner 
 #define YYPARSE_PARAM scanner 
 
-#define YYSTYPE odb_value_t
-
 #include "odbparse.h"
 #include "odbscan.h"
 #include "odb_bridge.h"
 
   static void odberror(char const*);
+
 %}
 
 %output="odbparse.c"
@@ -33,41 +32,48 @@
 %token IDENT STRING
 
 %union {
+  odb_uint_t uint;
   odb_value_t value;
+  odb_ident_t ident;
   odb_field_list_t* field;
-  odb_recordlist_t* record;
+  odb_record_list_t* record;
 } 
 
-%type <value> UINT INT FLOAT HEX4 HEX2 STRING value
-%type <field> field fields
+%type <uint>   id
+%type <value>  UINT INT FLOAT HEX4 HEX2 STRING IDENT value
+%type <ident>  class attribute
+%type <field>  field fields
+%type <record> record records
 
 %%
 
-input :  header records
+/* final act of parse is to assign to global odb_t structure */
+
+input :  '/' id '.' id records { odb = odb_create_list($2,$4,$5); }
 ;
+
+/* linked list of records */
 
 records : record
-| records record
+| records record { $2->next = $1; $$ = $2; }
 ;
 
-header : '/' version
+record : '(' class '.' id fields ')' { $$ = odb_create_record_list($2,$4,$5); }
+| '(' class '.' id ')'               { $$ = odb_create_record_list($2,$4,NULL); }
 ;
 
-version : UINT '.' UINT 
+/* linked list of fields */
+
+fields : field
+| fields field { $2->next = $1; $$ = $2; }
 ;
 
-record : '(' class '.' id fields ')'
+field : attribute ':' value { $$ = odb_create_field_list($1,$3); }
 ;
 
-fields : /* empty */ 
-| field
-| fields field
-;
+/* basic types */
 
-id : UINT
-;
-
-field : attribute ':' value
+id : UINT { $$ = $1.u; }
 ;
 
 value : UINT
@@ -78,15 +84,15 @@ value : UINT
 | HEX2 
 ;
 
-class : IDENT
+class : IDENT { $$ = $1.ident; }
 ;
 
-attribute : IDENT
+attribute : IDENT { $$ = $1.ident; }
 ;  
 
 %%
 
 static void odberror(char const *s)
 {
-  fprintf (stderr, "%s\n",s);
+  fprintf(stderr, "%s\n",s);
 }

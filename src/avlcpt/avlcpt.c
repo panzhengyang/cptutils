@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.2 2005/02/08 21:23:41 jjg Exp $
+  $Id: avlcpt.c,v 1.1 2005/11/13 23:49:51 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -21,7 +21,7 @@
 #include "avlcpt.h"
 
 static int avlcpt_convert(avl_grad_t*,cpt_t*,avlcpt_opt_t);
-static int avl_readfile(char*,avl_grad_t*,int);
+static int avl_readfile(char*,avl_grad_t*,avlcpt_opt_t);
 
 extern int avlcpt(avlcpt_opt_t opt)
 {
@@ -42,7 +42,7 @@ extern int avlcpt(avlcpt_opt_t opt)
 
   /* transfer the gradient data to the cpt_t struct */
 
-  if (avl_readfile(opt.file.input,&avl,opt.debug) != 0)
+  if (avl_readfile(opt.file.input,&avl,opt) != 0)
     {
       fprintf(stderr,"failed to read data from %s\n",
 	      (opt.file.input ?  opt.file.input : "<stdin>"));
@@ -122,7 +122,7 @@ static int cpt_append_err(cpt_seg_t* seg,cpt_t* cpt)
   handle stream choice and call libavl function, read_avl()
 */ 
 
-static int avl_readfile(char* file,avl_grad_t* avl,int debug)
+static int avl_readfile(char* file,avl_grad_t* avl,avlcpt_opt_t opt)
 {
   int err = 0;
 
@@ -136,12 +136,12 @@ static int avl_readfile(char* file,avl_grad_t* avl,int debug)
 	  return 1;
 	}
 
-      err = avl_read(s,avl,debug);
+      err = avl_read(s,avl,opt.verbose,opt.debug);
 
       fclose(s);
     }
   else
-    err = avl_read(stdin,avl,debug);
+    err = avl_read(stdin,avl,opt.verbose,opt.debug);
 
   return err;
 }
