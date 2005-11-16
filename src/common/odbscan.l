@@ -2,14 +2,18 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.1 2005/11/13 23:50:08 jjg Exp jjg $
+   $Id: odbscan.l,v 1.2 2005/11/15 00:45:24 jjg Exp jjg $
 */
 
 %{
 #include "odb.h"
 #include "odbparse.h"
+#include "odb_bridge.h"
 
 #define YYSTYPE odb_value_t
+
+  static int identifier_insert(char*,identtab_t*);
+
 %}
 
 %option header-file="odbscan.h"
@@ -24,7 +28,7 @@
 %option noyywrap
 %option debug
  
-%x head
+%x head str
 
 D      [0-9]
 H      [0-9a-f]
@@ -34,7 +38,7 @@ INT    \-{D}+
 HEX4   0x{H}{H}{H}{H}
 HEX2   0x{H}{H}
 IDENT  [a-zA-z]+
-STRING \".*\"
+STRING \"(.*)\"
 
 %%
 
@@ -44,19 +48,58 @@ STRING \".*\"
 <head>[ \t]+
 <head>"\n"         BEGIN(INITIAL); 
 [ \t\n]+
+\"                 BEGIN(str);
+<str>[^\"]*        yylval->s = identifier_insert(yytext,stringtab); return STRING;
+<str>\"            BEGIN(INITIAL);
 "("                return '(';
 ")"                return ')';
 "."                return '.';
 ":"                return ':';
-"-"                return '-';
-{STRING}           return STRING;
-{UINT}             yylval->u  = (odb_uint_t)atoi(yytext);  return UINT;
-{INT}              yylval->i  = (odb_int_t)atoi(yytext);   return INT;
-{FLOAT}            yylval->f  = (odb_float_t)atof(yytext); return FLOAT;
-{HEX2}             yylval->h2 = (odb_hex2_t)atoi(yytext);  return HEX2; 
-{HEX4}             yylval->h4 = (odb_hex4_t)atoi(yytext);  return HEX4;
-{IDENT}            return IDENT;
+{UINT}             yylval->u     = (odb_uint_t)atoi(yytext);  return UINT;
+{INT}              yylval->i     = (odb_int_t)atoi(yytext);   return INT;
+{FLOAT}            yylval->f     = (odb_float_t)atof(yytext); return FLOAT;
+{HEX2}             yylval->h2    = (odb_hex2_t)atoi(yytext);  return HEX2; 
+{HEX4}             yylval->h4    = (odb_hex4_t)atoi(yytext);  return HEX4;
+{IDENT}            yylval->ident = identifier_insert(yytext,identtab); return IDENT;
 <<EOF>>            yyterminate();  
-.                  printf("didn't expect (%s)\n",yytext);
+.                  fprintf(stderr,"didn't expect (%s)\n",yytext);
 
 %%
+
+/*
+  this returns the (unique) id of the name inserted, 
+  or -1 on error 
+*/
+
+static int identifier_insert(char* name,identtab_t* tab)
+{
+  int id;
+  ident_t* ident;
+
+  ident = identtab_name_lookup(tab,name); 
+
+  if (ident)
+    {
+      id = ident->id;
+    }
+  else
+    {
+      static int sid = 1;
+      
+      if ((ident = ident_new(name,sid)) == NULL)
+	{
+	  fprintf(stderr,"failed to create identifier wrapper\n");
+	  return -1;
+	}
+
+      if (identtab_insert(tab,ident) != 0)
+	{
+	  fprintf(stderr,"failed to insert identifier\n");
+	  return -1;
+	}
+
+      id = sid++;
+    }
+
+  return id;
+}
