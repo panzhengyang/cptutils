@@ -4,7 +4,7 @@
   a simple identifier table
 
   (c) J. J. Green 2001
-  $Id: identtab.c,v 1.1 2002/08/28 21:44:41 jjg Exp $
+  $Id: identtab.c,v 1.1 2005/11/16 00:28:48 jjg Exp jjg $
 */
 
 /*
@@ -116,7 +116,7 @@ extern int identtab_insert(identtab_t* tab,ident_t* ident)
   lookup, note that tfind() returns a pointer to ident_t*
 */
 
-static int ident_name_fcmp(char* a,ident_t* b)
+static int ident_name_fcmp(const char* a,ident_t* b)
 {
   return strcmp(a,b->name);
 }
@@ -126,7 +126,7 @@ static int ident_id_fcmp(unsigned int* a,ident_t* b)
   return ui_cmp(*a,b->id);
 }
    
-static ident_t* identtab_lookup(void* key,void** root,cmp_t cmp)
+static ident_t* identtab_lookup(const void* key,void** root,cmp_t cmp)
 {
   ident_t ** val;
 
@@ -140,7 +140,7 @@ extern ident_t* identtab_id_lookup(identtab_t* tab,unsigned int id)
   return identtab_lookup(&id,tab->ids,(cmp_t)ident_id_fcmp);
 }  
 
-extern ident_t* identtab_name_lookup(identtab_t* tab,char* name)
+extern ident_t* identtab_name_lookup(identtab_t* tab,const char* name)
 {
   return identtab_lookup(name,tab->names,(cmp_t)ident_name_fcmp);
 }  

@@ -3,7 +3,7 @@
 
   avl structures
   J.J. Green 2005
-  $Id: avl.c,v 1.1 2005/11/13 23:49:56 jjg Exp jjg $
+  $Id: avl.c,v 1.2 2005/11/16 00:27:57 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -27,6 +27,7 @@
 extern int odbparse(void*);
 extern int odbdebug;
 
+static int odb_avl(odb_t*,identtab_t*,identtab_t*,avl_grad_t*,int);
 
 /* main avl construction function */
 
@@ -103,12 +104,33 @@ extern int avl_read(FILE* st,avl_grad_t* avl,int verbose,int debug)
       return 1;
     }
 
+  if (odb_avl(odb,identtab,stringtab,avl,verbose) != 0)
+    {
+      fprintf(stderr,"failed avl extraction\n");
+      return 1;
+    }
+
   /* clean up */
 
   odb_destroy(odb);
 
   identtab_destroy(identtab);
   identtab_destroy(stringtab);
+
+  return 0;
+}
+
+/*
+  extract avl gradient from an odb serialised structure
+*/
+
+static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl, int verbose)
+{
+  odb_record_t* r1;
+  odb_field_t* f1;
+
+  r1 = odb_class_name_lookup("ODB",itab,odb);
+  f1 = odb_attribute_name_lookup("Roots",itab,r1);
 
   return 0;
 }
