@@ -5,7 +5,7 @@
   odb obhjects
 
   J.J.Green 2005
-  $Id: odb.c,v 1.1 2005/11/16 00:27:47 jjg Exp jjg $
+  $Id: odb.c,v 1.2 2005/11/17 00:01:39 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -155,8 +155,6 @@ extern int odb_serialise(odb_t* odb,identtab_t* tab)
 
   for (recls = odb->list, i=0 ; recls ; recls = recls->next, i++)
     {
-      printf("ser: %i %i %i\n",recls->id,n-1-i,recls->class);
-
       /* reverse the linked list order */
 
       if (record_serialise(recls,tab,rec+(n-1-i)) != 0)
@@ -190,6 +188,9 @@ static int record_serialise(odb_record_list_t* recls,identtab_t* tab,odb_record_
   odb_field_list_t* fl;
   odb_field_t* f;
   int n;
+
+  rec->id    = recls->id;
+  rec->class = recls->class;
 
   rec->n = 0;
   rec->fields = NULL;
@@ -243,7 +244,10 @@ static int field_serialise(odb_field_list_t* fl,odb_field_t* f)
 }
 
 /* 
-   odb structure searches 
+   odb structure searches - we just do a linear search, there are only going to
+   be a few hundred of these at most. this is less painful than you would think
+   since there are no strcmp() calls, just integer compares (due to use of the
+   identifier table)
 */
 
 extern odb_record_t* odb_class_name_lookup(const char* class,identtab_t* tab,odb_t* odb)
@@ -271,8 +275,6 @@ extern odb_record_t* odb_class_nid_lookup(odb_ident_t id,odb_t* odb)
 
   for (i=0 ; i<n ; i++)
     {
-      printf("class %i / %i\n",id,rec[i].class);
-
       if (rec[i].class == id)
 	{
 	  return rec + i;
@@ -305,11 +307,9 @@ extern odb_field_t* odb_attribute_nid_lookup(odb_ident_t id,odb_record_t* rec)
 
   for (i=0 ; i<n ; i++)
     {
-      printf("%i %i\n",f[i].attribute,id);
-
       if (f[i].attribute == id)
 	{
-	  printf("found attribute %i at %i\n",id,i);
+	  printf("found attribute %i at field %i\n",id,i+1);
 
 	  return f + i;
 	}
