@@ -2,7 +2,7 @@
   odb.h
   structures for obd data
   J.J. Green 2005
-  $Id: odb.h,v 1.3 2005/11/16 00:27:53 jjg Exp jjg $
+  $Id: odb.h,v 1.4 2005/11/17 00:01:49 jjg Exp jjg $
 */
 
 #ifndef ODB_H
@@ -107,10 +107,11 @@ extern odb_t* odb_create_list(odb_uint_t,odb_uint_t,odb_record_list_t*);
 extern int odb_serialise(odb_t*,identtab_t*);
 
 extern odb_record_t* odb_class_name_lookup(const char*,identtab_t*,odb_t*);
-extern odb_record_t* odb_class_nid_lookup(odb_ident_t,odb_t*);
+extern odb_record_t* odb_class_ident_lookup(odb_ident_t,odb_t*);
+extern odb_record_t* odb_class_id_lookup(odb_uint_t,odb_t*);
 
 extern odb_field_t* odb_attribute_name_lookup(const char*,identtab_t*,odb_record_t*);
-extern odb_field_t* odb_attribute_nid_lookup(odb_ident_t,odb_record_t*);
+extern odb_field_t* odb_attribute_ident_lookup(odb_ident_t,odb_record_t*);
 
 
 extern void odb_destroy(odb_t*);

@@ -4,7 +4,7 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: odbparse.y,v 1.2 2005/11/15 00:45:15 jjg Exp jjg $
+  $Id: odbparse.y,v 1.3 2005/11/16 00:28:44 jjg Exp jjg $
 */
 
 %{
@@ -40,7 +40,7 @@
 } 
 
 %type <uint>   id
-%type <value>  UINT INT FLOAT HEX4 HEX2 STRING IDENT value
+%type <value>  UINT INT FLOAT HEX4 HEX2 STRING IDENT
 %type <ident>  class attribute
 %type <field>  field fields
 %type <record> record records
@@ -68,20 +68,17 @@ fields : field
 | fields field { $2->next = $1; $$ = $2; }
 ;
 
-field : attribute ':' value { $$ = odb_create_field_list($1,$3); }
+field : attribute ':' UINT   { $$ = odb_create_field_list($1,$3); $$->type = odb_uint; }
+| attribute ':' INT    { $$ = odb_create_field_list($1,$3); $$->type = odb_int; }
+| attribute ':' HEX2   { $$ = odb_create_field_list($1,$3); $$->type = odb_hex2; }
+| attribute ':' HEX4   { $$ = odb_create_field_list($1,$3); $$->type = odb_hex4; }
+| attribute ':' FLOAT  { $$ = odb_create_field_list($1,$3); $$->type = odb_float; }
+| attribute ':' STRING { $$ = odb_create_field_list($1,$3); $$->type = odb_string; }
 ;
 
 /* basic types */
 
 id : UINT { $$ = $1.u; }
-;
-
-value : UINT
-| INT 
-| FLOAT
-| STRING
-| HEX4 
-| HEX2 
 ;
 
 class : IDENT { $$ = $1.ident; }

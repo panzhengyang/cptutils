@@ -5,7 +5,7 @@
   odb obhjects
 
   J.J.Green 2005
-  $Id: odb.c,v 1.2 2005/11/17 00:01:39 jjg Exp jjg $
+  $Id: odb.c,v 1.3 2005/11/17 00:15:25 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -260,12 +260,10 @@ extern odb_record_t* odb_class_name_lookup(const char* class,identtab_t* tab,odb
       return NULL;
     }
 
-  printf("class %s -> %i\n",class,ident->id);
-
-  return odb_class_nid_lookup(ident->id,odb);
+  return odb_class_ident_lookup(ident->id,odb);
 }
 
-extern odb_record_t* odb_class_nid_lookup(odb_ident_t id,odb_t* odb)
+extern odb_record_t* odb_class_ident_lookup(odb_ident_t id,odb_t* odb)
 {
   int n,i;
   odb_record_t* rec;
@@ -284,6 +282,25 @@ extern odb_record_t* odb_class_nid_lookup(odb_ident_t id,odb_t* odb)
   return NULL;
 }
 
+extern odb_record_t* odb_class_id_lookup(odb_uint_t id,odb_t* odb)
+{
+  int n,i;
+  odb_record_t* rec;
+
+  n   = odb->n;
+  rec = odb->records;
+
+  for (i=0 ; i<n ; i++)
+    {
+      if (rec[i].id == id)
+	{
+	  return rec + i;
+	}
+    }
+
+  return NULL;
+}
+
 extern odb_field_t* odb_attribute_name_lookup(const char* att,identtab_t* tab,odb_record_t* rec)
 {
   ident_t* ident;
@@ -294,10 +311,10 @@ extern odb_field_t* odb_attribute_name_lookup(const char* att,identtab_t* tab,od
       return NULL;
     }
 
-  return odb_attribute_nid_lookup(ident->id,rec);
+  return odb_attribute_ident_lookup(ident->id,rec);
 }
 
-extern odb_field_t* odb_attribute_nid_lookup(odb_ident_t id,odb_record_t* rec)
+extern odb_field_t* odb_attribute_ident_lookup(odb_ident_t id,odb_record_t* rec)
 {
   int n,i;
   odb_field_t* f;
@@ -309,8 +326,6 @@ extern odb_field_t* odb_attribute_nid_lookup(odb_ident_t id,odb_record_t* rec)
     {
       if (f[i].attribute == id)
 	{
-	  printf("found attribute %i at field %i\n",id,i+1);
-
 	  return f + i;
 	}
     }
