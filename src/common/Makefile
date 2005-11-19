@@ -1,18 +1,20 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.12 2005/06/26 15:45:30 jjg Exp jjg $
+# $Id: Makefile,v 1.13 2005/08/29 21:14:12 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
 OBJGGR  = gradient.o
 OBJPSP  = psp.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o 
-OBJPOV  = povwrite.o
+OBJPOV  = pov.o povwrite.o
+OBJID   = ident.o identtab.o
+OBJODB  = odb_bridge.o odb.o odbparse.o odbscan.o
 
 CFLAGS +=
 LDLIBS +=
 
-CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a
+CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a libident.a libodb.a
 
 RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG) $(OBJPOV)
 
@@ -54,6 +56,12 @@ libsvg.a : $(OBJSVG)
 
 libpov.a : $(OBJPOV)
 	ar r libpov.a $(OBJPOV)
+
+libident.a : $(OBJID)
+	ar r libident.a $(OBJID)
+
+libodb.a : $(OBJODB)
+	ar r libodb.a $(OBJODB)
 
 stdcol.c : stdcol.gperf
 	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
