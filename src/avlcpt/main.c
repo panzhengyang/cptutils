@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2005/01/27 21:17:50 jjg Exp $
+  $Id: main.c,v 1.1 2005/11/13 23:50:18 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -57,6 +57,16 @@ int main(int argc,char** argv)
   /* regular expression for labels */
 
   opt.label = (info.label_given ? info.label_arg : "%i %i");
+
+  /* precision */
+
+  opt.precision = info.precision_arg;
+  
+  if ( ! (opt.precision > 0))
+    {
+      fprintf(stderr,"precision must be positive but %f isn't\n",opt.precision);
+      return EXIT_FAILURE;
+    }
 
   /* null outfile for stdout */
 
