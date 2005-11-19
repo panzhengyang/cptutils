@@ -1,12 +1,13 @@
 # -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.2 2005/02/08 21:28:35 jjg Exp $
+# $Id: options.ggo,v 1.1 2005/11/13 23:50:12 jjg Exp jjg $
 package "avlcpt"
 purpose "convert ArcView Legend to GMT colour palette table"
 option  "debug"         d "print debugging output"           flag    off
 option  "label"         l "regular expression for label"     string  no
 option	"output"	o "output filename"	             string  no
+option  "precision"     p "precision"                        double  1.0
 option	"verbose"	v "verbose operation"	             flag    off
 
 
