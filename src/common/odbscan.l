@@ -2,7 +2,7 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.2 2005/11/15 00:45:24 jjg Exp jjg $
+   $Id: odbscan.l,v 1.3 2005/11/16 00:28:17 jjg Exp jjg $
 */
 
 %{
@@ -58,8 +58,8 @@ STRING \"(.*)\"
 {UINT}             yylval->u     = (odb_uint_t)atoi(yytext);  return UINT;
 {INT}              yylval->i     = (odb_int_t)atoi(yytext);   return INT;
 {FLOAT}            yylval->f     = (odb_float_t)atof(yytext); return FLOAT;
-{HEX2}             yylval->h2    = (odb_hex2_t)atoi(yytext);  return HEX2; 
-{HEX4}             yylval->h4    = (odb_hex4_t)atoi(yytext);  return HEX4;
+{HEX2}             yylval->h2    = (odb_hex2_t)strtol(yytext,NULL,16);  return HEX2; 
+{HEX4}             yylval->h4    = (odb_hex4_t)strtol(yytext,NULL,16);  return HEX4;
 {IDENT}            yylval->ident = identifier_insert(yytext,identtab); return IDENT;
 <<EOF>>            yyterminate();  
 .                  fprintf(stderr,"didn't expect (%s)\n",yytext);

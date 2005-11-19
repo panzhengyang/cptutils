@@ -3,7 +3,7 @@
 
   avl structures
   J.J. Green 2005
-  $Id: avl.c,v 1.3 2005/11/17 00:01:44 jjg Exp jjg $
+  $Id: avl.c,v 1.4 2005/11/18 00:27:16 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -180,137 +180,288 @@ static int traverse(odb_uint_t id,const char* att,identtab_t* tab,odb_t* odb,odb
 
 static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl, int verbose)
 {
-  odb_record_t *rl,*rs;
-  odb_uint_t odbid,legid,symid;
-  avl_seg_t* seg = NULL; 
-  int n;
+  odb_record_t *Rl,*Rs;
+  odb_uint_t odbid,legid,symid,*idxs,*idxl;
+  avl_seg_t* segs = NULL; 
+  int i,n,ns,nl,class,colour,child;
 
-  odbid = lookup_id("ODB",itab);
-  printf("ODB\t%u\n",odbid);
+  /* get Legend and SymTab records */
 
-  traverse(odbid,"Roots",itab,odb,&legid);
-  printf("Legend\t%u\n",legid);
+  if ((odbid = lookup_id("ODB",itab)) == 0 ||
+      traverse(odbid,"Roots",itab,odb,&legid) != 0  ||
+      traverse(legid,"Symbols",itab,odb,&symid) != 0)
+    return 1;
 
-  traverse(legid,"Symbols",itab,odb,&symid);
-  printf("SymTab\t%u\n",symid);
+  if ((Rl = odb_class_id_lookup(legid,odb)) == NULL)
+    {
+      fprintf(stderr,"failed to find Legend record\n");
+      return 1;
+    }
 
-  if ((rl = odb_class_id_lookup(legid,odb)) == NULL)
+  if ((Rs = odb_class_id_lookup(symid,odb)) == NULL)
     {
       fprintf(stderr,"failed to find SymList record\n");
       return 1;
     }
 
-  if ((rs = odb_class_id_lookup(symid,odb)) == NULL)
-    {
-      fprintf(stderr,"failed to find SymList record\n");
-      return 1;
-    }
+  /*
+    the label strings are held in the class attribute, while 
+    the colours are in the symtab. To merge these we first create 
+    2 arrays which index the appropriate fields
+  */
 
-  if ((n = rl->n) > 0)
+  class  = lookup_id("Class",itab);
+  child  = lookup_id("Child",itab);
+  colour = lookup_id("Color",itab);
+
+  /* count legends & colors, plus some sanity checking */
+
+  if ((n = Rl->n) > 0)
     {
-      int cid,i,j,m;
       odb_field_t* fs;
-      ident_t* ident;
 
-      fs = rl->fields;
+      fs = Rl->fields;
 
-      cid = lookup_id("Class",itab);
+      for (i=0,nl=0 ; i<n ; i++)
+	{
+	  if (fs[i].attribute == class) nl++;
+	}
+
+      if (!nl)
+	{
+	  fprintf(stderr,"no Class field in Legend record\n");
+	  return 1;
+	}
+    }
+  else
+    {
+      fprintf(stderr,"Legend record is empty\n");
+      return 1;
+    }
+
+  if ((n = Rs->n) > 0)
+    {
+      odb_field_t* fs;
+
+      fs = Rs->fields;
+
+      for (i=0,ns=0 ; i<n ; i++)
+	{
+	  if (fs[i].attribute == child) ns++;
+	}
+
+      if (!ns)
+	{
+	  fprintf(stderr,"no Child field in SymTab record\n");
+	  return 1;
+	}
+    }
+  else
+    {
+      fprintf(stderr,"SymTab record is empty\n");
+      return 1;
+    }
+
+  if (verbose)
+    {
+      printf("found %i/%i legend, %i/%i colour\n",nl,Rl->n,ns,Rs->n);
+    }
+
+  if (ns != nl)
+    {
+      fprintf(stderr,"unbalanced legend : %i legends, %i colours\n",nl,ns);
+      return 1;
+    }
+
+  /* create indicies */
+
+  idxs = malloc(ns*sizeof(int));
+  idxl = malloc(nl*sizeof(int));
+
+  if ((!idxs) || (!idxl))
+    {
+      fprintf(stderr,"out of memory\n");
+      return 1;
+    }
+
+  if ((n = Rl->n) > 0)
+    {
+      int i,m;
+      odb_field_t* fl = Rl->fields;
 
       for (i=0,m=0 ; i<n ; i++)
 	{
-	  if (fs[i].attribute == cid) m++;
+	  if (fl[i].attribute == class)
+	    {
+	      idxl[m] = i;
+	      m++;
+	    }
 	}
+    }
 
-      if (!m)
+  if ((n = Rs->n) > 0)
+    {
+      int i,m;
+      odb_field_t* fs = Rs->fields;
+
+      for (i=0,m=0 ; i<n ; i++)
 	{
-	  fprintf(stderr,"no Classes in Legend\n");
+	  if (fs[i].attribute == child)
+	    {
+	      idxs[m] = i;
+	      m++;
+	    }
+	}
+    }
+
+  /* segments */
+
+  if ((segs = malloc(ns*sizeof(avl_seg_t))) == NULL)
+    {
+      fprintf(stderr,"out of memory\n");
+      return 1;
+    }
+
+  for (i=0 ; i<nl ; i++)
+    {
+      odb_uint_t lcid,colid,bshid;
+      odb_record_t *rl,*rs;
+      int labid,il,is;
+      odb_field_t *fl,*fs,*fr,*fg,*fb;
+      avl_seg_t seg;      
+      const char* label;
+
+      /* get legend string */
+
+      il = idxl[i];
+      fl = Rl->fields + il;
+      
+      if (fl->attribute != class)
+	{
+	  fprintf(stderr,"indexing error\n");
+	  return 1;
+	}
+      
+      if (fl->type != odb_uint)
+	{
+	  fprintf(stderr,"Class %i value not an integer type!\n",il);
+	  return 1;
+	}
+      
+      lcid = fl->value.u;
+      
+      if ((rl = odb_class_id_lookup(lcid,odb)) == NULL)
+	{
+	  fprintf(stderr,"failed to find LClass record\n");
 	  return 1;
 	}
 
-      printf("found %i classes\n",m);
-
-      if ((seg = malloc(m*sizeof(avl_seg_t))) == NULL)
+      if ((fl = odb_attribute_name_lookup("Label",itab,rl)) == NULL)
 	{
-	  fprintf(stderr,"out of memory\n");
+	  fprintf(stderr,"failed to find Label field in LClass\n");
 	  return 1;
 	}
 
-      for (i=0,j=0 ; i<n ; i++)
+      if (fl->type != odb_string)
 	{
-	  odb_uint_t lcid;
-	  odb_record_t *r;
-	  odb_field_t* f;
-	  int label;
+	  fprintf(stderr,"Label value not a string type!\n");
+	  return 1;
+	}
+      
+      labid = fl->value.s;
 
-	  f = fs + i;
+      if ((label = lookup_name(labid,stab)) == NULL) return 1;
 
-	  if (f->attribute != cid) continue;
+      /* get the colours */
 
-	  if (f->type != odb_uint)
-	    {
-	      fprintf(stderr,"Child %i value not an integer type!\n",j+1);
-	      return 1;
-	    }
+      is = idxs[i];
+      fs = Rs->fields + is;
+      
+      if (fs->attribute != child)
+	{
+	  fprintf(stderr,"indexing error\n");
+	  return 1;
+	}
+      
+      if (fs->type != odb_uint)
+	{
+	  fprintf(stderr,"Color %i value not an integer type!\n",is);
+	  return 1;
+	}
+      
+      bshid = fs->value.u;
+      
+      if ((rs = odb_class_id_lookup(bshid,odb)) == NULL)
+	{
+	  fprintf(stderr,"failed to find BshSym record\n");
+	  return 1;
+	}
 
-	  lcid = f->value.u;
+      if ((fs = odb_attribute_ident_lookup(colour,rs)) == NULL)
+	{
+	  fprintf(stderr,"failed to find Color field in BBhSym\n");
+	  return 1;
+	}
 
-	  // printf("LClass\t%u\n",lcid);
+      if (fs->type != odb_uint)
+	{
+	  fprintf(stderr,"Color %i value not an integer type!\n",is);
+	  return 1;
+	}
+      
+      colid = fs->value.u;
+            
+      if ((rs = odb_class_id_lookup(colid,odb)) == NULL)
+	{
+	  fprintf(stderr,"failed to find Color record\n");
+	  return 1;
+	}
 
-	  if ((r = odb_class_id_lookup(lcid,odb)) == NULL)
-	    {
-	      fprintf(stderr,"failed to find LClass record\n");
-	      return 1;
-	    }
-
-	  if ((f = odb_attribute_name_lookup("Label",itab,r)) == NULL)
-	    {
-	      fprintf(stderr,"failed to find Label field in LClass\n");
-	      return 1;
-	    }
-
-	  if (f->type != odb_string)
-	    {
-	      fprintf(stderr,"Label value not a string type!\n");
-	      return 1;
-	    }
-
-	  label = f->value.s;
-
-	  printf("  %s\n",lookup_name(label,stab));
-
-	  /*
-	  odb_field_t *fr,*fg,*fb;
-
-	  if ((r = odb_class_id_lookup(id,odb)) == NULL)
-	    {
-	      fprintf(stderr,"failed to find Color record\n");
-	      return 1;
-	    }
-
-	  fr = odb_attribute_name_lookup("Red",itab,r);
-	  fg = odb_attribute_name_lookup("Green",itab,r);
-	  fb = odb_attribute_name_lookup("Blue",itab,r);
-
-	  if ( ! (fr && fg && fb))
-	    {
-	      fprintf(stderr,"failed to find components of Color %p %p %p\n",fr,fg,fb);
-	      return 1;
-	    }
-
-	  if ((fr->type != odb_hex4) )
+      fr = odb_attribute_name_lookup("Red",itab,rs);
+      fg = odb_attribute_name_lookup("Green",itab,rs);
+      fb = odb_attribute_name_lookup("Blue",itab,rs);
+      
+      if (fr && fg && fb)
+	{
+	  if (fr->type != odb_hex4 ||
+	      fg->type != odb_hex4 ||
+	      fb->type != odb_hex4)
 	    {
 	      fprintf(stderr,"Color component not a hex4 type!\n");
 	      return 1;
 	    }
-	  */
 
+	  /* now we have everthing we need so we write to the segment */
+	  
+	  seg.nodata = 0;
+	  seg.r      = fr->value.h4;
+	  seg.g      = fg->value.h4;
+	  seg.b      = fb->value.h4;
+	  seg.label  = strdup(label);
 	}
+      else
+	{
+	  /* probably a nodata legend, mark as such */
+	
+	  seg.nodata = 1;
+	  seg.r      = 0;
+	  seg.g      = 0;
+	  seg.b      = 0;
+	  seg.label  = NULL;
+	}
+
+      segs[i] = seg;
     }
+
+  avl->n   = ns;
+  avl->seg = segs;
 
   return 0;
 }
 
 extern int avl_clean(avl_grad_t* avl)
 {
+  /* FIXME */
+
   return 0;
 }

@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.1 2005/11/13 23:49:51 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.2 2005/11/16 00:28:06 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -49,8 +49,7 @@ extern int avlcpt(avlcpt_opt_t opt)
       return 1;
     }
 
-  // causes a core dump
-  // strncpy(cpt->name,avl.name,CPT_NAME_LEN);
+  strncpy(cpt->name,avl.name,CPT_NAME_LEN);
 
   if (avlcpt_convert(&avl,cpt,opt) != 0)
     {
@@ -87,6 +86,40 @@ static int cpt_append_err(cpt_seg_t*,cpt_t*);
 
 static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
 {
+  int i,n;
+
+  n = avl->n;
+
+  for (i=0 ; i<n ; i++)
+    {
+      cpt_seg_t* cseg;
+      avl_seg_t aseg = avl->seg[i];
+      double z0,z1;
+
+      if (aseg.nodata) continue;
+
+      sscanf(aseg.label,"%lf - %lf",&z0,&z1);
+
+      z0 = round(z0);
+      z1 = round(z1);
+
+      if ((cseg = cpt_seg_new_err()) == NULL) return 1;
+
+      cseg->lsmp.val = z0;
+      cseg->lsmp.fill.type = colour;
+      cseg->lsmp.fill.u.colour.rgb.red   = aseg.r/256;
+      cseg->lsmp.fill.u.colour.rgb.green = aseg.g/256;
+      cseg->lsmp.fill.u.colour.rgb.blue  = aseg.b/256;
+      
+      cseg->rsmp.val = z1;
+      cseg->rsmp.fill.type = colour;
+      cseg->rsmp.fill.u.colour.rgb.red   = aseg.r/256;
+      cseg->rsmp.fill.u.colour.rgb.green = aseg.g/256;
+      cseg->rsmp.fill.u.colour.rgb.blue  = aseg.b/256;
+      
+      if (cpt_append_err(cseg,cpt) != 0) return 1;
+    }
+
   return 0;
 }
 
