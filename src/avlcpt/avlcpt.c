@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.2 2005/11/16 00:28:06 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.3 2005/11/19 00:39:32 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -49,7 +49,7 @@ extern int avlcpt(avlcpt_opt_t opt)
       return 1;
     }
 
-  strncpy(cpt->name,avl.name,CPT_NAME_LEN);
+  strncpy(cpt->name,(opt.file.output ? opt.file.output : "<stdout>"),CPT_NAME_LEN);
 
   if (avlcpt_convert(&avl,cpt,opt) != 0)
     {
@@ -87,6 +87,9 @@ static int cpt_append_err(cpt_seg_t*,cpt_t*);
 static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
 {
   int i,n;
+  double prec;
+
+  prec = opt.precision;
 
   n = avl->n;
 
@@ -98,10 +101,22 @@ static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
 
       if (aseg.nodata) continue;
 
-      sscanf(aseg.label,"%lf - %lf",&z0,&z1);
+      if (opt.reverse)
+	{
+	  z0 = aseg.max;
+	  z1 = aseg.min;
+	}
+      else
+	{
+	  z0 = aseg.min;
+	  z1 = aseg.max;
+	}
 
-      z0 = round(z0);
-      z1 = round(z1);
+      z0 = round(z0/prec)*prec;
+      z1 = round(z1/prec)*prec;
+
+      z0 -= opt.adjust.lower;
+      z1 += opt.adjust.upper;
 
       if ((cseg = cpt_seg_new_err()) == NULL) return 1;
 

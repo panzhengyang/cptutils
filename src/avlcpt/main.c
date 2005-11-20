@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2005/11/19 16:56:58 jjg Exp jjg $
+  $Id: main.c,v 1.3 2005/11/19 17:03:30 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -54,9 +54,10 @@ int main(int argc,char** argv)
   opt.verbose = info.verbose_given;
   opt.debug   = info.debug_given;
 
-  /* scanf format string for labels : might be worth a sanity check here */
+  opt.adjust.lower = (info.lower_given ? info.lower_arg : 0.0);
+  opt.adjust.upper = (info.upper_given ? info.upper_arg : 0.0);
 
-  opt.label = (info.label_given ? info.label_arg : "%lf - %lf");
+  opt.reverse = info.reverse_given;
 
   /* precision */
 

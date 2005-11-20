@@ -3,7 +3,7 @@
 
   avl structures
   J.J. Green 2005
-  $Id: avl.c,v 1.4 2005/11/18 00:27:16 jjg Exp jjg $
+  $Id: avl.c,v 1.5 2005/11/19 00:39:19 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -326,12 +326,11 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
     {
       odb_uint_t lcid,colid,bshid;
       odb_record_t *rl,*rs;
-      int labid,il,is;
+      int il,is;
       odb_field_t *fl,*fs,*fr,*fg,*fb;
-      avl_seg_t seg;      
-      const char* label;
+      double min,max;
 
-      /* get legend string */
+      /* get label min/max values */
 
       il = idxl[i];
       fl = Rl->fields + il;
@@ -356,21 +355,37 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
 	  return 1;
 	}
 
-      if ((fl = odb_attribute_name_lookup("Label",itab,rl)) == NULL)
+      if ((fl = odb_attribute_name_lookup("MinNum",itab,rl)) == NULL)
 	{
-	  fprintf(stderr,"failed to find Label field in LClass\n");
-	  return 1;
+	  segs[i].nodata = 1;
+	  continue;
+	}
+      else
+	{
+	  if (fl->type != odb_float)
+	    {
+	      fprintf(stderr,"MinNum not a float type!\n");
+	      return 1;
+	    }
+	  
+	  min = fl->value.f;
 	}
 
-      if (fl->type != odb_string)
+      if ((fl = odb_attribute_name_lookup("MaxNum",itab,rl)) == NULL)
 	{
-	  fprintf(stderr,"Label value not a string type!\n");
-	  return 1;
+	  segs[i].nodata = 1;
+	  continue;
 	}
-      
-      labid = fl->value.s;
-
-      if ((label = lookup_name(labid,stab)) == NULL) return 1;
+      else
+	{
+	  if (fl->type != odb_float)
+	    {
+	      fprintf(stderr,"MaxNum not a float type!\n");
+	      return 1;
+	    }
+	  
+	  max = fl->value.f;
+	}
 
       /* get the colours */
 
@@ -433,24 +448,19 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
 
 	  /* now we have everthing we need so we write to the segment */
 	  
-	  seg.nodata = 0;
-	  seg.r      = fr->value.h4;
-	  seg.g      = fg->value.h4;
-	  seg.b      = fb->value.h4;
-	  seg.label  = strdup(label);
+	  segs[i].nodata = 0;
+	  segs[i].r      = fr->value.h4;
+	  segs[i].g      = fg->value.h4;
+	  segs[i].b      = fb->value.h4;
+	  segs[i].min    = min;
+	  segs[i].max    = max;
 	}
       else
 	{
 	  /* probably a nodata legend, mark as such */
-	
-	  seg.nodata = 1;
-	  seg.r      = 0;
-	  seg.g      = 0;
-	  seg.b      = 0;
-	  seg.label  = NULL;
-	}
 
-      segs[i] = seg;
+	  segs[i].nodata = 1;
+	}
     }
 
   avl->n   = ns;
