@@ -2,7 +2,7 @@
   odb.h
   structures for obd data
   J.J. Green 2005
-  $Id: odb.h,v 1.4 2005/11/17 00:01:49 jjg Exp jjg $
+  $Id: odb.h,v 1.5 2005/11/18 00:27:24 jjg Exp jjg $
 */
 
 #ifndef ODB_H
@@ -14,8 +14,7 @@ typedef int odb_ident_t;
 
 /* value types */
 
-typedef unsigned short   odb_hex2_t;
-typedef unsigned int     odb_hex4_t;
+typedef unsigned int     odb_hex_t;
 typedef unsigned int     odb_uint_t;
 typedef signed int       odb_int_t;
 typedef double           odb_float_t;
@@ -25,8 +24,7 @@ typedef odb_ident_t      odb_string_t;
 
 typedef enum 
   { 
-    odb_hex2,
-    odb_hex4,
+    odb_hex,
     odb_uint,
     odb_int,
     odb_float,
@@ -36,8 +34,7 @@ typedef enum
 	       
 typedef union
 {
-  odb_hex2_t   h2;
-  odb_hex4_t   h4;
+  odb_hex_t    h;
   odb_uint_t   u;
   odb_int_t    i;
   odb_float_t  f;

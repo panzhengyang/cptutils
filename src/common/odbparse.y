@@ -4,7 +4,7 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: odbparse.y,v 1.3 2005/11/16 00:28:44 jjg Exp jjg $
+  $Id: odbparse.y,v 1.4 2005/11/18 00:27:47 jjg Exp jjg $
 */
 
 %{
@@ -28,7 +28,7 @@
 %verbose
 %debug
 
-%token UINT INT FLOAT HEX2 HEX4
+%token UINT INT FLOAT HEX
 %token IDENT STRING
 
 %union {
@@ -40,7 +40,7 @@
 } 
 
 %type <uint>   id
-%type <value>  UINT INT FLOAT HEX4 HEX2 STRING IDENT
+%type <value>  UINT INT FLOAT HEX STRING IDENT
 %type <ident>  class attribute
 %type <field>  field fields
 %type <record> record records
@@ -70,8 +70,7 @@ fields : field
 
 field : attribute ':' UINT   { $$ = odb_create_field_list($1,$3); $$->type = odb_uint; }
 | attribute ':' INT    { $$ = odb_create_field_list($1,$3); $$->type = odb_int; }
-| attribute ':' HEX2   { $$ = odb_create_field_list($1,$3); $$->type = odb_hex2; }
-| attribute ':' HEX4   { $$ = odb_create_field_list($1,$3); $$->type = odb_hex4; }
+| attribute ':' HEX    { $$ = odb_create_field_list($1,$3); $$->type = odb_hex; }
 | attribute ':' FLOAT  { $$ = odb_create_field_list($1,$3); $$->type = odb_float; }
 | attribute ':' STRING { $$ = odb_create_field_list($1,$3); $$->type = odb_string; }
 ;

@@ -2,7 +2,7 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.3 2005/11/16 00:28:17 jjg Exp jjg $
+   $Id: odbscan.l,v 1.4 2005/11/19 00:39:05 jjg Exp jjg $
 */
 
 %{
@@ -35,8 +35,7 @@ H      [0-9a-f]
 UINT   {D}+
 FLOAT  \-?{D}+\.{D}*
 INT    \-{D}+
-HEX4   0x{H}{H}{H}{H}
-HEX2   0x{H}{H}
+HEX    0x{H}+
 IDENT  [a-zA-z]+
 STRING \"(.*)\"
 
@@ -57,9 +56,8 @@ STRING \"(.*)\"
 ":"                return ':';
 {UINT}             yylval->u     = (odb_uint_t)atoi(yytext);  return UINT;
 {INT}              yylval->i     = (odb_int_t)atoi(yytext);   return INT;
+{HEX}              yylval->h     = (odb_hex_t)strtol(yytext,NULL,16);  return HEX;
 {FLOAT}            yylval->f     = (odb_float_t)atof(yytext); return FLOAT;
-{HEX2}             yylval->h2    = (odb_hex2_t)strtol(yytext,NULL,16);  return HEX2; 
-{HEX4}             yylval->h4    = (odb_hex4_t)strtol(yytext,NULL,16);  return HEX4;
 {IDENT}            yylval->ident = identifier_insert(yytext,identtab); return IDENT;
 <<EOF>>            yyterminate();  
 .                  fprintf(stderr,"didn't expect (%s)\n",yytext);
