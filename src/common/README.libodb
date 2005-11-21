@@ -1,0 +1,13 @@
+The files making up libodb may be of interest to others.
+They constitute a flex/bison scanner/parser pair which generates
+a linked-list represention of the ODB struct, which is then converted
+to an array of records, each with an array of fields. Both of these
+are available in the odb_t struct, see odb.h
+
+See ../avlcpt/ for an example of how this is used (there we extract
+the colour gradient from an ArcView legend file). 
+
+Note that this library requires libident -- also in this directory --
+which impements an identifier table, just to make the string-handling
+a bit easier. This requires that the C library provide tsearch(3) 
+which is not POSIX, but is avaiable in GNU libc.   
