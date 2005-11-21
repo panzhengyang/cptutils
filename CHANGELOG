@@ -1,7 +1,14 @@
-Changes $Id: CHANGELOG,v 1.21 2005/09/21 20:20:35 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.22 2005/11/12 00:14:42 jjg Exp jjg $
+
+1.22 (21 Nov 2005)
+  - added new program avlcpt, converting the ArcView legend
+    format. Still needs a bit of work.
+  - above uses libodb which parses ODB format files and serialises
+    them into a convenient array structure. this might be of 
+    independent interest -- see src/common/README.libodb
 
 1.21 (11 Nov 2005)
-  - fixed bad default format string for td class labe
+  - fixed bad default format string for td class label
     in cptcss
 
 1.20 (21 Sep 2005)
