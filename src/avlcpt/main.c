@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.3 2005/11/19 17:03:30 jjg Exp jjg $
+  $Id: main.c,v 1.4 2005/11/20 16:40:15 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -56,8 +56,6 @@ int main(int argc,char** argv)
 
   opt.adjust.lower = (info.lower_given ? info.lower_arg : 0.0);
   opt.adjust.upper = (info.upper_given ? info.upper_arg : 0.0);
-
-  opt.reverse = info.reverse_given;
 
   /* precision */
 

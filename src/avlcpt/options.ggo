@@ -1,14 +1,13 @@
 # -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.3 2005/11/19 16:53:15 jjg Exp jjg $
+# $Id: options.ggo,v 1.4 2005/11/20 16:40:10 jjg Exp jjg $
 package "avlcpt"
 purpose "convert ArcView Legend to GMT colour palette table"
 option  "debug"         d "print debugging output"           flag    off
 option  "lower"         l "adjust lower height"              double  no
 option	"output"	o "output filename"	             string  no
 option  "precision"     p "precision"                        double  no
-option  "reverse"       r "reverse segment min/max values"   flag    off
 option	"verbose"	v "verbose operation"	             flag    off
 option  "upper"         u "adjust upper height"              double  no
 
