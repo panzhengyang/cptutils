@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.3 2005/11/19 00:39:32 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.4 2005/11/20 16:39:58 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -81,14 +81,28 @@ extern int avlcpt(avlcpt_opt_t opt)
   return 0;
 }
 
+#define AVLCPT_INC   1
+#define AVLCPT_DEC   2
+#define AVLCPT_ERROR 3
+
 static cpt_seg_t* cpt_seg_new_err(void);
 static int cpt_append_err(cpt_seg_t*,cpt_t*);
+static int avlcpt_direction(avl_grad_t*);
 
 static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
 {
-  int i,n;
+  int i,n,dir;
   double prec;
 
+  if ((dir = avlcpt_direction(avl)) == AVLCPT_ERROR)
+    {
+      fprintf(stderr,"avl gradient direction error\n");
+      return 1;
+    }
+
+  if (opt.verbose)
+    printf("gradient is %s\n",(dir == AVLCPT_INC ? "increasing" : "decreasing"));
+ 
   prec = opt.precision;
 
   n = avl->n;
@@ -101,15 +115,15 @@ static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
 
       if (aseg.nodata) continue;
 
-      if (opt.reverse)
-	{
-	  z0 = aseg.max;
-	  z1 = aseg.min;
-	}
-      else
+      if (dir == AVLCPT_INC)
 	{
 	  z0 = aseg.min;
 	  z1 = aseg.max;
+	}
+      else
+	{
+	  z0 = aseg.max;
+	  z1 = aseg.min;
 	}
 
       z0 = round(z0/prec)*prec;
@@ -136,6 +150,68 @@ static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
     }
 
   return 0;
+}
+
+/* 
+   is the avlcpt gradient increasing or non-increasing?
+   we also check that the gradients is monotone, else return
+   error.
+*/
+
+static int avlcpt_direction(avl_grad_t* avl)
+{
+  int i,n;
+  avl_seg_t* segs;
+
+  n    = avl->n;
+  segs = avl->seg;
+
+  switch (n)
+    {
+    case 0:
+      fprintf(stderr,"gradient has no segments!\n");
+      return AVLCPT_ERROR;
+    case 1:
+      fprintf(stderr,"gradient has only one segments!\n");
+      return AVLCPT_INC;
+    }
+
+  /* we have at least 2 */
+
+  if (segs[0].min < segs[1].min) 
+    {
+      for (i=1 ; i<n-1 ; i++)
+	{
+	  if (segs[i].nodata || segs[i+1].nodata) continue;
+
+	  if (! (segs[i].min < segs[i+1].min))
+	    {
+	      fprintf(stderr,"increasing gradient started to decrease!\n");
+	      fprintf(stderr,"segment %i, %.4f -> %.4f\n",i,segs[i].min,segs[i+1].min);
+	      return AVLCPT_ERROR;
+	    }
+	}
+
+      return AVLCPT_INC;
+    }
+  else
+    {
+      for (i=1 ; i<n-1 ; i++)
+	{
+	  if (segs[i].nodata || segs[i+1].nodata) continue;
+
+	  if (segs[i].min < segs[i+1].min)
+	    {
+	      fprintf(stderr,"decreasing gradient started to increase!\n");
+	      fprintf(stderr,"segment %i, %.4f -> %.4f\n",i,segs[i].min,segs[i+1].min);
+	      return AVLCPT_ERROR;
+	    }
+	}
+
+      return AVLCPT_DEC;
+    }
+
+  return AVLCPT_ERROR;
 }
 
 /* error message versions of functions used in avlcpt_convert */

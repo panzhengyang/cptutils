@@ -3,7 +3,7 @@
 
   avl structures
   J.J. Green 2005
-  $Id: avl.c,v 1.5 2005/11/19 00:39:19 jjg Exp jjg $
+  $Id: avl.c,v 1.6 2005/11/20 16:40:20 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -438,9 +438,9 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
       
       if (fr && fg && fb)
 	{
-	  if (fr->type != odb_hex4 ||
-	      fg->type != odb_hex4 ||
-	      fb->type != odb_hex4)
+	  if (fr->type != odb_hex ||
+	      fg->type != odb_hex ||
+	      fb->type != odb_hex)
 	    {
 	      fprintf(stderr,"Color component not a hex4 type!\n");
 	      return 1;
@@ -449,9 +449,9 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
 	  /* now we have everthing we need so we write to the segment */
 	  
 	  segs[i].nodata = 0;
-	  segs[i].r      = fr->value.h4;
-	  segs[i].g      = fg->value.h4;
-	  segs[i].b      = fb->value.h4;
+	  segs[i].r      = fr->value.h;
+	  segs[i].g      = fg->value.h;
+	  segs[i].b      = fb->value.h;
 	  segs[i].min    = min;
 	  segs[i].max    = max;
 	}
@@ -471,7 +471,10 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
 
 extern int avl_clean(avl_grad_t* avl)
 {
-  /* FIXME */
+  if (avl->n && avl->seg) free(avl->seg);
+
+  avl->n = 0;
+  avl->seg = NULL;
 
   return 0;
 }
