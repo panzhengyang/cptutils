@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.4 2005/11/20 16:39:58 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.5 2005/11/21 22:24:54 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -16,7 +16,7 @@
 
 #include "cpt.h"
 #include "cptio.h"
-#include "avl.h"
+#include "avlgrad.h"
 
 #include "avlcpt.h"
 
@@ -160,55 +160,69 @@ static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
 
 static int avlcpt_direction(avl_grad_t* avl)
 {
-  int i,n;
+  int i,n,m;
   avl_seg_t* segs;
 
   n    = avl->n;
   segs = avl->seg;
 
-  switch (n)
+  for (i=0,m=0 ; i<n ; i++)
+    if (! segs[i].nodata) m++;
+
+  if (m == 0)
     {
-    case 0:
       fprintf(stderr,"gradient has no segments!\n");
       return AVLCPT_ERROR;
-    case 1:
-      fprintf(stderr,"gradient has only one segments!\n");
-      return AVLCPT_INC;
     }
-
-  /* we have at least 2 */
-
-  if (segs[0].min < segs[1].min) 
+  else if (m == 1)
     {
-      for (i=1 ; i<n-1 ; i++)
-	{
-	  if (segs[i].nodata || segs[i+1].nodata) continue;
-
-	  if (! (segs[i].min < segs[i+1].min))
-	    {
-	      fprintf(stderr,"increasing gradient started to decrease!\n");
-	      fprintf(stderr,"segment %i, %.4f -> %.4f\n",i,segs[i].min,segs[i+1].min);
-	      return AVLCPT_ERROR;
-	    }
-	}
-
+      fprintf(stderr,"gradient has at one segment!\n");
       return AVLCPT_INC;
     }
   else
     {
-      for (i=1 ; i<n-1 ; i++)
-	{
-	  if (segs[i].nodata || segs[i+1].nodata) continue;
+      /* extract the non-nodata min/max values first */
 
-	  if (segs[i].min < segs[i+1].min)
+      double min[m],max[m];
+
+      for (i=0,m=0 ; i<n ; i++)
+	{	
+	  if (! segs[i].nodata)
 	    {
-	      fprintf(stderr,"decreasing gradient started to increase!\n");
-	      fprintf(stderr,"segment %i, %.4f -> %.4f\n",i,segs[i].min,segs[i+1].min);
-	      return AVLCPT_ERROR;
+	      min[m] = segs[i].min;
+	      max[m] = segs[i].max;
+	      m++;
 	    }
 	}
 
-      return AVLCPT_DEC;
+      /* now monotonicity checking is easy */ 
+
+      if (min[0] < min[1]) 
+	{
+	  for (i=1 ; i<m-1 ; i++)
+	    {
+	      if (! (min[i] < min[i+1]))
+		{
+		  fprintf(stderr,"increasing gradient started to decrease!\n");
+		  fprintf(stderr,"(%.4f,%.4f) -> (%.4f,%.4f)\n",min[i],max[i],min[i+1],max[i+1]);
+		  return AVLCPT_ERROR;
+		}
+	    }
+	  return AVLCPT_INC;
+	}
+      else
+	{
+	  for (i=1 ; i<m-1 ; i++)
+	    {
+	      if (min[i] < min[i+1])
+		{
+		  fprintf(stderr,"decreasing gradient started to increase!\n");
+		  fprintf(stderr,"(%.4f,%.4f) -> (%.4f,%.4f)\n",min[i],max[i],min[i+1],max[i+1]);
+		  return AVLCPT_ERROR;
+		}
+	    }
+	  return AVLCPT_DEC;
+	}
     }
 
   return AVLCPT_ERROR;
