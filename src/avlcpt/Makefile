@@ -1,9 +1,9 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2005/11/16 00:28:53 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2005/11/19 17:16:08 jjg Exp jjg $
 
-OBJ      =  avlcpt.o main.o options.o avl.o
+OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
 
 LDLIBS += 
@@ -35,14 +35,16 @@ odbparse.c : odbparse.y
 
 # for testing 
 
-RUBBISH += ddvelev9c.cpt
+CPT = avl/ddvelev1a.cpt avl/ddvelev9c.cpt avl/96004SP.cpt 
+
+RUBBISH += $(CPT)
 
 %.cpt : %.avl
 	./avlcpt -v -o $*.cpt $< 
 
-ddvelev9c.cpt : avlcpt
+$(CPT) : avlcpt
 
-test check : ddvelev9c.cpt
+test check : $(CPT)
 
 include ../Common.mk
 include ../Progs.mk
