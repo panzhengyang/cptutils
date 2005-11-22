@@ -2,10 +2,26 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.4 2005/11/19 00:39:05 jjg Exp jjg $
+   $Id: odbscan.l,v 1.5 2005/11/21 22:46:54 jjg Exp jjg $
+
+   Note that this treats bitblocks badly -- a bitblock may
+   be indistinguishable from a UINT, so we scan for a "proper" 
+   bitblock like "0a97762f 0928". If we find it we don't
+   interpret it, just insert into the string table. Bitblocks
+   which look like UINT will be interperted as UINT. That may
+   cause a parse error in a higher level structure like AVL.
+
+   These do seem to come in a "Bits" field, so perhaps a better
+   way mignt be to make that an ODB keyword, and even interpret
+   the bitfield into an appropriate structure.
+
+   I would welcome a patch implementing this functionality
+
+   :-) 
 */
 
 %{
+
 #include "odb.h"
 #include "odbparse.h"
 #include "odb_bridge.h"
@@ -37,6 +53,7 @@ FLOAT  \-?{D}+\.{D}*
 INT    \-{D}+
 HEX    0x{H}+
 IDENT  [a-zA-z]+
+BITBLK {H}{1,8}(" "{H}{1,8})+
 STRING \"(.*)\"
 
 %%
@@ -45,8 +62,8 @@ STRING \"(.*)\"
 <head>{UINT}       yylval->u  = (odb_uint_t)atoi(yytext);  return UINT;
 <head>"."          return '.';
 <head>[ \t]+
-<head>"\n"         BEGIN(INITIAL); 
-[ \t\n]+
+<head>[\r\n]+      BEGIN(INITIAL); 
+[ \t\r\n]+
 \"                 BEGIN(str);
 <str>[^\"]*        yylval->s = identifier_insert(yytext,stringtab); return STRING;
 <str>\"            BEGIN(INITIAL);
@@ -59,10 +76,12 @@ STRING \"(.*)\"
 {HEX}              yylval->h     = (odb_hex_t)strtol(yytext,NULL,16);  return HEX;
 {FLOAT}            yylval->f     = (odb_float_t)atof(yytext); return FLOAT;
 {IDENT}            yylval->ident = identifier_insert(yytext,identtab); return IDENT;
+{BITBLK}           yylval->b     = identifier_insert(yytext,stringtab); return BITBLK;
 <<EOF>>            yyterminate();  
 .                  fprintf(stderr,"didn't expect (%s)\n",yytext);
 
 %%
+
 
 /*
   this returns the (unique) id of the name inserted, 

@@ -4,7 +4,7 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: odbparse.y,v 1.4 2005/11/18 00:27:47 jjg Exp jjg $
+  $Id: odbparse.y,v 1.5 2005/11/21 22:46:44 jjg Exp jjg $
 */
 
 %{
@@ -29,7 +29,7 @@
 %debug
 
 %token UINT INT FLOAT HEX
-%token IDENT STRING
+%token IDENT STRING BITBLK
 
 %union {
   odb_uint_t uint;
@@ -40,7 +40,7 @@
 } 
 
 %type <uint>   id
-%type <value>  UINT INT FLOAT HEX STRING IDENT
+%type <value>  UINT INT FLOAT HEX STRING IDENT BITBLK
 %type <ident>  class attribute
 %type <field>  field fields
 %type <record> record records
@@ -73,6 +73,7 @@ field : attribute ':' UINT   { $$ = odb_create_field_list($1,$3); $$->type = odb
 | attribute ':' HEX    { $$ = odb_create_field_list($1,$3); $$->type = odb_hex; }
 | attribute ':' FLOAT  { $$ = odb_create_field_list($1,$3); $$->type = odb_float; }
 | attribute ':' STRING { $$ = odb_create_field_list($1,$3); $$->type = odb_string; }
+| attribute ':' BITBLK { $$ = odb_create_field_list($1,$3); $$->type = odb_bitblk; }
 ;
 
 /* basic types */
