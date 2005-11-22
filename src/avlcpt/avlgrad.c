@@ -3,7 +3,7 @@
 
   avl gradients structures
   J.J. Green 2005
-  $Id: avl.c,v 1.7 2005/11/21 22:25:04 jjg Exp jjg $
+  $Id: avlgrad.c,v 1.1 2005/11/22 22:51:31 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -524,7 +524,7 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
 		  fprintf(stderr,"Blue component not a hex type!\n");
 		  return 1;
 		}
-	      segs[i].r = fb->value.h;
+	      segs[i].b = fb->value.h;
 	      ncols++;
 	    }
 	}
