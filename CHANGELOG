@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.23 2005/11/21 22:41:18 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.24 2005/11/22 22:53:35 jjg Exp jjg $
+
+1.23 (03 Dec 2005)
+  - xycpt cleanup
 
 1.22 (21 Nov 2005)
   - added new program avlcpt, converting the ArcView legend
