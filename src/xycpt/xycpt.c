@@ -4,10 +4,8 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.3 2004/04/12 15:21:52 jjg Exp jjg $
+  $Id: xycpt.c,v 1.4 2004/04/12 15:48:41 jjg Exp jjg $
 */
-
-#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,14 +49,14 @@ extern int xycpt(xycpt_opt_t opt)
     }
 
   cpt->model = rgb;
+
+  /* set bg/fg/nan values */
   
   cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
-  
-  /*
-    cpt->fg.u.colour.rgb  = opt.fg;
-    cpt->bg.u.colour.rgb  = opt.bg;
-    cpt->nan.u.colour.rgb = opt.nan;
-  */
+
+  cpt->bg.u.colour.rgb  = opt.bg;
+  cpt->fg.u.colour.rgb  = opt.fg;
+  cpt->nan.u.colour.rgb = opt.nan;
 
   strncpy(cpt->name,(opt.file.input ?  opt.file.input : "<stdin>"),CPT_NAME_LEN);
 

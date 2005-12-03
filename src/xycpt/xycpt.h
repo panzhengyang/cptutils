@@ -2,11 +2,13 @@
   xycpt.h
 
   (c) J.J.Green 2004
-  $Id: xycpt.h,v 1.1 2004/04/01 23:37:48 jjg Exp jjg $
+  $Id$
 */
 
 #ifndef XYCPT_H
 #define XYCPT_H
+
+#include "colour.h"
 
 typedef enum {reg_lower,reg_middle,reg_upper} reg_t;
 
@@ -17,6 +19,7 @@ typedef struct
   int discrete;
   reg_t reg;
   int unital;
+  rgb_t fg,bg,nan;
   struct
   {
     char *input,*output;
