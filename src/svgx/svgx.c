@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.11 2005/12/04 19:49:27 jjg Exp jjg $
+  $Id: svgx.c,v 1.12 2005/12/04 19:50:54 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -503,7 +503,6 @@ static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
 static int svgcpt(svg_t* svg,cpt_t* cpt)
 {
   svg_node_t *node,*next;
-  fill_t fill;
 
   node = svg->nodes;
   next = node->r; 
