@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.5 2005/11/21 22:24:54 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.6 2005/11/22 22:18:56 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -36,9 +36,15 @@ extern int avlcpt(avlcpt_opt_t opt)
       return 1;
     }
 
+  /* housekeeping */
+
   cpt->model = rgb;
   
   cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+
+  cpt->bg.u.colour.rgb  = opt.bg;
+  cpt->fg.u.colour.rgb  = opt.fg;
+  cpt->nan.u.colour.rgb = opt.nan;
 
   /* transfer the gradient data to the cpt_t struct */
 
