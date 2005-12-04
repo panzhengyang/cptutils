@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.10 2005/12/04 19:38:55 jjg Exp jjg $
+  $Id: svgx.c,v 1.11 2005/12/04 19:49:27 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -372,14 +372,9 @@ static int svgcpt_dump(svg_t* svg,svgx_opt_t* opt)
   
   cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
   
-  cpt->bg.u.colour.rgb  = opt.bg;
-  cpt->fg.u.colour.rgb  = opt.fg;
-  cpt->nan.u.colour.rgb = opt.nan;
-  
-  if (snprintf(cpt->name,CPT_NAME_LEN,"%s",svg->name) >= CPT_NAME_LEN)
-    {
-      fprintf(stderr,"cpt name truncated\n");
-    }
+  cpt->bg.u.colour.rgb  = opt->bg;
+  cpt->fg.u.colour.rgb  = opt->fg;
+  cpt->nan.u.colour.rgb = opt->nan;
   
   /* translate */
 
