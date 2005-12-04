@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.15 2005/09/21 10:27:35 jjg Exp jjg $
+# $Id: Makefile,v 1.16 2005/09/21 20:25:04 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
@@ -20,14 +20,14 @@ check test : svgx
 	  echo $$file ; \
 	  for name in `$(SVGX) -l $$file` ; do \
 	    echo "  $$name" ; \
-	    $(SVGCPT) -n $$name -o test/$$name.cpt $$file ; \
-	    $(SVGGGR) -n $$name -o test/$$name.ggr $$file ; \
-	    $(SVGPOV) -n $$name -o test/$$name.inc $$file ; \
+	    $(SVGCPT) -N $$name -b10 -f1/2/3 -n0/12/0 -o test/$$name.cpt $$file ; \
+	    $(SVGGGR) -N $$name -o test/$$name.ggr $$file ; \
+	    $(SVGPOV) -N $$name -o test/$$name.inc $$file ; \
 	  done ;\
 	done
 
 test.png : test.pov
-	povray  +L, +Itest.pov
+	povray  +L. +A0.1 +Q11 +Itest.pov
 
 clean :
 	$(RM) $(RUBBISH)

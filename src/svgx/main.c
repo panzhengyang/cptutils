@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.7 2005/08/29 18:28:17 jjg Exp jjg $
+  $Id$
 */
 
 #include <stdio.h>
@@ -103,11 +103,31 @@ int main(int argc,char** argv)
     default:
       fprintf(stderr,"Exactly one SVG file must be specified!\n");
       options_print_help();
-      return EXIT_FAILURE;
+      return EXIT_FAILURE; 
     }
   
   opt.input.file  = infile;
   opt.output.file = outfile;
+
+  /* fg/bg/nan */
+
+  if (parse_rgb(info.background_arg,&opt.bg) != 0)
+    {
+      fprintf(stderr,"bad background %s\n",info.background_arg);
+      return EXIT_FAILURE;
+    }
+
+  if (parse_rgb(info.foreground_arg,&opt.fg) != 0)
+    {
+      fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
+      return EXIT_FAILURE;
+    }
+
+  if (parse_rgb(info.nan_arg,&opt.nan) != 0)
+    {
+      fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
+      return EXIT_FAILURE;
+    }
 
   /* 
      we write the translation of the svg gradient <name> to stdout 
@@ -115,7 +135,7 @@ int main(int argc,char** argv)
   */
 
   if (opt.name && !outfile && opt.verbose)
-    {
+   {
       fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
       opt.verbose = 0;
     }
@@ -129,7 +149,7 @@ int main(int argc,char** argv)
 	  const char* tstr;
 
 	  switch (opt.type)
-	    {
+ 	    {
 	    case type_cpt : tstr = "cpt"; break;
 	    case type_ggr : tstr = "gimp"; break;
 	    case type_pov : tstr = "pov"; break;

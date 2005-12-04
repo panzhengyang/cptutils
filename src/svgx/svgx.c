@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.8 2005/09/21 20:08:37 jjg Exp jjg $
+  $Id$
   J.J. Green 2005
 */
 
@@ -189,7 +189,22 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	  fprintf(stderr,"failed to create cpt structure\n");
 	  return 1;
 	}
+
+      /* housekeeping */
+
+      cpt->model = rgb;
+
+      cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
       
+      cpt->bg.u.colour.rgb  = opt.bg;
+      cpt->fg.u.colour.rgb  = opt.fg;
+      cpt->nan.u.colour.rgb = opt.nan;
+  
+      if (snprintf(cpt->name,CPT_NAME_LEN,"%s",svg->name) >= CPT_NAME_LEN)
+	{
+	  fprintf(stderr,"cpt name truncated\n");
+	}
+
       if (svgcpt(svg,cpt) != 0)
 	{
 	  fprintf(stderr,"failed to convert %s to cpt\n",opt.name);
@@ -479,22 +494,6 @@ static int svgcpt(svg_t* svg,cpt_t* cpt)
 {
   svg_node_t *node,*next;
   fill_t fill;
-
-  cpt->model = rgb;
-
-  fill.type = rgb;
-  fill.u.colour.rgb.red   = 255;
-  fill.u.colour.rgb.green = 255;
-  fill.u.colour.rgb.blue  = 255;
-
-  cpt->bg  = fill;
-  cpt->fg  = fill;
-  cpt->nan = fill;
-
-  if (snprintf(cpt->name,CPT_NAME_LEN,"%s",svg->name) >= CPT_NAME_LEN)
-    {
-      fprintf(stderr,"cpt name truncated\n");
-    }
 
   node = svg->nodes;
   next = node->r; 

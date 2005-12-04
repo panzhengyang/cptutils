@@ -2,11 +2,13 @@
   svgx.h
 
   (c) J.J.Green 2004
-  $Id: svgx.h,v 1.3 2005/08/29 18:26:56 jjg Exp jjg $
+  $Id$
 */
 
 #ifndef SVGX_H
 #define SVGX_H
+
+#include "colour.h"
 
 typedef enum {type_cpt, type_ggr, type_pov} svgx_type_t;
 
@@ -19,6 +21,7 @@ typedef struct
   int first;
   int list;
   char *name;
+  rgb_t fg,bg,nan;
   svgx_type_t type; 
   struct
   {
