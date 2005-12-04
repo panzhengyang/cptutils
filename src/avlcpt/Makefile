@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.5 2005/11/19 17:16:08 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2005/11/22 22:51:26 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
@@ -40,7 +40,7 @@ CPT = avl/ddvelev1a.cpt avl/ddvelev9c.cpt avl/96004SP.cpt
 RUBBISH += $(CPT)
 
 %.cpt : %.avl
-	./avlcpt -v -o $*.cpt $< 
+	./avlcpt -b0/0/20 -f0/20/0 -n20/0/0 -v -o $*.cpt $< 
 
 $(CPT) : avlcpt
 

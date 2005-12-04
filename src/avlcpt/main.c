@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.4 2005/11/20 16:40:15 jjg Exp jjg $
+  $Id: main.c,v 1.5 2005/11/21 22:16:36 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -97,6 +97,26 @@ int main(int argc,char** argv)
   
   opt.file.input  = infile;
   opt.file.output = outfile;
+
+  /* get fg/bg/nan */
+
+  if (parse_rgb(info.background_arg,&opt.bg) != 0)
+    {
+      fprintf(stderr,"bad background %s\n",info.background_arg);
+      return EXIT_FAILURE;
+    }
+
+  if (parse_rgb(info.foreground_arg,&opt.fg) != 0)
+    {
+      fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
+      return EXIT_FAILURE;
+    }
+
+  if (parse_rgb(info.nan_arg,&opt.nan) != 0)
+    {
+      fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
+      return EXIT_FAILURE;
+    }
 
   err = avlcpt(opt);
 
