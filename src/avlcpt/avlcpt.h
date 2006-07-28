@@ -2,17 +2,20 @@
   avlcpt.h
 
   (c) J.J.Green 2005
-  $Id: avlcpt.h,v 1.2 2005/11/20 16:40:04 jjg Exp jjg $
+  $Id: avlcpt.h,v 1.3 2005/11/21 22:16:56 jjg Exp jjg $
 */
 
 #ifndef AVLCPT_H
 #define AVLCPT_H
+
+#include "colour.h"
 
 typedef struct
 {
   int verbose;
   int debug;
   double precision;
+  rgb_t fg,bg,nan;
   struct
   {
     int upper,lower;
