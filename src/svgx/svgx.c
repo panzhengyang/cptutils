@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.12 2005/12/04 19:50:54 jjg Exp jjg $
+  $Id: svgx.c,v 1.13 2005/12/04 19:51:27 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -796,14 +796,9 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
   return 0;
 }
 
-/*
-  this funtion ignores the silly 20 stop limit in the povray format,
-  that needs to be handled by the calling funtion
-*/
-
 static int svgpov(svg_t* svg,pov_t* pov)
 {
-  int n,m;
+  int n,m,nmod;
   svg_node_t *node;
 
   /* count & allocate */
@@ -874,13 +869,20 @@ static int svgpov(svg_t* svg,pov_t* pov)
 
   pov->n = n;
 
-  if (pov_set_name(pov,(svg->name ? svg->name : "(unnamed)")) != 0)
+  if (pov_set_name(pov,(svg->name ? svg->name : "unnamed"),&nmod) != 0)
     {
       fprintf(stderr,
 	      "failed to assign povray name (%s)\n",
 	      (svg->name ? svg->name : "(null)"));
       return 1;
     }
+
+  /* warn if name was modified */
+
+  if (nmod > 0)
+    fprintf(stderr,
+	    "name modified : %s to %s\n",
+	    svg->name, pov->name); 
 
   return 0;
 }
