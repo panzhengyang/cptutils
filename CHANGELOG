@@ -1,4 +1,9 @@
-Changes $Id: CHANGELOG,v 1.25 2005/12/03 00:23:32 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.26 2005/12/04 19:45:02 jjg Exp jjg $
+
+1.25 (28 Aug 2006)
+  - povray output now has the name beautified (converted to
+    only alphanumerics and underscore) to avoid povray parse
+    errors.
 
 1.24 (04 Dec 2005)
   - all cpt writing  programs now have -b -f and -n flags, so 

@@ -5,7 +5,7 @@
   low-level manipulations
 
   J.J.Green 2005
-  $Id: pov.c,v 1.2 2005/09/21 10:32:28 jjg Exp jjg $
+  $Id: pov.c,v 1.3 2006/08/27 23:07:36 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -63,7 +63,7 @@ extern int pov_set_name(pov_t* pov,const char* name,int *n)
   povname[POV_NAME_LEN-1] = '\0';
 
   for (c = povname, *n = 0 ; *c ; c++)
-    if (! isalnum(*c))
+    if (! (isalnum(*c) || *c == '_'))
       {
 	*c = '_';
 	m++;
