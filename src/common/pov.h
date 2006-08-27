@@ -3,7 +3,7 @@
   structures for povray colour maps
 
   J.J.Green 2005
-  $Id: pov.h,v 1.4 2005/09/21 10:32:47 jjg Exp jjg $
+  $Id: pov.h,v 1.5 2005/09/21 19:49:33 jjg Exp jjg $
 */
 
 #ifndef POV_H
@@ -31,6 +31,6 @@ extern pov_t* pov_new(void);
 extern void pov_destroy(pov_t*);
 
 extern int pov_stops_alloc(pov_t*,int);
-extern int pov_set_name(pov_t*,const char*);
+extern int pov_set_name(pov_t*,const char*,int*);
 
 #endif
