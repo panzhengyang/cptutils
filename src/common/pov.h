@@ -3,16 +3,20 @@
   structures for povray colour maps
 
   J.J.Green 2005
-  $Id: pov.h,v 1.5 2005/09/21 19:49:33 jjg Exp jjg $
+  $Id: pov.h,v 1.6 2006/08/27 23:07:46 jjg Exp jjg $
 */
 
 #ifndef POV_H
 #define POV_H
 
-/* piss poor limitatation! */
+/* 
+   POV_STOPS_MAX increased from 20 to 256 in version
+   1.24, the online documentation says the former,
+   but the pov-ray code says not.
+*/
 
 #define POV_NAME_LEN 256
-#define POV_STOPS_MAX 20
+#define POV_STOPS_MAX 256
 
 typedef struct pov_stop_t
 {
