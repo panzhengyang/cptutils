@@ -5,11 +5,12 @@
   low-level manipulations
 
   J.J.Green 2005
-  $Id: pov.c,v 1.1 2005/09/20 22:38:58 jjg Exp jjg $
+  $Id: pov.c,v 1.2 2005/09/21 10:32:28 jjg Exp jjg $
 */
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "pov.h"
 
@@ -45,10 +46,30 @@ extern int pov_stops_alloc(pov_t* pov,int n)
   return 0;
 }
 
-extern int pov_set_name(pov_t* pov,const char* name)
+/*
+  here we copy over the name and then normalise the 
+  name -- non-alphanumerics are converted to 
+  underscore (this needed for the pov-ray parser).
+  The count passed to the function has the number
+  of charcters changed (caller may wish to warn)
+*/
+
+extern int pov_set_name(pov_t* pov,const char* name,int *n)
 {
-  strncat(pov->name,name,POV_NAME_LEN-1);
-  pov->name[POV_NAME_LEN-1] = '\0';
+  char *c,*povname = pov->name;
+  int m = 0;
+
+  strncat(povname,name,POV_NAME_LEN-1);
+  povname[POV_NAME_LEN-1] = '\0';
+
+  for (c = povname, *n = 0 ; *c ; c++)
+    if (! isalnum(*c))
+      {
+	*c = '_';
+	m++;
+      }
+
+  *n = m;
 
   return 0;
 }
