@@ -3,7 +3,7 @@
 
   read photoshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.h,v 1.2 2005/01/27 21:32:02 jjg Exp jjg $
+  $Id: psp.h,v 1.3 2005/01/28 20:03:23 jjg Exp jjg $
 */
 
 #ifndef PSP_H
@@ -24,6 +24,7 @@ typedef struct
 typedef struct
 {
   char* name;
+  int ver[2];
   int n;
   psp_seg_t* seg;
 } psp_grad_t;
@@ -32,3 +33,4 @@ extern int read_psp(FILE*,psp_grad_t*);
 extern int clean_psp(psp_grad_t*);
 
 #endif
+ 

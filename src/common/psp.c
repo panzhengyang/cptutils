@@ -3,7 +3,7 @@
 
   read photoshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.2 2005/01/27 21:32:11 jjg Exp jjg $
+  $Id: psp.c,v 1.3 2005/01/28 20:03:17 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -39,9 +39,12 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
 	}
     }
 
-  /* next 4 looks like a format version - 00 03 00 01 */
+  /* next 4 looks like a format version - 00 03 00 01 -> 3.1 ? */
 
-  SKIP(s,4);
+  fread(b,1,4,s);
+
+  grad->ver[0] = b[0]*256 + b[1];
+  grad->ver[1] = b[2]*256 + b[3];
 
   /* then a single unsigned char, the title length */
 
@@ -252,7 +255,8 @@ static int read_segment_pos(FILE *s,psp_seg_t* seg)
      g g b b
 
    not sure what the zeros are (alpha?) and I dont
-   know why the rgb values are repeated.
+   know why the rgb values are repeated. Possibly 
+   colour are 2-byte unsigned ints
  */
 
 static int read_segment_data(FILE *s,psp_seg_t* seg)
@@ -287,8 +291,8 @@ static int read_segment_data(FILE *s,psp_seg_t* seg)
 /* 
    the footer -- not sure what is in here, possibly
    - the alpha channel (but then what is the first 
-     pair of chars in the segment data?)
-   - the angle of the gradient
+     pair of chars in the segment data? padding to 8 bytes?)
+   - the angle of the gradient (one of 0, 90, 180 270)
    - the type (linear, circular,..)
    - the number of repeats
    ???
@@ -300,9 +304,20 @@ static int read_segment_data(FILE *s,psp_seg_t* seg)
    the colour path. The last would be nice (but we would
    leave it up to calling function whether to implement 
    it)
+
+   Typically the first octet of the footer is
+
+     000 000 000   x
+     000   y 000 000
+
+   usually y is 002 but sometimes bigger, and then the footer
+   is longer -- so possibly it is the number of segments
+   in the alpha channel.
 */
 
 #ifdef DEBUG
+
+/* this is for inspecting the footer */
 
 static int read_footer(FILE *s)
 {
