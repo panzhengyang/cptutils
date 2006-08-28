@@ -3,7 +3,7 @@
 
   read photoshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.3 2005/01/28 20:03:17 jjg Exp jjg $
+  $Id: psp.c,v 1.4 2006/08/28 21:47:24 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -132,10 +132,10 @@ extern int clean_psp(psp_grad_t* grad)
   with (x,y) interpreted as the z-value, we take it to 
   mean a big endian unsigned short, so (x,y) -> 256*x+y.
 
-  In the first segment the value octet is absent, and so
-  we assume an implicit value of zero.
+  In the first segment the value quad is absent, and so
+  we assume an implicit value of zero is implied.
 
-  In all files so far tested, the value for the final
+  In all files so far tested, the (z) value for the final
   segment is 4096 (16,0)
 */
 
@@ -202,7 +202,10 @@ static int read_segment_h1(FILE *s,psp_seg_t* seg)
   return 0;
 }
 
-/* expect 0 0 0 50 */
+/* 
+   expect 0 0 0 50 - second pair the location of
+   the centre-point?
+*/
 
 static int read_segment_h2(FILE *s,psp_seg_t* seg)
 {
