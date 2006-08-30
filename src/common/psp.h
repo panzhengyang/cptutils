@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.h,v 1.4 2006/08/28 21:47:46 jjg Exp jjg $
+  $Id: psp.h,v 1.5 2006/08/30 23:13:39 jjg Exp jjg $
 */
 
 #ifndef PSP_H
@@ -21,7 +21,7 @@ typedef struct
 
 typedef struct
 {
-  unsigned char z;
+  unsigned int z;
   unsigned char opacity;
   unsigned char midpoint;
 } psp_opseg_t;
