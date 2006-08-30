@@ -1,4 +1,13 @@
-Changes $Id: CHANGELOG,v 1.26 2005/12/04 19:45:02 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.27 2006/08/27 23:24:37 jjg Exp jjg $
+
+1.26 (31 Aug 2006)
+  - psp.c now also parses the opacity gradient and 
+    midpoints of the segments.  
+  - pspcpt prints out the opacity gradient and gives
+    warnings if there are uncentred midpoints or
+    any tranparency. 
+  - pspcpt now needs to be replaced by pspgimp, since
+    that would be lossless.
 
 1.25 (28 Aug 2006)
   - povray output now has the name beautified (converted to
