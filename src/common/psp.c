@@ -1,10 +1,17 @@
 /*
   psp.c
 
-  read photoshop pro gradients.
+  read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.4 2006/08/28 21:47:24 jjg Exp jjg $
+  $Id: psp.c,v 1.5 2006/08/28 22:14:39 jjg Exp jjg $
 */
+
+/* TODO : check fread return values */
+
+#if 0
+#define DEBUG_OPGRAD
+#define DEBUG_H1
+#endif
 
 #include <stdio.h>
 
@@ -12,13 +19,13 @@
 
 #define SKIP(stream,n) fseek((stream),(n),SEEK_CUR)
 
-static int read_first_segment(FILE*,psp_seg_t*);
-static int read_segment(FILE*,psp_seg_t*);
-static int read_footer(FILE*);
+static int read_first_rgbseg(FILE*,psp_rgbseg_t*);
+static int read_rgbseg(FILE*,psp_rgbseg_t*);
+static int read_opseg(FILE*,psp_opseg_t*);
 
 extern int read_psp(FILE* s,psp_grad_t* grad)
 {
-  unsigned char b[4],magic[4] = "8BGR";
+  unsigned char b[6],magic[4] = "8BGR";
   int i,n;
 
   /* first 4 look like a magic number 8BGR */
@@ -73,9 +80,13 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
       grad->name = name;
     }
     
-  /* then an unsigned char, the number of samples */
+  /* then an unsigned char, the number of rgb samples */
 
   n = fgetc(s);
+
+#ifdef DEBUG_H1
+  printf("rgb gradient : %i stops\n",n);
+#endif
 
   if (n<2)
     {
@@ -85,29 +96,87 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
   else 
     {
       int j, err = 0;
-      psp_seg_t* seg;
+      psp_rgbseg_t* seg;
 
-      if ((seg = malloc(n*sizeof(psp_seg_t))) == NULL)
+      if ((seg = malloc(n*sizeof(psp_rgbseg_t))) == NULL)
 	{
 	  fprintf(stderr,"failed malloc()");
 	  return 1;
 	}
       
-      err += read_first_segment(s,seg);
+      err += read_first_rgbseg(s,seg);
 
       for (j=1 ; j<n ; j++) 
-	err += read_segment(s,seg+j);
+	err += read_rgbseg(s,seg+j);
 
       if (err) return err;
 
-      grad->n   = n;
-      grad->seg = seg;
+      grad->rgb.n   = n;
+      grad->rgb.seg = seg;
     }
 
-  if (read_footer(s) != 0)
+  /* then 0 0 0 0 0 n, where n is the number of opacity samples */
+
+  fread(b,1,6,s);
+
+  for (i=0 ; i<5 ; i++)
     {
-      fprintf(stderr,"error reading footer\n");
+      if (b[i] != 0)
+	{
+	  int j;
+
+	  fprintf(stderr,"unexpected opacity gradient header : ");
+	  for (j=0 ; j<6 ; j++) fprintf(stderr," %i",(int)b[j]);
+	  fprintf(stderr,"\n");
+
+	  return 1;
+	}
+    }
+
+   /* 
+      check n feasible: 2 are needed, and there are only 16
+      possible z values so more than 31 stops would be madness
+      (think a 16-step staircase)
+   */
+
+  n = b[5];
+
+#ifdef DEBUG_OPGRAD
+  printf("opacity gradient: %i stops\n",n);
+#endif
+
+  if (n<2) 
+    {
+      fprintf(stderr,
+	      "there are %i opacity stop%s (not enough)\n",
+	      n,(n==1 ? "" : "s" ));
       return 1;
+    }
+  else 
+    {
+      int j, err = 0;
+      psp_opseg_t* seg;
+
+      if (n>31)
+	{
+	  fprintf(stderr,
+		  "there are %i opacity stop%s (probably too many)\n",
+		  n,(n==1 ? "" : "s" ));
+	}
+
+      if ((seg = malloc(n*sizeof(psp_opseg_t))) == NULL)
+	{
+	  fprintf(stderr,"failed malloc()");
+	  return 1;
+	}
+      
+      for (j=0 ; j<n ; j++) 
+	err += read_opseg(s,seg+j);
+
+      if (err) return err;
+
+      grad->op.n   = n;
+      grad->op.seg = seg;
     }
 
   return 0;
@@ -116,41 +185,50 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
 extern int clean_psp(psp_grad_t* grad)
 {
   free(grad->name);
-  free(grad->seg);
+  free(grad->rgb.seg);
+  free(grad->op.seg);
 
   return 0;
 }
 
 
 /*
-  In all but the first segment, the header seems to be
+  In all but the first rgbseg, the header seems to be
 
     0 0 0 0  : h1 
-    0 0 x y  : val
-    0 0 0 50 : h2
+    0 0 x y  : z
+    0 0 0 m  : midpoint
 
   with (x,y) interpreted as the z-value, we take it to 
   mean a big endian unsigned short, so (x,y) -> 256*x+y.
+  The midpoint is an unsigned char which should be 
+  intepreted as a percentage (of the )
 
-  In the first segment the value quad is absent, and so
-  we assume an implicit value of zero is implied.
+  In the first segment the z block is absent and z is 
+  implicitly zero. So the data are
 
-  In all files so far tested, the (z) value for the final
-  segment is 4096 (16,0)
+    0 m z m z m
+    --- --- ---
+ 
+  i.e., the midpoint of the final segment is redundant,
+
+  In all files so far tested, the z value for the final
+  segment is 4096 = 2^12 (16,0) and the redundant 
+  midpoint 50.
 */
 
-static int read_segment_h1(FILE*,psp_seg_t*);
-static int read_segment_h2(FILE*,psp_seg_t*);
-static int read_segment_pos(FILE*,psp_seg_t*);
-static int read_segment_data(FILE*,psp_seg_t*);
+static int read_rgbseg_head(FILE*,psp_rgbseg_t*);
+static int read_rgbseg_midpoint(FILE*,psp_rgbseg_t*);
+static int read_rgbseg_z(FILE*,psp_rgbseg_t*);
+static int read_rgbseg_rgb(FILE*,psp_rgbseg_t*);
 
-static int read_first_segment(FILE *s,psp_seg_t* seg)
+static int read_first_rgbseg(FILE *s,psp_rgbseg_t* seg)
 {
   int err = 0;
 
-  err += read_segment_h1(s,seg);
-  err += read_segment_h2(s,seg);
-  err += read_segment_data(s,seg);
+  err += read_rgbseg_head(s,seg);
+  err += read_rgbseg_midpoint(s,seg);
+  err += read_rgbseg_rgb(s,seg);
 
   if (err) return err;
 
@@ -159,14 +237,14 @@ static int read_first_segment(FILE *s,psp_seg_t* seg)
   return 0;
 }
 
-static int read_segment(FILE *s,psp_seg_t* seg)
+static int read_rgbseg(FILE *s,psp_rgbseg_t* seg)
 {
   int err = 0;
 
-  err += read_segment_h1(s,seg);
-  err += read_segment_pos(s,seg);
-  err += read_segment_h2(s,seg);
-  err += read_segment_data(s,seg);
+  err += read_rgbseg_head(s,seg);
+  err += read_rgbseg_z(s,seg);
+  err += read_rgbseg_midpoint(s,seg);
+  err += read_rgbseg_rgb(s,seg);
 
   return err;
 }
@@ -182,7 +260,7 @@ static int print_array(unsigned char* b,int n,FILE* s,const char* fmt)
 
 /* usually 0 0 0 0 -- smoothness parameter? */ 
 
-static int read_segment_h1(FILE *s,psp_seg_t* seg)
+static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned char b[4];
 
@@ -190,7 +268,7 @@ static int read_segment_h1(FILE *s,psp_seg_t* seg)
 
   if ((b[0] != 0) || (b[1] != 0))
     {
-      fprintf(stderr,"unusual h1 found : ");
+      fprintf(stderr,"unusual head found : ");
       print_array(b,4,stderr," %i");
       fprintf(stderr,"\n");
 
@@ -199,15 +277,21 @@ static int read_segment_h1(FILE *s,psp_seg_t* seg)
 
   seg->h1 = 256*b[2]+b[3];
 
+#ifdef DEBUG_H1
+  printf("  %i\n",(int)(seg->h1));
+#endif
+
   return 0;
 }
 
 /* 
-   expect 0 0 0 50 - second pair the location of
-   the centre-point?
+   expect 0 0 0 m 
+
+   m is the midpoint in percentage, though the 
+   psp gui seems to limit it to 5 < m < 95
 */
 
-static int read_segment_h2(FILE *s,psp_seg_t* seg)
+static int read_rgbseg_midpoint(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned char b[4];
 
@@ -215,21 +299,21 @@ static int read_segment_h2(FILE *s,psp_seg_t* seg)
 
   if ((b[0] != 0) || (b[1] != 0) || (b[2] != 0))
     {
-      fprintf(stderr,"unusual h2 found : ");
+      fprintf(stderr,"unusual midpoint block found : ");
       print_array(b,4,stderr," %i");
       fprintf(stderr,"\n");
 
       return 1;
     }
 
-  seg->h2 = b[3];
-  
+  seg->midpoint = b[3];
+
   return 0;
 }
 
 /* expect 0 0 x y, interpet xy as an unsigned short */  
 
-static int read_segment_pos(FILE *s,psp_seg_t* seg)
+static int read_rgbseg_z(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned char b[4];
 
@@ -259,10 +343,11 @@ static int read_segment_pos(FILE *s,psp_seg_t* seg)
 
    not sure what the zeros are (alpha?) and I dont
    know why the rgb values are repeated. Possibly 
-   colour are 2-byte unsigned ints
+   colour are 2-byte unsigned ints. The initial zeros
+   are not the alpha channel.
  */
 
-static int read_segment_data(FILE *s,psp_seg_t* seg)
+static int read_rgbseg_rgb(FILE *s,psp_rgbseg_t* seg)
 {
   int i;
   unsigned char b[8];
@@ -275,7 +360,7 @@ static int read_segment_data(FILE *s,psp_seg_t* seg)
 	{
 	  int j;
 
-	  fprintf(stderr,"unexpected segment data : ");
+	  fprintf(stderr,"unexpected rgbseg data : ");
 	  for (j=0 ; j<8 ; j++) fprintf(stderr," %i",(int)b[j]);
 	  fprintf(stderr,"\n");
 
@@ -283,7 +368,14 @@ static int read_segment_data(FILE *s,psp_seg_t* seg)
 	}
     }
 
-  seg->a = b[0];
+  if (b[0] || b[1])
+    {
+      fprintf(stderr,
+	      "unexpected rgbseg initial block : %i %i\n",
+	      b[0],b[1]);
+      return 1;
+    }
+
   seg->r = b[2];
   seg->g = b[4];
   seg->b = b[6];
@@ -292,63 +384,53 @@ static int read_segment_data(FILE *s,psp_seg_t* seg)
 }
 
 /* 
-   the footer -- not sure what is in here, possibly
-   - the alpha channel (but then what is the first 
-     pair of chars in the segment data? padding to 8 bytes?)
-   - the angle of the gradient (one of 0, 90, 180 270)
-   - the type (linear, circular,..)
-   - the number of repeats
-   ???
+   expect 
+   
+   0 0 
+   z 0 
+   0 0 
+   0 m 
+   0 p  
+   
+   where 
 
-   The first would be nice to work out (so we could have
-   alpha translation to convert to ggr) but not so much
-   for the cpt conversion. The second to are specific to
-   the painting/display of art gradients -- we just want
-   the colour path. The last would be nice (but we would
-   leave it up to calling function whether to implement 
-   it)
+   z is the z-coordinate 0 <= z <=  16
+   m is the mid-point    0 <= m <= 100
+   p is the opacity      0 <= p <= 256 
 
-   Typically the first octet of the footer is
+   note that the opacity segments do not have a special
+   initial form where the z is implicit, the first has
+   z=0 and the last has z=16, which seems a rather coarse
+   z-range.
 
-     000 000 000   x
-     000   y 000 000
-
-   usually y is 002 but sometimes bigger, and then the footer
-   is longer -- so possibly it is the number of segments
-   in the alpha channel.
+   I assume that the final m is unused.
 */
 
-#ifdef DEBUG
-
-/* this is for inspecting the footer */
-
-static int read_footer(FILE *s)
+static int read_opseg(FILE *s,psp_opseg_t* seg)
 {
-  unsigned char b[4];
+  unsigned char b[10];
 
-  while (fread(b,1,4,s))
+  fread(b,1,10,s);
+
+  if (b[0] || b[1] || b[3] || b[4] || b[5] || b[6] || b[8])
     {
-      int i;
+      int j;
 
-      for (i=0 ; i<4 ; i++)
-	     printf("%.3i ",(int)b[i]);
-
-      printf("%s",(*((int*)b)) ? "" : "*");
-
-      printf("\n");
+      fprintf(stderr,"unusual opacity segment:");
+      for (j=0 ; j<10 ; j++) fprintf(stderr," %i",(int)b[j]);
+      fprintf(stderr,"\n");
     }
 
-  return 0;
-}
+  seg->z        = b[2];
+  seg->midpoint = b[7];
+  seg->opacity  = b[9];
 
-#else
-
-static int read_footer(FILE *s)
-{
-  return 0;
-}
-
+#ifdef DEBUG_OPGRAD
+  printf("  %.2i %.3i %.3i\n",(int)b[2],(int)b[7],(int)b[9]);
 #endif
+
+  return 0;
+}
 
 #ifdef TESTPROG
 
@@ -384,7 +466,7 @@ int main (int argc,char** argv)
   printf("# %s\n",grad.name);
   for (i=0 ; i<grad.n ; i++)
     {
-      psp_seg_t seg = grad.seg[i];
+      psp_rgbseg_t seg = grad.seg[i];
 
       printf("%.4i %.3i %.3i %.3i\n",
 	     seg.z,
