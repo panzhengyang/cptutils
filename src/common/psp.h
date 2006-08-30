@@ -1,9 +1,9 @@
 /*
   psp.h
 
-  read photoshop pro gradients.
+  read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.h,v 1.3 2005/01/28 20:03:23 jjg Exp jjg $
+  $Id: psp.h,v 1.4 2006/08/28 21:47:46 jjg Exp jjg $
 */
 
 #ifndef PSP_H
@@ -14,19 +14,32 @@
 typedef struct
 {
   unsigned int  z;
-  unsigned char a,r,g,b;
-  /* smoothess parameter? */
-  unsigned int h1;
-  /* might be the midpoint */
-  unsigned char h2;
-} psp_seg_t;
+  unsigned char r,g,b;
+  unsigned int  h1; /* unknown meaning */
+  unsigned char midpoint;
+} psp_rgbseg_t;
+
+typedef struct
+{
+  unsigned char z;
+  unsigned char opacity;
+  unsigned char midpoint;
+} psp_opseg_t;
 
 typedef struct
 {
   char* name;
   int ver[2];
-  int n;
-  psp_seg_t* seg;
+  struct 
+  {
+    int n;
+    psp_rgbseg_t* seg;
+  } rgb;
+  struct
+  {
+    int n;
+    psp_opseg_t* seg;
+  } op;
 } psp_grad_t;
 
 extern int read_psp(FILE*,psp_grad_t*);
