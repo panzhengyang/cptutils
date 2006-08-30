@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.5 2006/08/28 22:14:39 jjg Exp jjg $
+  $Id: psp.c,v 1.6 2006/08/30 23:13:24 jjg Exp jjg $
 */
 
 /* TODO : check fread return values */
@@ -387,21 +387,20 @@ static int read_rgbseg_rgb(FILE *s,psp_rgbseg_t* seg)
    expect 
    
    0 0 
-   z 0 
+   x y 
    0 0 
    0 m 
    0 p  
    
-   where 
+   where z = xy is an unsigned short 
 
-   z is the z-coordinate 0 <= z <=  16
+   z is the z-coordinate 0 <= z <= 16*256
    m is the mid-point    0 <= m <= 100
    p is the opacity      0 <= p <= 256 
 
    note that the opacity segments do not have a special
    initial form where the z is implicit, the first has
-   z=0 and the last has z=16, which seems a rather coarse
-   z-range.
+   z=0 and the last has z=4096=16*256
 
    I assume that the final m is unused.
 */
@@ -412,7 +411,7 @@ static int read_opseg(FILE *s,psp_opseg_t* seg)
 
   fread(b,1,10,s);
 
-  if (b[0] || b[1] || b[3] || b[4] || b[5] || b[6] || b[8])
+  if (b[0] || b[1] || b[4] || b[5] || b[6] || b[8])
     {
       int j;
 
@@ -421,12 +420,12 @@ static int read_opseg(FILE *s,psp_opseg_t* seg)
       fprintf(stderr,"\n");
     }
 
-  seg->z        = b[2];
+  seg->z        = b[2]*256 + b[3];
   seg->midpoint = b[7];
   seg->opacity  = b[9];
 
 #ifdef DEBUG_OPGRAD
-  printf("  %.2i %.3i %.3i\n",(int)b[2],(int)b[7],(int)b[9]);
+  printf("  %.2i %.3i %.3i\n",seg->z,(int)b[7],(int)b[9]);
 #endif
 
   return 0;
