@@ -1,0 +1,84 @@
+The PaintShop Pro gradient format
+---------------------------------
+
+PaintShop Pro gradients typically have the extension 
+.jgd (in earlier version) or .PspGradient (in more recent 
+versions). The format is binary and holds independent 
+48-bit RGB and 8-bit opacity gradients, along with an
+embedded gradient name.
+
+The format
+----------
+
+<psp gradient> =
+  <header>
+  <rgb block>
+  <op block>
+
+<header> = 
+  uchar[4] = [8 B G R],  magic number
+  ushort[2], unknown, major/minor version of format? (usually 3/1)
+  uchar[1], the title length n
+  char[n], title (without a terminating null)
+
+<rgb block> = 
+  short[1], number of rgb samples
+  <rbg initial seg>
+  <rgb seg>
+     :
+  <rgb seg>
+  <block end>
+
+<op block>
+  short[1], number of opacity samples
+  <op seg>
+     :
+  <op seg>
+  <block end>
+
+<block end>
+  ushort[2] = [0 0]
+
+<rgb initial seg>
+  ushort[6] = [0 m 0 r g b], midpoint & rgb values (z implicitly 0)
+
+<rgb seg>
+  ushort[6] = [0 m 0 z 0 r g b], midpoint, z & rgb values
+
+<op seg>
+  ushort[5] = [0 z 0 m p], midpoint & opacity 
+   
+Remarks
+-------
+
+Here
+
+  z is the z-coordinate 0 <= z <= 2^12 = 4096 
+  m is the mid-point    0 <= m <= 100
+  p is the opacity      0 <= p <= 256 
+  rgb are the channels  0 <= r,g,b < 2^16 = 65536
+
+Odd that the rgb gradient has a special initial segment
+(which lacks [0 z], so z is taken to be zero), yet the
+opacity gradient does not. 
+
+The midpoint m[i] is the percentage of the displacement 
+from z[i] to z[i+1], and PSP output always has this value
+between 5 and 95. The midpoint of the final segment is
+unused (PSP output has this midpoint 50).
+
+The reason for the midpoint is to control a (presumably)
+nonlinear curve through rgb/p space. The form of this
+curve as used in PSP is not yet determined.
+
+The above is a complete description, in particular the 
+angle, repeat and type (linear, radial) are not part of
+to the format. 
+
+About this document
+-------------------
+
+This document was written by J.J.Green and is hereby
+contributed to the public domain.
+
+$Id$
