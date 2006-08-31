@@ -3,10 +3,17 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.6 2006/08/30 23:13:24 jjg Exp jjg $
+  $Id: psp.c,v 1.7 2006/08/30 23:50:16 jjg Exp jjg $
 */
 
-/* TODO : check fread return values */
+/* 
+   TODO : 
+   
+   check fread return values
+   add psp_write
+   rename top pspio.c
+   autconf the ntoh
+*/
 
 #if 0
 #define DEBUG_OPGRAD
@@ -17,15 +24,45 @@
 
 #include "psp.h"
 
-#define SKIP(stream,n) fseek((stream),(n),SEEK_CUR)
+/* 
+  portable ntoh - perhaps use built-in (if available)
+
+  BSD does this with 
+
+  uint16_t ntohs (uint16_t x)   	
+  {
+  #if BYTE_ORDER == LITTLE_ENDIAN
+      u_char *s = (u_char *) &x;
+      return (uint16_t)(s[0] << 8 | s[1]);
+  else
+      return x;
+  #endif
+  }
+*/ 
+
+/* 
+   convert big-endian short to host short, this needed
+   since the shorts we read are big endian. Co-incidentally
+   the internet is big-endian (network-endian) and so this
+   function is almost standard.
+*/
+
+static unsigned short ntohs(unsigned short x)
+{
+  unsigned char *c = (unsigned char*)&x;
+
+  return c[0]*256 + c[1]; 
+}
 
 static int read_first_rgbseg(FILE*,psp_rgbseg_t*);
 static int read_rgbseg(FILE*,psp_rgbseg_t*);
 static int read_opseg(FILE*,psp_opseg_t*);
+static int read_block_end(FILE*);
 
 extern int read_psp(FILE* s,psp_grad_t* grad)
 {
   unsigned char b[6],magic[4] = "8BGR";
+  unsigned short u[2];
   int i,n;
 
   /* first 4 look like a magic number 8BGR */
@@ -46,12 +83,12 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
 	}
     }
 
-  /* next 4 looks like a format version - 00 03 00 01 -> 3.1 ? */
+  /* next 2 shorts, a format version (usually 3 1) */
 
-  fread(b,1,4,s);
+  fread(u,2,2,s);
 
-  grad->ver[0] = b[0]*256 + b[1];
-  grad->ver[1] = b[2]*256 + b[3];
+  grad->ver[0] = ntohs(u[0]);
+  grad->ver[1] = ntohs(u[1]);
 
   /* then a single unsigned char, the title length */
 
@@ -75,14 +112,18 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
 	  return 1;
 	}
 
-      for (j=0 ; j<n+1 ; j++)  name[j] = fgetc(s);
+      for (j=0 ; j<n ; j++)  name[j] = fgetc(s);
+
+      name[n] = '\0';
 
       grad->name = name;
     }
     
-  /* then an unsigned char, the number of rgb samples */
+  /* then an short, the number of rgb samples */
 
-  n = fgetc(s);
+  fread(u,2,1,s);
+
+  n = ntohs(u[0]);
 
 #ifdef DEBUG_H1
   printf("rgb gradient : %i stops\n",n);
@@ -115,31 +156,13 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
       grad->rgb.seg = seg;
     }
 
-  /* then 0 0 0 0 0 n, where n is the number of opacity samples */
+  if (read_block_end(s) != 0) return 1;
 
-  fread(b,1,6,s);
+  /* then a short, the number of opacity samples */
 
-  for (i=0 ; i<5 ; i++)
-    {
-      if (b[i] != 0)
-	{
-	  int j;
+  fread(u,1,2,s);
 
-	  fprintf(stderr,"unexpected opacity gradient header : ");
-	  for (j=0 ; j<6 ; j++) fprintf(stderr," %i",(int)b[j]);
-	  fprintf(stderr,"\n");
-
-	  return 1;
-	}
-    }
-
-   /* 
-      check n feasible: 2 are needed, and there are only 16
-      possible z values so more than 31 stops would be madness
-      (think a 16-step staircase)
-   */
-
-  n = b[5];
+  n = ntohs(u[0]);
 
 #ifdef DEBUG_OPGRAD
   printf("opacity gradient: %i stops\n",n);
@@ -157,13 +180,6 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
       int j, err = 0;
       psp_opseg_t* seg;
 
-      if (n>31)
-	{
-	  fprintf(stderr,
-		  "there are %i opacity stop%s (probably too many)\n",
-		  n,(n==1 ? "" : "s" ));
-	}
-
       if ((seg = malloc(n*sizeof(psp_opseg_t))) == NULL)
 	{
 	  fprintf(stderr,"failed malloc()");
@@ -179,6 +195,8 @@ extern int read_psp(FILE* s,psp_grad_t* grad)
       grad->op.seg = seg;
     }
 
+  if (read_block_end(s) != 0) return 1;
+
   return 0;
 }
 
@@ -191,26 +209,16 @@ extern int clean_psp(psp_grad_t* grad)
   return 0;
 }
 
-
 /*
-  In all but the first rgbseg, the header seems to be
+  rgb segment is (shorts)
 
-    0 0 0 0  : h1 
-    0 0 x y  : z
-    0 0 0 m  : midpoint
+  0 0 
+  0 z 
+  0 m 
+  0 r g b
 
-  with (x,y) interpreted as the z-value, we take it to 
-  mean a big endian unsigned short, so (x,y) -> 256*x+y.
-  The midpoint is an unsigned char which should be 
-  intepreted as a percentage (of the )
-
-  In the first segment the z block is absent and z is 
-  implicitly zero. So the data are
-
-    0 m z m z m
-    --- --- ---
- 
-  i.e., the midpoint of the final segment is redundant,
+  in all but the first, there the [0 z] block is 
+  absent and z is implicitly zero
 
   In all files so far tested, the z value for the final
   segment is 4096 = 2^12 (16,0) and the redundant 
@@ -249,33 +257,33 @@ static int read_rgbseg(FILE *s,psp_rgbseg_t* seg)
   return err;
 }
 
-static int print_array(unsigned char* b,int n,FILE* s,const char* fmt)
+static int print_array(unsigned short* u,int n,FILE* s,const char* fmt)
 {
   int i;
-  
-  for (i=0 ; i<n ; i++) fprintf(s,fmt,(int)b[i]);
 
-  return 1;
+  for (i=0 ; i<n ; i++) fprintf(s,fmt,(int)ntohs(u[i]));
+
+  return 0;
 }
 
-/* usually 0 0 0 0 -- smoothness parameter? */ 
+/* expect short[2] = 0 0, unused */ 
 
 static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
 {
-  unsigned char b[4];
+  unsigned short u[2];
 
-  fread(b,1,4,s);
+  fread(u,2,2,s);
 
-  if ((b[0] != 0) || (b[1] != 0))
+  if (u[0] != 0)
     {
       fprintf(stderr,"unusual head found : ");
-      print_array(b,4,stderr," %i");
+      print_array(u,2,stderr," %i");
       fprintf(stderr,"\n");
 
       return 1;
     }
 
-  seg->h1 = 256*b[2]+b[3];
+  seg->h1 = ntohs(u[1]);
 
 #ifdef DEBUG_H1
   printf("  %i\n",(int)(seg->h1));
@@ -285,7 +293,7 @@ static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
 }
 
 /* 
-   expect 0 0 0 m 
+   expect ushort[2] = 0 m 
 
    m is the midpoint in percentage, though the 
    psp gui seems to limit it to 5 < m < 95
@@ -293,140 +301,127 @@ static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
 
 static int read_rgbseg_midpoint(FILE *s,psp_rgbseg_t* seg)
 {
-  unsigned char b[4];
+  unsigned short u[2];
 
-  fread(b,1,4,s);
+  fread(u,2,2,s);
 
-  if ((b[0] != 0) || (b[1] != 0) || (b[2] != 0))
+  if (u[0] != 0)
     {
       fprintf(stderr,"unusual midpoint block found : ");
-      print_array(b,4,stderr," %i");
+      print_array(u,2,stderr," %i");
       fprintf(stderr,"\n");
 
       return 1;
     }
 
-  seg->midpoint = b[3];
+  seg->midpoint = ntohs(u[1]);
 
   return 0;
 }
 
-/* expect 0 0 x y, interpet xy as an unsigned short */  
+/* expect ushort[2] = 0 z  */  
 
 static int read_rgbseg_z(FILE *s,psp_rgbseg_t* seg)
 {
-  unsigned char b[4];
+  unsigned short u[2];
 
-  fread(b,1,4,s);
+  fread(u,2,2,s);
 
-  if ((b[0] != 0) || (b[1] != 0))
+  if (u[0] != 0)
     {  
-      int j;
-      
-      fprintf(stderr,"unusual z octet found : ");
-      for (j=0 ; j<4 ; j++) fprintf(stderr," %i",(int)b[j]);
+      fprintf(stderr,"unusual z pair found : ");
+      print_array(u,2,stderr," %i");
       fprintf(stderr,"\n");
 
       return 1;
     }
   
-  seg->z = b[2]*256 + b[3];
+  seg->z = ntohs(u[1]);
 
   return 0;
 }
 
 /* 
-   read colour data, which looks like
-
-     0 0 r r 
-     g g b b
-
-   not sure what the zeros are (alpha?) and I dont
-   know why the rgb values are repeated. Possibly 
-   colour are 2-byte unsigned ints. The initial zeros
-   are not the alpha channel.
+   expect ushort[4] = 0 r g b, the first short is
+   unused (it is not an alpha channel), the next
+   3 are the RGB values using the full 16 bits 
+   range. To get the 8 bit value integer divide
+   by 256
  */
 
 static int read_rgbseg_rgb(FILE *s,psp_rgbseg_t* seg)
 {
-  int i;
-  unsigned char b[8];
+  unsigned short u[4];
 
-  fread(b,1,8,s);
+  fread(u,2,4,s);
 
-  for (i=0 ; i<4 ; i++)
-    {
-      if (b[2*i] != b[2*i+1])
-	{
-	  int j;
-
-	  fprintf(stderr,"unexpected rgbseg data : ");
-	  for (j=0 ; j<8 ; j++) fprintf(stderr," %i",(int)b[j]);
-	  fprintf(stderr,"\n");
-
-	  return 1;
-	}
-    }
-
-  if (b[0] || b[1])
+  if (u[0])
     {
       fprintf(stderr,
-	      "unexpected rgbseg initial block : %i %i\n",
-	      b[0],b[1]);
+	      "unexpected rgb padding : %i\n",
+	      (int)u[0]);
       return 1;
     }
 
-  seg->r = b[2];
-  seg->g = b[4];
-  seg->b = b[6];
+  seg->r = ntohs(u[1]);
+  seg->g = ntohs(u[2]);
+  seg->b = ntohs(u[3]);
 
   return 0;
 }
 
 /* 
-   expect 
+   expect ushort[5] = 0 z 0 m p  
    
-   0 0 
-   x y 
-   0 0 
-   0 m 
-   0 p  
-   
-   where z = xy is an unsigned short 
+   where
 
-   z is the z-coordinate 0 <= z <= 16*256
-   m is the mid-point    0 <= m <= 100
-   p is the opacity      0 <= p <= 256 
+     z is the z-coordinate 0 <= z <= 16*256
+     m is the mid-point    0 <= m <= 100
+     p is the opacity      0 <= p <= 256 
 
    note that the opacity segments do not have a special
    initial form where the z is implicit, the first has
    z=0 and the last has z=4096=16*256
 
-   I assume that the final m is unused.
+   The m in the final segment is unused (and usually 50).
 */
 
 static int read_opseg(FILE *s,psp_opseg_t* seg)
 {
-  unsigned char b[10];
+  unsigned short u[5];
 
-  fread(b,1,10,s);
+  fread(u,2,5,s);
 
-  if (b[0] || b[1] || b[4] || b[5] || b[6] || b[8])
+  if (u[0] || u[2])
     {
-      int j;
-
       fprintf(stderr,"unusual opacity segment:");
-      for (j=0 ; j<10 ; j++) fprintf(stderr," %i",(int)b[j]);
+      print_array(u,2,stderr," %i");
       fprintf(stderr,"\n");
     }
 
-  seg->z        = b[2]*256 + b[3];
-  seg->midpoint = b[7];
-  seg->opacity  = b[9];
+  seg->z        = ntohs(u[1]);
+  seg->midpoint = ntohs(u[3]);
+  seg->opacity  = ntohs(u[4]);
 
 #ifdef DEBUG_OPGRAD
-  printf("  %.2i %.3i %.3i\n",seg->z,(int)b[7],(int)b[9]);
+  printf("  %.2i %.3i %.3i\n",seg->z,seg->midpoint,seg->opacity);
 #endif
+
+  return 0;
+}
+
+static int read_block_end(FILE* s)
+{
+  unsigned short u[2];
+
+  fread(u,2,2,s);
+
+  if (u[0] || u[1])
+    {
+      fprintf(stderr,"unepected block end : %i %i\n",
+	      (int)u[0],(int)u[1]);
+      return 1;
+    }
 
   return 0;
 }
