@@ -1,9 +1,10 @@
 /*
   psp.h
 
-  read paintshop pro gradients.
-  2005 (c) J.J. Green
-  $Id: psp.h,v 1.6 2006/08/30 23:41:24 jjg Exp jjg $
+  paintshop pro gradient structures
+
+  2006 (c) J.J. Green
+  $Id: psp.h,v 1.7 2006/08/31 23:24:50 jjg Exp jjg $
 */
 
 #ifndef PSP_H
@@ -15,7 +16,6 @@ typedef struct
 {
   unsigned short z;
   unsigned short r,g,b;
-  unsigned short h1; /* unknown meaning */
   unsigned short midpoint;
 } psp_rgbseg_t;
 
@@ -42,7 +42,8 @@ typedef struct
   } op;
 } psp_grad_t;
 
-extern int read_psp(FILE*,psp_grad_t*);
+extern unsigned char pspmagic[];
+
 extern int clean_psp(psp_grad_t*);
 
 #endif
