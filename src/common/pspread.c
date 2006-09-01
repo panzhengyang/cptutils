@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.c,v 1.8 2006/08/31 23:23:49 jjg Exp jjg $
+  $Id: pspread.c,v 1.1 2006/09/01 20:48:02 jjg Exp jjg $
 */
 
 /* 
@@ -28,17 +28,17 @@ static int read_block_end(FILE*);
 
 extern int read_psp(FILE* s,psp_grad_t* grad)
 {
-  unsigned char b[6],magic[4] = "8BGR";
+  unsigned char b[6];
   unsigned short u[2];
   int i,n;
 
-  /* first 4 look like a magic number 8BGR */
+  /* first 4 are the psp magic number */
 
   fread(b,1,4,s);
 
   for (i=0 ; i<4 ; i++)
     {
-      if (b[i] != magic[i])
+      if (b[i] != pspmagic[i])
 	{
 	  int j;
 

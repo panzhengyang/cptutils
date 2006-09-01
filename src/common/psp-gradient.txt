@@ -10,10 +10,13 @@ embedded gradient name.
 The format
 ----------
 
+Here all ushorts are 2-byte big-endian unsigned integers.
+
 <psp gradient> =
   <header>
   <rgb block>
   <op block>
+  <gradient end>
 
 <header> = 
   uchar[4] = [8 B G R],  magic number
@@ -22,7 +25,7 @@ The format
   char[n], title (without a terminating null)
 
 <rgb block> = 
-  short[1], number of rgb samples
+  ushort[1], number of rgb samples
   <rbg initial seg>
   <rgb seg>
      :
@@ -30,23 +33,26 @@ The format
   <block end>
 
 <op block>
-  short[1], number of opacity samples
+  ushort[1], number of opacity samples
   <op seg>
      :
   <op seg>
   <block end>
 
-<block end>
-  ushort[2] = [0 0]
-
 <rgb initial seg>
-  ushort[6] = [0 m 0 r g b], midpoint & rgb values (z implicitly 0)
+  ushort[8] = [0 0 0 m 0 r g b], midpoint & rgb values (z implicitly 0)
 
 <rgb seg>
-  ushort[6] = [0 m 0 z 0 r g b], midpoint, z & rgb values
+  ushort[10] = [0 0 0 m 0 z 0 r g b], midpoint, z & rgb values
 
 <op seg>
   ushort[5] = [0 z 0 m p], midpoint & opacity 
+
+<block end>
+  ushort[2] = [0 0]
+
+<gradient end> 
+  ushort[1] = [0]
    
 Remarks
 -------
@@ -81,4 +87,4 @@ About this document
 This document was written by J.J.Green and is hereby
 contributed to the public domain.
 
-$Id$
+$Id: psp-gradient.txt,v 1.1 2006/08/31 22:23:08 jjg Exp jjg $
