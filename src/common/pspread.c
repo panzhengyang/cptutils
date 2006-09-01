@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: pspread.c,v 1.1 2006/09/01 20:48:02 jjg Exp jjg $
+  $Id: pspread.c,v 1.2 2006/09/01 22:26:21 jjg Exp jjg $
 */
 
 /* 
@@ -26,7 +26,7 @@ static int read_rgbseg(FILE*,psp_rgbseg_t*);
 static int read_opseg(FILE*,psp_opseg_t*);
 static int read_block_end(FILE*);
 
-extern int read_psp(FILE* s,psp_grad_t* grad)
+extern int read_psp(FILE* s,psp_t* grad)
 {
   unsigned char b[6];
   unsigned short u[2];
@@ -382,7 +382,7 @@ int main (int argc,char** argv)
 {
   FILE *s;
   char *file = argv[1];
-  psp_grad_t grad;
+  psp_t grad;
   int i;
 
   if (argc != 2)

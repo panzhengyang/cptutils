@@ -4,7 +4,7 @@
   paintshop pro gradient structures
 
   2006 (c) J.J. Green
-  $Id: psp.h,v 1.7 2006/08/31 23:24:50 jjg Exp jjg $
+  $Id: psp.h,v 1.8 2006/09/01 22:34:00 jjg Exp jjg $
 */
 
 #ifndef PSP_H
@@ -40,11 +40,11 @@ typedef struct
     int n;
     psp_opseg_t* seg;
   } op;
-} psp_grad_t;
+} psp_t;
 
 extern unsigned char pspmagic[];
 
-extern int clean_psp(psp_grad_t*);
+extern int clean_psp(psp_t*);
 
 #endif
  
