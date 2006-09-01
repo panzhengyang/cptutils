@@ -3,13 +3,13 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: psp.h,v 1.7 2006/08/31 23:24:50 jjg Exp $
+  $Id: pspread.h,v 1.1 2006/09/01 20:13:40 jjg Exp jjg $
 */
 
 #ifndef PSPREAD_H
 #define PSPREAD_H
 
-#include <stdlib.h>
+#include <stdio.h>
 
 #include "psp.h"
 

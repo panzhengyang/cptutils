@@ -3,13 +3,13 @@
 
   writes paintshop pro gradients.
   2006 (c) J.J. Green
-  $Id: pspread.h,v 1.1 2006/09/01 20:13:40 jjg Exp $
+  $Id: pspwrite.h,v 1.1 2006/09/01 20:15:09 jjg Exp jjg $
 */
 
 #ifndef PSPWRITE_H
 #define PSPWRITE_H
 
-#include <stdlib.h>
+#include <stdio.h>
 
 #include "psp.h"
 
