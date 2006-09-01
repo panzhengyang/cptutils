@@ -4,7 +4,7 @@
   paintshop pro gradient structures
   2005 (c) J.J. Green
 
-  $Id: psp.c,v 1.10 2006/09/01 22:55:51 jjg Exp jjg $
+  $Id: psp.c,v 1.11 2006/09/01 23:07:35 jjg Exp jjg $
 */
 
 #include "psp.h"
@@ -34,6 +34,4 @@ extern void psp_destroy(psp_t* psp)
   free(psp->op.seg);
 
   free(psp);
-
-  return 0;
 }
