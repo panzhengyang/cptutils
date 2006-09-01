@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id$
+  $Id: main.c,v 1.9 2005/12/04 19:38:42 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -79,6 +79,12 @@ int main(int argc,char** argv)
 	opt.type = type_pov;
       else if (strcmp("pov",tstr) == 0)
 	opt.type = type_pov;
+      else if (strcmp("psp",tstr) == 0)
+	opt.type = type_psp;
+      else if (strcmp("PspGradient",tstr) == 0)
+	opt.type = type_psp;
+      else if (strcmp("jgd",tstr) == 0)
+	opt.type = type_psp;
       else
 	{
 	  fprintf(stderr,"no such type %s\n",tstr);
