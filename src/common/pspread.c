@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: pspread.c,v 1.2 2006/09/01 22:26:21 jjg Exp jjg $
+  $Id: pspread.c,v 1.3 2006/09/01 22:56:51 jjg Exp jjg $
 */
 
 /* 
@@ -21,12 +21,38 @@
 #include "pspread.h"
 #include "htons.h"
 
+static int psp_read_stream(FILE*,psp_t*);
+
+extern int psp_read(const char* file,psp_t* psp)
+{
+  int err;
+
+  if (file)
+    {
+      FILE* s;
+
+      if ((s = fopen(file,"r")) == NULL)
+	{
+	  fprintf(stderr,"failed to open %s\n",file);
+	  return 1;
+	}
+
+      err = psp_read_stream(s,psp);
+
+      fclose(s);
+    }
+  else
+    err = psp_read_stream(stdin,psp);
+
+  return err;
+}
+
 static int read_first_rgbseg(FILE*,psp_rgbseg_t*);
 static int read_rgbseg(FILE*,psp_rgbseg_t*);
 static int read_opseg(FILE*,psp_opseg_t*);
 static int read_block_end(FILE*);
 
-extern int read_psp(FILE* s,psp_t* grad)
+static int psp_read_stream(FILE* s,psp_t* grad)
 {
   unsigned char b[6];
   unsigned short u[2];
@@ -113,13 +139,21 @@ extern int read_psp(FILE* s,psp_t* grad)
       for (j=1 ; j<n ; j++) 
 	err += read_rgbseg(s,seg+j);
 
-      if (err) return err;
+      if (err)
+	{
+	  fprintf(stderr,"error reading rgb segments (%i)\n",err);
+	  return err;
+	}
 
       grad->rgb.n   = n;
       grad->rgb.seg = seg;
     }
 
-  if (read_block_end(s) != 0) return 1;
+  if (read_block_end(s) != 0)
+    {
+      fprintf(stderr,"error reading endblock\n");
+      return 1;
+    }
 
   /* then a short, the number of opacity samples */
 
@@ -152,13 +186,21 @@ extern int read_psp(FILE* s,psp_t* grad)
       for (j=0 ; j<n ; j++) 
 	err += read_opseg(s,seg+j);
 
-      if (err) return err;
+      if (err)
+	{
+	  fprintf(stderr,"error reading op segments (%i)\n",err);
+	  return err;
+	}
 
       grad->op.n   = n;
       grad->op.seg = seg;
     }
 
-  if (read_block_end(s) != 0) return 1;
+  if (read_block_end(s) != 0)
+    {
+      fprintf(stderr,"error reading endblock\n");
+      return 1;
+    }
 
   return 0;
 }
