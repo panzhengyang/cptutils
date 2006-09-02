@@ -1,18 +1,19 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.16 2005/09/21 20:25:04 jjg Exp jjg $
+# $Id: Makefile,v 1.17 2005/12/04 19:39:07 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test.png
+RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test/*.PspGradient test.png
 
 default : all
 
 SVGX   = ./svgx
 SVGCPT = ./svgx -t cpt
 SVGGGR = ./svgx -t ggr
+SVGPSP = ./svgx -t psp
 SVGPOV = ./svgx -t pov
 
 check test : svgx
@@ -23,6 +24,7 @@ check test : svgx
 	    $(SVGCPT) -N $$name -b10 -f1/2/3 -n0/12/0 -o test/$$name.cpt $$file ; \
 	    $(SVGGGR) -N $$name -o test/$$name.ggr $$file ; \
 	    $(SVGPOV) -N $$name -o test/$$name.inc $$file ; \
+	    $(SVGPSP) -N $$name -o test/$$name.PspGradient $$file ; \
 	  done ;\
 	done
 
@@ -47,10 +49,12 @@ install : all
 	$(INSTALL) -m755 svgcpt.sh $(bindir)/svgcpt
 	$(INSTALL) -m755 svggimp.sh $(bindir)/svggimp
 	$(INSTALL) -m755 svgpov.sh $(bindir)/svgpov
+	$(INSTALL) -m755 svgpsp.sh $(bindir)/svgpsp
 	$(INSTALL) -m644 svgx.1 $(mandir)/man1/svgx.1 
 	ln -f -s svgx.1 $(mandir)/man1/svgcpt.1
 	ln -f -s svgx.1 $(mandir)/man1/svggimp.1
 	ln -f -s svgx.1 $(mandir)/man1/svgpov.1
+	ln -f -s svgx.1 $(mandir)/man1/svgpsp.1
 
 else
 

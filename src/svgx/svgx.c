@@ -1,8 +1,12 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.13 2005/12/04 19:51:27 jjg Exp jjg $
+  $Id: svgx.c,v 1.14 2006/08/27 23:39:25 jjg Exp jjg $
   J.J. Green 2005
+
+  TODO  
+  - svgpsp_dump
+  - implicit first/last segments  
 */
 
 #include <stdlib.h>
@@ -17,6 +21,7 @@
 #include "cptio.h"
 #include "gradient.h"
 #include "povwrite.h"
+#include "pspwrite.h"
 
 #include "svgx.h"
 
@@ -26,6 +31,7 @@ static int svgx_all(svgx_opt_t,svg_list_t*);
 
 static int svgcpt(svg_t*,cpt_t*);
 static int svgggr(svg_t*,gradient_t*);
+static int svgpsp(svg_t*,psp_t*);
 static int svgpov(svg_t*,pov_t*);
 
 extern int svgx(svgx_opt_t opt)
@@ -144,6 +150,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   svg_t *svg;
   cpt_t *cpt;
   pov_t *pov;
+  psp_t *psp;
   gradient_t *ggr;
   char *file;
 
@@ -242,6 +249,30 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	}
       
       grad_free_gradient(ggr);
+
+      break;
+
+    case type_psp:
+
+      if ((psp = psp_new()) == NULL)
+	{
+	  fprintf(stderr,"failed to create psp structure\n");
+	  return 1;
+	}
+      
+      if (svgpsp(svg,psp) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to psp\n",opt.name);
+	  return 1;
+	}
+            
+      if (psp_write(file,psp) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
+
+      psp_destroy(psp);
 
       break;
 
@@ -792,6 +823,68 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 
       n++;
     } 
+
+  return 0;
+}
+
+static int svgpsp(svg_t* svg,psp_t* psp)
+{
+  int m,n;
+  svg_node_t *node;
+  psp_rgbseg_t *pcseg;
+  psp_opseg_t *poseg;
+
+  /* count & allocate */
+
+  m = svg_num_stops(svg);
+  
+  if (m < 2)
+    {
+      fprintf(stderr,"bad number of stops : %i\n",m);
+      return 1;
+    }
+
+  pcseg = malloc(m*sizeof(psp_rgbseg_t));
+  poseg = malloc(m*sizeof(psp_opseg_t));
+  
+  if (! (pcseg && poseg))
+    {
+      fprintf(stderr,"failed to allocate segments\n");
+      return 1;
+    }
+
+  /* convert segments */
+
+  for (n=0, node = svg->nodes ; node ; n++,node = node->r)
+    {
+      rgb_t rgb;
+      int op;
+      double z;
+
+      rgb = node->stop.colour;
+      op  = node->stop.opacity;
+      z   = node->stop.value;
+      
+      pcseg[n].z        = 4096*z/100.0;
+      pcseg[n].midpoint = 50;
+      pcseg[n].r        = rgb.red*257;
+      pcseg[n].g        = rgb.green*257;
+      pcseg[n].b        = rgb.blue*257;
+  
+      poseg[n].z        = 4096*z/100.0;
+      poseg[n].midpoint = 50;
+      poseg[n].opacity  = op*255;
+    }
+
+  /* copy across */
+
+  psp->name = strdup(svg->name);
+
+  psp->rgb.n   = m;
+  psp->rgb.seg = pcseg; 
+
+  psp->op.n    = m;
+  psp->op.seg  = poseg; 
 
   return 0;
 }
