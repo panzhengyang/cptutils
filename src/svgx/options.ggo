@@ -1,7 +1,7 @@
 # -*- sh -*-
 # gengetopt input for svgcpt
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.8 2005/12/04 19:00:41 jjg Exp jjg $
+# $Id: options.ggo,v 1.9 2006/09/02 01:01:05 jjg Exp jjg $
 package "svgx"
 purpose "convert SVG gradient to other formats"
 option	"all"	        a "convert all gradients"           	flag    off
@@ -10,8 +10,8 @@ option  "foreground"    f "foreground colour"                   string  default=
 option  "nan"           n "nan colour"                          string  default="255/0/0" no
 option  "first"         1 "convert first gradient in the file"  flag    off
 option	"list"	        l "list gradients in file"           	flag    off
-option	"name"	        N "convert gradient with specifed name"	string  no
-option	"output"	o "output filename"	             	string  no
+option	"select"        s "convert gradient with specifed name"	string  no
+option	"output"	o "output filename (not with -a)"     	string  no
 option  "permissive"    p "ignore format limits on output"      flag    off
 option  "type"          t "output format: cpt, ggr, psp or inc" string  no
 option	"verbose"	v "verbose operation"	                flag    off
