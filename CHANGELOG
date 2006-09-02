@@ -1,13 +1,16 @@
-Changes $Id: CHANGELOG,v 1.27 2006/08/27 23:24:37 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.28 2006/08/30 23:59:27 jjg Exp jjg $
 
-1.26 (31 Aug 2006)
-  - psp.c now also parses the opacity gradient and 
-    midpoints of the segments.  
-  - pspcpt prints out the opacity gradient and gives
-    warnings if there are uncentred midpoints or
-    any tranparency. 
-  - pspcpt now needs to be replaced by pspgimp, since
-    that would be lossless.
+1.26 (1 Sep 2006)
+  PaintShop Pro special, the psp format is now completely
+  reverse engineered: see src/common/README.psp
+  - pspread.c now also parses the opacity gradient and 
+    midpoints of the segments.
+  - new pspwrite.c writes psp gradients  
+  - pspcpt(1) now prints out the opacity gradient and gives
+    warnings if there are uncentred midpoints or any 
+    tranparency. 
+  - svgx now also outputs the psp format, and the wrapper
+    script svgpsp(1) is provided.
 
 1.25 (28 Aug 2006)
   - povray output now has the name beautified (converted to
