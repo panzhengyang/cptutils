@@ -1,4 +1,10 @@
-Changes $Id: CHANGELOG,v 1.28 2006/08/30 23:59:27 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.29 2006/09/02 00:54:01 jjg Exp jjg $
+
+1.27 (28 Sep 2006)
+  - added the default version to psp structure, fixing a bug
+    whereby svgpsp produced psp files with no version (these
+    could not be read by pspx) 
+  - fixed command-line bug in svgx
 
 1.26 (1 Sep 2006)
   PaintShop Pro special, the psp format is now completely
