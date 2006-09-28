@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.9 2005/12/04 19:38:42 jjg Exp jjg $
+  $Id: main.c,v 1.10 2006/09/01 23:59:53 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -54,7 +54,7 @@ int main(int argc,char** argv)
   opt.list       = info.list_given;
   opt.all        = info.all_given;
   opt.first      = info.first_given;
-  opt.name       = (info.name_given ? info.name_arg : NULL);
+  opt.name       = (info.select_given ? info.select_arg : NULL);
 
   if (opt.first && opt.all)
     {
