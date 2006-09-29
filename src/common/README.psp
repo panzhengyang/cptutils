@@ -20,9 +20,10 @@ Here all ushorts are 2-byte big-endian unsigned integers.
 
 <header> = 
   uchar[4] = [8 B G R],  magic number
-  ushort[2], unknown, major/minor version of format? (usually 3/1)
-  uchar[1], the title length n
-  char[n], title (without a terminating null)
+  ushort[1], unknown, version of format? (usually 3)
+  ushort[1], unknown, number of gradients in file? (usually 1)
+  uchar[1],  the title length n
+  char[n],   title (without a terminating null)
 
 <rgb block> = 
   ushort[1], number of rgb samples
@@ -77,9 +78,9 @@ The reason for the midpoint is to control a (presumably)
 nonlinear curve through rgb/p space. The form of this
 curve as used in PSP is not yet determined.
 
-The above is a complete description, in particular the 
-angle, repeat and type (linear, radial) are not part of
-to the format. 
+It seems to be the case that multiple gradients can be
+stored in a file, but this document describes the format
+in the single-gradient case. 
 
 About this document
 -------------------
@@ -87,4 +88,4 @@ About this document
 This document was written by J.J.Green and is hereby
 contributed to the public domain.
 
-$Id: psp-gradient.txt,v 1.2 2006/09/01 22:24:38 jjg Exp $
+$Id: README.psp,v 1.1 2006/09/02 00:54:44 jjg Exp jjg $
