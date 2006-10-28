@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.10 2006/09/01 23:59:53 jjg Exp jjg $
+  $Id: main.c,v 1.11 2006/09/28 23:11:11 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -85,6 +85,8 @@ int main(int argc,char** argv)
 	opt.type = type_psp;
       else if (strcmp("jgd",tstr) == 0)
 	opt.type = type_psp;
+      else if (strcmp("grd",tstr) == 0)
+	opt.type = type_psp;
       else
 	{
 	  fprintf(stderr,"no such type %s\n",tstr);
@@ -115,7 +117,7 @@ int main(int argc,char** argv)
   opt.input.file  = infile;
   opt.output.file = outfile;
 
-  /* fg/bg/nan */
+  /* fg/bg/nan for cpt output */
 
   if (parse_rgb(info.background_arg,&opt.bg) != 0)
     {
@@ -156,15 +158,16 @@ int main(int argc,char** argv)
 
 	  switch (opt.type)
  	    {
-	    case type_cpt : tstr = "cpt"; break;
-	    case type_ggr : tstr = "gimp"; break;
-	    case type_pov : tstr = "pov"; break;
+	    case type_cpt : tstr = "GMT colour palette table"; break;
+	    case type_ggr : tstr = "GIMP gradient"; break;
+	    case type_pov : tstr = "POV-Ray colour map"; break;
+	    case type_psp : tstr = "grd v3"; break;
 	    default:
 	      fprintf(stderr,"wierd output format!\n");
 	      return EXIT_FAILURE;
 	    }
 	  
-	  printf("mode is svg%s\n",tstr);
+	  printf("convert svg to %s\n",tstr);
 	  printf("%s format limits\n",
 		 (opt.permissive ? "ignoring" : "respecting"));
 	}

@@ -1,12 +1,11 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.14 2006/08/27 23:39:25 jjg Exp jjg $
+  $Id: svgx.c,v 1.15 2006/09/02 00:44:58 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
-  - svgpsp_dump
-  - implicit first/last segments  
+  - conversion of implicit first/last segments  
 */
 
 #include <stdlib.h>
@@ -333,6 +332,7 @@ static int svg_select_name(svg_t* svg,char* name)
 static int svgcpt_dump(svg_t*,svgx_opt_t*);
 static int svgggr_dump(svg_t*,svgx_opt_t*);
 static int svgpov_dump(svg_t*,svgx_opt_t*);
+static int svgpsp_dump(svg_t*,svgx_opt_t*);
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 {
@@ -355,6 +355,11 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
     case type_pov:
 
       dump = (int (*)(svg_t*,void*))svgpov_dump;
+      break;
+
+    case type_psp:
+
+      dump = (int (*)(svg_t*,void*))svgpsp_dump;
       break;
 
     default:
@@ -522,6 +527,48 @@ static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
     }
 
   pov_destroy(pov);
+
+  if (opt->verbose)  
+    printf("  %s\n",file);
+
+  return 0;
+}
+
+static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
+{
+  int  n = SVG_NAME_LEN+5;
+  char file[n],*name;
+  psp_t* psp;
+
+  if (!svg) return 1;
+
+  name = svg->name;
+
+  if (snprintf(file,n,"%s.grd",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+
+  if ((psp = psp_new()) == NULL)
+    {
+      fprintf(stderr,"failed to create psp structure\n");
+      return 1;
+    }
+      
+  if (svgpsp(svg,psp) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to psp\n",opt->name);
+      return 1;
+    }
+            
+  if (psp_write(file,psp) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+      return 1;
+    }
+
+  psp_destroy(psp);
 
   if (opt->verbose)  
     printf("  %s\n",file);
