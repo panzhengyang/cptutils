@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.15 2006/09/02 00:44:58 jjg Exp jjg $
+  $Id: svgx.c,v 1.16 2006/10/28 22:18:09 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
@@ -411,6 +411,11 @@ static int svgcpt_dump(svg_t* svg,svgx_opt_t* opt)
   cpt->bg.u.colour.rgb  = opt->bg;
   cpt->fg.u.colour.rgb  = opt->fg;
   cpt->nan.u.colour.rgb = opt->nan;
+  
+  if (snprintf(cpt->name,CPT_NAME_LEN,"%s",name) >= CPT_NAME_LEN)
+    {
+      fprintf(stderr,"gradient name (%s) truncated\n",name);
+    }
   
   /* translate */
 

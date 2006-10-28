@@ -1,12 +1,12 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005
-# $Id: Makefile,v 1.18 2006/09/02 00:45:09 jjg Exp jjg $
+# $Id: Makefile,v 1.19 2006/09/28 23:12:31 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test/*.PspGradient test.png
+RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test/*.grd test.png
 
 default : all
 
@@ -24,7 +24,7 @@ check test : svgx
 	    $(SVGCPT) -s $$name -b10 -f1/2/3 -n0/12/0 -o test/$$name.cpt $$file ; \
 	    $(SVGGGR) -s $$name -o test/$$name.ggr $$file ; \
 	    $(SVGPOV) -s $$name -o test/$$name.inc $$file ; \
-	    $(SVGPSP) -s $$name -o test/$$name.PspGradient $$file ; \
+	    $(SVGPSP) -s $$name -o test/$$name.grd $$file ; \
 	  done ;\
 	done
 
