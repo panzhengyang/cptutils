@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.10 2004/03/22 22:58:34 jjg Exp jjg $
+  $Id: gimpcpt.c,v 1.11 2004/06/16 23:05:01 jjg Exp $
 */
 
 #define _GNU_SOURCE
@@ -128,6 +128,19 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
 
     if (opt.tol > 0.0)
       {
+	/* 
+	   this does not work, segfault on tl/power-1.25.ggr, and so 
+	   disabled for now (we want to remove this program and replace
+	   it with a ggr -> svg program (then use svg -> cpt to replace
+	   this functionality)
+	*/
+
+#ifndef ENABLE_BAD_SIMPLIFY
+	fprintf(stderr,"ggr simplification is broken, if you really want to\n");
+	fprintf(stderr,"use it recompile and define ENABLE_BAD_SIMPLIFY\n");
+	return 1;
+#endif
+
 	if (opt.verbose) 
 	  printf("optimising spline with tolerance %.2f pixels\n",opt.tol);
     	
@@ -316,7 +329,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	    rseg->lsmp.fill.u.colour.rgb = rgb; 
 	    rseg->lsmp.val               = SCALE(x,opt);
 	    
-	    inserr != cpt_prepend(rseg,cpt);
+	    inserr |= cpt_prepend(rseg,cpt);
 	    
 	    for (i=2 ; i<=n ; i++)
 	      {
@@ -335,7 +348,7 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 		lseg->lsmp.fill.u.colour.rgb = rgb; 
 		lseg->lsmp.val               = SCALE(x,opt);
 		
-		inserr != cpt_prepend(lseg,cpt);
+		inserr |= cpt_prepend(lseg,cpt);
 		
 		rseg = lseg;
 	      }
@@ -414,6 +427,12 @@ static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
       return 1;
     }
 
+  /* 
+     this snips the unused segments out -- this might be 
+     easier to constuct a new cpt & destroy the whole of
+     the old one.
+  */
+
   s = seg; 
   
   for (i=0 ; i<len ; i++)
@@ -424,12 +443,16 @@ static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
 
 	  left  = s;
 	  right = s->rseg;
-	  
+
+	  /* 
+	     this is where the segfault happens, left->rseg 
+	     is null for a particular 2-segment input
+	  */
+
 	  left->rsmp = right->rsmp;
 	  left->rseg = right->rseg;
 
-	  if (left->rseg)
-	    left->rseg->lseg = left;
+	  if (left->rseg) left->rseg->lseg = left;
 	    
 	  cpt_seg_destroy(right);
 	}
