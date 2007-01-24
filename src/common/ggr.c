@@ -46,7 +46,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.6 2004/06/16 22:37:42 jjg Exp jjg $
+  $Id: gradient.c,v 1.7 2004/06/17 23:17:37 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -214,13 +214,13 @@ extern gradient_t* grad_load_gradient(char* filename)
 	      rgb0[1] = seg->g0;
 	      rgb0[2] = seg->b0;
 
-	      err != rgbD_to_hsvD(rgb0,hsv0);
+	      err |= rgbD_to_hsvD(rgb0,hsv0);
 
 	      rgb1[0] = seg->r1;
 	      rgb1[1] = seg->g1;
 	      rgb1[2] = seg->b1;
 
-	      err != rgbD_to_hsvD(rgb1,hsv1);
+	      err |= rgbD_to_hsvD(rgb1,hsv1);
 
 	      if (err)
 		{
