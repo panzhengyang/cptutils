@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.13 2004/04/12 23:42:00 jjg Exp jjg $
+  $Id: cpt.c,v 1.14 2004/08/15 23:48:26 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -30,6 +30,10 @@ extern cpt_seg_t* cpt_segment(cpt_t* cpt,int n)
   return seg;
 }
 
+/*
+  count the number of segments
+*/
+
 extern int cpt_nseg(cpt_t* cpt)
 {
   int n = 0;
@@ -39,6 +43,19 @@ extern int cpt_nseg(cpt_t* cpt)
 
   return n;
 }
+
+/*
+  get the offsets of the continuous pieces 
+  in an array of seg, so if the segs are
+
+    [blue red], [red red], [red blue], [pink pink],...
+
+  the the segos array would start [0,3,...]. 
+
+  the function returns the number of pieces.
+*/
+
+#define DEBUG
 
 extern int cpt_npc(cpt_t* cpt,int *segos)
 {
@@ -55,21 +72,30 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
 
   if (! right) return 1;
 
-  n = 1;
-  i = 0;
-
-  while (right)
+  for (n = 1,i = 1 ; right ; i++)
     {    
       if (! fill_eq(left->rsmp.fill,right->lsmp.fill))
 	{
 	  segos[n] = i;
+
+#ifdef DEBUG
+	  printf("%i\t(%f) -> %i\n",n,left->rsmp.val,i);
+#endif
+
 	  n++;
 	}
 
+#ifdef DEBUG
+      printf("\t(%f)\n",left->rsmp.val);
+#endif
+
       left  = right;
       right = left->rseg;
-      i++;
     }
+
+#ifdef DEBUG
+  printf("npc %i\n",n);
+#endif
 
   return n;
 }

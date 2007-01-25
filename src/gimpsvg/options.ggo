@@ -1,7 +1,7 @@
 # -*- sh -*-
 # gengetopt input for gimpcpt
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.1 2004/02/10 00:18:26 jjg Exp jjg $
+# $Id: options.ggo,v 1.2 2004/02/24 18:36:07 jjg Exp jjg $
 package "gimpcpt"
 purpose "convert gimp gradients to GMT colour palattes"
 option  "background"    b "background colour"  		string  default="0/0/0" no
@@ -11,7 +11,6 @@ option	"output"	o "output filename"		string	no
 option  "range"		r "palette range as min/max"   	string  default="0.0/1.0" no
 option  "samples"       s "number of samples"           int     default="100" no
 option	"transparency"	t "transparency colour"		string	default="255/255/255"  no
-option  "tolerance"     T "optimisation tolerance"      double  default="0.0" no
 option	"verbose"	v "verbose operation"		flag	off
 
 

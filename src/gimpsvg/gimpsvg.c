@@ -2,10 +2,8 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.11 2004/06/16 23:05:01 jjg Exp $
+  $Id: gimpcpt.c,v 1.12 2007/01/24 21:03:24 jjg Exp jjg $
 */
-
-#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,10 +15,9 @@
 #include "findgrad.h"
 #include "files.h"
 #include "cptio.h"
-#include "dp-simplify.h"
 
 /*
-#define DEBUG
+  #define DEBUG
 */
 
 #define SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
@@ -30,7 +27,6 @@
 #define ERR_INSERT 3
 
 static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
-static int cpt_optimise(double,cpt_t*);
 
 static char* find_infile(char*);
 
@@ -122,44 +118,6 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
       {
 	int n = cpt_nseg(cpt);
 	printf("converted to %i segment rgb-spline\n",n);
-      }
-
-    /* perform optimisation */
-
-    if (opt.tol > 0.0)
-      {
-	/* 
-	   this does not work, segfault on tl/power-1.25.ggr, and so 
-	   disabled for now (we want to remove this program and replace
-	   it with a ggr -> svg program (then use svg -> cpt to replace
-	   this functionality)
-	*/
-
-#ifndef ENABLE_BAD_SIMPLIFY
-	fprintf(stderr,"ggr simplification is broken, if you really want to\n");
-	fprintf(stderr,"use it recompile and define ENABLE_BAD_SIMPLIFY\n");
-	return 1;
-#endif
-
-	if (opt.verbose) 
-	  printf("optimising spline with tolerance %.2f pixels\n",opt.tol);
-    	
-	if (cpt_optimise(opt.tol/255.0,cpt) != 0)
-	  {
-	    fprintf(stderr,"failed to optimise cpt\n");
-	    return 1;
-	  }
-
-	if (opt.verbose) 
-	  {
-	    int n = cpt_nseg(cpt);
-	    printf("optimised to %i segment%s\n",n,(n-1 ? "s" : ""));
-	  }
-      }    
-    else
-      {
-	if (opt.verbose)
-	  printf("skipping optimisation\n");
       }
 
     /* write the cpt file */
@@ -359,149 +317,6 @@ static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
 	gseg = gseg->prev;
     } 
   
-  return 0;
-}
-
-/*
-  cpt_optimise tries to merge linear splines of the cpt
-  path, and so reduce the size of the cpt file.
-  it should, perhaps, be in common/cpt -- put it there 
-  later
-*/ 
-
-/*
-  this is where we convert the cpt to a path in 4-space,
-  the rgb components and the path parameter. We'll need to
-  test the scaling here: map everything into [0,1]^4 in
-  the first instance
-*/
-
-static vertex_t smp_to_vertex(cpt_sample_t smp)
-{
-  vertex_t v;
-  rgb_t rgb;
-
-#ifdef DEBUG
-  int i;
-#endif
-
-  rgb = smp.fill.u.colour.rgb;
-
-  v.x[0] = smp.val;
-  v.x[1] = rgb.red/255.0; 
-  v.x[2] = rgb.green/255.0;
-  v.x[3] = rgb.blue/255.0; 
-
-#ifdef DEBUG
-  for (i=0 ; i<4 ; i++)
-    printf("  %f",v.x[i]);
-  printf("\n");
-#endif
-
-  return v;
-}
-
-static int cpt_optimise_segs(double tol,cpt_seg_t* seg,int len)
-{
-  int      k[len+1],i;
-  vertex_t pv[len+1];
-  cpt_seg_t* s;
-
-  s = seg;
-
-#ifdef DEBUG
-  printf("length = %i\n",len);
-#endif
-
-  pv[0] = smp_to_vertex(s->lsmp);
-
-  for (i=0 ; i<len ; i++)
-    {
-      pv[i+1] = smp_to_vertex(s->rsmp);
-      s = s->rseg;
-    }
-
-  if (poly_simplify(tol,pv,len+1,k) != 0)
-    {
-      fprintf(stderr,"failed polyline simpification\n");
-      return 1;
-    }
-
-  /* 
-     this snips the unused segments out -- this might be 
-     easier to constuct a new cpt & destroy the whole of
-     the old one.
-  */
-
-  s = seg; 
-  
-  for (i=0 ; i<len ; i++)
-    {
-      if (k[i+1] == 0)
-	{
-	  cpt_seg_t *left,*right;
-
-	  left  = s;
-	  right = s->rseg;
-
-	  /* 
-	     this is where the segfault happens, left->rseg 
-	     is null for a particular 2-segment input
-	  */
-
-	  left->rsmp = right->rsmp;
-	  left->rseg = right->rseg;
-
-	  if (left->rseg) left->rseg->lseg = left;
-	    
-	  cpt_seg_destroy(right);
-	}
-      else 
-	s = s->rseg;
-    }
-
-  return 0;
-}
-
-static int cpt_optimise(double tol,cpt_t* cpt)
-{
-  int n,m;
-
-  if ((n = cpt_nseg(cpt)) > 1)
-    {
-      int i,segos[n+1];
-
-      m = cpt_npc(cpt,segos);
-
-      if (m>0)
-	{
-	  cpt_seg_t *seg[m];
-	  int        len[m];
-
-	  segos[m] = n;
-
-	  for (i=0 ; i<m ; i++)
-	    {
-	      if ((seg[i] = cpt_segment(cpt,segos[i])) == NULL)
-		{
-		  fprintf(stderr,"got null segment %i in section %i!\n",segos[i],i);
-		  return 1;
-		}
-	      
-	      len[i] = segos[i+1] - segos[i];
-	    }
-
-	  for (i=0 ; i<m ; i++)
-	    {
-	      if (cpt_optimise_segs(tol,seg[i],len[i]) != 0)
-		{
-		  fprintf(stderr,"failed optimise for section %i!\n",i);
-		  return 1;
-		}
-	    }
-	}
-    }
-
   return 0;
 }
     
