@@ -1,4 +1,9 @@
-Changes $Id: CHANGELOG,v 1.30 2006/09/28 23:18:40 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.31 2006/10/28 22:41:41 jjg Exp jjg $
+
+1.29 pre
+  - moved dp-simplify out of gimpcpt and into svg-simplify
+  - fixed fencepost error in common/cpt.c cpt_npc
+  - updated author homepage
 
 1.28 (28 Oct 2006)
   - svgpsp now supports the -a (convert all gradients) switch
