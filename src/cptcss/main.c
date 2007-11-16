@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2005/07/19 22:19:59 jjg Exp jjg $
+  $Id: main.c,v 1.2 2005/11/12 00:10:43 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -64,7 +64,7 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
-  opt.format = (info.format_given ? info.format_arg : "cptcss-%i");
+  opt.format = (info.format_given ? info.format_arg : "cptcss-%.2i");
 
   err = cptcss(opt);
   

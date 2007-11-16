@@ -1,6 +1,6 @@
 # Makefile for cptcss
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2005/06/27 17:50:43 jjg Exp $
+# $Id: Makefile,v 1.1 2005/07/19 22:18:11 jjg Exp jjg $
 
 OBJ      = main.o options.o cptcss.o
 RUBBISH += $(OBJ) cptcss
@@ -26,10 +26,11 @@ cptcss : $(OBJ)
 
 # for testing 
 
-CPT = /usr/local/share/gmt/cpt/GMT_haxby.cpt
+CPT = /usr/share/gmt/cpt/GMT_haxby.cpt
 
 test check : cptcss
 	./cptcss -f "level-%.2i" -v $(CPT)
+	./cptcss -v $(CPT)
 
 include ../Common.mk
 include ../Progs.mk
