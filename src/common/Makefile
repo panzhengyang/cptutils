@@ -1,10 +1,10 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.18 2006/08/31 23:23:56 jjg Exp jjg $
+# $Id: Makefile,v 1.19 2006/09/01 22:33:49 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
-OBJGGR  = gradient.o
+OBJGGR  = gradient.o findgrad.o
 OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o 
 OBJPOV  = pov.o povwrite.o
