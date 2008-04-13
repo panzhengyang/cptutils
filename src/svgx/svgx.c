@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.16 2006/10/28 22:18:09 jjg Exp jjg $
+  $Id: svgx.c,v 1.17 2006/10/28 22:32:58 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
@@ -569,7 +569,7 @@ static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
             
   if (psp_write(file,psp) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+      fprintf(stderr,"failed to write to %s\n",file);
       return 1;
     }
 
