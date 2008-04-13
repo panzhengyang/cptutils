@@ -1,6 +1,6 @@
 # Makefile.in for gimpcpt
 
-# $Id: Makefile.in,v 1.4 2004/08/16 22:12:01 jjg Exp jjg $
+# $Id: Makefile.in,v 1.5 2008/04/13 20:57:37 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -32,8 +32,8 @@ clean :
 
 veryclean spotless : clean
 	$(RM) $(CONFFILES)
-	rm -rf autom4te.cache
 	autoconf
+	rm -rf autom4te.cache
 	cd src ; $(MAKE) veryclean ; cd ..
 
 dist : veryclean
