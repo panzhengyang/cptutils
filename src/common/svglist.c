@@ -89,19 +89,23 @@ extern svg_t* svg_list_svg(svg_list_t* list)
   if (n < a)
     {
       list->n++;
+      svg = list->svg + n; 
 
-      return list->svg + n; 
+      svg_init(svg);
+
+      return svg; 
     }
 
   /* not enough room, so reallocate */
 
   a += LIST_INC;
 
-  svg = realloc(list->svg,a);
+  svg = realloc(list->svg,sizeof(svg_t)*a);
 
   if (svg == NULL) return NULL;
 
   list->alloc = a;
+  list->svg   = svg;
 
   return svg_list_svg(list);
 }

@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.h,v 1.2 2005/06/02 22:38:47 jjg Exp jjg $
+  $Id: svg.h,v 1.3 2005/09/21 10:32:59 jjg Exp jjg $
 */
 
 #ifndef SVG_H
@@ -36,6 +36,7 @@ typedef struct svg_t
 } svg_t;
 
 extern svg_t* svg_new();
+extern void   svg_init(svg_t*);
 extern void   svg_destroy(svg_t*);
 
 extern int svg_prepend(svg_stop_t,svg_t*);

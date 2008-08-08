@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.2 2005/06/02 22:39:50 jjg Exp jjg $
+  $Id: svg.c,v 1.3 2005/09/20 23:08:09 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -50,9 +50,15 @@ extern svg_t* svg_new(void)
     if ((svg = malloc(sizeof(svg_t))) == NULL)
       return NULL;
 
-    svg->nodes = NULL;
+    svg_init(svg);
 
     return svg;
+}
+
+extern void svg_init(svg_t* svg)
+{
+  svg->nodes   = NULL;
+  svg->name[0] = '\0';
 }
 
 static svg_node_t* svg_node_new(svg_stop_t stop)

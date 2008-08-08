@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.6 2005/08/31 21:52:59 jjg Exp jjg $
+  $Id: svgread.c,v 1.7 2008/08/08 00:11:04 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -185,11 +185,11 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 	  return 1;
 	}
 
+      svg->nodes = NULL;
+
       /* so we might as well write it to the svg_t */
 
-      // printf("[%s]\n",id);
-
-      if (snprintf(svg->name,SVG_NAME_LEN,"%s",id) >= SVG_NAME_LEN)
+      if (snprintf(svg->name,SVG_NAME_LEN-1,"%s",id) >= SVG_NAME_LEN)
 	{
 	  fprintf(stderr,"long gradient name truncated!\n");
 	}
@@ -340,7 +340,7 @@ static int parse_offset(const char *po,double *z)
   them otherwise. Neither case is an error.
 
   We do a simple tokenisation with strtok_r, rather than 
-  introduce a dependancy on a css paring library
+  introduce a dependancy on a css parsing library
 */
 
 static int parse_style_statement(const char*,rgb_t*,double*);
@@ -411,18 +411,17 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 static int parse_colour_numeric1(const char*);
 static int parse_colour_numeric2(const char*);
 
-static void whitespace_trim(char**,int*); 
-
+static char* whitespace_trim(char*,int*); 
 
 static int parse_colour(char *st,rgb_t *rgb,double *opacity)
 {
   struct stdcol_t *p;
   int r,g,b;
-  int n;
+  int n = 0;
 
   if (st == NULL) return 1;
 
-  whitespace_trim(&st,&n);
+  st = whitespace_trim(st,&n);
 
   if (n == 0) return 1;
 
@@ -473,8 +472,6 @@ static int parse_colour(char *st,rgb_t *rgb,double *opacity)
       rgb->green = g;
       rgb->blue  = b;
 
-      // printf("%s -> %i/%i/%i\n",st,r,g,b);
-
       return 0;
     }
 
@@ -492,22 +489,22 @@ static int parse_colour(char *st,rgb_t *rgb,double *opacity)
   return 1;
 }
 
-static void whitespace_trim(char** pst,int* pn)
+static char* whitespace_trim(char* st,int* pn)
 {
-  int i,n = strlen(*pst);
+  int i,n = strlen(st);
 
   for (i=0 ; i<n ; i++)
     {
-      switch ((*pst)[i])
+      switch (st[i])
 	{
 	case ' ':
 	case '\t':
 	case '\n':
 	  break;
 	default:
-	  *pst += i;
-	  *pn   = n-i;
-	  return;
+	  *pn = n;
+
+	  return st + i;
 	}
     }
 
@@ -515,7 +512,7 @@ static void whitespace_trim(char** pst,int* pn)
 
   *pn = 0;
 
-  return;
+  return st+n;
 }
 
 

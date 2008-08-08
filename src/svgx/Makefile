@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
-# J.J. Green 2005
-# $Id: Makefile,v 1.19 2006/09/28 23:12:31 jjg Exp jjg $
+# J.J. Green 2005, 2008
+# $Id: Makefile,v 1.20 2006/10/28 22:33:07 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
@@ -16,15 +16,18 @@ SVGGGR = ./svgx -t ggr
 SVGPSP = ./svgx -t psp
 SVGPOV = ./svgx -t pov
 
+CPTARG = -b10 -f1/2/3 -n0/12/0 
+
 check test : svgx
 	for file in `ls test/*.svg` ; do \
 	  echo $$file ; \
+	  $(SVGX) -l $$file > /dev/null || exit 1 ; \
 	  for name in `$(SVGX) -l $$file` ; do \
 	    echo "  $$name" ; \
-	    $(SVGCPT) -s $$name -b10 -f1/2/3 -n0/12/0 -o test/$$name.cpt $$file ; \
-	    $(SVGGGR) -s $$name -o test/$$name.ggr $$file ; \
-	    $(SVGPOV) -s $$name -o test/$$name.inc $$file ; \
-	    $(SVGPSP) -s $$name -o test/$$name.grd $$file ; \
+	    $(SVGCPT) -s $$name $(CPTARG) -o test/$$name.cpt $$file || exit 1 ; \
+	    $(SVGGGR) -s $$name -o test/$$name.ggr $$file  || exit 1 ; \
+	    $(SVGPOV) -s $$name -o test/$$name.inc $$file  || exit 1 ; \
+	    $(SVGPSP) -s $$name -o test/$$name.grd $$file  || exit 1 ; \
 	  done ;\
 	done
 
