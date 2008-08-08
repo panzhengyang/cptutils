@@ -1,8 +1,10 @@
-Changes $Id: CHANGELOG,v 1.36 2008/08/08 00:13:10 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.37 2008/08/08 22:31:33 jjg Exp jjg $
 
 1.31 (8 Aug 2008)
+  svgx special : several fixes in svgread.c and svglist.c
   - fixed allocation bug for > 20 gradients in a svg file
   - added parsing of whitespace in svg style tags
+  - set default unit opacity when no opacity-stop is given 
 
 1.30 (13 Apr 2008)
   - added gimplut
