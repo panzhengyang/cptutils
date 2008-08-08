@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.5 2005/06/26 20:33:58 jjg Exp jjg $
+  $Id: svgread.c,v 1.6 2005/08/31 21:52:59 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -187,6 +187,8 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 
       /* so we might as well write it to the svg_t */
 
+      // printf("[%s]\n",id);
+
       if (snprintf(svg->name,SVG_NAME_LEN,"%s",id) >= SVG_NAME_LEN)
 	{
 	  fprintf(stderr,"long gradient name truncated!\n");
@@ -273,7 +275,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		{
 		  if (parse_style((char*)style,&rgb,&op) != 0)
 		    {
-		      fprintf(stderr,"error parsing stop style %s\n",style);
+		      fprintf(stderr,"error parsing stop style \"%s\"\n",style);
 		      return 1;
 		    }
 
@@ -284,7 +286,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 		{
 		  if (parse_opacity((char*)opacity,&op) != 0)
 		    {
-		      fprintf(stderr,"problem parsing opacity %s\n",opacity);
+		      fprintf(stderr,"problem parsing opacity \"%s\"\n",opacity);
 		      return 1;
 		    }
 
@@ -386,7 +388,7 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 	    {
 	      if (parse_colour(val,rgb,opacity) != 0)
 		{
-		  fprintf(stderr,"failed on %s [%s]\n",val,stmnt);
+		  fprintf(stderr,"stop-colour parse failed on %s [%s]\n",val,stmnt);
 		  return 1;
 		}
 	    }
@@ -394,7 +396,7 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 	    {
 	      if (parse_opacity(val,opacity) != 0)
 		{
-		  fprintf(stderr,"failed on %s\n",val);
+		  fprintf(stderr,"opacity parse failed on %s\n",val);
 		  return 1;
 		}
 	    }
@@ -409,6 +411,9 @@ static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
 static int parse_colour_numeric1(const char*);
 static int parse_colour_numeric2(const char*);
 
+static void whitespace_trim(char**,int*); 
+
+
 static int parse_colour(char *st,rgb_t *rgb,double *opacity)
 {
   struct stdcol_t *p;
@@ -417,7 +422,7 @@ static int parse_colour(char *st,rgb_t *rgb,double *opacity)
 
   if (st == NULL) return 1;
 
-  n = strlen(st);
+  whitespace_trim(&st,&n);
 
   if (n == 0) return 1;
 
@@ -468,6 +473,8 @@ static int parse_colour(char *st,rgb_t *rgb,double *opacity)
       rgb->green = g;
       rgb->blue  = b;
 
+      // printf("%s -> %i/%i/%i\n",st,r,g,b);
+
       return 0;
     }
 
@@ -484,6 +491,33 @@ static int parse_colour(char *st,rgb_t *rgb,double *opacity)
 
   return 1;
 }
+
+static void whitespace_trim(char** pst,int* pn)
+{
+  int i,n = strlen(*pst);
+
+  for (i=0 ; i<n ; i++)
+    {
+      switch ((*pst)[i])
+	{
+	case ' ':
+	case '\t':
+	case '\n':
+	  break;
+	default:
+	  *pst += i;
+	  *pn   = n-i;
+	  return;
+	}
+    }
+
+  /* all is whitespace */
+
+  *pn = 0;
+
+  return;
+}
+
 
 static int parse_hex(char);
 
