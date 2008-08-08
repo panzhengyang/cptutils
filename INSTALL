@@ -1,5 +1,5 @@
-Installing gimpcpt
-------------------
+Installing cptutils
+-------------------
 
 This is the usual 
 
@@ -10,7 +10,7 @@ This is the usual
 configuration setup, which installs the binaries
 and manpages.
 
-$Id: INSTALL,v 1.1 2002/06/18 21:57:22 jjg Exp jjg $
+$Id: INSTALL,v 1.2 2004/08/16 22:00:27 jjg Exp jjg $
 
       Generic Instructions for Building Auto-Configured Packages
       ==========================================================
