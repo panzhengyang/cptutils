@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.7 2008/08/08 00:11:04 jjg Exp jjg $
+  $Id: svgread.c,v 1.8 2008/08/08 22:27:19 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -248,7 +248,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg)
 	}
       else
 	{
-	  double z,op;
+	  double z,op = 1.0;
 	  rgb_t rgb;
 
 	  if (parse_offset((char*)offset,&z) != 0)
