@@ -1,7 +1,7 @@
-The PaintShop Pro gradient format
+The Paint Shop Pro gradient format
 ---------------------------------
 
-PaintShop Pro gradients typically have the extension 
+Paint Shop Pro gradients typically have the extension 
 .jgd (in earlier version) or .PspGradient (in more recent 
 versions). The format is binary and holds independent 
 48-bit RGB and 8-bit opacity gradients, along with an
@@ -88,4 +88,4 @@ About this document
 This document was written by J.J.Green and is hereby
 contributed to the public domain.
 
-$Id: README.psp,v 1.1 2006/09/02 00:54:44 jjg Exp jjg $
+$Id: README.psp,v 1.2 2006/09/29 21:32:22 jjg Exp jjg $
