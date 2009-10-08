@@ -74,9 +74,11 @@ from z[i] to z[i+1], and PSP output always has this value
 between 5 and 95. The midpoint of the final segment is
 unused (PSP output has this midpoint 50).
 
-The reason for the midpoint is to control a (presumably)
-nonlinear curve through rgb/p space. The form of this
-curve as used in PSP is not yet determined.
+The reason for the midpoint is to control a piecewise linear
+(two-piece) curve through rgb/p space.  This can be confirmed
+by creating a gradient with midpoint not equal to 50, making
+a gradient-fill in PSP, converting the colours to numbers
+and plotting them. Thus it is rather pointless. 
 
 It seems to be the case that multiple gradients can be
 stored in a file, but this document describes the format
@@ -88,4 +90,4 @@ About this document
 This document was written by J.J.Green and is hereby
 contributed to the public domain.
 
-$Id: README.psp,v 1.2 2006/09/29 21:32:22 jjg Exp jjg $
+$Id: README.psp,v 1.3 2009/07/29 22:00:40 jjg Exp jjg $
