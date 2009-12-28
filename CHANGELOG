@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.38 2008/08/08 23:37:30 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.39 2009/10/08 17:42:41 jjg Exp jjg $
+
+1.33 (28 Dec 2009)
+  added gplcpt
 
 1.32 (8 Oct 2009)
   improved handling of midpoints in pspcpt
@@ -10,7 +13,7 @@ Changes $Id: CHANGELOG,v 1.38 2008/08/08 23:37:30 jjg Exp jjg $
   - set default unit opacity when no opacity-stop is given 
 
 1.30 (13 Apr 2008)
-  - added gimplut
+  added gimplut
 
 1.29 (16 Nov 2007)
   - new program cpthsv
@@ -29,7 +32,7 @@ Changes $Id: CHANGELOG,v 1.38 2008/08/08 23:37:30 jjg Exp jjg $
   - fixed command-line bug in svgx
 
 1.26 (1 Sep 2006)
-  PaintShop Pro special, the psp format is now completely
+  Paint Shop Pro special, the psp format is now completely
   reverse engineered: see src/common/README.psp
   - pspread.c now also parses the opacity gradient and 
     midpoints of the segments.
