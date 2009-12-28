@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.4 2006/07/28 22:58:36 jjg Exp $
+  $Id: main.c,v 1.1 2009/12/28 16:46:27 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -37,7 +37,7 @@
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  xycpt_opt_t opt;
+  gplcpt_opt_t opt;
   char *infile,*outfile;
   int err;
 
@@ -79,7 +79,7 @@ int main(int argc,char** argv)
     }
   
   if (opt.verbose)
-    printf("This is xycpt (version %s)\n",VERSION);
+    printf("This is gplcpt (version %s)\n",VERSION);
   
   opt.file.input  = infile;
   opt.file.output = outfile;
