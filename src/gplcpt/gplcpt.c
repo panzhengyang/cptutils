@@ -2,7 +2,7 @@
   gplcpt.h
   convert GIMP palette (gpl) to GMT colour table (cpt)
   Copyright (c) J.J. Green 2010
-  $Id: gplcpt.c,v 1.1 2009/12/28 17:57:10 jjg Exp jjg $
+  $Id: gplcpt.c,v 1.2 2009/12/28 21:52:20 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -226,9 +226,9 @@ static int cpt_step_optimise(cpt_t* cpt)
 	  if ((right = dead->rseg) != NULL)
 	    {
 	      right->lseg = left;
-	      left->rsmp.val = right->lsmp.val;
 	    }
 
+	  left->rsmp.val = dead->rsmp.val;
 	  left->rseg = right;
 	  
 	  cpt_seg_destroy(dead);
