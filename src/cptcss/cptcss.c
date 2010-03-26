@@ -2,7 +2,7 @@
   cptcss.c - colour text with a cpt file
 
   J.J. Green 2004
-  $Id: cptcss.c,v 1.2 2004/08/15 23:50:35 jjg Exp $
+  $Id: cptcss.c,v 1.1 2005/07/19 22:17:56 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -87,7 +87,7 @@ static int output_css(cpt_t *cpt,const char *format)
 	  return 1;
 	}
       
-      sprintf(hcstr,"#%.2x%.2x%.2x",rgb.red,rgb.blue,rgb.green);
+      sprintf(hcstr,"#%.2x%.2x%.2x",rgb.red,rgb.green,rgb.blue);
       
       if (snprintf(clstr,cllen,format,n) > cllen-1)
 	{
