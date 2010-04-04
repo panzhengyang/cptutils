@@ -1,6 +1,9 @@
-Changes $Id: CHANGELOG,v 1.40 2009/12/28 21:58:57 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.41 2010/03/26 20:19:12 jjg Exp jjg $
 
-1.34 (26 Feb 2009)
+1.35 (4 Apr 2010)
+  added program cptcont
+
+1.34 (26 Feb 2010)
   fixed accidental rbg colours in cptcss
 
 1.33 (28 Dec 2009)

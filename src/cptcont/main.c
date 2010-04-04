@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2007/11/16 17:05:42 jjg Exp $
+  $Id: main.c,v 1.1 2010/04/04 17:27:31 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -82,7 +82,7 @@ int main(int argc,char** argv)
     }
   
   if (opt.verbose)
-    printf("This is cpthsv (version %s)\n",VERSION);
+    printf("This is cptcont (version %s)\n",VERSION);
   
   opt.partial = (info.partial_given ? info.partial_arg/100.0 : 1.0);
 
