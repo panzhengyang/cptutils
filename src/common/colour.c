@@ -4,7 +4,7 @@
   colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.c,v 1.5 2004/03/22 01:09:22 jjg Exp jjg $
+  $Id: colour.c,v 1.6 2004/08/15 23:45:15 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -141,10 +141,10 @@ static int colour8(double x)
 {
     int i;
 
-    i = (int)(x*256.0 - 0.5);
+    i = nearbyint(255*x);
 
-    i = (i<0 ? 0 : i);
-    i = (i>255 ? 255 : i);
+    i = MAX(i,0);
+    i = MIN(i,255);
 
     return i;
 }
