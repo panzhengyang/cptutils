@@ -2,7 +2,7 @@
   cptcont.c
 
   (c) J.J.Green 2010
-  $Id: cptcont.c,v 1.1 2007/11/16 17:04:49 jjg Exp $
+  $Id: cptcont.c,v 1.1 2010/04/04 17:27:27 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -102,8 +102,8 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 				  cpt->model,
 				  &F1);
 	  err += fill_interpolate(p,
-				  s2->rsmp.fill,
-				  s1->lsmp.fill,
+				  s2->lsmp.fill,
+				  s1->rsmp.fill,
 				  cpt->model,
 				  &F2);
 	  
