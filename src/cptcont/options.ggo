@@ -1,0 +1,12 @@
+# -*- sh -*-
+# gengetopt input for cptcont
+# (c) J.J. Green 2010
+# $Id: options.ggo,v 1.1 2007/11/16 14:42:02 jjg Exp $
+package "cptcont"
+purpose "transform GMT colour palettes in HSV colour-space"
+option	"output"    o "output filename"		      string no
+option  "partial"   p "percentage towards continuous" double default="100.0" no
+option	"verbose"   v "verbose operation"             flag   off
+
+
+
