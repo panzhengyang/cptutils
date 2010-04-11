@@ -1,6 +1,6 @@
 # Makefile for cptcont
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.1 2010/04/04 17:27:23 jjg Exp $
+# $Id: Makefile,v 1.1 2010/04/11 21:38:50 jjg Exp jjg $
 
 NAME = cptclip
 
@@ -36,7 +36,7 @@ CPTCLP  = $(BASE)-clip.cpt
 test : $(CPTCLP) 
 
 $(CPTCLP) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTLP) -v 2 5 $(CPT)
+	./$(NAME) -o $(CPTCLP) -v 2 5 $(CPT)
 
 RUBBISH += $(CPTCLP)
 
