@@ -1,0 +1,11 @@
+# -*- sh -*-
+# gengetopt input for cptcont
+# (c) J.J. Green 2010
+# $Id: options.ggo,v 1.2 2010/04/04 17:32:50 jjg Exp $
+package "cptclip"
+purpose "Create cpt file with restricted z-range"
+option	"output"    o "output filename"		      string no
+option	"verbose"   v "verbose operation"             flag   off
+
+
+
