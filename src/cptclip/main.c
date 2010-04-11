@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2010/04/04 17:27:51 jjg Exp $
+  $Id: main.c,v 1.1 2010/04/11 22:25:59 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -107,7 +107,7 @@ int main(int argc,char** argv)
 
       if (opt.verbose)
 	{
-	  printf("extracting segments %zi - %zi\n",
+	  printf("extracting segments %zi to %zi\n",
 		 opt.u.segs.min,opt.u.segs.max);
 	}
     }
@@ -118,14 +118,14 @@ int main(int argc,char** argv)
 
       if (opt.u.segs.min >= opt.u.segs.max) 
 	{
-	  fprintf(stderr,"bad segment selection %f - %f\n",
+	  fprintf(stderr,"bad segment selection %g - %g\n",
 		  opt.u.z.min,opt.u.z.max);
 	  return EXIT_FAILURE;
 	}
 
       if (opt.verbose)
 	{
-	  printf("extracting z-range %f - %f\n",
+	  printf("extracting z-range %g to %g\n",
 		 opt.u.z.min,opt.u.z.max);
 	}
 
