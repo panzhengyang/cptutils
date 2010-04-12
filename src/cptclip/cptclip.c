@@ -2,7 +2,7 @@
   cptclip.c
 
   (c) J.J.Green 2010
-  $Id: cptclip.c,v 1.1 2010/04/11 22:25:53 jjg Exp jjg $
+  $Id: cptclip.c,v 1.2 2010/04/12 21:36:32 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -92,7 +92,7 @@ static int cptclip_convert(cpt_t* cpt,cptclip_opt_t opt)
 
 #if 0
 
-  // FIXME
+  // FIXME - need to implement the below
 
   if (cpt_increasing(cpt))
     err = cptclip_z(cpt,opt);
