@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.14 2004/08/15 23:48:26 jjg Exp jjg $
+  $Id: cpt.c,v 1.15 2007/01/25 00:09:24 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -184,6 +184,8 @@ extern cpt_t* cpt_new(void)
     return cpt;
 }
 
+/* add a segment to the start (leftmost) */
+
 extern int cpt_prepend(cpt_seg_t* seg,cpt_t* cpt)
 {
     cpt_seg_t* s;
@@ -200,21 +202,84 @@ extern int cpt_prepend(cpt_seg_t* seg,cpt_t* cpt)
     return 0;
 }
 
+/* add a segment to the end (rightmost) */
+
 extern int cpt_append(cpt_seg_t* seg,cpt_t* cpt)
 {
-    cpt_seg_t* s;
+  cpt_seg_t* s;
 
-    s = cpt->segment;
+  s = cpt->segment;
+  
+  if (!s) return cpt_prepend(seg,cpt);
+  
+  while (s->rseg) s = s->rseg;
+  
+  s->rseg = seg;
+  seg->lseg = s;
+  seg->rseg = NULL;
+  
+  return 0;
+}
 
-    if (!s) return cpt_prepend(seg,cpt);
- 
-    while (s->rseg) s = s->rseg;
- 
-    s->rseg = seg;
-    seg->lseg = s;
-    seg->rseg = NULL;
- 
-    return 0;
+/* remove first segment (and return it) */
+
+extern cpt_seg_t* cpt_pop(cpt_t* cpt)
+{
+  cpt_seg_t* s1 = cpt->segment;
+
+  if (s1)
+    {
+      cpt_seg_t* s2 = s1->rseg;
+
+      if (s2) s2->lseg = NULL;
+      
+      cpt->segment = s2;
+
+      s1->rseg = NULL;
+      s1->lseg = NULL;
+
+      return s1;
+    }
+
+  return NULL;
+}
+
+/* remove last segment (and return it) */
+
+extern cpt_seg_t* cpt_shift(cpt_t* cpt)
+{
+  cpt_seg_t* s1;
+
+  s1 = cpt->segment;
+  
+  /* no segment case */
+
+  if (!s1) return NULL;
+
+  /* single segment case */
+
+  if (! s1->rseg)
+    {
+      cpt->segment = NULL;
+
+      s1->lseg = NULL;
+      s1->rseg = NULL;
+
+      return s1;
+    }
+
+  /* multi segment case */
+
+  while (s1->rseg->rseg) s1 = s1->rseg;
+  
+  cpt_seg_t* s2 = s1->rseg;
+  
+  s1->rseg = NULL;
+  
+  s2->lseg = NULL;
+  s2->rseg = NULL;
+  
+  return s2;
 }
 
 extern void cpt_destroy(cpt_t* cpt)

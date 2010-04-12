@@ -5,7 +5,7 @@
   on them
 
   (c) J.J.Green 2001,2004
-  $Id: cpt.h,v 1.9 2004/04/12 23:42:20 jjg Exp jjg $
+  $Id: cpt.h,v 1.10 2005/03/30 23:14:03 jjg Exp jjg $
 */
 
 #ifndef CPT_H
@@ -43,6 +43,9 @@ extern void cpt_destroy(cpt_t*);
 
 extern int cpt_prepend(cpt_seg_t*,cpt_t*);
 extern int cpt_append(cpt_seg_t*,cpt_t*);
+
+extern cpt_seg_t* cpt_pop(cpt_t*);
+extern cpt_seg_t* cpt_shift(cpt_t*);
 
 extern cpt_seg_t* cpt_seg_new();
 extern void cpt_seg_destroy(cpt_seg_t*);
