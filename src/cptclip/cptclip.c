@@ -2,7 +2,7 @@
   cptclip.c
 
   (c) J.J.Green 2010
-  $Id: cptcont.c,v 1.2 2010/04/04 18:10:18 jjg Exp $
+  $Id: cptclip.c,v 1.1 2010/04/11 22:25:53 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -65,69 +65,52 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
   return err;
 }
 
-
+static int cptclip_z(cpt_t*,cptclip_opt_t);
 
 static int cptclip_convert(cpt_t* cpt,cptclip_opt_t opt)
 {
-#if 0
-
-  /* check we have at least one cpt segment */
-
   if (cpt->segment == NULL)
     {
       fprintf(stderr,"cpt has no segments\n");
       return 1;
     }
 
-  /* convert cpt segments */
-
-  cpt_seg_t *s1,*s2;
-  int n = 0;
-  double p = opt.partial/2;
-
-  for (s1 = cpt->segment, s2 = s1->rseg ; 
-       s2 ; 
-       s1 = s2, s2 = s1->rseg)
+  if (opt.segments)
     {
-      if (s1->rsmp.fill.type != s2->lsmp.fill.type)
-        {
-          fprintf(stderr,"sorry, can't convert mixed fill types\n");
-          return 1;
-        }
+      int i,nseg = cpt_nseg(cpt);
 
-      if (! fill_eq(s1->rsmp.fill,s2->lsmp.fill))
-	{
-	  fill_t F1,F2;
-	  int err;
+      for (i=1 ; i<opt.u.segs.min ; i++)
+	cpt_pop(cpt);
 
-	  err += fill_interpolate(p,
-				  s1->rsmp.fill,
-				  s2->lsmp.fill,
-				  cpt->model,
-				  &F1);
-	  err += fill_interpolate(p,
-				  s2->lsmp.fill,
-				  s1->rsmp.fill,
-				  cpt->model,
-				  &F2);
-	  
-	  if (err)
-	    {
-	      fprintf(stderr,"failed fill intepolate\n");
-	      return 1;
-	    }
+      for (i=nseg ; i>opt.u.segs.max ; i--)
+	cpt_shift(cpt);
 
-	  s1->rsmp.fill = F1;
-	  s2->lsmp.fill = F2;
-
-	  n++;
-	}
+      return 0;
     }
 
-  if (opt.verbose)
-    printf("modified %i discontinuities\n",n);
+  int err = 0;
+
+#if 0
+
+  // FIXME
+
+  if (cpt_increasing(cpt))
+    err = cptclip_z(cpt,opt);
+  else
+    {
+      cpt_reverse(cpt);
+      err = cptclip_z(cpt,opt);
+      cpt_reverse(cpt);
+    }
 
 #endif
-  
+
+  return err;
+}
+
+static int cptclip_z(cpt_t* cpt,cptclip_opt_t opt)
+{
+  // FIXME
+
   return 0;
 }
