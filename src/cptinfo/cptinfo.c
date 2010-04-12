@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.3 2004/03/18 02:26:00 jjg Exp jjg $
+  $Id: cptinfo.c,v 1.4 2004/03/21 22:22:22 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -224,8 +224,21 @@ static int analyse_segment(cpt_seg_t* seg,info_t* info)
       return 1;
     }
 
-  if (info->z.min > seg->lsmp.val) info->z.min = seg->lsmp.val;
-  if (info->z.max < seg->rsmp.val) info->z.max = seg->rsmp.val;
+  double zmin,zmax;
+
+  if ( seg->lsmp.val < seg->rsmp.val )
+    {
+      zmin = seg->lsmp.val;
+      zmax = seg->rsmp.val;
+    }
+  else
+    {
+      zmax = seg->lsmp.val;
+      zmin = seg->rsmp.val;
+    }
+
+  if (info->z.min > zmin) info->z.min = zmin;
+  if (info->z.max < zmax) info->z.max = zmax;
 
   return 0;
 }

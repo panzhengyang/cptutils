@@ -1,4 +1,8 @@
-Changes $Id: CHANGELOG,v 1.41 2010/03/26 20:19:12 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.42 2010/04/04 17:29:57 jjg Exp jjg $
+
+1.36 () 
+  - fixed cptinfo output on cpt-files with decreasing z
+  - new program cptclip
 
 1.35 (4 Apr 2010)
   added program cptcont
