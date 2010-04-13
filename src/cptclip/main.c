@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.2 2010/04/11 22:29:54 jjg Exp jjg $
+  $Id: main.c,v 1.3 2010/04/13 23:16:19 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -143,11 +143,3 @@ int main(int argc,char** argv)
   
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-
