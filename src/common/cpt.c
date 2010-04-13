@@ -5,7 +5,7 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.15 2007/01/25 00:09:24 jjg Exp jjg $
+  $Id: cpt.c,v 1.16 2010/04/12 21:00:23 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -118,6 +118,21 @@ extern int cpt_zrange(cpt_t* cpt,double* z)
   return 0;
 }
 
+/* 
+   returns 1 if the cpt z-range is increasing
+   and zero otherwise.  The input is expected
+   to have at least one segment.
+*/
+
+extern int cpt_increasing(cpt_t* cpt)
+{
+  double z[2] = {0};
+
+  cpt_zrange(cpt,z);
+
+  return z[0] < z[1];
+}
+
 extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 {
   cpt_seg_t *seg;
@@ -147,7 +162,11 @@ extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 
 	  zp = (z-z0)/(z1-z0);
 
-	  if (fill_interpolate(zp,seg->lsmp.fill,seg->rsmp.fill,model,fill) != 0)
+	  if (fill_interpolate(zp,
+			       seg->lsmp.fill,
+			       seg->rsmp.fill,
+			       model,
+			       fill) != 0)
 	    {
 	      fprintf(stderr,"fill interpolation failed\n");
 	      return 1;
@@ -158,7 +177,7 @@ extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 
       if (seg->rseg == NULL)
 	{
-	  if (z1<=z)
+	  if (z1 <= z)
 	    {
 	      *fill = cpt->fg;
 	      return 0;
