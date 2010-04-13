@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.1 2010/04/11 22:25:59 jjg Exp jjg $
+  $Id: main.c,v 1.2 2010/04/11 22:29:54 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -116,7 +116,7 @@ int main(int argc,char** argv)
       opt.u.z.min = atof(info.inputs[0]);
       opt.u.z.max = atof(info.inputs[1]);
 
-      if (opt.u.segs.min >= opt.u.segs.max) 
+      if (opt.u.z.min >= opt.u.z.max) 
 	{
 	  fprintf(stderr,"bad segment selection %g - %g\n",
 		  opt.u.z.min,opt.u.z.max);
