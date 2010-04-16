@@ -2,7 +2,7 @@
   cptclip.c
 
   (c) J.J.Green 2010
-  $Id: cptclip.c,v 1.3 2010/04/12 21:36:52 jjg Exp jjg $
+  $Id: cptclip.c,v 1.4 2010/04/13 23:16:12 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -27,13 +27,21 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
 	{
 	  if (cptclip_convert(cpt,opt) == 0)
 	    {
-	      if (cpt_write(outfile,cpt) == 0)
+	      if (cpt_nseg(cpt) > 0)
 		{
-		  /* success */
+		  if (cpt_write(outfile,cpt) == 0)
+		    {
+		      /* success */
+		    }
+		  else
+		    {
+		      fprintf(stderr,"error writing cpt struct\n");
+		      err = 1;
+		    }
 		}
 	      else
 		{
-		  fprintf(stderr,"error writing cpt struct\n");
+		  fprintf(stderr,"clipped result has no segments\n");
 		  err = 1;
 		}
 	    }
@@ -81,10 +89,16 @@ static int cptclip_convert(cpt_t* cpt,cptclip_opt_t opt)
       int i,nseg = cpt_nseg(cpt);
 
       for (i=1 ; i<opt.u.segs.min ; i++)
-	cpt_pop(cpt);
+	{	
+	  cpt_seg_t* s = cpt_pop(cpt);
+	  cpt_seg_destroy(s);
+	}
 
       for (i=nseg ; i>opt.u.segs.max ; i--)
-	cpt_shift(cpt);
+	{
+	  cpt_seg_t* s = cpt_shift(cpt);
+	  cpt_seg_destroy(s);
+	}
 
       return 0;
     }
@@ -96,7 +110,16 @@ static int cptclip_convert(cpt_t* cpt,cptclip_opt_t opt)
 	  );
 }
 
-static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
+/*
+  handles cptclip_z_inc and _dec by considering the target
+  interval in the gradient's left-right frame of reference.
+*/
+
+static int cptclip_z_id(cpt_t* cpt,
+			double zleft,
+			double zright,
+			bool (*left_of)(double,double),
+			bool (*right_of)(double,double))
 {
   cpt_seg_t* seg;
 
@@ -106,7 +129,12 @@ static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
   */
 
   while ((seg = cpt_pop(cpt)) != NULL)
-    if (seg->rsmp.val > opt.u.z.min) break;
+    {
+      if (right_of(seg->rsmp.val,zleft)) 
+	break;
+
+      cpt_seg_destroy(seg);
+    }
 
   if (seg)
     {
@@ -115,12 +143,12 @@ static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
 	requested interval then clip it to the interval
       */
 
-      if (seg->lsmp.val < opt.u.z.min)
+      if (left_of(seg->lsmp.val,zleft))
 	{
 	  fill_t fill;
-	  double 
-	    len = seg->rsmp.val - seg->lsmp.val,
-	    z   = (opt.u.z.min - seg->lsmp.val)/len; 
+	  double z = 
+	    (zleft - seg->lsmp.val)/
+	    (seg->rsmp.val - seg->lsmp.val); 
 
 	  if  (fill_interpolate(z,
 				seg->lsmp.fill,
@@ -133,7 +161,7 @@ static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
             }
 
 	  seg->lsmp.fill = fill;
-	  seg->lsmp.val  = opt.u.z.min;
+	  seg->lsmp.val  = zleft;
 	}
 
       /*
@@ -147,16 +175,21 @@ static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
   /* likewise on the right */
 
   while ((seg = cpt_shift(cpt)) != NULL)
-    if (seg->lsmp.val < opt.u.z.max) break;
+    {
+      if (left_of(seg->lsmp.val,zright)) 
+	break;
+      
+      cpt_seg_destroy(seg);
+    }
 
   if (seg)
     {
-      if (seg->rsmp.val > opt.u.z.max)
+      if (right_of(seg->rsmp.val,zright))
 	{
 	  fill_t fill;
-	  double 
-	    len = seg->rsmp.val - seg->lsmp.val,
-	    z   = (opt.u.z.max - seg->lsmp.val)/len; 
+	  double z = 
+	    (zright - seg->lsmp.val)/ 
+	    (seg->rsmp.val - seg->lsmp.val);
 
 	  if  (fill_interpolate(z,
 				seg->lsmp.fill,
@@ -169,7 +202,7 @@ static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
             }
 
 	  seg->rsmp.fill = fill;
-	  seg->rsmp.val  = opt.u.z.max;
+	  seg->rsmp.val  = zright;
 	}
 
       cpt_append(seg,cpt);
@@ -178,10 +211,22 @@ static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
   return 0;
 }
 
+static bool lt(double a,double b){ return a < b; }
+static bool gt(double a,double b){ return a > b; }
+
+static int cptclip_z_inc(cpt_t* cpt,cptclip_opt_t opt)
+{
+  return cptclip_z_id(cpt,
+		      opt.u.z.min,
+		      opt.u.z.max,
+		      lt,gt);
+}
+
 static int cptclip_z_dec(cpt_t* cpt,cptclip_opt_t opt)
 {
-  // FIXME
-
-  fprintf(stderr,"decreasing gradients not handled yet\n");
-  return 1;
+  return cptclip_z_id(cpt,
+		      opt.u.z.max,
+		      opt.u.z.min,
+		      gt,lt);
 }
+
