@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.3 2010/04/13 23:16:19 jjg Exp jjg $
+  $Id: main.c,v 1.4 2010/04/13 23:17:00 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -73,16 +73,16 @@ int main(int argc,char** argv)
 
   switch (info.inputs_num)
     {
-    case 2:
+    case 0:
       infile = NULL;
       break;
 
-    case 3:
-      infile = info.inputs[2];
+    case 1:
+      infile = info.inputs[0];
       break;
 
     default:
-      fprintf(stderr,"expected 2 or 3 arguments, got %i\n",
+      fprintf(stderr,"expected 0 or 1 arguments, got %i\n",
 	      info.inputs_num);
       return EXIT_FAILURE;
     }
@@ -93,8 +93,13 @@ int main(int argc,char** argv)
 
   if (opt.segments)
     {
-      opt.u.segs.min = atoi(info.inputs[0]);
-      opt.u.segs.max = atoi(info.inputs[1]);
+      if (sscanf(info.range_arg,"%i/%i",
+		 &opt.u.segs.min,
+		 &opt.u.segs.max) != 2)
+	{
+	  fprintf(stderr,"bad range argument %s\n",info.range_arg);
+	  return EXIT_FAILURE;
+	}
 
       if ((opt.u.segs.min > opt.u.segs.max) ||
 	  ( opt.u.segs.min < 1 ) || 
@@ -113,12 +118,17 @@ int main(int argc,char** argv)
     }
   else
     {
-      opt.u.z.min = atof(info.inputs[0]);
-      opt.u.z.max = atof(info.inputs[1]);
+      if (sscanf(info.range_arg,"%lf/%lf",
+		 &opt.u.z.min,
+		 &opt.u.z.max) != 2)
+	{
+	  fprintf(stderr,"bad range argument %s\n",info.range_arg);
+	  return EXIT_FAILURE;
+	}
 
       if (opt.u.z.min >= opt.u.z.max) 
 	{
-	  fprintf(stderr,"bad segment selection %g - %g\n",
+	  fprintf(stderr,"bad range %g - %g\n",
 		  opt.u.z.min,opt.u.z.max);
 	  return EXIT_FAILURE;
 	}
