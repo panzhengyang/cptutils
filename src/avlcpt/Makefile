@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.7 2005/12/04 18:25:53 jjg Exp jjg $
+# $Id: Makefile,v 1.8 2010/04/18 16:10:17 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
@@ -50,7 +50,7 @@ cpt : avlcpt
 
 cpt-clean : 
 	for base in $(TESTBASE) ; do \
-	  $(RM)/$$base.cpt ; \
+	  $(RM) $$base.cpt ; \
 	done
 
 test check : cpt
