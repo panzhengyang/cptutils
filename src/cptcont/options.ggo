@@ -1,12 +1,13 @@
 # -*- sh -*-
 # gengetopt input for cptcont
 # (c) J.J. Green 2010
-# $Id: options.ggo,v 1.1 2010/04/04 15:45:16 jjg Exp jjg $
+# $Id: options.ggo,v 1.2 2010/04/04 17:32:50 jjg Exp jjg $
 package "cptcont"
 purpose "Create a continuous colour table from non-continuous"
-option	"output"    o "output filename"		      string no
-option  "partial"   p "percentage towards continuous" double default="100.0" no
-option	"verbose"   v "verbose operation"             flag   off
+option  "midpoint"  m "split segments at the midpoint" string no
+option	"output"    o "output filename"		       string no
+option  "partial"   p "percentage towards continuous"  double default="100.0" no
+option	"verbose"   v "verbose operation"              flag   off
 
 
 
