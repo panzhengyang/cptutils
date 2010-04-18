@@ -1,12 +1,12 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.20 2006/10/28 22:33:07 jjg Exp jjg $
+# $Id: Makefile,v 1.21 2008/08/08 22:29:51 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
 LDLIBS  += 
-RUBBISH += svgx $(OBJ) test/*.ggr test/*.cpt test/*.inc test/*.grd test.png
+RUBBISH += svgx $(OBJ) test/* test.png
 
 default : all
 
@@ -19,7 +19,7 @@ SVGPOV = ./svgx -t pov
 CPTARG = -b10 -f1/2/3 -n0/12/0 
 
 check test : svgx
-	for file in `ls test/*.svg` ; do \
+	for file in `ls $(TESTD)/svg/*.svg` ; do \
 	  echo $$file ; \
 	  $(SVGX) -l $$file > /dev/null || exit 1 ; \
 	  for name in `$(SVGX) -l $$file` ; do \
