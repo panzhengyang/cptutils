@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.5 2005/06/27 17:50:27 jjg Exp $
+# $Id: Makefile,v 1.1 2007/11/16 17:06:30 jjg Exp jjg $
 
 NAME = cpthsv
 
@@ -27,18 +27,19 @@ veryclean :
 
 $(NAME) : $(OBJ)
 
+include ../Common.mk
+include ../Progs.mk
+
 # for testing 
 
 BASE  = subtle
-CPT   = $(BASE).cpt
+CPT   = $(TESTD)/cpt/$(BASE).cpt
 SAT   = $(BASE)-sat.cpt
 DESAT = $(BASE)-desat.cpt
+
+test : $(SAT)
 
 $(SAT) : $(NAME) $(ORIG)
 	./$(NAME) -o $(SAT) -T s90 -v $(CPT)
 
-include ../Common.mk
-include ../Progs.mk
-
-
-
+RUBBISH += $(SAT)

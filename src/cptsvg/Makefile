@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2005/06/05 13:09:51 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2005/06/27 17:50:27 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
@@ -25,22 +25,19 @@ veryclean :
 
 cptsvg : $(OBJ)
 
+include ../Common.mk
+include ../Progs.mk
+
 # for testing 
 
 BASE       = subtle
-CPT        = $(BASE).cpt
+CPT        = $(TESTD)/cpt/$(BASE).cpt
 SVG        = $(BASE).svg 
-RUBBISH   += $(SVG)
-XMLPRETTY  = xmlpretty --PrettyWhiteNewline --PrettyWhiteIndent --CatchEmptyElement
 
 $(SVG) : cptsvg
 	./cptsvg -o $(SVG) -v $(CPT)
 
 check test : $(SVG)
-	cat $(SVG) | $(XMLPRETTY)
 
-include ../Common.mk
-include ../Progs.mk
-
-
+RUBBISH += $(SVG)
 
