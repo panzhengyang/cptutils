@@ -2,7 +2,7 @@
   cptcont.c
 
   (c) J.J.Green 2010
-  $Id: cptcont.c,v 1.1 2010/04/04 17:27:27 jjg Exp jjg $
+  $Id: cptcont.c,v 1.2 2010/04/04 18:10:18 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -65,6 +65,8 @@ extern int cptcont(char* infile,char* outfile,cptcont_opt_t opt)
   return err;
 }
 
+static int midpoint_split(cpt_seg_t*,model_t);
+
 static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 {
   /* check we have at least one cpt segment */
@@ -73,6 +75,20 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
     {
       fprintf(stderr,"cpt has no segments\n");
       return 1;
+    }
+
+  /* midpoint splitting */
+
+  if (opt.midpoint)
+    {
+      if (opt.verbose)
+	printf("splitting at midpoints\n");
+
+      if (midpoint_split(cpt->segment,cpt->model) != 0)
+	{
+	  fprintf(stderr,"error splitting at midpoints\n");
+	  return 1;
+	}
     }
 
   /* convert cpt segments */
@@ -123,5 +139,48 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
   if (opt.verbose)
     printf("modified %i discontinuities\n",n);
   
+  return 0;
+}
+
+/*
+  recursive function which splits seach segment into
+  two -- the old segment on the left, the new one on
+  the right
+*/
+
+static int midpoint_split(cpt_seg_t* s,model_t model)
+{
+  if (!s) return 0;
+
+  int err; 
+
+  if ((err = midpoint_split(s->rseg,model)) != 0) 
+    return err + 1;
+
+  double zm = (s->lsmp.val + s->rsmp.val)/2.0; 
+
+  /* the new left and right segments */
+
+  cpt_seg_t 
+    *sl = s,
+    *sr = cpt_seg_new();
+
+  if (!sl)
+    {
+      fprintf(stderr,"failed to create new segment\n");
+      return 1;
+    }
+
+  sr->rsmp.val  = sl->rsmp.val;
+  sr->rsmp.fill = sl->rsmp.fill;
+  sr->rseg      = sl->rseg;
+
+  sr->lsmp.val  = zm;
+  sr->lsmp.fill = sl->lsmp.fill;
+  sr->lseg      = sl;
+
+  sl->rsmp.val  = zm;
+  sl->rseg      = sr;
+
   return 0;
 }

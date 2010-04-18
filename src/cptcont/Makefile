@@ -1,6 +1,6 @@
 # Makefile for cptcont
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.1 2010/04/04 17:27:23 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2010/04/18 15:24:35 jjg Exp jjg $
 
 NAME = cptcont
 
@@ -41,10 +41,10 @@ CPTTEST = $(CPTCONT) $(CPTAC)
 test : $(CPTTEST)
 
 $(CPTCONT) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTCONT) -v $(CPT)
+	./$(NAME) -o $(CPTCONT) -m -v $(CPT)
 
 $(CPTAC) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTAC) -v -p 60 $(CPT)
+	./$(NAME) -o $(CPTAC) -v -m -p 60 $(CPT)
 
 RUBBISH += $(CPTCONT) $(CPTTEST)
 
