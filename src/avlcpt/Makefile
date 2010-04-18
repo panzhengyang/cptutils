@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.6 2005/11/22 22:51:26 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2005/12/04 18:25:53 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
@@ -16,7 +16,7 @@ install :
 	$(INSTALL_DATA) avlcpt.1 $(mandir)/man1/avlcpt.1
 	$(INSTALL_PROGRAM) avlcpt $(bindir)/avlcpt
 
-clean :
+clean : cpt-clean
 	$(RM) $(RUBBISH)
 
 veryclean : 
@@ -33,20 +33,26 @@ odbscan.c odbscan.h : odbscan.l
 odbparse.c : odbparse.y 
 	bison odbparse.y
 
+include ../Common.mk
+include ../Progs.mk
+
 # for testing 
 
-CPT = avl/ddvelev1a.cpt avl/ddvelev9c.cpt avl/96004SP.cpt 
+TESTBASE = ddvelev1a ddvelev9c 96004SP 
 
 RUBBISH += $(CPT)
 
-%.cpt : %.avl
-	./avlcpt -b0/0/20 -f0/20/0 -n20/0/0 -v -o $*.cpt $< 
+cpt : avlcpt
+	for base in $(TESTBASE) ; do \
+	  ./avlcpt -b0/0/20 -f0/20/0 -n20/0/0 -v -o $$base.cpt \
+	  	$(TESTD)/avl/$$base.avl ; \
+	done
 
-$(CPT) : avlcpt
+cpt-clean : 
+	for base in $(TESTBASE) ; do \
+	  $(RM)/$$base.cpt ; \
+	done
 
-test check : $(CPT)
-
-include ../Common.mk
-include ../Progs.mk
+test check : cpt
 
 
