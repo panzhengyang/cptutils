@@ -1,6 +1,6 @@
 # Makefile.in for gimpcpt
 
-# $Id: Makefile.in,v 1.5 2008/04/13 20:57:37 jjg Exp jjg $
+# $Id: Makefile.in,v 1.6 2008/04/13 20:59:55 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -11,7 +11,7 @@ VERSION   = @VERSION@
 RUBBISH   = *~
 CONFFILES = config.cache config.log config.status configure Makefile
 
-DIST      = gimpcpt-$(VERSION)
+DIST      = 
 
 # targets
 
@@ -30,17 +30,15 @@ clean :
 	$(RM) $(RUBBISH)
 	cd src ; $(MAKE) clean ; cd ..
 
-veryclean spotless : clean
+veryclean spotless : clean version
 	$(RM) $(CONFFILES)
 	autoconf
 	rm -rf autom4te.cache
 	cd src ; $(MAKE) veryclean ; cd ..
 
-dist : veryclean
-	cd .. ; tar --exclude=RCS -zcvf gimpcpt.tar.gz gimpcpt ; cd gimpcpt
+version :
+	echo $(VERSION) > VERSION
 
-maint-dist : clean
-	cd .. ; tar -zcvf $(VERSION)-maintain.tar.gz gimpcpt ; cd gimpcpt
 
 
 

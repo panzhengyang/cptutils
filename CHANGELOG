@@ -1,6 +1,7 @@
-Changes $Id: CHANGELOG,v 1.42 2010/04/04 17:29:57 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.43 2010/04/12 19:43:38 jjg Exp jjg $
 
-1.36 () 
+1.36 (20 April 2010) 
+  - midpoint option added to cptcont
   - fixed cptinfo output on cpt-files with decreasing z
   - new program cptclip
 
