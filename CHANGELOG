@@ -1,4 +1,8 @@
-Changes $Id: CHANGELOG,v 1.43 2010/04/12 19:43:38 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.44 2010/04/19 23:34:53 jjg Exp jjg $
+
+1.37 ()
+  added -u option to xycpt which allows input colours to
+  to be specified a doubles in 0-1
 
 1.36 (20 April 2010) 
   - midpoint option added to cptcont

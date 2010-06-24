@@ -1,7 +1,7 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2004/04/12 00:39:00 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2005/06/27 17:51:52 jjg Exp jjg $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
@@ -18,6 +18,11 @@ install :
 
 clean :
 	$(RM) $(RUBBISH)
+	for dir in i u ; do \
+	  for n in 1 2 3 4 ; do \
+	    $(RM) test/$$dir/$$n.cpt ; \
+	  done ; \
+	done
 
 veryclean : 
 
@@ -27,14 +32,11 @@ xycpt : $(OBJ)
 
 # for testing 
 
-TESTCPT  = test.1.cpt test.2.cpt test.3.cpt test.4.cpt
-RUBBISH += $(TESTCPT)
-
 test check : xycpt
-	$(MAKE) $(TESTCPT)
-
-%.cpt : %.dat 
-	./xycpt -v -o $*.cpt $< 
+	for n in 1 2 3 4 ; do \
+	  ./xycpt -v -o    test/i/$$n.cpt test/i/$$n.dat || exit 1 ; \
+	  ./xycpt -u -v -o test/u/$$n.cpt test/u/$$n.dat || exit 1 ; \
+	done
 
 include ../Common.mk
 include ../Progs.mk

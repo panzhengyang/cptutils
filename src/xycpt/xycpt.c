@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.4 2004/04/12 15:48:41 jjg Exp jjg $
+  $Id: xycpt.c,v 1.5 2005/12/03 00:17:24 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -24,14 +24,14 @@ typedef struct fill_stack_t
 } fill_stack_t;
 
 static int xycpt_convert(fill_stack_t*,cpt_t*,xycpt_opt_t);
-static fill_stack_t* xyread(char*);
+static fill_stack_t* xyread(char*,xycpt_opt_t);
 
 extern int xycpt(xycpt_opt_t opt)
 {
   cpt_t* cpt;
   fill_stack_t* xy;
 
-  xy = xyread(opt.file.input);
+  xy = xyread(opt.file.input,opt);
     
   if (!xy)
     {
@@ -244,9 +244,9 @@ static int cpt_append_err(cpt_seg_t* seg,cpt_t* cpt)
   handle stream choice
 */ 
 
-static fill_stack_t* xyread_stream(FILE*);
+static fill_stack_t* xyread_stream(FILE*,xycpt_opt_t);
 
-static fill_stack_t* xyread(char* file)
+static fill_stack_t* xyread(char* file,xycpt_opt_t opt)
 {
   FILE* stream;
   fill_stack_t* xy;
@@ -259,12 +259,12 @@ static fill_stack_t* xyread(char* file)
 	  return NULL;
 	}
 
-      xy = xyread_stream(stream);
+      xy = xyread_stream(stream,opt);
 
       fclose(stream);
     }
   else
-    xy = xyread_stream(stdin);
+    xy = xyread_stream(stdin,opt);
 
   return xy;
 }
@@ -287,12 +287,24 @@ static fill_stack_t* xyread2(FILE*,char*);
 static fill_stack_t* xyread3(FILE*,char*,int);
 static fill_stack_t* xyread4(FILE*,char*);
 
-static fill_stack_t* xyread_stream(FILE* stream)
+static fill_stack_t* xyread1u(FILE*,char*,int);
+static fill_stack_t* xyread2u(FILE*,char*);
+static fill_stack_t* xyread3u(FILE*,char*,int);
+static fill_stack_t* xyread4u(FILE*,char*);
+
+static int unital(const char*);
+static int colour8(double);
+
+static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
 {
   char buf[BUFSIZE];
   char *tok[NTOK];
   int  i;
   fill_stack_t* f;
+
+  /* chose the string to colour function */
+
+  int (*atocol)(const char*) = (opt.unital ? unital : atoi);
 
   /* read first non-comment line */
 
@@ -327,40 +339,48 @@ static fill_stack_t* xyread_stream(FILE* stream)
       f->fill.type = grey;
       f->val       = 0;
 
-      f->fill.u.grey = atoi(tok[0]);
+      f->fill.u.grey = atocol(tok[0]);
 
-      f->next = xyread1(stream,buf,1);
+      f->next = (opt.unital ? 
+		 xyread1u(stream,buf,1) : 
+		 xyread1(stream,buf,1));
       break;
 
     case 2:
       f->fill.type   = grey;
       f->val         = atof(tok[0]);
 
-      f->fill.u.grey = atoi(tok[1]);
+      f->fill.u.grey = atocol(tok[1]);
 
-      f->next = xyread2(stream,buf);
+      f->next = (opt.unital ? 
+		 xyread2u(stream,buf) :
+		 xyread2(stream,buf));
       break;
 
     case 3:
       f->fill.type = colour;
       f->val       = 0;
 
-      f->fill.u.colour.rgb.red   = atoi(tok[0]);
-      f->fill.u.colour.rgb.green = atoi(tok[1]);
-      f->fill.u.colour.rgb.blue  = atoi(tok[2]);
+      f->fill.u.colour.rgb.red   = atocol(tok[0]);
+      f->fill.u.colour.rgb.green = atocol(tok[1]);
+      f->fill.u.colour.rgb.blue  = atocol(tok[2]);
 
-      f->next = xyread3(stream,buf,1);
+      f->next = (opt.unital ? 
+		 xyread3u(stream,buf,1) :
+		 xyread3(stream,buf,1));
       break;
  
     case 4:
       f->fill.type = colour;
       f->val       = atof(tok[0]);
 
-      f->fill.u.colour.rgb.red   = atoi(tok[1]);
-      f->fill.u.colour.rgb.green = atoi(tok[2]);
-      f->fill.u.colour.rgb.blue  = atoi(tok[3]);
+      f->fill.u.colour.rgb.red   = atocol(tok[1]);
+      f->fill.u.colour.rgb.green = atocol(tok[2]);
+      f->fill.u.colour.rgb.blue  = atocol(tok[3]);
 
-      f->next = xyread4(stream,buf);
+      f->next = (opt.unital ? 
+		 xyread4u(stream,buf) :
+		 xyread4(stream,buf));
 
       break;
 
@@ -400,6 +420,33 @@ static fill_stack_t* xyread1(FILE* stream,char* buf,int n)
   return f;
 }
 
+static fill_stack_t* xyread1u(FILE* stream,char* buf,int n)
+{
+  fill_stack_t* f;
+  double d;
+
+  do
+    if (fgets(buf,BUFSIZE,stream) == NULL) 
+      return NULL;
+  while (skipline(buf));
+  
+  if (sscanf(buf,"%lf",&d) != 1)
+    {
+      fprintf(stderr,"bad line\n  %s",buf);
+      return NULL;
+    }
+
+  if ((f = malloc(sizeof(fill_stack_t))) == NULL)
+    return NULL;
+
+  f->fill.type   = grey;
+  f->fill.u.grey = colour8(d);
+  f->val         = n;
+  f->next        = xyread1u(stream,buf,n+1);
+
+  return f;
+}
+
 static fill_stack_t* xyread2(FILE* stream,char* buf)
 {
   fill_stack_t* f;
@@ -424,6 +471,33 @@ static fill_stack_t* xyread2(FILE* stream,char* buf)
   f->fill.u.grey = i;
   f->val         = v;
   f->next        = xyread2(stream,buf);
+
+  return f;
+}
+
+static fill_stack_t* xyread2u(FILE* stream,char* buf)
+{
+  fill_stack_t* f;
+  double v,d;
+
+  do
+    if (fgets(buf,BUFSIZE,stream) == NULL) 
+      return NULL;
+  while (skipline(buf));
+  
+  if (sscanf(buf,"%lf %lf",&v,&d) != 2)
+    {
+      fprintf(stderr,"bad line\n  %s",buf);
+      return NULL;
+    }
+
+  if ((f = malloc(sizeof(fill_stack_t))) == NULL)
+    return NULL;
+
+  f->fill.type   = grey;
+  f->fill.u.grey = colour8(d);
+  f->val         = v;
+  f->next        = xyread2u(stream,buf);
 
   return f;
 }
@@ -455,6 +529,37 @@ static fill_stack_t* xyread3(FILE* stream,char* buf,int n)
   f->fill.u.colour.rgb.blue  = b;
 
   f->next = xyread3(stream,buf,n+1);
+
+  return f;
+}
+
+static fill_stack_t* xyread3u(FILE* stream,char* buf,int n)
+{
+  fill_stack_t* f;
+  double r,g,b;
+
+  do
+    if (fgets(buf,BUFSIZE,stream) == NULL) 
+      return NULL;
+  while (skipline(buf));
+  
+  if (sscanf(buf,"%lf %lf %lf",&r,&g,&b) != 3)
+    {
+      fprintf(stderr,"bad line\n  %s",buf);
+      return NULL;
+    }
+
+  if ((f = malloc(sizeof(fill_stack_t))) == NULL)
+    return NULL;
+
+  f->fill.type = colour;
+  f->val       = n;
+
+  f->fill.u.colour.rgb.red   = colour8(r);
+  f->fill.u.colour.rgb.green = colour8(g);
+  f->fill.u.colour.rgb.blue  = colour8(b);
+
+  f->next = xyread3u(stream,buf,n+1);
 
   return f;
 }
@@ -491,6 +596,38 @@ static fill_stack_t* xyread4(FILE* stream,char* buf)
   return f;
 }
 
+static fill_stack_t* xyread4u(FILE* stream,char* buf)
+{
+  fill_stack_t* f;
+  double r,g,b;
+  double z;
+
+  do
+    if (fgets(buf,BUFSIZE,stream) == NULL) 
+      return NULL;
+  while (skipline(buf));
+  
+  if (sscanf(buf,"%lf %lf %lf %lf",&z,&r,&g,&b) != 4)
+    {
+      fprintf(stderr,"bad line\n  %s",buf);
+      return NULL;
+    }
+
+  if ((f = malloc(sizeof(fill_stack_t))) == NULL)
+    return NULL;
+
+  f->fill.type = colour;
+  f->val       = z;
+
+  f->fill.u.colour.rgb.red   = colour8(r);
+  f->fill.u.colour.rgb.green = colour8(g);
+  f->fill.u.colour.rgb.blue  = colour8(b);
+
+  f->next = xyread4u(stream,buf);
+
+  return f;
+}
+
 static int skipline(const char* line)
 {
   const char *s;
@@ -516,4 +653,22 @@ static int skipline(const char* line)
   while (s++);
 
   return 0;
+}
+
+#define MAX(a,b) (((a)>(b)) ? (a) : (b))
+#define MIN(a,b) (((a)>(b)) ? (b) : (a))
+
+static int unital(const char* str)
+{
+  return colour8(atof(str));
+}
+
+static int colour8(double d)
+{
+  int i = nearbyint(255*d);
+
+  i = MAX(i,0);
+  i = MIN(i,255);
+
+  return i;
 }
