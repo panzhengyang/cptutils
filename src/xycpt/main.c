@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.3 2004/04/12 15:22:03 jjg Exp jjg $
+  $Id: main.c,v 1.4 2006/07/28 22:58:36 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -138,6 +138,8 @@ int main(int argc,char** argv)
       fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
       return EXIT_FAILURE;
     }
+
+  opt.unital = info.init_given;
 
   if (opt.verbose)
     {
