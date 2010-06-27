@@ -1,6 +1,6 @@
-Changes $Id: CHANGELOG,v 1.44 2010/04/19 23:34:53 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.45 2010/06/24 21:03:38 jjg Exp jjg $
 
-1.37 ()
+1.37 (27 June 2010)
   added -u option to xycpt which allows input colours to
   to be specified a doubles in 0-1
 

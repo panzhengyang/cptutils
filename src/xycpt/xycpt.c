@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.5 2005/12/03 00:17:24 jjg Exp jjg $
+  $Id: xycpt.c,v 1.6 2010/06/24 21:01:34 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -274,7 +274,9 @@ static fill_stack_t* xyread(char* file,xycpt_opt_t opt)
 
    we read the first data line and work out how many
    columns there are, then call a specific function
-   depending on the value found.
+   depending on the value found. the i variant expect
+   integers between 0 and 255, the f expects floats
+   between 0 and 1
 */
 
 #define BUFSIZE 1024
@@ -282,15 +284,15 @@ static fill_stack_t* xyread(char* file,xycpt_opt_t opt)
 
 static int skipline(const char*);
 
-static fill_stack_t* xyread1(FILE*,char*,int);
-static fill_stack_t* xyread2(FILE*,char*);
-static fill_stack_t* xyread3(FILE*,char*,int);
-static fill_stack_t* xyread4(FILE*,char*);
+static fill_stack_t* xyread1i(FILE*,char*,int);
+static fill_stack_t* xyread2i(FILE*,char*);
+static fill_stack_t* xyread3i(FILE*,char*,int);
+static fill_stack_t* xyread4i(FILE*,char*);
 
-static fill_stack_t* xyread1u(FILE*,char*,int);
-static fill_stack_t* xyread2u(FILE*,char*);
-static fill_stack_t* xyread3u(FILE*,char*,int);
-static fill_stack_t* xyread4u(FILE*,char*);
+static fill_stack_t* xyread1f(FILE*,char*,int);
+static fill_stack_t* xyread2f(FILE*,char*);
+static fill_stack_t* xyread3f(FILE*,char*,int);
+static fill_stack_t* xyread4f(FILE*,char*);
 
 static int unital(const char*);
 static int colour8(double);
@@ -342,8 +344,8 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       f->fill.u.grey = atocol(tok[0]);
 
       f->next = (opt.unital ? 
-		 xyread1u(stream,buf,1) : 
-		 xyread1(stream,buf,1));
+		 xyread1f(stream,buf,1) : 
+		 xyread1i(stream,buf,1));
       break;
 
     case 2:
@@ -353,8 +355,8 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       f->fill.u.grey = atocol(tok[1]);
 
       f->next = (opt.unital ? 
-		 xyread2u(stream,buf) :
-		 xyread2(stream,buf));
+		 xyread2f(stream,buf) :
+		 xyread2i(stream,buf));
       break;
 
     case 3:
@@ -366,8 +368,8 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       f->fill.u.colour.rgb.blue  = atocol(tok[2]);
 
       f->next = (opt.unital ? 
-		 xyread3u(stream,buf,1) :
-		 xyread3(stream,buf,1));
+		 xyread3f(stream,buf,1) :
+		 xyread3i(stream,buf,1));
       break;
  
     case 4:
@@ -379,8 +381,8 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       f->fill.u.colour.rgb.blue  = atocol(tok[3]);
 
       f->next = (opt.unital ? 
-		 xyread4u(stream,buf) :
-		 xyread4(stream,buf));
+		 xyread4f(stream,buf) :
+		 xyread4i(stream,buf));
 
       break;
 
@@ -393,7 +395,7 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
   return f;
 }
 
-static fill_stack_t* xyread1(FILE* stream,char* buf,int n)
+static fill_stack_t* xyread1i(FILE* stream,char* buf,int n)
 {
   fill_stack_t* f;
   int i;
@@ -415,12 +417,12 @@ static fill_stack_t* xyread1(FILE* stream,char* buf,int n)
   f->fill.type   = grey;
   f->fill.u.grey = i;
   f->val         = n;
-  f->next        = xyread1(stream,buf,n+1);
+  f->next        = xyread1i(stream,buf,n+1);
 
   return f;
 }
 
-static fill_stack_t* xyread1u(FILE* stream,char* buf,int n)
+static fill_stack_t* xyread1f(FILE* stream,char* buf,int n)
 {
   fill_stack_t* f;
   double d;
@@ -442,12 +444,12 @@ static fill_stack_t* xyread1u(FILE* stream,char* buf,int n)
   f->fill.type   = grey;
   f->fill.u.grey = colour8(d);
   f->val         = n;
-  f->next        = xyread1u(stream,buf,n+1);
+  f->next        = xyread1f(stream,buf,n+1);
 
   return f;
 }
 
-static fill_stack_t* xyread2(FILE* stream,char* buf)
+static fill_stack_t* xyread2i(FILE* stream,char* buf)
 {
   fill_stack_t* f;
   int i;
@@ -470,12 +472,12 @@ static fill_stack_t* xyread2(FILE* stream,char* buf)
   f->fill.type   = grey;
   f->fill.u.grey = i;
   f->val         = v;
-  f->next        = xyread2(stream,buf);
+  f->next        = xyread2i(stream,buf);
 
   return f;
 }
 
-static fill_stack_t* xyread2u(FILE* stream,char* buf)
+static fill_stack_t* xyread2f(FILE* stream,char* buf)
 {
   fill_stack_t* f;
   double v,d;
@@ -497,12 +499,12 @@ static fill_stack_t* xyread2u(FILE* stream,char* buf)
   f->fill.type   = grey;
   f->fill.u.grey = colour8(d);
   f->val         = v;
-  f->next        = xyread2u(stream,buf);
+  f->next        = xyread2f(stream,buf);
 
   return f;
 }
 
-static fill_stack_t* xyread3(FILE* stream,char* buf,int n)
+static fill_stack_t* xyread3i(FILE* stream,char* buf,int n)
 {
   fill_stack_t* f;
   int r,g,b;
@@ -528,12 +530,12 @@ static fill_stack_t* xyread3(FILE* stream,char* buf,int n)
   f->fill.u.colour.rgb.green = g;
   f->fill.u.colour.rgb.blue  = b;
 
-  f->next = xyread3(stream,buf,n+1);
+  f->next = xyread3i(stream,buf,n+1);
 
   return f;
 }
 
-static fill_stack_t* xyread3u(FILE* stream,char* buf,int n)
+static fill_stack_t* xyread3f(FILE* stream,char* buf,int n)
 {
   fill_stack_t* f;
   double r,g,b;
@@ -559,12 +561,12 @@ static fill_stack_t* xyread3u(FILE* stream,char* buf,int n)
   f->fill.u.colour.rgb.green = colour8(g);
   f->fill.u.colour.rgb.blue  = colour8(b);
 
-  f->next = xyread3u(stream,buf,n+1);
+  f->next = xyread3f(stream,buf,n+1);
 
   return f;
 }
 
-static fill_stack_t* xyread4(FILE* stream,char* buf)
+static fill_stack_t* xyread4i(FILE* stream,char* buf)
 {
   fill_stack_t* f;
   int r,g,b;
@@ -591,12 +593,12 @@ static fill_stack_t* xyread4(FILE* stream,char* buf)
   f->fill.u.colour.rgb.green = g;
   f->fill.u.colour.rgb.blue  = b;
 
-  f->next = xyread4(stream,buf);
+  f->next = xyread4i(stream,buf);
 
   return f;
 }
 
-static fill_stack_t* xyread4u(FILE* stream,char* buf)
+static fill_stack_t* xyread4f(FILE* stream,char* buf)
 {
   fill_stack_t* f;
   double r,g,b;
@@ -623,7 +625,7 @@ static fill_stack_t* xyread4u(FILE* stream,char* buf)
   f->fill.u.colour.rgb.green = colour8(g);
   f->fill.u.colour.rgb.blue  = colour8(b);
 
-  f->next = xyread4u(stream,buf);
+  f->next = xyread4f(stream,buf);
 
   return f;
 }
