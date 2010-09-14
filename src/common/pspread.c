@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: pspread.c,v 1.3 2006/09/01 22:56:51 jjg Exp jjg $
+  $Id: pspread.c,v 1.4 2006/09/01 23:41:38 jjg Exp jjg $
 */
 
 /* 
@@ -60,7 +60,11 @@ static int psp_read_stream(FILE* s,psp_t* grad)
 
   /* first 4 are the psp magic number */
 
-  fread(b,1,4,s);
+  if (fread(b,1,4,s) != 4)
+    {
+      fprintf(stderr,"failed to read magic\n");
+      return 1;
+    }
 
   for (i=0 ; i<4 ; i++)
     {
@@ -78,7 +82,11 @@ static int psp_read_stream(FILE* s,psp_t* grad)
 
   /* next 2 shorts, a format version (usually 3 1) */
 
-  fread(u,2,2,s);
+  if (fread(u,2,2,s) != 2)
+    {
+      fprintf(stderr,"failed to read version\n");
+      return 1;
+    }
 
   grad->ver[0] = ntohs(u[0]);
   grad->ver[1] = ntohs(u[1]);
@@ -114,7 +122,11 @@ static int psp_read_stream(FILE* s,psp_t* grad)
     
   /* then an short, the number of rgb samples */
 
-  fread(u,2,1,s);
+  if (fread(u,2,1,s) != 1)
+    {
+      fprintf(stderr,"failed to read number of RGB samples\n");
+      return 1;
+    }
 
   n = ntohs(u[0]);
 
@@ -157,7 +169,11 @@ static int psp_read_stream(FILE* s,psp_t* grad)
 
   /* then a short, the number of opacity samples */
 
-  fread(u,1,2,s);
+  if (fread(u,1,2,s) != 2)
+    {
+      fprintf(stderr,"failed to read number of opacity samples\n");
+      return 1;
+    }
 
   n = ntohs(u[0]);
 
@@ -268,7 +284,11 @@ static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned short u[2];
 
-  fread(u,2,2,s);
+  if (fread(u,2,2,s) != 2)
+    {
+      fprintf(stderr,"failed to read RGB segment header\n");
+      return 1;
+    }
 
   if (u[0] != 0)
     {
@@ -293,7 +313,11 @@ static int read_rgbseg_midpoint(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned short u[2];
 
-  fread(u,2,2,s);
+  if (fread(u,2,2,s) != 2)
+    {
+      fprintf(stderr,"failed to read RGB segment header\n");
+      return 1;
+    }
 
   if (u[0] != 0)
     {
@@ -315,7 +339,11 @@ static int read_rgbseg_z(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned short u[2];
 
-  fread(u,2,2,s);
+  if (fread(u,2,2,s) != 2)
+    {
+      fprintf(stderr,"failed to read RGB segment z-value\n");
+      return 1;
+    }
 
   if (u[0] != 0)
     {  
@@ -343,7 +371,11 @@ static int read_rgbseg_rgb(FILE *s,psp_rgbseg_t* seg)
 {
   unsigned short u[4];
 
-  fread(u,2,4,s);
+  if (fread(u,2,4,s) != 4)
+    {
+      fprintf(stderr,"failed to read RGB values\n");
+      return 1;
+    }
 
   if (u[0])
     {
@@ -380,7 +412,11 @@ static int read_opseg(FILE *s,psp_opseg_t* seg)
 {
   unsigned short u[5];
 
-  fread(u,2,5,s);
+  if (fread(u,2,5,s) != 5)
+    {
+      fprintf(stderr,"failed to read opacity segment\n");
+      return 1;
+    }
 
   if (u[0] || u[2])
     {
@@ -404,7 +440,11 @@ static int read_block_end(FILE* s)
 {
   unsigned short u[2];
 
-  fread(u,2,2,s);
+  if (fread(u,2,2,s) != 2)
+    {
+      fprintf(stderr,"failed to read RGB segment header\n");
+      return 1;
+    }
 
   if (u[0] || u[1])
     {

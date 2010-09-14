@@ -1,6 +1,7 @@
-Changes $Id: CHANGELOG,v 1.46 2010/06/27 10:01:12 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.47 2010/09/14 18:40:57 jjg Exp jjg $
 
 1.38 
+  - added extra error handling for ggr and psp parsers
   - src/Makefile creates installation directories
 
 1.37 (27 June 2010)

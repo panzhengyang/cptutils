@@ -46,7 +46,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.7 2004/06/17 23:17:37 jjg Exp jjg $
+  $Id: gradient.c,v 1.8 2007/01/24 20:59:23 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -100,6 +100,11 @@ extern void grad_free_gradient(gradient_t *grad)
   free(grad);
 }
 
+static void warn_truncated(const char* where)
+{
+  fprintf(stderr,"unexpected end of file %s\n",where);
+}
+
 extern gradient_t* grad_load_gradient(char* filename)
 {
   FILE           *stream;
@@ -120,16 +125,28 @@ extern gradient_t* grad_load_gradient(char* filename)
       return NULL;
     }
 
-  fgets(line, 1024, stream);
+  if (fgets(line, 1024, stream) == NULL)
+    {
+      warn_truncated("at start of file");
+      return NULL;
+    }
+
   if (strcmp(line, "GIMP Gradient\n") != 0)
-     return NULL;
+    {
+      fprintf(stderr,"file does not seem to be a GIMP gradient\n");
+      return NULL;
+    }
 
   if ((grad = grad_new_gradient()) == NULL)
-     return NULL;
+    return NULL;
 
   grad->filename = (filename ? strdup(filename) : strdup("<stdin>"));
  
-  fgets(line, 1024, stream);
+  if (fgets(line, 1024, stream) == NULL)
+    {
+      warn_truncated("after header");
+      return NULL;
+    }
 
   /*
     In 1.3 gradients there is a line with the name of the 
@@ -147,7 +164,11 @@ extern gradient_t* grad_load_gradient(char* filename)
       
       grad->name = strdup(s);
 
-      fgets(line, 1024, stream);
+      if (fgets(line, 1024, stream) == NULL)
+	{
+	  warn_truncated("after segments line");
+	  return NULL;
+	}
     }
   else
     grad->name = (filename ?  basename(filename) : strdup("libgimpcpt-output"));
@@ -158,9 +179,9 @@ extern gradient_t* grad_load_gradient(char* filename)
 
   if (num_segments < 1)
     {
-	fprintf(stderr,
-		"invalid number of segments in %s\n",
-		filename);
+      fprintf(stderr,
+	      "invalid number of segments in %s\n",
+	      filename);
       free(grad);
       return NULL;
     }
@@ -177,12 +198,17 @@ extern gradient_t* grad_load_gradient(char* filename)
       else
 	grad->segments = seg;
 
-      fgets (line, 1024, stream);
-      if (sscanf (line, "%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%d%d",
-		  &(seg->left), &(seg->middle), &(seg->right),
-		  &(seg->r0), &(seg->g0), &(seg->b0), &(seg->a0),
-		  &(seg->r1), &(seg->g1), &(seg->b1), &(seg->a1),
-		  &type, &color) != 13)
+      if (fgets(line, 1024, stream) == NULL)
+	{
+	  fprintf(stderr,"unexpected end of file at segment %i\n",i+1);
+	  return NULL;
+	}
+
+      if (sscanf(line, "%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%d%d",
+		 &(seg->left), &(seg->middle), &(seg->right),
+		 &(seg->r0), &(seg->g0), &(seg->b0), &(seg->a0),
+		 &(seg->r1), &(seg->g1), &(seg->b1), &(seg->a1),
+		 &type, &color) != 13)
 	{
 	  fprintf(stderr,
 		  "badly formatted gradient segment %d in %s\n",
