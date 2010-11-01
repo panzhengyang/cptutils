@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.12 2006/10/28 22:19:20 jjg Exp jjg $
+  $Id: main.c,v 1.13 2010/11/01 19:05:15 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -165,7 +165,7 @@ int main(int argc,char** argv)
 	    case type_cpt : tstr = "GMT colour palette table"; break;
 	    case type_ggr : tstr = "GIMP gradient"; break;
 	    case type_pov : tstr = "POV-Ray colour map"; break;
-	    case type_pov : tstr = "Gnuplot colour map"; break;
+	    case type_gpt : tstr = "Gnuplot colour map"; break;
 	    case type_psp : tstr = "grd v3"; break;
 	    default:
 	      fprintf(stderr,"weird output format!\n");
