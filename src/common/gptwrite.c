@@ -5,7 +5,7 @@
   a file or stream.
 
   J.J.Green 2010
-  $Id: povwrite.c,v 1.3 2005/09/21 22:00:07 jjg Exp $
+  $Id: gptwrite.c,v 1.1 2010/11/01 18:42:43 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -38,11 +38,11 @@ extern int gpt_write(const char* file,gpt_t* gpt)
     {
       gpt_stop_t stop = gpt->stop[i];
 
-      fprintf(st,"%7.5f %3i %3i %3i\n",
+      fprintf(st,"%7.5f %7.5f %7.5f %7.5f\n",
 	      stop.z,
-	      (int)stop.rgb[0],
-	      (int)stop.rgb[1],
-	      (int)stop.rgb[2]);
+	      stop.rgb[0],
+	      stop.rgb[1],
+	      stop.rgb[2]);
     }
 
   fclose(st);

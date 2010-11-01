@@ -3,7 +3,7 @@
   structures for gnuplot colour maps
 
   J.J.Green 2010
-  $Id: pov.h,v 1.7 2006/08/27 23:34:24 jjg Exp $
+  $Id: gpt.h,v 1.1 2010/11/01 18:42:47 jjg Exp jjg $
 */
 
 #ifndef GPT_H
@@ -12,7 +12,7 @@
 typedef struct 
 {
   double z;
-  unsigned char rgb[3];   
+  double rgb[3];   
 } gpt_stop_t;
 
 typedef struct 

@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.17 2006/10/28 22:32:58 jjg Exp jjg $
+  $Id: svgx.c,v 1.18 2008/04/13 21:13:51 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
@@ -20,6 +20,7 @@
 #include "cptio.h"
 #include "gradient.h"
 #include "povwrite.h"
+#include "gptwrite.h"
 #include "pspwrite.h"
 
 #include "svgx.h"
@@ -32,6 +33,7 @@ static int svgcpt(svg_t*,cpt_t*);
 static int svgggr(svg_t*,gradient_t*);
 static int svgpsp(svg_t*,psp_t*);
 static int svgpov(svg_t*,pov_t*);
+static int svggpt(svg_t*,gpt_t*);
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -120,12 +122,16 @@ static int svgpov_valid(svg_t* svg,int permissive,int verbose)
       if (permissive)
 	{
 	  if (verbose)
-	    printf("warning : format limit broken %i stops (max is %i)\n",m,POV_STOPS_MAX);
+	    printf("warning : format limit broken %i stops (max is %i)\n",
+		   m,POV_STOPS_MAX);
 	}
       else
 	{
-	  fprintf(stderr,"format limit : POV-ray allows no more than %i stops,\n",POV_STOPS_MAX);
-	  fprintf(stderr,"but this gradient has %i (use -p to ignore format limits)\n",m);
+	  fprintf(stderr,
+		  "format limit : POV-ray allows no more than %i stops,\n",
+		  POV_STOPS_MAX);
+	  fprintf(stderr,
+		  "but this gradient has %i (use -p to ignore format limits)\n",m);
 	  return 0;
 	}
     }
@@ -149,6 +155,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   svg_t *svg;
   cpt_t *cpt;
   pov_t *pov;
+  gpt_t *gpt;
   psp_t *psp;
   gradient_t *ggr;
   char *file;
@@ -285,7 +292,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
       if ((pov = pov_new()) == NULL)
 	{
-	  fprintf(stderr,"failed to create ggr structure\n");
+	  fprintf(stderr,"failed to create pov structure\n");
 	  return 1;
 	}
 
@@ -302,6 +309,30 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	}
 
       pov_destroy(pov);
+
+      break;
+
+    case type_gpt:
+      
+      if ((gpt = gpt_new()) == NULL)
+	{
+	  fprintf(stderr,"failed to create gpt structure\n");
+	  return 1;
+	}
+
+      if (svggpt(svg,gpt) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to gpt\n",opt.name);
+	  return 1;
+	}
+            
+      if (gpt_write(file,gpt) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
+
+      gpt_destroy(gpt);
 
       break;
 
@@ -332,6 +363,7 @@ static int svg_select_name(svg_t* svg,char* name)
 static int svgcpt_dump(svg_t*,svgx_opt_t*);
 static int svgggr_dump(svg_t*,svgx_opt_t*);
 static int svgpov_dump(svg_t*,svgx_opt_t*);
+static int svggpt_dump(svg_t*,svgx_opt_t*);
 static int svgpsp_dump(svg_t*,svgx_opt_t*);
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
@@ -355,6 +387,11 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
     case type_pov:
 
       dump = (int (*)(svg_t*,void*))svgpov_dump;
+      break;
+
+    case type_gpt:
+
+      dump = (int (*)(svg_t*,void*))svggpt_dump;
       break;
 
     case type_psp:
@@ -532,6 +569,52 @@ static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
     }
 
   pov_destroy(pov);
+
+  if (opt->verbose)  
+    printf("  %s\n",file);
+
+  return 0;
+}
+
+static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
+{
+  int  n = SVG_NAME_LEN+5;
+  char file[n],*name;
+  gpt_t* gpt;
+
+  if (!svg) return 1;
+
+  name = svg->name;
+
+  if (snprintf(file,n,"%s.gpt",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+
+  if ((gpt = gpt_new()) == NULL)
+    {
+      fprintf(stderr,"failed to create gpt structure\n");
+      return 1;
+    }
+
+  /* translate */
+
+  if (svggpt(svg,gpt) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to gpt\n",name);
+      return 1;
+    }
+
+  /* write */
+
+  if (gpt_write(file,gpt) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
+
+  gpt_destroy(gpt);
 
   if (opt->verbose)  
     printf("  %s\n",file);
@@ -1028,6 +1111,65 @@ static int svgpov(svg_t* svg,pov_t* pov)
     fprintf(stderr,
 	    "name modified : %s to %s\n",
 	    svg->name, pov->name); 
+
+  return 0;
+}
+
+static int svggpt(svg_t* svg, gpt_t* gpt)
+{
+  int n,m;
+  svg_node_t *node;
+
+  /* count & allocate */
+
+  m = svg_num_stops(svg);
+  
+  if (m < 2)
+    {
+      fprintf(stderr,"bad number of stops : %i\n",m);
+      return 1;
+    }
+
+  if (gpt_stops_alloc(gpt,m) != 0)
+    {
+      fprintf(stderr,"failed alloc for %i stops\n",m);
+      return 1;
+    }
+
+  /* convert */
+
+  for (n=0, node = svg->nodes ; node ; n++,node = node->r)
+    {
+      gpt_stop_t stop;
+      rgb_t rgb;
+      double c[3];
+
+      rgb = node->stop.colour;
+
+      if (rgb_to_rgbD(rgb,c) != 0)
+	{
+	  fprintf(stderr,"failed conversion to rgbD\n");
+	  return 1;
+	}
+      
+      stop.z = node->stop.value/100.0;
+
+      stop.rgb[0] = c[0];
+      stop.rgb[1] = c[1];
+      stop.rgb[2] = c[2];
+
+      gpt->stop[n] = stop;
+    }
+
+  if (n != m)
+    {
+      fprintf(stderr,
+	      "missmatch between stops expected (%i) and found (%i)\n",
+	      m,n);
+      return 1;
+    }
+
+  gpt->n = n;
 
   return 0;
 }
