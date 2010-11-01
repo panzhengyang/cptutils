@@ -1,8 +1,9 @@
-Changes $Id: CHANGELOG,v 1.47 2010/09/14 18:40:57 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.48 2010/09/14 21:27:59 jjg Exp jjg $
 
 1.38 
   - added extra error handling for ggr and psp parsers
   - src/Makefile creates installation directories
+  - svgx now also writes gnuplot files
 
 1.37 (27 June 2010)
   added -u option to xycpt which allows input colours to
