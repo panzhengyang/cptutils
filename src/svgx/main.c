@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.11 2006/09/28 23:11:11 jjg Exp jjg $
+  $Id: main.c,v 1.12 2006/10/28 22:19:20 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -79,6 +79,10 @@ int main(int argc,char** argv)
 	opt.type = type_pov;
       else if (strcmp("pov",tstr) == 0)
 	opt.type = type_pov;
+      else if (strcmp("gpt",tstr) == 0)
+	opt.type = type_gpt;
+      else if (strcmp("gnuplot",tstr) == 0)
+	opt.type = type_gpt;
       else if (strcmp("psp",tstr) == 0)
 	opt.type = type_psp;
       else if (strcmp("PspGradient",tstr) == 0)
@@ -161,9 +165,10 @@ int main(int argc,char** argv)
 	    case type_cpt : tstr = "GMT colour palette table"; break;
 	    case type_ggr : tstr = "GIMP gradient"; break;
 	    case type_pov : tstr = "POV-Ray colour map"; break;
+	    case type_pov : tstr = "Gnuplot colour map"; break;
 	    case type_psp : tstr = "grd v3"; break;
 	    default:
-	      fprintf(stderr,"wierd output format!\n");
+	      fprintf(stderr,"weird output format!\n");
 	      return EXIT_FAILURE;
 	    }
 	  
