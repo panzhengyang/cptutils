@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.19 2006/09/01 22:33:49 jjg Exp jjg $
+# $Id: Makefile,v 1.20 2008/04/13 20:54:42 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -8,16 +8,18 @@ OBJGGR  = gradient.o findgrad.o
 OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o 
 OBJPOV  = pov.o povwrite.o
+OBJGPT  = gpt.o gptwrite.o
 OBJID   = ident.o identtab.o
 OBJODB  = odb_bridge.o odb.o odbparse.o odbscan.o
 
 CFLAGS += 
 LDLIBS +=
 
-CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a libident.a libodb.a
+CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a \
+	libident.a libodb.a libgpt.o
 
 RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG) \
-	   $(OBJPOV) $(OBJID) $(OBJODB)
+	   $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT)
 
 default : all
 
@@ -64,6 +66,9 @@ libsvg.a : $(OBJSVG)
 libpov.a : $(OBJPOV)
 	ar r libpov.a $(OBJPOV)
 
+libgpt.a : $(OBJGPT)
+	ar r libgpt.a $(OBJGPT)
+
 libident.a : $(OBJID)
 	ar r libident.a $(OBJID)
 
@@ -76,7 +81,6 @@ stdcol.c : stdcol.gperf
 RUBBISH += svgio arse.svg
 
 svgio : svgio.o svg.o colour.o
-
 
 include ../Common.mk
 
