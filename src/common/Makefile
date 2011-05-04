@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.21 2010/11/01 18:45:24 jjg Exp jjg $
+# $Id: Makefile,v 1.22 2010/11/01 18:46:04 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -9,6 +9,7 @@ OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o 
 OBJPOV  = pov.o povwrite.o
 OBJGPT  = gpt.o gptwrite.o
+OBJCSS3 = css3.o css3write.o
 OBJID   = ident.o identtab.o
 OBJODB  = odb_bridge.o odb.o odbparse.o odbscan.o
 
@@ -16,10 +17,10 @@ CFLAGS +=
 LDLIBS +=
 
 CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a \
-	libident.a libodb.a libgpt.a
+	libident.a libodb.a libgpt.a libcss3.a
 
 RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG) \
-	   $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT)
+	   $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3)
 
 default : all
 
@@ -68,6 +69,9 @@ libpov.a : $(OBJPOV)
 
 libgpt.a : $(OBJGPT)
 	ar r libgpt.a $(OBJGPT)
+
+libcss3.a : $(OBJCSS3)
+	ar r libcss3.a $(OBJCSS3)
 
 libident.a : $(OBJID)
 	ar r libident.a $(OBJID)

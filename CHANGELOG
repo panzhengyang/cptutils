@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.49 2010/11/01 19:47:28 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.50 2010/11/06 22:20:18 jjg Exp jjg $
+
+1.39 (pending)
+  svgx now also writes CSS3 gradients
 
 1.38 (6 Nov 2010)
   - added extra error handling for ggr and psp parsers

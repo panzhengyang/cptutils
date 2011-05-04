@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.13 2010/11/01 19:05:15 jjg Exp jjg $
+  $Id: main.c,v 1.14 2010/11/01 19:05:46 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -79,6 +79,10 @@ int main(int argc,char** argv)
 	opt.type = type_pov;
       else if (strcmp("pov",tstr) == 0)
 	opt.type = type_pov;
+      else if (strcmp("css3",tstr) == 0)
+	opt.type = type_css3;
+      else if (strcmp("c3g",tstr) == 0)
+	opt.type = type_css3;
       else if (strcmp("gpt",tstr) == 0)
 	opt.type = type_gpt;
       else if (strcmp("gnuplot",tstr) == 0)
@@ -162,11 +166,12 @@ int main(int argc,char** argv)
 
 	  switch (opt.type)
  	    {
-	    case type_cpt : tstr = "GMT colour palette table"; break;
-	    case type_ggr : tstr = "GIMP gradient"; break;
-	    case type_pov : tstr = "POV-Ray colour map"; break;
-	    case type_gpt : tstr = "Gnuplot colour map"; break;
-	    case type_psp : tstr = "grd v3"; break;
+	    case type_cpt  : tstr = "GMT colour palette table"; break;
+	    case type_ggr  : tstr = "GIMP gradient"; break;
+	    case type_pov  : tstr = "POV-Ray colour map"; break;
+	    case type_gpt  : tstr = "Gnuplot colour map"; break;
+	    case type_css3 : tstr = "CSS3 gradient"; break;
+	    case type_psp  : tstr = "grd v3"; break;
 	    default:
 	      fprintf(stderr,"weird output format!\n");
 	      return EXIT_FAILURE;

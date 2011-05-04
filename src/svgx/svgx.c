@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.18 2008/04/13 21:13:51 jjg Exp jjg $
+  $Id: svgx.c,v 1.19 2010/11/01 19:20:52 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
@@ -21,6 +21,7 @@
 #include "gradient.h"
 #include "povwrite.h"
 #include "gptwrite.h"
+#include "css3write.h"
 #include "pspwrite.h"
 
 #include "svgx.h"
@@ -34,6 +35,7 @@ static int svgggr(svg_t*,gradient_t*);
 static int svgpsp(svg_t*,psp_t*);
 static int svgpov(svg_t*,pov_t*);
 static int svggpt(svg_t*,gpt_t*);
+static int svgcss3(svg_t*,css3_t*);
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -152,11 +154,12 @@ static int svg_select_first(svg_t*,char*);
 
 static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 {
-  svg_t *svg;
-  cpt_t *cpt;
-  pov_t *pov;
-  gpt_t *gpt;
-  psp_t *psp;
+  svg_t  *svg;
+  cpt_t  *cpt;
+  pov_t  *pov;
+  gpt_t  *gpt;
+  css3_t *css3;
+  psp_t  *psp;
   gradient_t *ggr;
   char *file;
 
@@ -164,7 +167,9 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
   if (opt.name)
     {
-      svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_name,opt.name);
+      svg = svg_list_select(list,
+			    (int (*)(svg_t*,void*))svg_select_name,
+			    opt.name);
 
       if (!svg)
 	{
@@ -174,7 +179,9 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
     }
   else if (opt.first)
     {
-      svg = svg_list_select(list,(int (*)(svg_t*,void*))svg_select_first,NULL);
+      svg = svg_list_select(list,
+			    (int (*)(svg_t*,void*))svg_select_first,
+			    NULL);
 
       if (!svg)
 	{
@@ -336,6 +343,30 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 
       break;
 
+    case type_css3:
+      
+      if ((css3 = css3_new()) == NULL)
+	{
+	  fprintf(stderr,"failed to create css3 structure\n");
+	  return 1;
+	}
+
+      if (svgcss3(svg,css3) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to css3\n",opt.name);
+	  return 1;
+	}
+            
+      if (css3_write(file,css3) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
+
+      css3_destroy(css3);
+
+      break;
+
     default:
 
       fprintf(stderr,"strange output format!\n");
@@ -364,6 +395,7 @@ static int svgcpt_dump(svg_t*,svgx_opt_t*);
 static int svgggr_dump(svg_t*,svgx_opt_t*);
 static int svgpov_dump(svg_t*,svgx_opt_t*);
 static int svggpt_dump(svg_t*,svgx_opt_t*);
+static int svgcss3_dump(svg_t*,svgx_opt_t*);
 static int svgpsp_dump(svg_t*,svgx_opt_t*);
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
@@ -392,6 +424,11 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
     case type_gpt:
 
       dump = (int (*)(svg_t*,void*))svggpt_dump;
+      break;
+
+    case type_css3:
+
+      dump = (int (*)(svg_t*,void*))svgcss3_dump;
       break;
 
     case type_psp:
@@ -615,6 +652,52 @@ static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
     }
 
   gpt_destroy(gpt);
+
+  if (opt->verbose)  
+    printf("  %s\n",file);
+
+  return 0;
+}
+
+static int svgcss3_dump(svg_t* svg, svgx_opt_t* opt)
+{
+  int  n = SVG_NAME_LEN+6;
+  char file[n],*name;
+  css3_t *css3;
+
+  if (!svg) return 1;
+
+  name = svg->name;
+
+  if (snprintf(file,n,"%s.css3",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+
+  if ((css3 = css3_new()) == NULL)
+    {
+      fprintf(stderr,"failed to create css3 structure\n");
+      return 1;
+    }
+
+  /* translate */
+
+  if (svgcss3(svg,css3) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to css3\n",name);
+      return 1;
+    }
+
+  /* write */
+
+  if (css3_write(file,css3) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
+
+  css3_destroy(css3);
 
   if (opt->verbose)  
     printf("  %s\n",file);
@@ -1170,6 +1253,52 @@ static int svggpt(svg_t* svg, gpt_t* gpt)
     }
 
   gpt->n = n;
+
+  return 0;
+}
+
+static int svgcss3(svg_t* svg, css3_t* css3)
+{
+  int n,m;
+  svg_node_t *node;
+
+  /* count & allocate */
+
+  m = svg_num_stops(svg);
+  
+  if (m < 2)
+    {
+      fprintf(stderr,"bad number of stops : %i\n",m);
+      return 1;
+    }
+
+  if (css3_stops_alloc(css3,m) != 0)
+    {
+      fprintf(stderr,"failed alloc for %i stops\n",m);
+      return 1;
+    }
+
+  /* convert */
+
+  for (n=0, node = svg->nodes ; node ; n++,node = node->r)
+    {
+      css3_stop_t stop;
+
+      stop.rgb = node->stop.colour;      
+      stop.z   = node->stop.value;
+
+      css3->stop[n] = stop;
+    }
+
+  if (n != m)
+    {
+      fprintf(stderr,
+	      "missmatch between stops expected (%i) and found (%i)\n",
+	      m,n);
+      return 1;
+    }
+
+  css3->n = n;
 
   return 0;
 }
