@@ -5,7 +5,7 @@
   a file or stream.
 
   J.J.Green 2010
-  $Id: css3write.c,v 1.1 2011/05/04 20:50:23 jjg Exp jjg $
+  $Id: css3write.c,v 1.2 2011/05/06 19:13:24 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -51,7 +51,7 @@ extern int css3_write(const char* file,css3_t* css3)
       css3_stop_t stop = css3->stop[i];
 
       if (stop.alpha < 1.0)
-	fprintf(st,"  rgba(%3i,%3i,%3i,%5.3) ",
+	fprintf(st,"  rgba(%3i,%3i,%3i,%5.3f) ",
 		stop.rgb.red,
 		stop.rgb.green,
 		stop.rgb.blue,
