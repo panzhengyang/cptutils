@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.19 2010/11/01 19:20:52 jjg Exp jjg $
+  $Id: svgx.c,v 1.20 2011/05/04 20:53:58 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
@@ -1284,8 +1284,9 @@ static int svgcss3(svg_t* svg, css3_t* css3)
     {
       css3_stop_t stop;
 
-      stop.rgb = node->stop.colour;      
-      stop.z   = node->stop.value;
+      stop.rgb   = node->stop.colour;      
+      stop.z     = node->stop.value;
+      stop.alpha = node->stop.opacity;
 
       css3->stop[n] = stop;
     }
