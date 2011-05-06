@@ -3,7 +3,7 @@
   structures for css3 gradients
 
   J.J.Green 2010
-  $Id: css3.h,v 1.2 2010/11/01 19:21:28 jjg Exp $
+  $Id: css3.h,v 1.1 2011/05/04 20:50:28 jjg Exp jjg $
 */
 
 #ifndef CSS3_H
@@ -14,6 +14,7 @@
 typedef struct 
 {
   double z;
+  double alpha;
   rgb_t rgb;   
 } css3_stop_t;
 
