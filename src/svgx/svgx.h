@@ -2,7 +2,7 @@
   svgx.h
 
   (c) J.J.Green 2004
-  $Id: svgx.h,v 1.7 2010/11/01 18:47:13 jjg Exp jjg $
+  $Id: svgx.h,v 1.8 2011/05/04 20:54:03 jjg Exp jjg $
 */
 
 #ifndef SVGX_H
@@ -10,8 +10,9 @@
 
 #include "colour.h"
 
-typedef enum {type_cpt, type_ggr, type_pov, type_gpt, type_css3, type_psp} 
-  svgx_type_t;
+typedef enum {type_cpt, type_ggr, type_pov, 
+	      type_gpt, type_css3, type_psp,
+	      type_sao } svgx_type_t;
 
 typedef struct
 {

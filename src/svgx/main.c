@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.14 2010/11/01 19:05:46 jjg Exp jjg $
+  $Id: main.c,v 1.15 2011/05/04 20:53:52 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -95,6 +95,10 @@ int main(int argc,char** argv)
 	opt.type = type_psp;
       else if (strcmp("grd",tstr) == 0)
 	opt.type = type_psp;
+      else if (strcmp("sao",tstr) == 0)
+	opt.type = type_sao;
+      else if (strcmp("ds9",tstr) == 0)
+	opt.type = type_sao;
       else
 	{
 	  fprintf(stderr,"no such type %s\n",tstr);
@@ -172,6 +176,8 @@ int main(int argc,char** argv)
 	    case type_gpt  : tstr = "Gnuplot colour map"; break;
 	    case type_css3 : tstr = "CSS3 gradient"; break;
 	    case type_psp  : tstr = "grd v3"; break;
+	    case type_sao  : tstr = "SAO (DS9) colour map"; break;
+
 	    default:
 	      fprintf(stderr,"weird output format!\n");
 	      return EXIT_FAILURE;

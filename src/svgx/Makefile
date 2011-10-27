@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.23 2010/11/01 19:19:14 jjg Exp jjg $
+# $Id: Makefile,v 1.24 2011/05/04 20:53:19 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
@@ -17,6 +17,7 @@ SVGPSP = ./svgx -t psp
 SVGPOV = ./svgx -t pov
 SVGGPT = ./svgx -t gpt
 SVGCSS3 = ./svgx -t css3
+SVGSAO = ./svgx -t sao
 
 CPTARG = -b10 -f1/2/3 -n0/12/0 
 
@@ -32,6 +33,7 @@ check test : svgx
 	    $(SVGGPT) -s $$name -o test/$$name.gpt $$file  || exit 1 ; \
 	    $(SVGCSS3) -s $$name -o test/$$name.css3 $$file  || exit 1 ; \
 	    $(SVGPSP) -s $$name -o test/$$name.grd $$file  || exit 1 ; \
+	    $(SVGSAO) -s $$name -o test/$$name.sao $$file  || exit 1 ; \
 	  done ;\
 	done
 
@@ -59,6 +61,7 @@ install : all
 	$(INSTALL) -m755 svggpt.sh $(bindir)/svggpt
 	$(INSTALL) -m755 svgcss3.sh $(bindir)/svgcss3
 	$(INSTALL) -m755 svgpsp.sh $(bindir)/svgpsp
+	$(INSTALL) -m755 svgsao.sh $(bindir)/svgsao
 	$(INSTALL) -m644 svgx.1 $(mandir)/man1/svgx.1 
 	ln -f -s svgx.1 $(mandir)/man1/svgcpt.1
 	ln -f -s svgx.1 $(mandir)/man1/svggimp.1
@@ -66,6 +69,7 @@ install : all
 	ln -f -s svgx.1 $(mandir)/man1/svggpt.1
 	ln -f -s svgx.1 $(mandir)/man1/svgcss3.1
 	ln -f -s svgx.1 $(mandir)/man1/svgpsp.1
+	ln -f -s svgx.1 $(mandir)/man1/svgsao.1
 
 else
 
