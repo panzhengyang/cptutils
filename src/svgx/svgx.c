@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg file to cpt file
  
-  $Id: svgx.c,v 1.20 2011/05/04 20:53:58 jjg Exp jjg $
+  $Id: svgx.c,v 1.21 2011/05/06 19:20:42 jjg Exp jjg $
   J.J. Green 2005
 
   TODO  
@@ -23,19 +23,21 @@
 #include "gptwrite.h"
 #include "css3write.h"
 #include "pspwrite.h"
+#include "saowrite.h"
 
 #include "svgx.h"
 
-static int svgx_list(svgx_opt_t,svg_list_t*);
-static int svgx_named(svgx_opt_t,svg_list_t*);
-static int svgx_all(svgx_opt_t,svg_list_t*);
+static int svgx_list(svgx_opt_t, svg_list_t*);
+static int svgx_named(svgx_opt_t, svg_list_t*);
+static int svgx_all(svgx_opt_t, svg_list_t*);
 
-static int svgcpt(svg_t*,cpt_t*);
-static int svgggr(svg_t*,gradient_t*);
-static int svgpsp(svg_t*,psp_t*);
-static int svgpov(svg_t*,pov_t*);
-static int svggpt(svg_t*,gpt_t*);
-static int svgcss3(svg_t*,css3_t*);
+static int svgcpt(svg_t*, cpt_t*);
+static int svgggr(svg_t*, gradient_t*);
+static int svgpsp(svg_t*, psp_t*);
+static int svgpov(svg_t*, pov_t*);
+static int svggpt(svg_t*, gpt_t*);
+static int svgcss3(svg_t*, css3_t*);
+static int svgsao(svg_t*, sao_t*);
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -161,6 +163,8 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   css3_t *css3;
   psp_t  *psp;
   gradient_t *ggr;
+  sao_t *sao;
+
   char *file;
 
   /* get svg with this name */
@@ -364,6 +368,30 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	}
 
       css3_destroy(css3);
+
+      break;
+
+    case type_sao:
+
+      if ((sao = sao_new()) == NULL)
+	{
+	  fprintf(stderr,"failed to create sao structure\n");
+	  return 1;
+	}
+      
+      if (svgsao(svg,sao) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to psp\n",opt.name);
+	  return 1;
+	}
+            
+      if (sao_write(file, sao) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
+
+      sao_destroy(sao);
 
       break;
 
@@ -870,7 +898,7 @@ static int svgcpt(svg_t* svg,cpt_t* cpt)
   return 0;
 }
 
-/* coonvert an svg_t to a gradient_t */
+/* convert an svg_t to a gradient_t */
 
 static int svgggr(svg_t* svg,gradient_t* ggr)
 {
@@ -1255,6 +1283,13 @@ static int svggpt(svg_t* svg, gpt_t* gpt)
   gpt->n = n;
 
   return 0;
+}
+
+static int svgsao(svg_t* svg, sao_t* sao)
+{
+  // FIXME
+  
+  return 1;
 }
 
 static int svgcss3(svg_t* svg, css3_t* css3)

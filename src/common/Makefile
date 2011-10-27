@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.25 2011/10/27 22:35:32 jjg Exp jjg $
+# $Id: Makefile,v 1.26 2011/10/27 22:36:17 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -81,7 +81,7 @@ libodb.a : $(OBJODB)
 	ar r libodb.a $(OBJODB)
 
 libsao.a : $(OBJSAO)
-	ar r libsao.a $(SAOODB)
+	ar r libsao.a $(OBJSAO)
 
 stdcol.c : stdcol.gperf
 	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
