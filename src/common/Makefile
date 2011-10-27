@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.22 2010/11/01 18:46:04 jjg Exp jjg $
+# $Id: Makefile,v 1.23 2011/05/04 20:50:36 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = bridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -12,12 +12,13 @@ OBJGPT  = gpt.o gptwrite.o
 OBJCSS3 = css3.o css3write.o
 OBJID   = ident.o identtab.o
 OBJODB  = odb_bridge.o odb.o odbparse.o odbscan.o
+OBJSAO  = sao.o saowrite.o
 
 CFLAGS += 
 LDLIBS +=
 
 CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a \
-	libident.a libodb.a libgpt.a libcss3.a
+	libident.a libodb.a libgpt.a libcss3.a libsao.o
 
 RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG) \
 	   $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3)
@@ -78,6 +79,9 @@ libident.a : $(OBJID)
 
 libodb.a : $(OBJODB)
 	ar r libodb.a $(OBJODB)
+
+libsao.a : $(OBJSAO)
+	ar r libsao.a $(SAOODB)
 
 stdcol.c : stdcol.gperf
 	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
