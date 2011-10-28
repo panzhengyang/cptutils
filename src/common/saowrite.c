@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <time.h>
 
 #include "saowrite.h"
 #include "version.h"
