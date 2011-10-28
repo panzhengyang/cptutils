@@ -1,11 +1,11 @@
-Changes $Id: CHANGELOG,v 1.52 2011/05/06 17:23:09 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.53 2011/10/19 22:22:37 jjg Exp jjg $
 
-1.40 (pending)
-  - fixed accidental RBG colours in cpttext (some kind of
-    mental block there)
-  - added cptsao
+1.40 (1 Nov 2011)
+  - added svgx now writes the astronomical SAO format for DS9
+  - fixed accidental RBG colours in cpttext (some kind of mental 
+    block there)
 
-1.39 (6 May 1011)
+1.39 (6 May 2011)
   svgx now also writes CSS3 gradients
 
 1.38 (6 Nov 2010)
