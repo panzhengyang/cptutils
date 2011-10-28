@@ -2,7 +2,7 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.5 2005/11/21 22:46:54 jjg Exp jjg $
+   $Id: odbscan.l,v 1.6 2005/11/22 21:16:31 jjg Exp jjg $
 
    Note that this treats bitblocks badly -- a bitblock may
    be indistinguishable from a UINT, so we scan for a "proper" 
@@ -42,6 +42,7 @@
 %option 7bit
 
 %option noyywrap
+%option nounput
 %option debug
  
 %x head str
