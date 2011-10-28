@@ -17,13 +17,17 @@ static int writestop(double x, double v, FILE* st)
   return fprintf(st,"(%.5g,%.5g)",x,v);
 }
 
-static int sao_write_stream(FILE* st, sao_t* sao)
+static int sao_write_stream(FILE* st, sao_t* sao, const char* name)
 {
   time_t t = time(NULL);
 
   fprintf(st,"# SAOimage color table\n");
+
+  if (name) fprintf(st,"# %s\n",name);
+
   fprintf(st,"# created by cptutils %s\n",VERSION);
   fprintf(st,"# %s",ctime(&t));
+
   fprintf(st,"PSEUDOCOLOR\n");
   fprintf(st,"RED:\n");
   sao_eachred(sao,(stop_fn_t*)writestop,st); fprintf(st,"\n");
@@ -35,7 +39,7 @@ static int sao_write_stream(FILE* st, sao_t* sao)
   return 0;
 }
 
-extern int sao_write(const char* path, sao_t* sao)
+extern int sao_write(const char* path, sao_t* sao, const char* name)
 {
   int err = 0;
 
@@ -45,13 +49,13 @@ extern int sao_write(const char* path, sao_t* sao)
 
       if (!st) return 1;
 
-      err = sao_write_stream(st,sao);
+      err = sao_write_stream(st,sao,name);
 
       fclose(st);
     }
   else
     {
-      err = sao_write_stream(stdout,sao);
+      err = sao_write_stream(stdout,sao,name);
     }
 
   return err;

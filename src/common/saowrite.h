@@ -11,6 +11,6 @@
 
 #include "sao.h"
 
-extern int sao_write(const char*,sao_t*);
+extern int sao_write(const char*,sao_t*,const char*);
 
 #endif

@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.22 2011/10/27 23:05:15 jjg Exp jjg $
+  $Id: svgx.c,v 1.23 2011/10/28 09:23:57 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -382,7 +382,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	  return 1;
 	}
             
-      if (sao_write(file, sao) != 0)
+      if (sao_write(file, sao, svg->name) != 0)
 	{
 	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
 	  return 1;
@@ -672,7 +672,7 @@ static int svgsao_dump(svg_t* svg,svgx_opt_t* opt)
       return 1;
     }
   
-  if (sao_write(file, sao) != 0)
+  if (sao_write(file, sao, name) != 0)
     {
       fprintf(stderr,"failed to write to %s\n",file);
       return 1;
