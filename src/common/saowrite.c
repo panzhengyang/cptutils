@@ -19,11 +19,11 @@ static int writestop(double x, double v, FILE* st)
 
 static int sao_write_stream(FILE* st, sao_t* sao)
 {
+  time_t t = time(NULL);
+
   fprintf(st,"# SAOimage color table\n");
   fprintf(st,"# created by cptutils %s\n",VERSION);
   fprintf(st,"# %s",ctime(&t));
-
-  fprintf(st,"# cptutils output\n");
   fprintf(st,"PSEUDOCOLOR\n");
   fprintf(st,"RED:\n");
   sao_eachred(sao,(stop_fn_t*)writestop,st); fprintf(st,"\n");
