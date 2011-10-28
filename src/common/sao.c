@@ -2,7 +2,7 @@
   sao.c
 
   J.J. Green 2011
-  $Id: cptcss.c,v 1.2 2010/03/26 20:16:50 jjg Exp $
+  $Id: sao.c,v 1.1 2011/10/27 22:31:26 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -37,6 +37,8 @@ static sao_stop_t* sao_stop_new(double x, double v)
   return stop;
 }
 
+/* not used at present
+
 static int sao_channel_prepend(sao_stop_t** base, double x, double v)
 {
   sao_stop_t *stop = sao_stop_new(x,v);
@@ -50,19 +52,41 @@ static int sao_channel_prepend(sao_stop_t** base, double x, double v)
   return 0;
 }
 
+*/
+
+static int sao_channel_append(sao_stop_t** base, double x, double v)
+{
+  sao_stop_t *s, *stop = sao_stop_new(x,v);
+  
+  if (! stop)
+    return 1;
+
+  if (*base)
+    {
+      for (s=*base ; s->next ; s=s->next);
+      s->next = stop;
+    }
+  else
+    {
+      *base = stop;
+    }
+
+  return 0;
+}
+
 extern int sao_red_push(sao_t *sao, double x, double v)
 {
-  return sao_channel_prepend( &(sao->red), x, v);
+  return sao_channel_append( &(sao->red), x, v);
 }
 
 extern int sao_green_push(sao_t *sao, double x, double v)
 {
-  return sao_channel_prepend( &(sao->green), x, v);
+  return sao_channel_append( &(sao->green), x, v);
 }
 
 extern int sao_blue_push(sao_t *sao, double x, double v)
 {
-  return sao_channel_prepend( &(sao->blue), x, v);
+  return sao_channel_append( &(sao->blue), x, v);
 }
 
 extern sao_t* sao_new(void)

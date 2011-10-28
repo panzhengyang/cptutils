@@ -1,11 +1,8 @@
 /*
-  svgx.c : convert svg file to cpt file
+  svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.21 2011/05/06 19:20:42 jjg Exp jjg $
-  J.J. Green 2005
-
-  TODO  
-  - conversion of implicit first/last segments  
+  $Id: svgx.c,v 1.22 2011/10/27 23:05:15 jjg Exp jjg $
+  J.J. Green 2005, 2011
 */
 
 #include <stdlib.h>
@@ -425,6 +422,7 @@ static int svgpov_dump(svg_t*,svgx_opt_t*);
 static int svggpt_dump(svg_t*,svgx_opt_t*);
 static int svgcss3_dump(svg_t*,svgx_opt_t*);
 static int svgpsp_dump(svg_t*,svgx_opt_t*);
+static int svgsao_dump(svg_t*,svgx_opt_t*);
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 {
@@ -462,6 +460,11 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
     case type_psp:
 
       dump = (int (*)(svg_t*,void*))svgpsp_dump;
+      break;
+
+    case type_sao:
+
+      dump = (int (*)(svg_t*,void*))svgsao_dump;
       break;
 
     default:
@@ -640,6 +643,49 @@ static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
 
   return 0;
 }
+
+static int svgsao_dump(svg_t* svg,svgx_opt_t* opt)
+{
+  int  n = SVG_NAME_LEN+5;
+  char file[n],*name;
+  sao_t* sao;
+
+  if (!svg) return 1;
+  
+  name = svg->name;
+
+  if (snprintf(file,n,"%s.sao",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+  
+  if ((sao = sao_new()) == NULL)
+    {
+      fprintf(stderr,"failed to create sao structure\n");
+      return 1;
+    }
+  
+  if (svgsao(svg,sao) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to psp\n",opt->name);
+      return 1;
+    }
+  
+  if (sao_write(file, sao) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
+  
+  sao_destroy(sao);
+
+  if (opt->verbose)  
+    printf("  %s\n",file);
+
+  return 0;
+}
+
 
 static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
 {
@@ -1287,9 +1333,33 @@ static int svggpt(svg_t* svg, gpt_t* gpt)
 
 static int svgsao(svg_t* svg, sao_t* sao)
 {
-  // FIXME
+  svg_node_t *node;
+  int n=0;
+
+  for (node = svg->nodes ; node ; node = node->r, n++)
+    {
+      double rgbD[3], val = node->stop.value / 100.0;
+
+      if (rgb_to_rgbD(node->stop.colour, rgbD) != 0)
+	{
+	  fprintf(stderr,"error converting colour of stop %i\n",n+1);
+	  return 1;
+	}
+
+      int err = 0;
+
+      err += sao_red_push(sao,val,rgbD[0]);
+      err += sao_green_push(sao,val,rgbD[1]);
+      err += sao_blue_push(sao,val,rgbD[2]);
+
+      if (err)
+	{
+	  fprintf(stderr,"error adding sao stop %i\n",n+1);
+	  return 1;
+	}
+    }
   
-  return 1;
+  return 0;
 }
 
 static int svgcss3(svg_t* svg, css3_t* css3)
