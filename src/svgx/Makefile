@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.24 2011/05/04 20:53:19 jjg Exp jjg $
+# $Id: Makefile,v 1.25 2011/10/27 22:52:47 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o
 CFLAGS  += 
@@ -38,7 +38,7 @@ check test : svgx
 	done
 
 test.png : test.pov
-	povray  +L. +A0.1 +Q11 +Itest.pov
+	povray  +H480 +W640 +L. +A0.1 +Q11 +Itest.pov
 
 clean :
 	$(RM) $(RUBBISH)
