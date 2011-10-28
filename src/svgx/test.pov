@@ -39,3 +39,4 @@ sphere {
   }
   finish { phong 0.1 }
 }
+
