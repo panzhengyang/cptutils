@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "saowrite.h"
+#include "version.h"
 
 static int writestop(double x, double v, FILE* st)
 {
@@ -18,6 +19,9 @@ static int writestop(double x, double v, FILE* st)
 static int sao_write_stream(FILE* st, sao_t* sao)
 {
   fprintf(st,"# SAOimage color table\n");
+  fprintf(st,"# created by cptutils %s\n",VERSION);
+  fprintf(st,"# %s",ctime(&t));
+
   fprintf(st,"# cptutils output\n");
   fprintf(st,"PSEUDOCOLOR\n");
   fprintf(st,"RED:\n");
