@@ -3,7 +3,7 @@
   A generic gstack module
 
   J.J.Green
-  $Id: gstack.c,v 1.1 2007/11/04 16:04:49 jjg Exp $
+  $Id: gstack.c,v 1.1 2011/11/01 20:40:21 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -134,6 +134,33 @@ extern int gstack_pop(gstack_t* gstack,void* datum)
 
   return 0;
 }
+
+/* reverse the order of the allocated data */
+
+extern int gstack_reverse(gstack_t* gstack)
+{
+  if (gstack_empty(gstack)) return 0;
+
+  size_t 
+    n = gstack->n,
+    size = gstack->size;
+
+  void *buffer = malloc(n*size);
+
+  if (buffer == NULL) return 1;
+
+  memcpy(buffer, gstack->data, n*size);
+
+  size_t i;
+
+  for (i=0 ; i<n ; i++)
+    memcpy(gstack->data + i*size, buffer + (n-i-1)*size, size);
+
+  free(buffer);
+
+  return 0;
+}
+
 
 /*
   iterates over the gstack contents (in the order in which

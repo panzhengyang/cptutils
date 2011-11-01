@@ -3,7 +3,7 @@
   generic stack module
 
   J.J.Green
-  $Id: gstack.h,v 1.2 2008/05/19 22:51:01 jjg Exp $
+  $Id: gstack.h,v 1.1 2011/11/01 20:40:28 jjg Exp jjg $
 */
 
 #ifndef GSTACK_H
@@ -17,6 +17,7 @@ extern gstack_t* gstack_new(size_t,int,int);
 extern void      gstack_destroy(gstack_t*);
 extern int       gstack_push(gstack_t*,void*);
 extern int       gstack_pop(gstack_t*,void*);
+extern int       gstack_reverse(gstack_t*);
 extern int       gstack_foreach(gstack_t*,int (*)(void*,void*),void*);
 extern int       gstack_empty(gstack_t*);
 extern int       gstack_size(gstack_t*);
