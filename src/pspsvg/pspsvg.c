@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.2 2011/11/02 11:15:19 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.3 2011/11/02 14:31:05 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -371,6 +371,15 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
   return NULL;
 }
 
+static unsigned char d2uc(double x)
+{
+  x *= 256;
+  if (x > 255) x = 255;
+  if (x < 0) x = 0;
+
+  return x;
+}
+
 static int merged_svg(gstack_t *ross, svg_t *svg)
 {
   svg_stop_t ss;
@@ -378,11 +387,9 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
 
   while (gstack_pop(ross,&ros) == 0)
     {
-      // FIXME
-
-      ss.colour.red   = ros.r * 255;
-      ss.colour.green = ros.g * 255;
-      ss.colour.blue  = ros.b * 255;
+      ss.colour.red   = d2uc(ros.r);
+      ss.colour.green = d2uc(ros.g);
+      ss.colour.blue  = d2uc(ros.b);
       ss.opacity      = ros.op;
       ss.value        = ros.z / 4096.0;
       
