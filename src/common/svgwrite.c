@@ -77,7 +77,7 @@ extern int svg_write(const char* file,svg_t* svg)
 	    {
 	      xmlFreeTextWriter(writer);
 	      
-	      fprintf(stderr,"failed to convert cpt\n");
+	      fprintf(stderr,"failed memory write\n");
 	      err = 1;
 	    }
 	}
@@ -107,11 +107,11 @@ static int svg_write_mem(xmlTextWriter* writer,svg_t* svg)
   double min,max;
   int n;
 
-  /* check we have at least one cpt segment */
+  /* check we have at least one segment */
 
   if ((root = svg->nodes) == NULL)
     {
-      fprintf(stderr,"cpt has no segments\n");
+      fprintf(stderr,"svg has no segments\n");
       return 1;
     }
 
