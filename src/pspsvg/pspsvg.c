@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.1 2011/11/01 23:10:33 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.2 2011/11/02 11:15:19 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@ extern int pspsvg(pspsvg_opt_t opt)
 {
   svg_t* svg;
   psp_t* psp;
-    
+   
   /* create & intialise a svg struct */
 
   if ((svg = svg_new()) == NULL)
@@ -102,7 +102,7 @@ static double psp_rgb_it(unsigned short x)
 
 static double psp_op_it(unsigned short x)
 {
-  return (double)x/256.0;
+  return (double)x/255.0;
 }
 
 static unsigned int psp_z_it(unsigned short z)
@@ -242,7 +242,8 @@ static rgb_stop_t rgb_stop_interp(rgb_stop_t rs0,
 				  rgb_stop_t rs1, 
 				  unsigned int z)
 {
-  double M = (double)z/((double)(rs1.z) - (double)(rs0.z));
+  double M = 
+    ((double)z - (double)(rs0.z))/((double)(rs1.z) - (double)(rs0.z));
   rgb_stop_t rs;
 
   rs.z = z;
@@ -257,7 +258,8 @@ static op_stop_t op_stop_interp(op_stop_t os0,
 				op_stop_t os1, 
 				unsigned int z)
 {
-  double M = (double)z/((double)(os1.z) - (double)(os0.z));
+  double M = 
+    ((double)z -(double)(os0.z))/((double)(os1.z) - (double)(os0.z));
   op_stop_t os;
 
   os.z = z;
@@ -305,9 +307,6 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   while (1)
     {
-      printf("%u %u\n", rs0.z, rs1.z);
-      printf("%u %u\n--\n", os0.z, os1.z);
-
       ros = stop_merge(rs0,os0);
       gstack_push(ross, &ros);
 
@@ -346,6 +345,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 	    {
 	      ros = stop_merge(rs0,os0);
 	      gstack_push(ross, &ros);
+	      gstack_reverse(ross);
 
 	      return ross;
 	    }
@@ -371,6 +371,35 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
   return NULL;
 }
 
+static int merged_svg(gstack_t *ross, svg_t *svg)
+{
+  svg_stop_t ss;
+  rgbop_stop_t ros;
+
+  while (gstack_pop(ross,&ros) == 0)
+    {
+      // FIXME
+
+      ss.colour.red   = ros.r * 255;
+      ss.colour.green = ros.g * 255;
+      ss.colour.blue  = ros.b * 255;
+      ss.opacity      = ros.op;
+      ss.value        = ros.z / 4096.0;
+      
+      printf("%7.3f %3i %3i %3i %f\n",
+	     ss.value,
+	     ss.colour.red,
+	     ss.colour.green,
+	     ss.colour.blue,
+	     ss.opacity
+	     );
+
+      svg_append(ss,svg);
+    }
+
+  return 0;
+}
+
 static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
 {
   gstack_t *rgbrec,*oprec;
@@ -389,7 +418,8 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
   gstack_destroy(rgbrec);
   gstack_destroy(oprec);
 
-  // convert m to svg
+  if (merged_svg(m,svg) != 0)
+    return 1;
 
   gstack_destroy(m);
 
