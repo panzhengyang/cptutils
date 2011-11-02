@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.3 2011/11/02 14:31:05 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.4 2011/11/02 15:48:43 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -93,7 +93,7 @@ typedef struct
   double r,g,b,op;
 } rgbop_stop_t;
 
-/* convert to intermediate types */
+/* convert psp to intermediate types */
 
 static double psp_rgb_it(unsigned short x)
 {
@@ -117,6 +117,27 @@ static unsigned int psp_zmid_it(unsigned short z0,
   return (unsigned int)z0*100 + ((unsigned int)z1 - (unsigned int)z0)*M;
 }
 
+/* convert intermediate types to svg values */
+
+static unsigned char svg_it_rgb(double x)
+{
+  x *= 256;
+  if (x > 255) x = 255;
+  if (x < 0) x = 0;
+
+  return x;
+}
+
+static double svg_it_op(double x)
+{
+  return x;
+}
+
+static double svg_it_z(double x)
+{
+  return x  / 4096.0;
+}
+
 /* 
    convert the psp stops to the intermediate types, 
    and rectify -- replace the midpoints by explicit 
@@ -130,7 +151,7 @@ static gstack_t* rectify_rgb(psp_t* psp)
 
   if (n<2)
     {
-      fprintf(stderr,"there is not enough data to make a palette!\n");
+      fprintf(stderr,"input (grd) has %i rgb stop(s)\n",n);
       return NULL;
     }
 
@@ -184,7 +205,7 @@ static gstack_t* rectify_op(psp_t* psp)
 
   if (n<2)
     {
-      fprintf(stderr,"there is not enough data to make a palette!\n");
+      fprintf(stderr,"input (grd) has %i opacity stop(s)\n",n);
       return NULL;
     }
 
@@ -206,7 +227,8 @@ static gstack_t* rectify_op(psp_t* psp)
       if (pseg[i].midpoint != 50)
 	{
 	  stop.z  = psp_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
-	  stop.op = 0.5*(psp_op_it(pseg[i].opacity) + psp_op_it(pseg[i+1].opacity));
+	  stop.op = 0.5*(psp_op_it(pseg[i].opacity) + 
+			 psp_op_it(pseg[i+1].opacity));
 
 	  if (gstack_push(stack, &stop) != 0)
 	    return NULL;
@@ -281,17 +303,17 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   /* get the first two of each type of stop */
 
-  rgb_stop_t rs0,rs1;
+  rgb_stop_t rs0, rs1;
   
-  err += gstack_pop(rss,&rs0);
-  err += gstack_pop(rss,&rs1);
+  err += gstack_pop(rss, &rs0);
+  err += gstack_pop(rss, &rs1);
 
   if (err) return NULL;
 
-  op_stop_t os0,os1;
+  op_stop_t os0, os1;
   
-  err += gstack_pop(oss,&os0);
-  err += gstack_pop(oss,&os1);
+  err += gstack_pop(oss, &os0);
+  err += gstack_pop(oss, &os1);
 
   if (err) return NULL;
 
@@ -307,7 +329,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   while (1)
     {
-      ros = stop_merge(rs0,os0);
+      ros = stop_merge(rs0, os0);
       gstack_push(ross, &ros);
 
       if (rs1.z > os1.z)
@@ -338,29 +360,31 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 	  os0 = os1;
 
 	  int 
-	    oempty = gstack_pop(oss,&os1),
-	    rempty = gstack_pop(rss,&rs1);
+            odone = gstack_pop(oss, &os1),
+            rdone = gstack_pop(rss, &rs1);
 
-	  if (oempty && rempty)
+	  if (odone && rdone)
 	    {
-	      ros = stop_merge(rs0,os0);
+	      ros = stop_merge(rs0, os0);
 	      gstack_push(ross, &ros);
 	      gstack_reverse(ross);
 
 	      return ross;
 	    }
-	  else if (oempty && !rempty)
+	  else if (odone && !rdone)
 	    {
 	      fprintf(stderr,"early termination of opacity channel\n");
 	      break;
 	    }
-	  else if (rempty && !oempty)
+	  else if (rdone && ! odone)
 	    {
-	      fprintf(stderr,"early termination of opacity channel\n");
+	      fprintf(stderr,"early termination of rgb channel\n");
 	      break;
 	    }
-
-	  /* remaining case: neither are empty, so we continue */
+	  else
+	    {
+	      /* OK, so now we continue */
+	    }
 	}
     }
 
@@ -371,15 +395,6 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
   return NULL;
 }
 
-static unsigned char d2uc(double x)
-{
-  x *= 256;
-  if (x > 255) x = 255;
-  if (x < 0) x = 0;
-
-  return x;
-}
-
 static int merged_svg(gstack_t *ross, svg_t *svg)
 {
   svg_stop_t ss;
@@ -387,11 +402,13 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
 
   while (gstack_pop(ross,&ros) == 0)
     {
-      ss.colour.red   = d2uc(ros.r);
-      ss.colour.green = d2uc(ros.g);
-      ss.colour.blue  = d2uc(ros.b);
-      ss.opacity      = ros.op;
-      ss.value        = ros.z / 4096.0;
+      ss.colour.red   = svg_it_rgb(ros.r);
+      ss.colour.green = svg_it_rgb(ros.g);
+      ss.colour.blue  = svg_it_rgb(ros.b);
+      ss.opacity      = svg_it_op(ros.op);
+      ss.value        = svg_it_z(ros.z);
+
+#ifdef DEBUG
       
       printf("%7.3f %3i %3i %3i %f\n",
 	     ss.value,
@@ -400,6 +417,8 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
 	     ss.colour.blue,
 	     ss.opacity
 	     );
+
+#endif
 
       svg_append(ss,svg);
     }
@@ -411,16 +430,29 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
 {
   gstack_t *rgbrec,*oprec;
 
+  if (opt.verbose)
+    printf("processing \"%s\"\n",psp->name);
+
   if ((rgbrec = rectify_rgb(psp)) == NULL)
     return 1;
 
   if ((oprec = rectify_op(psp)) == NULL)
     return 1;
 
+  if (opt.verbose)
+    printf("stops: rgb %i/%i, opacity %i/%i\n",
+	   psp->rgb.n,
+	   gstack_size(rgbrec),
+	   psp->op.n,
+	   gstack_size(oprec));
+
   gstack_t *m;
 
   if ((m = merge(rgbrec,oprec)) == NULL)
     return 1;
+
+  if (opt.verbose)
+    printf("merged to %i\n", gstack_size(m));
   
   gstack_destroy(rgbrec);
   gstack_destroy(oprec);
@@ -429,6 +461,9 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
     return 1;
 
   gstack_destroy(m);
+
+  if (snprintf(svg->name, SVG_NAME_LEN, "%s", psp->name) >= SVG_NAME_LEN)
+    fprintf(stderr, "truncated svg name!\n");
 
   return 0;
 }
