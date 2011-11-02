@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.53 2011/10/19 22:22:37 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.54 2011/10/28 09:31:28 jjg Exp jjg $
+
+1.41 (pending)
+  - replaced pspcpt by pspsvg
 
 1.40 (1 Nov 2011)
   - added svgx now writes the astronomical SAO format for DS9
