@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.23 2011/10/28 09:23:57 jjg Exp jjg $
+  $Id: svgx.c,v 1.24 2011/10/28 12:00:43 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -1119,6 +1119,22 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
   return 0;
 }
 
+static double clampd(double z, double min, double max)
+{
+  if (z < min) z = min;
+  if (z > max) z = max;
+
+  return z;
+}
+
+static int clampi(int z, int min, int max)
+{
+  if (z < min) z = min;
+  if (z > max) z = max;
+
+  return z;
+}
+
 static int svgpsp(svg_t* svg,psp_t* psp)
 {
   int m,n;
@@ -1150,22 +1166,21 @@ static int svgpsp(svg_t* svg,psp_t* psp)
   for (n=0, node = svg->nodes ; node ; n++,node = node->r)
     {
       rgb_t rgb;
-      int op;
-      double z;
+      double op,z;
 
       rgb = node->stop.colour;
       op  = node->stop.opacity;
       z   = node->stop.value;
       
-      pcseg[n].z        = 4096*z/100.0;
+      pcseg[n].z        = clampd(4096*z/100.0, 0, 4096);
       pcseg[n].midpoint = 50;
-      pcseg[n].r        = rgb.red*257;
-      pcseg[n].g        = rgb.green*257;
-      pcseg[n].b        = rgb.blue*257;
+      pcseg[n].r        = clampi(rgb.red*257,   0, 65535);
+      pcseg[n].g        = clampi(rgb.green*257, 0, 65535);;
+      pcseg[n].b        = clampi(rgb.blue*257,  0, 65535);;
   
-      poseg[n].z        = 4096*z/100.0;
+      poseg[n].z        = clampd(4096*z/100.0, 0, 4096);
       poseg[n].midpoint = 50;
-      poseg[n].opacity  = op*255;
+      poseg[n].opacity  = clampi(op*256, 0, 255);
     }
 
   /* copy across */
