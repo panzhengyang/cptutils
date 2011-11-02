@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.11 2009/10/08 17:39:24 jjg Exp $
+  $Id: pspsvg.c,v 1.1 2011/11/01 23:10:33 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -225,6 +225,47 @@ static gstack_t* rectify_op(psp_t* psp)
   return stack;
 }
 
+static rgbop_stop_t stop_merge(rgb_stop_t rs, op_stop_t os)
+{
+  rgbop_stop_t ros;
+
+  ros.r  = rs.r;
+  ros.g  = rs.g;
+  ros.b  = rs.b;
+  ros.op = os.op;
+  ros.z  = rs.z;
+
+  return ros;
+}
+
+static rgb_stop_t rgb_stop_interp(rgb_stop_t rs0,
+				  rgb_stop_t rs1, 
+				  unsigned int z)
+{
+  double M = (double)z/((double)(rs1.z) - (double)(rs0.z));
+  rgb_stop_t rs;
+
+  rs.z = z;
+  rs.r = rs0.r + M*(rs1.r - rs0.r);
+  rs.g = rs0.g + M*(rs1.g - rs0.g);
+  rs.b = rs0.b + M*(rs1.b - rs0.b);
+  
+  return rs;
+}
+
+static op_stop_t op_stop_interp(op_stop_t os0,
+				op_stop_t os1, 
+				unsigned int z)
+{
+  double M = (double)z/((double)(os1.z) - (double)(os0.z));
+  op_stop_t os;
+
+  os.z = z;
+  os.op = os0.op + M*(os1.op - os0.op);
+
+  return os;
+}
+
 /* 
    merge the independent rgb and opacity channels into
    a single rgbop channel. This means we interpolate 
@@ -236,9 +277,6 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
   gstack_t *ross;
   int err = 0, n = gstack_size(rss) + gstack_size(oss);
 
-  if ((ross = gstack_new(sizeof(rgbop_stop_t), n, n)) == NULL)
-    return NULL;
-
   /* get the first two of each type of stop */
 
   rgb_stop_t rs0,rs1;
@@ -248,19 +286,89 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   if (err) return NULL;
 
-  rgb_stop_t os0,os1;
+  op_stop_t os0,os1;
   
   err += gstack_pop(oss,&os0);
   err += gstack_pop(oss,&os1);
 
   if (err) return NULL;
 
-  printf("%u %u\n", rs0.z, rs1.z);
-  printf("%u %u\n", os0.z, os1.z);
+  if ((rs0.z != 0) || (os0.z != 0))
+    return NULL;
 
-  // to finish
+  /* merged stack to return */
 
-  return ross;
+  if ((ross = gstack_new(sizeof(rgbop_stop_t), n, n)) == NULL)
+    return NULL;
+
+  rgbop_stop_t ros;
+
+  while (1)
+    {
+      printf("%u %u\n", rs0.z, rs1.z);
+      printf("%u %u\n--\n", os0.z, os1.z);
+
+      ros = stop_merge(rs0,os0);
+      gstack_push(ross, &ros);
+
+      if (rs1.z > os1.z)
+	{
+	  rs0 = rgb_stop_interp(rs0, rs1, os1.z);
+	  os0 = os1;
+
+	  if (gstack_pop(oss, &os1) != 0)
+	    {
+	      fprintf(stderr,"early termination of opacity channel\n");
+	      break;
+	    }
+	}
+      else if (rs1.z < os1.z)
+	{
+	  os0 = op_stop_interp(os0, os1, rs1.z);
+	  rs0 = rs1;
+
+	  if (gstack_pop(rss,&rs1) != 0)
+	    {
+	      fprintf(stderr,"early termination of opacity channel\n");
+	      break;
+	    }
+	}
+      else
+	{
+	  rs0 = rs1;
+	  os0 = os1;
+
+	  int 
+	    oempty = gstack_pop(oss,&os1),
+	    rempty = gstack_pop(rss,&rs1);
+
+	  if (oempty && rempty)
+	    {
+	      ros = stop_merge(rs0,os0);
+	      gstack_push(ross, &ros);
+
+	      return ross;
+	    }
+	  else if (oempty && !rempty)
+	    {
+	      fprintf(stderr,"early termination of opacity channel\n");
+	      break;
+	    }
+	  else if (rempty && !oempty)
+	    {
+	      fprintf(stderr,"early termination of opacity channel\n");
+	      break;
+	    }
+
+	  /* remaining case: neither are empty, so we continue */
+	}
+    }
+
+  /* something has gone pear-shaped */
+
+  gstack_destroy(ross);
+
+  return NULL;
 }
 
 static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
