@@ -4,7 +4,7 @@
   paintshop pro gradient structures
 
   2006 (c) J.J. Green
-  $Id: psp.h,v 1.9 2006/09/01 22:55:16 jjg Exp jjg $
+  $Id: psp.h,v 1.10 2006/09/03 17:02:10 jjg Exp jjg $
 */
 
 #ifndef PSP_H
@@ -28,7 +28,7 @@ typedef struct
 
 typedef struct
 {
-  char* name;
+  unsigned char* name;
   int ver[2];
   struct 
   {

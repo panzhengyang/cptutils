@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: pspread.c,v 1.4 2006/09/01 23:41:38 jjg Exp jjg $
+  $Id: pspread.c,v 1.5 2010/09/14 21:25:00 jjg Exp jjg $
 */
 
 /* 
@@ -104,7 +104,7 @@ static int psp_read_stream(FILE* s,psp_t* grad)
     }
   else
     {
-      char *name;
+      unsigned char *name;
       int j;
 
       if ((name = malloc(n+1)) == NULL)
