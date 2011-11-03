@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.6 2011/11/03 00:11:55 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.7 2011/11/03 10:34:20 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -178,10 +178,17 @@ static gstack_t* rectify_rgb(psp_t* psp)
       
       if (pseg[i].midpoint != 50)
 	{
+	  // if midpoint is 100 then a final stop is created, 
+	  // so put all of the stops in the stack an then do
+	  // a post-rectify tail chopping exercise
+
 	  stop.z = psp_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
 	  stop.r = 0.5*(psp_rgb_it(pseg[i].r) + psp_rgb_it(pseg[i+1].r));
 	  stop.g = 0.5*(psp_rgb_it(pseg[i].g) + psp_rgb_it(pseg[i+1].g));
 	  stop.b = 0.5*(psp_rgb_it(pseg[i].b) + psp_rgb_it(pseg[i+1].b));
+
+	  printf("%i %f %f %f midpoint %i\n",
+		 stop.z,stop.r,stop.g,stop.b,pseg[i].midpoint);
 
 	  if (gstack_push(stack, &stop) != 0)
 	    return NULL;
@@ -193,7 +200,7 @@ static gstack_t* rectify_rgb(psp_t* psp)
   stop.g = psp_rgb_it(pseg[i].g);
   stop.b = psp_rgb_it(pseg[i].b);
   
-  printf("%i %i %i %i\n",pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
+  printf("%i %i %i %i (final)\n",pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
 
   if (gstack_push(stack, &stop) != 0)
     return NULL;
@@ -203,6 +210,9 @@ static gstack_t* rectify_rgb(psp_t* psp)
   if (stop.z < 409600)
     {
       stop.z = 409600;
+
+      printf("%i %i %i %i (padding)\n",
+	     pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
@@ -269,7 +279,7 @@ static gstack_t* rectify_op(psp_t* psp)
   stop.z  = psp_z_it(pseg[i].z);
   stop.op = psp_op_it(pseg[i].opacity);
   
-  printf("%i %i\n",pseg[i].z,pseg[i].opacity);
+  printf("%i %i (final)\n",pseg[i].z,pseg[i].opacity);
 
   if (gstack_push(stack, &stop) != 0)
     return NULL;
