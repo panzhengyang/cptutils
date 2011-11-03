@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.h,v 1.3 2005/09/21 10:32:59 jjg Exp jjg $
+  $Id: svg.h,v 1.4 2008/08/08 22:27:27 jjg Exp jjg $
 */
 
 #ifndef SVG_H
@@ -31,7 +31,7 @@ typedef struct svg_node_t
 
 typedef struct svg_t
 {
-  char        name[SVG_NAME_LEN];
+  unsigned char name[SVG_NAME_LEN];
   svg_node_t *nodes;
 } svg_t;
 
