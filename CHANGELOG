@@ -1,6 +1,7 @@
-Changes $Id: CHANGELOG,v 1.55 2011/11/02 14:36:59 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.56 2011/11/02 21:39:45 jjg Exp jjg $
 
 1.41 (pending)
+  - fixed some Unicode issues in common/svgread
   - replaced pspcpt by pspsvg
   - fixed opacity conversion in svgpsp (svgx) 
 

@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.5 2011/11/02 20:36:51 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.6 2011/11/03 00:11:55 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -489,12 +489,58 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
   return 0;
 }
 
+/* 
+   In grd3 files, names are non null-terminated
+   arrays of unsigned char, but we store them as
+   null-terminated arrays of unsigned char.  In
+   the wild one sees the upper half of the range
+   being used, and it seems to be latin-1.  
+
+   SVG uses unicode, so we need to convert our
+   latin-1 into unicode, the implementation taken
+   from http://stackoverflow.com/questions/4059775 
+*/
+
+static int latin1_to_unicode(const unsigned char *in, 
+			     unsigned char *out,
+			     size_t lenout)
+{
+  size_t lenin = 0;
+  const unsigned char* p;
+
+  for (p=in ; *p ; p++) lenin++;
+
+  if (2*lenin >= lenout)
+    return 1;
+
+  while (*in)
+    {
+      if (*in < 128) 
+	*out++ = *in++;
+      else if (*in < 192)
+	return 1;
+      else 
+	{
+	  *out++ = 0xc2 + (*in > 0xbf);
+	  *out++ = (*in++ & 0x3f) + 0x80;
+	}
+    }
+
+  return 0;
+}
+
 static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
 {
   gstack_t *rgbrec,*oprec;
 
+  if (latin1_to_unicode(psp->name, svg->name, SVG_NAME_LEN) != 0)
+    {
+      fprintf(stderr, "failed latin1 to unicode name conversion\n");
+      return 1;
+    }
+
   if (opt.verbose)
-    printf("processing \"%s\"\n",psp->name);
+    printf("processing \"%s\"\n",svg->name);
 
   if ((rgbrec = rectify_rgb(psp)) == NULL)
     return 1;
@@ -524,9 +570,6 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
     return 1;
 
   gstack_destroy(m);
-
-  if (snprintf(svg->name, SVG_NAME_LEN, "%s", psp->name) >= SVG_NAME_LEN)
-    fprintf(stderr, "truncated svg name!\n");
 
   return 0;
 }
