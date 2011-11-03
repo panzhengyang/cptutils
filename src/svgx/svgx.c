@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.25 2011/11/02 21:29:29 jjg Exp jjg $
+  $Id: svgx.c,v 1.26 2011/11/03 10:52:35 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -23,6 +23,7 @@
 #include "saowrite.h"
 
 #include "svgx.h"
+#include "utf8ascii.h"
 
 static int svgx_list(svgx_opt_t, svg_list_t*);
 static int svgx_named(svgx_opt_t, svg_list_t*);
@@ -592,7 +593,7 @@ static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
   return 0;
 }
 
-static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
+static int svgpov_dump(svg_t* svg, svgx_opt_t* opt)
 {
   int  n = SVG_NAME_LEN+5;
   char file[n],*name;
@@ -630,7 +631,7 @@ static int svgpov_dump(svg_t* svg,svgx_opt_t* opt)
 
   /* write */
 
-  if (pov_write(file,pov) != 0)
+  if (pov_write(file, pov) != 0)
     {
       fprintf(stderr,"failed to write to %s\n",file);
       return 1;
@@ -1196,7 +1197,7 @@ static int svgpsp(svg_t* svg,psp_t* psp)
   return 0;
 }
 
-static int svgpov(svg_t* svg,pov_t* pov)
+static int svgpov(svg_t* svg, pov_t* pov)
 {
   int n,m,nmod;
   svg_node_t *node;
@@ -1269,20 +1270,46 @@ static int svgpov(svg_t* svg,pov_t* pov)
 
   pov->n = n;
 
-  if (pov_set_name(pov,(svg->name ? svg->name : "unnamed"),&nmod) != 0)
+  /* povray names need to be alphanumeric ascii */
+
+  if (svg->name)
     {
-      fprintf(stderr,
-	      "failed to assign povray name (%s)\n",
-	      (svg->name ? svg->name : "(null)"));
-      return 1;
+      char aname[SVG_NAME_LEN];
+
+      if (utf8_to_ascii(svg->name, aname, SVG_NAME_LEN) != 0)
+	{
+	  printf("failed to convert name %s to ascii\n",aname);
+	  return 1;
+	}
+
+      if (pov_set_name(pov,aname,&nmod) != 0)
+	{
+	  fprintf(stderr,
+		  "failed to assign povray name (%s)\n",
+		  aname);
+	  return 1;
+	}
+ 
+      /* warn if name was modified */
+
+      if (nmod > 0)
+	fprintf(stderr,
+		"name modified : %s to %s\n",
+		svg->name,
+		pov->name); 
     }
+  else
+    {      
+      const char aname[] = "unassigned";
 
-  /* warn if name was modified */
-
-  if (nmod > 0)
-    fprintf(stderr,
-	    "name modified : %s to %s\n",
-	    svg->name, pov->name); 
+      if (pov_set_name(pov,aname,&nmod) != 0)
+	{
+	  fprintf(stderr,
+		  "failed to assign povray name (%s)\n",
+		  aname);
+	  return 1;
+	}
+    }
 
   return 0;
 }
