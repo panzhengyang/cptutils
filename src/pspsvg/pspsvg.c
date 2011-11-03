@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.4 2011/11/02 15:48:43 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.5 2011/11/02 20:36:51 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -164,10 +164,14 @@ static gstack_t* rectify_rgb(psp_t* psp)
 
   for (i=0 ; i<n-1 ; i++)
     {
+      if (pseg[i].z >= 4096) break;
+
       stop.z = psp_z_it(pseg[i].z);
       stop.r = psp_rgb_it(pseg[i].r);
       stop.g = psp_rgb_it(pseg[i].g);
       stop.b = psp_rgb_it(pseg[i].b);
+
+      printf("%i %i %i %i\n",pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
@@ -184,13 +188,25 @@ static gstack_t* rectify_rgb(psp_t* psp)
 	}
     }
 
-  stop.z = psp_z_it(pseg[n-1].z);
-  stop.r = psp_rgb_it(pseg[n-1].r);
-  stop.g = psp_rgb_it(pseg[n-1].g);
-  stop.b = psp_rgb_it(pseg[n-1].b);
+  stop.z = psp_z_it(pseg[i].z);
+  stop.r = psp_rgb_it(pseg[i].r);
+  stop.g = psp_rgb_it(pseg[i].g);
+  stop.b = psp_rgb_it(pseg[i].b);
   
+  printf("%i %i %i %i\n",pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
+
   if (gstack_push(stack, &stop) != 0)
     return NULL;
+
+  /* add implicit final stop */
+
+  if (stop.z < 409600)
+    {
+      stop.z = 409600;
+
+      if (gstack_push(stack, &stop) != 0)
+	return NULL;
+    }
 
   if (gstack_reverse(stack) != 0)
     return NULL;
@@ -216,10 +232,25 @@ static gstack_t* rectify_op(psp_t* psp)
 
   op_stop_t stop;
 
+  if (pseg[0].z > 0)
+    {
+      stop.z  = 0;
+      stop.op = psp_op_it(pseg[0].opacity);
+
+      printf("%i %i (implicit)\n",0,pseg[0].opacity);
+
+      if (gstack_push(stack, &stop) != 0)
+	return NULL;
+    }
+
   for (i=0 ; i<n-1 ; i++)
     {
+      if (pseg[i].z >= 4096) break;
+
       stop.z  = psp_z_it(pseg[i].z);
       stop.op = psp_op_it(pseg[i].opacity);
+
+      printf("%i %i\n",pseg[i].z,pseg[i].opacity);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
@@ -235,11 +266,20 @@ static gstack_t* rectify_op(psp_t* psp)
 	}
     }
 
-  stop.z  = psp_z_it(pseg[n-1].z);
-  stop.op = psp_op_it(pseg[n-1].opacity);
+  stop.z  = psp_z_it(pseg[i].z);
+  stop.op = psp_op_it(pseg[i].opacity);
   
+  printf("%i %i\n",pseg[i].z,pseg[i].opacity);
+
   if (gstack_push(stack, &stop) != 0)
     return NULL;
+
+  if (stop.z < 409600)
+    {
+      stop.z = 409600;
+      if (gstack_push(stack, &stop) != 0)
+	return NULL;
+    }
 
   if (gstack_reverse(stack) != 0)
     return NULL;
@@ -308,17 +348,32 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
   err += gstack_pop(rss, &rs0);
   err += gstack_pop(rss, &rs1);
 
-  if (err) return NULL;
+  if (err)
+    {
+      fprintf(stderr,"%i errors rgb\n",err);
+      return NULL;
+    }
 
   op_stop_t os0, os1;
   
   err += gstack_pop(oss, &os0);
   err += gstack_pop(oss, &os1);
 
-  if (err) return NULL;
+  if (err)
+    {
+      fprintf(stderr,"%i errors rgb\n",err);
+      return NULL;
+    }
+
+  printf("OK\n");
 
   if ((rs0.z != 0) || (os0.z != 0))
-    return NULL;
+    {
+      fprintf(stderr,"nonzero initial opacity %i %i\n",os0.z,os1.z);
+      return NULL;
+    }
+
+  printf("OK\n");
 
   /* merged stack to return */
 
@@ -332,8 +387,12 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
       ros = stop_merge(rs0, os0);
       gstack_push(ross, &ros);
 
+      fprintf(stderr,"(%i %i) (%i %i)\n",rs0.z,rs1.z,os0.z,os1.z);
+
       if (rs1.z > os1.z)
 	{
+	  printf("interp rgb\n");
+
 	  rs0 = rgb_stop_interp(rs0, rs1, os1.z);
 	  os0 = os1;
 
@@ -345,12 +404,14 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 	}
       else if (rs1.z < os1.z)
 	{
+	  printf("interp op\n");
+
 	  os0 = op_stop_interp(os0, os1, rs1.z);
 	  rs0 = rs1;
 
-	  if (gstack_pop(rss,&rs1) != 0)
+	  if (gstack_pop(rss, &rs1) != 0)
 	    {
-	      fprintf(stderr,"early termination of opacity channel\n");
+	      fprintf(stderr,"early termination of rgb channel\n");
 	      break;
 	    }
 	}
@@ -407,6 +468,8 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
       ss.colour.blue  = svg_it_rgb(ros.b);
       ss.opacity      = svg_it_op(ros.op);
       ss.value        = svg_it_z(ros.z);
+
+#define DEBUG
 
 #ifdef DEBUG
       
