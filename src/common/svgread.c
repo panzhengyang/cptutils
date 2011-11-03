@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.8 2008/08/08 22:27:19 jjg Exp jjg $
+  $Id: svgread.c,v 1.9 2008/08/08 23:23:49 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -173,7 +173,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 	svg from the svg_list
       */
 
-      if ((id = xmlGetProp(cur,(unsigned char*)"id")) == NULL)
+      if ((id = xmlGetProp(cur,(xmlChar *)"id")) == NULL)
 	{
 	  fprintf(stderr,"gradient has no id attribute, skipping\n");
 	  continue; 
@@ -189,7 +189,9 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list)
 
       /* so we might as well write it to the svg_t */
 
-      if (snprintf(svg->name,SVG_NAME_LEN-1,"%s",id) >= SVG_NAME_LEN)
+      if (xmlStrPrintf(svg->name,
+		       SVG_NAME_LEN-1,
+		       (xmlChar *)"%s",id) >= SVG_NAME_LEN)
 	{
 	  fprintf(stderr,"long gradient name truncated!\n");
 	}

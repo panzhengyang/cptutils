@@ -4,7 +4,7 @@
   writes paintshop pro gradients.
   2006 (c) J.J. Green
 
-  $Id: pspwrite.c,v 1.4 2006/09/01 23:23:34 jjg Exp jjg $
+  $Id: pspwrite.c,v 1.5 2006/09/01 23:58:05 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -41,6 +41,15 @@ static int write_rgb(FILE*,psp_rgbseg_t*);
 static int write_op(FILE*,psp_opseg_t*);
 static int write_zeros(FILE*,int);
 
+static size_t ustrlen(const unsigned char* s)
+{
+  size_t n;
+
+  for (n=0 ; *s ; s++) n++;
+
+  return n;
+}
+
 static int psp_write_stream(FILE *s,psp_t *psp)
 {
   int i,n;
@@ -59,15 +68,15 @@ static int psp_write_stream(FILE *s,psp_t *psp)
 
   if (psp->name)
     {
-      unsigned char len = strlen(psp->name);
+      unsigned char len = ustrlen(psp->name);
 
       fwrite(&len,1,1,s);
       fwrite(psp->name,1,len,s);
     }
   else
     {
-      char name[] = "unspecified";
-      unsigned char len = strlen(name);
+      const unsigned char name[] = "unspecified";
+      unsigned char len = ustrlen(name);
 
       fwrite(&len,1,1,s);
       fwrite(name,1,len,s);
