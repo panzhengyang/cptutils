@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.24 2011/10/28 12:00:43 jjg Exp jjg $
+  $Id: svgx.c,v 1.25 2011/11/02 21:29:29 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -406,12 +406,12 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   return 0;
 }
 
-static int svg_select_first(svg_t* svg,char* name)
+static int svg_select_first(svg_t* svg, char* name)
 {
   return 1;
 }
 
-static int svg_select_name(svg_t* svg,char* name)
+static int svg_select_name(svg_t* svg, char* name)
 {
   return (strcmp(svg->name,name) == 0 ? 1 : 0);
 }
