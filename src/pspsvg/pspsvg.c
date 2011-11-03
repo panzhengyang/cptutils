@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.7 2011/11/03 10:34:20 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.8 2011/11/03 11:19:47 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -138,6 +138,68 @@ static double svg_it_z(double x)
   return x  / 4096.0;
 }
 
+/* trim off excessive stops */
+
+static int trim_rgb(gstack_t* stack)
+{
+  int n = gstack_size(stack);
+  rgb_stop_t stop;
+  gstack_t *stack0;
+
+  if ((stack0 = gstack_new(sizeof(rgb_stop_t), n, n)) == NULL)
+    return 1;
+
+  while (! gstack_empty(stack))
+    {
+      gstack_pop(stack, &stop);
+      gstack_push(stack0, &stop);
+
+      if (stop.z >= 409600)
+	{
+	  while (! gstack_empty(stack))
+	    gstack_pop(stack,&stop);
+	}
+    }
+
+  while (! gstack_empty(stack0))
+    {
+      gstack_pop(stack0,&stop);
+      gstack_push(stack,&stop);
+    }
+
+  return 0;
+}
+
+static int trim_op(gstack_t* stack)
+{
+  int n = gstack_size(stack);
+  op_stop_t stop;
+  gstack_t *stack0;
+
+  if ((stack0 = gstack_new(sizeof(op_stop_t), n, n)) == NULL)
+    return 1;
+
+  while (! gstack_empty(stack))
+    {
+      gstack_pop(stack, &stop);
+      gstack_push(stack0, &stop);
+
+      if (stop.z >= 409600)
+	{
+	  while (! gstack_empty(stack))
+	    gstack_pop(stack,&stop);
+	}
+    }
+
+  while (! gstack_empty(stack0))
+    {
+      gstack_pop(stack0,&stop);
+      gstack_push(stack,&stop);
+    }
+
+  return 0;
+}
+
 /* 
    convert the psp stops to the intermediate types, 
    and rectify -- replace the midpoints by explicit 
@@ -164,43 +226,30 @@ static gstack_t* rectify_rgb(psp_t* psp)
 
   for (i=0 ; i<n-1 ; i++)
     {
-      if (pseg[i].z >= 4096) break;
-
       stop.z = psp_z_it(pseg[i].z);
       stop.r = psp_rgb_it(pseg[i].r);
       stop.g = psp_rgb_it(pseg[i].g);
       stop.b = psp_rgb_it(pseg[i].b);
-
-      printf("%i %i %i %i\n",pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
       
       if (pseg[i].midpoint != 50)
 	{
-	  // if midpoint is 100 then a final stop is created, 
-	  // so put all of the stops in the stack an then do
-	  // a post-rectify tail chopping exercise
-
 	  stop.z = psp_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
 	  stop.r = 0.5*(psp_rgb_it(pseg[i].r) + psp_rgb_it(pseg[i+1].r));
 	  stop.g = 0.5*(psp_rgb_it(pseg[i].g) + psp_rgb_it(pseg[i+1].g));
 	  stop.b = 0.5*(psp_rgb_it(pseg[i].b) + psp_rgb_it(pseg[i+1].b));
-
-	  printf("%i %f %f %f midpoint %i\n",
-		 stop.z,stop.r,stop.g,stop.b,pseg[i].midpoint);
 
 	  if (gstack_push(stack, &stop) != 0)
 	    return NULL;
 	}
     }
 
-  stop.z = psp_z_it(pseg[i].z);
-  stop.r = psp_rgb_it(pseg[i].r);
-  stop.g = psp_rgb_it(pseg[i].g);
-  stop.b = psp_rgb_it(pseg[i].b);
-  
-  printf("%i %i %i %i (final)\n",pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
+  stop.z = psp_z_it(pseg[n-1].z);
+  stop.r = psp_rgb_it(pseg[n-1].r);
+  stop.g = psp_rgb_it(pseg[n-1].g);
+  stop.b = psp_rgb_it(pseg[n-1].b);
 
   if (gstack_push(stack, &stop) != 0)
     return NULL;
@@ -211,14 +260,14 @@ static gstack_t* rectify_rgb(psp_t* psp)
     {
       stop.z = 409600;
 
-      printf("%i %i %i %i (padding)\n",
-	     pseg[i].z,pseg[i].r,pseg[i].g,pseg[i].b);
-
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
     }
 
   if (gstack_reverse(stack) != 0)
+    return NULL;
+
+  if (trim_rgb(stack) != 0)
     return NULL;
 
   return stack;
@@ -247,20 +296,14 @@ static gstack_t* rectify_op(psp_t* psp)
       stop.z  = 0;
       stop.op = psp_op_it(pseg[0].opacity);
 
-      printf("%i %i (implicit)\n",0,pseg[0].opacity);
-
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
     }
 
   for (i=0 ; i<n-1 ; i++)
     {
-      if (pseg[i].z >= 4096) break;
-
       stop.z  = psp_z_it(pseg[i].z);
       stop.op = psp_op_it(pseg[i].opacity);
-
-      printf("%i %i\n",pseg[i].z,pseg[i].opacity);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
@@ -276,10 +319,8 @@ static gstack_t* rectify_op(psp_t* psp)
 	}
     }
 
-  stop.z  = psp_z_it(pseg[i].z);
-  stop.op = psp_op_it(pseg[i].opacity);
-  
-  printf("%i %i (final)\n",pseg[i].z,pseg[i].opacity);
+  stop.z  = psp_z_it(pseg[n-1].z);
+  stop.op = psp_op_it(pseg[n-1].opacity);
 
   if (gstack_push(stack, &stop) != 0)
     return NULL;
@@ -292,6 +333,9 @@ static gstack_t* rectify_op(psp_t* psp)
     }
 
   if (gstack_reverse(stack) != 0)
+    return NULL;
+
+  if (trim_op(stack) != 0)
     return NULL;
 
   return stack;
@@ -375,15 +419,11 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
       return NULL;
     }
 
-  printf("OK\n");
-
   if ((rs0.z != 0) || (os0.z != 0))
     {
       fprintf(stderr,"nonzero initial opacity %i %i\n",os0.z,os1.z);
       return NULL;
     }
-
-  printf("OK\n");
 
   /* merged stack to return */
 
@@ -397,12 +437,8 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
       ros = stop_merge(rs0, os0);
       gstack_push(ross, &ros);
 
-      fprintf(stderr,"(%i %i) (%i %i)\n",rs0.z,rs1.z,os0.z,os1.z);
-
       if (rs1.z > os1.z)
 	{
-	  printf("interp rgb\n");
-
 	  rs0 = rgb_stop_interp(rs0, rs1, os1.z);
 	  os0 = os1;
 
@@ -414,8 +450,6 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 	}
       else if (rs1.z < os1.z)
 	{
-	  printf("interp op\n");
-
 	  os0 = op_stop_interp(os0, os1, rs1.z);
 	  rs0 = rs1;
 
@@ -479,8 +513,6 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
       ss.opacity      = svg_it_op(ros.op);
       ss.value        = svg_it_z(ros.z);
 
-#define DEBUG
-
 #ifdef DEBUG
       
       printf("%7.3f %3i %3i %3i %f\n",
@@ -506,14 +538,14 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
    the wild one sees the upper half of the range
    being used, and it seems to be latin-1.  
 
-   SVG uses unicode, so we need to convert our
-   latin-1 into unicode, the implementation taken
-   from http://stackoverflow.com/questions/4059775 
+   SVG uses utf8, so we need to convert our latin-1 
+   to it: the implementation taken from 
+   http://stackoverflow.com/questions/4059775 
 */
 
-static int latin1_to_unicode(const unsigned char *in, 
-			     unsigned char *out,
-			     size_t lenout)
+static int latin1_to_utf8(const unsigned char *in, 
+			  unsigned char *out,
+			  size_t lenout)
 {
   size_t lenin = 0;
   const unsigned char* p;
@@ -543,7 +575,7 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
 {
   gstack_t *rgbrec,*oprec;
 
-  if (latin1_to_unicode(psp->name, svg->name, SVG_NAME_LEN) != 0)
+  if (latin1_to_utf8(psp->name, svg->name, SVG_NAME_LEN) != 0)
     {
       fprintf(stderr, "failed latin1 to unicode name conversion\n");
       return 1;
