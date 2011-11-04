@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.26 2011/11/03 10:52:35 jjg Exp jjg $
+  $Id: svgx.c,v 1.27 2011/11/03 23:57:35 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -23,7 +23,7 @@
 #include "saowrite.h"
 
 #include "svgx.h"
-#include "utf8ascii.h"
+#include "utf8x.h"
 
 static int svgx_list(svgx_opt_t, svg_list_t*);
 static int svgx_named(svgx_opt_t, svg_list_t*);
@@ -383,7 +383,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	  return 1;
 	}
             
-      if (sao_write(file, sao, svg->name) != 0)
+      if (sao_write(file, sao, (const char*)svg->name) != 0)
 	{
 	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
 	  return 1;
@@ -414,7 +414,7 @@ static int svg_select_first(svg_t* svg, char* name)
 
 static int svg_select_name(svg_t* svg, char* name)
 {
-  return (strcmp(svg->name,name) == 0 ? 1 : 0);
+  return (strcmp((const char*)svg->name,name) == 0 ? 1 : 0);
 }
 
 static int svgcpt_dump(svg_t*,svgx_opt_t*);
@@ -494,7 +494,7 @@ static int svgcpt_dump(svg_t* svg,svgx_opt_t* opt)
 
   if (!svg) return 1;
 
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.cpt",name) >= n)
     {
@@ -555,7 +555,7 @@ static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
 
   if (!svg) return 1;
 
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.ggr",name) >= n)
     {
@@ -607,7 +607,7 @@ static int svgpov_dump(svg_t* svg, svgx_opt_t* opt)
       return 1;
     }
 
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.inc",name) >= n)
     {
@@ -653,7 +653,7 @@ static int svgsao_dump(svg_t* svg,svgx_opt_t* opt)
 
   if (!svg) return 1;
   
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.sao",name) >= n)
     {
@@ -696,7 +696,7 @@ static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
 
   if (!svg) return 1;
 
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.gpt",name) >= n)
     {
@@ -742,7 +742,7 @@ static int svgcss3_dump(svg_t* svg, svgx_opt_t* opt)
 
   if (!svg) return 1;
 
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.css3",name) >= n)
     {
@@ -788,7 +788,7 @@ static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
 
   if (!svg) return 1;
 
-  name = svg->name;
+  name = (char*)svg->name;
 
   if (snprintf(file,n,"%s.grd",name) >= n)
     {
@@ -953,7 +953,7 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
   grad_segment_t *gseg,*prev=NULL; 
   int n=0;
 
-  ggr->name = strdup(svg->name);
+  ggr->name = strdup((char*)svg->name);
 
   node = svg->nodes;
   next = node->r; 
@@ -1184,9 +1184,17 @@ static int svgpsp(svg_t* svg,psp_t* psp)
       poseg[n].opacity  = clampi(op*256, 0, 255);
     }
 
-  /* copy across */
+  /* copy name */
 
-  psp->name = strdup(svg->name);
+  char buffer[SVG_NAME_LEN];
+
+  if (utf8_to_x("LATIN1", svg->name, buffer, SVG_NAME_LEN) != 0)
+    {
+      fprintf(stderr,"failed to convert utf name to latin1\n");
+      return 1;
+    }
+
+  psp->name = (unsigned char*)strdup(buffer);
 
   psp->rgb.n   = m;
   psp->rgb.seg = pcseg; 
@@ -1276,7 +1284,7 @@ static int svgpov(svg_t* svg, pov_t* pov)
     {
       char aname[SVG_NAME_LEN];
 
-      if (utf8_to_ascii(svg->name, aname, SVG_NAME_LEN) != 0)
+      if (utf8_to_x("ASCII", svg->name, aname, SVG_NAME_LEN) != 0)
 	{
 	  printf("failed to convert name %s to ascii\n",aname);
 	  return 1;

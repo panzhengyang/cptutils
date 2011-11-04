@@ -2,7 +2,7 @@
   convert a utf8 multibyte string to ascii with
   character transliteration
 
-  $Id$
+  $Id: utf8ascii.c,v 1.1 2011/11/03 23:43:04 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -12,21 +12,31 @@
 #include <iconv.h>
 #include <locale.h>
 
-#include "utf8ascii.h"
+#include "utf8x.h"
 
-extern int utf8_to_ascii(const unsigned char *in, 
-			 char *out,
-			 size_t lenout)
+extern int utf8_to_x(const char *type,
+		     const unsigned char *in, 
+		     char *out,
+		     size_t lenout)
 {
   const char lname[] = "en_US.UTF-8";
-  
+  const char icopt[] = "TRANSLIT";
+  size_t icnamelen = strlen(type) + 2 + strlen(icopt) + 1;
+  char icname[icnamelen];
+
+  if (snprintf(icname,icnamelen,"%s//%s",type,icopt) > icnamelen)
+    {
+      fprintf(stderr,"failed to create iconv string\n");
+      return 1;
+    }
+
   if (setlocale(LC_CTYPE,lname) == NULL)
     {
       fprintf(stderr,"failed to set locale to %s\n",lname);
       return 1;
     }
 
-  iconv_t cv = iconv_open("ASCII//TRANSLIT","UTF-8");
+  iconv_t cv = iconv_open(icname,"UTF-8");
   
   if (cv == (iconv_t)(-1))
     {
