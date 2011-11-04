@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.4 2005/06/03 23:41:24 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.5 2005/06/15 21:21:06 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -92,7 +92,9 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
   /* copy the name */
 
-  if (snprintf(svg->name,SVG_NAME_LEN,"%s",cpt->name) >= SVG_NAME_LEN)
+  if (snprintf((char*)svg->name,
+	       SVG_NAME_LEN,
+	       "%s",cpt->name) >= SVG_NAME_LEN)
     {
       fprintf(stderr,"truncated svg name!\n");
     }
