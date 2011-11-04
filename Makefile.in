@@ -1,13 +1,13 @@
-# Makefile.in for gimpcpt
+# Makefile.in for cptutils
 
-# $Id: Makefile.in,v 1.6 2008/04/13 20:59:55 jjg Exp jjg $
+# $Id: Makefile.in,v 1.7 2010/04/19 23:37:12 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
 
 # Macros
 
-VERSION   = @VERSION@
+VERSION   = @PACKAGE_VERSION@
 RUBBISH   = *~
 CONFFILES = config.cache config.log config.status configure Makefile
 
