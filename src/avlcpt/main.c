@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.5 2005/11/21 22:16:36 jjg Exp jjg $
+  $Id: main.c,v 1.6 2005/12/04 18:22:38 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -33,6 +33,7 @@
 
 #include "options.h"
 #include "avlcpt.h"
+#include "version.h"
 
 int main(int argc,char** argv)
 {
