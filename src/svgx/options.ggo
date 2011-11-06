@@ -1,12 +1,13 @@
 # -*- sh -*-
 # gengetopt input for svgcpt
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.10 2006/09/02 11:49:41 jjg Exp jjg $
+# $Id: options.ggo,v 1.11 2011/05/04 20:53:46 jjg Exp jjg $
 package "svgx"
 purpose "convert SVG gradient to other formats"
 option	"all"	        a "convert all gradients"           	flag    off
 option  "background"    b "background colour"                   string  default="0/0/0" no
 option  "foreground"    f "foreground colour"                   string  default="255/255/255" no
+option  "geometry"      g "image size (png only)"               string  default="340x36" no
 option  "nan"           n "nan colour"                          string  default="255/0/0" no
 option  "first"         1 "convert first gradient in the file"  flag    off
 option	"list"	        l "list gradients in file"           	flag    off
