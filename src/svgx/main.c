@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.15 2011/05/04 20:53:52 jjg Exp jjg $
+  $Id: main.c,v 1.16 2011/10/27 22:52:53 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -99,6 +99,8 @@ int main(int argc,char** argv)
 	opt.type = type_sao;
       else if (strcmp("ds9",tstr) == 0)
 	opt.type = type_sao;
+      else if (strcmp("png",tstr) == 0)
+	opt.type = type_png;
       else
 	{
 	  fprintf(stderr,"no such type %s\n",tstr);
@@ -149,6 +151,20 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
+  /* parse image size for png output */
+
+  if (info.geometry_given && (opt.type != type_png))
+    {
+      fprintf(stderr,"geometry option used only in conversion to png\n");
+      return EXIT_FAILURE;
+    }
+      
+  if (sscanf(info.geometry_arg,"%ix%i",&opt.width,&opt.height) != 2)
+    {
+      fprintf(stderr,"bad argument \"%s\" to geometry option",info.geometry_arg);
+      return EXIT_FAILURE;
+    }
+
   /* 
      we write the translation of the svg gradient <name> to stdout 
      if <name> is specified, so then we suppress verbosity
@@ -177,6 +193,7 @@ int main(int argc,char** argv)
 	    case type_css3 : tstr = "CSS3 gradient"; break;
 	    case type_psp  : tstr = "grd v3"; break;
 	    case type_sao  : tstr = "SAO (DS9) colour map"; break;
+	    case type_png  : tstr = "png image"; break;
 
 	    default:
 	      fprintf(stderr,"weird output format!\n");
@@ -186,6 +203,10 @@ int main(int argc,char** argv)
 	  printf("convert svg to %s\n",tstr);
 	  printf("%s format limits\n",
 		 (opt.permissive ? "ignoring" : "respecting"));
+
+	  if (opt.type == type_png)
+	    printf("output size is %i x %i\n", opt.width, opt.height);
+
 	}
     }
 
