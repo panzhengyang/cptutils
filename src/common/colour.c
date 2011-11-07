@@ -4,7 +4,7 @@
   colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.c,v 1.6 2004/08/15 23:45:15 jjg Exp jjg $
+  $Id: colour.c,v 1.7 2010/04/04 17:22:15 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -344,7 +344,7 @@ static int rgbD_interpolate(double z,double *aD,double *bD,double *cD)
   return err;
 }
 
-static int rgb_interpolate(double z,rgb_t a,rgb_t b,rgb_t *c)
+extern int rgb_interpolate(double z,rgb_t a,rgb_t b,rgb_t *c)
 {
   double aD[3], bD[3], cD[3];
   int err = 0;
@@ -370,7 +370,8 @@ extern int hsv_interpolate(double z,hsv_t a,hsv_t b,hsv_t *c)
   return err;
 }
 
-extern int colour_interpolate(double z,colour_t a,colour_t b,model_t model,colour_t *c)
+extern int colour_interpolate(double z,colour_t a,colour_t b,
+			      model_t model,colour_t *c)
 {
   int err;
 

@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.h,v 1.4 2008/08/08 22:27:27 jjg Exp jjg $
+  $Id: svg.h,v 1.5 2011/11/03 10:03:40 jjg Exp jjg $
 */
 
 #ifndef SVG_H
@@ -43,7 +43,7 @@ extern int svg_prepend(svg_stop_t,svg_t*);
 extern int svg_append(svg_stop_t,svg_t*);
 
 extern int svg_each_stop(svg_t*,int (*)(svg_stop_t,void*),void*);
-
+extern int svg_interpolate(svg_t*, double, rgb_t*, double*);
 extern int svg_num_stops(svg_t*);
 
 #endif

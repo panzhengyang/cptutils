@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.3 2005/09/20 23:08:09 jjg Exp jjg $
+  $Id: svg.c,v 1.4 2008/08/08 22:27:05 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -41,6 +41,73 @@ extern int svg_each_stop(svg_t* svg,int (*f)(svg_stop_t,void*),void* opt)
     } 
 
   return 0;
+}
+
+/*
+  interpolate the colour and opacity values of the
+  svg gradient at the specified z value.
+*/
+
+static int svg_interpolate_stops(svg_stop_t ls, 
+				 svg_stop_t rs, 
+				 double z, 
+				 rgb_t *rgb,
+				 double *op)
+{
+  
+  
+  if ((rs.value - ls.value) <= 0) return 1;
+
+  double t = (z - ls.value)/(rs.value - ls.value);
+  
+  *op = ls.opacity * (1-t) + rs.opacity * t;
+
+  return rgb_interpolate(t, ls.colour, rs.colour, rgb); 
+}
+
+extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
+{
+  if ((z < 0.0) || (z > 100.0))
+    return 1;
+
+  svg_node_t *node;
+
+  /* find first node where node.z => z */
+
+  for (node = svg->nodes ; 
+       node && (node->stop.value < z) ; 
+       node = node->r);
+
+  /*
+    this might happen with a defective svg, say if the
+    last node had z-value less that 100
+  */
+
+  if (node) return 1;
+
+  /*
+    if there is a leftward node then the z-value of
+    it is less than z, so we can inrerploate.
+    if there is no leftward node then we are at the
+    first node, which should have z-value zero
+  */
+
+  if (node->l)
+    return svg_interpolate_stops(node->l->stop, 
+				 node->stop, 
+				 z, rgb, op);
+  else
+    {
+      if (node->stop.value <= z)
+	{
+	  *rgb = node->stop.colour;
+	  *op  = node->stop.opacity;
+
+	  return 0;
+	}
+    }
+
+  return 1;
 }
 
 extern svg_t* svg_new(void)
