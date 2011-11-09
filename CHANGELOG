@@ -1,11 +1,14 @@
-Changes $Id: CHANGELOG,v 1.57 2011/11/03 10:36:34 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.58 2011/11/04 18:14:32 jjg Exp jjg $
 
 1.41 (pending)
+  - added svgpng
   - fixed some UTF8 issues in common/svgread
   - replaced pspcpt by pspsvg
   - fixed opacity conversion in svgpsp (svgx) 
   - improved character-set handling in pspsvg, 
     svgpsp, svgpov (svgx)
+  - fixed conversion of implicit initial and final stops 
+    in svgx  
 
 1.40 (1 Nov 2011)
   - added svgx now writes the astronomical SAO format for DS9

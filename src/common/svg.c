@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.5 2011/11/07 23:40:55 jjg Exp jjg $
+  $Id: svg.c,v 1.6 2011/11/09 00:10:46 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -14,6 +14,38 @@
 #include <time.h>
 
 #include "svg.h"
+
+/*
+  modifies its argument in making explicit 
+  the initial and final implicit stops
+*/
+
+extern int svg_explicit(svg_t *svg)
+{
+  svg_node_t *node = svg->nodes;
+
+  if (node->stop.value > 0.0)
+    {
+      svg_stop_t stop = node->stop;
+
+      stop.value = 0.0;
+
+      if (svg_prepend(stop,svg) != 0) return 1;
+    }
+
+  for ( ; node->r ; node = node->r ) ;
+
+  if (node->stop.value < 100.0)
+    {
+      svg_stop_t stop = node->stop;
+
+      stop.value = 100.0;
+
+      if (svg_append(stop,svg) != 0) return 1;
+    }
+
+  return 0;
+}
 
 /*
   this operates on each stop : if f returns 
@@ -24,7 +56,7 @@
   not tested
 */
 
-extern int svg_each_stop(svg_t* svg,int (*f)(svg_stop_t,void*),void* opt)
+extern int svg_each_stop(svg_t* svg, int (*f)(svg_stop_t,void*), void* opt)
 {
   svg_node_t *node;
 
@@ -63,6 +95,8 @@ static int svg_interpolate_stops(svg_stop_t ls,
   return rgb_interpolate(t, ls.colour, rs.colour, rgb); 
 }
 
+/* interpolate an svg with explicit initial and final stops */
+
 extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
 {
   if ((z < 0.0) || (z > 100.0))
@@ -77,11 +111,14 @@ extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
        node = node->r);
 
   /*
-    this might happen with a defective svg, say if the
-    last node had z-value less that 100
+    this will happen if the initial stop is implicit
   */
 
-  if (!node) return 1;
+  if (!node)
+    {
+      fprintf(stderr,"implicit initial stop\n");
+      return 1;
+    }
 
   /*
     if there is a leftward node then the z-value of
@@ -106,6 +143,10 @@ extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
 	  return 0;
 	}
     }
+
+  /* this will happen if the final stop is implicit */
+
+  fprintf(stderr, "implicit final stop\n");
 
   return 1;
 }
