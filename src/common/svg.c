@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.4 2008/08/08 22:27:05 jjg Exp jjg $
+  $Id: svg.c,v 1.5 2011/11/07 23:40:55 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -54,8 +54,6 @@ static int svg_interpolate_stops(svg_stop_t ls,
 				 rgb_t *rgb,
 				 double *op)
 {
-  
-  
   if ((rs.value - ls.value) <= 0) return 1;
 
   double t = (z - ls.value)/(rs.value - ls.value);
@@ -83,7 +81,7 @@ extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
     last node had z-value less that 100
   */
 
-  if (node) return 1;
+  if (!node) return 1;
 
   /*
     if there is a leftward node then the z-value of
@@ -93,9 +91,11 @@ extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
   */
 
   if (node->l)
-    return svg_interpolate_stops(node->l->stop, 
-				 node->stop, 
-				 z, rgb, op);
+    {
+      return svg_interpolate_stops(node->l->stop, 
+				   node->stop, 
+				   z, rgb, op);
+    }
   else
     {
       if (node->stop.value <= z)

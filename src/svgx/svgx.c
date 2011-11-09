@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.27 2011/11/03 23:57:35 jjg Exp jjg $
+  $Id: svgx.c,v 1.28 2011/11/04 15:20:35 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <png.h>
 
 #include "colour.h"
 #include "svgread.h"
@@ -25,6 +26,12 @@
 #include "svgx.h"
 #include "utf8x.h"
 
+typedef struct
+{
+  size_t width, height;
+  unsigned char *row;
+} png_t;
+
 static int svgx_list(svgx_opt_t, svg_list_t*);
 static int svgx_named(svgx_opt_t, svg_list_t*);
 static int svgx_all(svgx_opt_t, svg_list_t*);
@@ -36,6 +43,101 @@ static int svgpov(svg_t*, pov_t*);
 static int svggpt(svg_t*, gpt_t*);
 static int svgcss3(svg_t*, css3_t*);
 static int svgsao(svg_t*, sao_t*);
+static int svgpng(svg_t*, png_t*);
+
+extern png_t* png_new(size_t w, size_t h)
+{
+  png_t *png;
+
+  if ((png = malloc(sizeof(png_t))) == NULL) return NULL;
+
+  png->width  = w;
+  png->height = h;
+
+  png->row = malloc(4 * w);
+
+  if (png->row == NULL) return NULL;
+ 
+  return png;
+}
+
+extern void png_destroy(png_t* png)
+{
+  free(png->row);
+  free(png);
+}
+
+extern int png_write(const char *path, png_t *png, const char* name)
+{
+
+
+  png_structp pngH = NULL;
+  png_infop   infoH = NULL;
+
+  png_byte **rows = NULL;
+  
+  pngH = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+  if (pngH == NULL)
+    return 1;
+    
+  if ((infoH = png_create_info_struct(pngH)) == NULL)
+    return 1;
+
+  if (setjmp(png_jmpbuf(pngH)))
+    return 1;
+    
+  /* Set image attributes. */
+
+  png_set_IHDR(pngH,
+	       infoH,
+	       png->width,
+	       png->height,
+	       8,
+	       PNG_COLOR_TYPE_RGBA,
+	       PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_DEFAULT,
+	       PNG_FILTER_TYPE_DEFAULT);
+
+  /*
+    since all rows are identical, using PNG_FILTER_UP 
+    gives us better compression
+  */
+
+  png_set_filter(pngH, PNG_FILTER_TYPE_BASE, PNG_FILTER_UP);
+
+  /*
+    initialize rows of PNG, assigning each to the same
+    simple row
+  */
+
+  if ((rows = malloc(png->height * sizeof(png_byte*))) == NULL)
+    return 1;
+
+  size_t j;
+
+  for (j = 0 ; j < png->height ; j++) rows[j] = png->row;
+    
+  /* Write the image data */
+
+  FILE *st;
+
+  if ((st = fopen(path, "wb")) == NULL) 
+    return 1;
+
+  png_init_io(pngH, st);
+  png_set_rows(pngH, infoH, rows);
+  png_write_png(pngH, infoH, PNG_TRANSFORM_IDENTITY, NULL);
+
+  fclose(st);
+
+  /* tidy up */
+
+  free(rows);
+  png_destroy_write_struct(&pngH, &infoH);
+
+  return 0;
+}
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -162,6 +264,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   psp_t  *psp;
   gradient_t *ggr;
   sao_t *sao;
+  png_t *png;
 
   char *file;
 
@@ -390,6 +493,30 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 	}
 
       sao_destroy(sao);
+
+      break;
+
+    case type_png:
+
+      if ((png = png_new(opt.width, opt.height)) == NULL)
+	{
+	  fprintf(stderr,"failed to create png structure\n");
+	  return 1;
+	}
+      
+      if (svgpng(svg, png) != 0)
+	{
+	  fprintf(stderr,"failed to convert %s to png\n",opt.name);
+	  return 1;
+	}
+            
+      if (png_write(file, png, (const char*)svg->name) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
+
+      png_destroy(png);
 
       break;
 
@@ -1455,6 +1582,37 @@ static int svgcss3(svg_t* svg, css3_t* css3)
     }
 
   css3->n = n;
+
+  return 0;
+}
+
+static int svgpng(svg_t *svg, png_t *png)
+{
+
+  size_t nz = png->width;
+  unsigned char *row = png->row;
+  int i;
+
+  for (i=0 ; i<nz ; i++)
+    {
+      rgb_t rgb;
+      double op, z = 100.0 * (double)i/(double)(nz-1);
+
+      if (svg_interpolate(svg, z, &rgb, &op) != 0)
+	{
+	  fprintf(stderr,"failed svg interpolate at %.3g\n", z);
+	  return 1;
+	}
+      
+      op *= 256;
+
+      if (op > 255) op = 255;
+
+      row[4*i]   = rgb.red;
+      row[4*i+1] = rgb.green;
+      row[4*i+2] = rgb.blue;
+      row[4*i+3] = (unsigned char)op;
+    }
 
   return 0;
 }
