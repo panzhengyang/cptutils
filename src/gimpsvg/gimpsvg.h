@@ -1,16 +1,16 @@
 /*
-  gimpcpt.h
+  gimpsvg.h
 
-  (c) J.J.Green 2001
-  $Id: gimpcpt.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
+  (c) J.J.Green 2011
+  $Id: gimpsvg.h,v 1.2 2004/02/24 18:36:23 jjg Exp jjg $
 */
 
-#ifndef GIMPCPT_H
-#define GIMPCPT_H
+#ifndef GIMPSVG_H
+#define GIMPSVG_H
 
 #include "colour.h"
 
-typedef struct cptopt_t
+typedef struct 
 {
   unsigned int verbose    : 1;
   unsigned int reverse    : 1;
@@ -24,9 +24,9 @@ typedef struct cptopt_t
   
   double tol;
 
-} cptopt_t;
+} gimpsvg_opt_t;
 
-extern int gimpcpt(char*,char*,cptopt_t);
+extern int gimpsvg(const char*, const char*, gimpsvg_opt_t);
 
 #endif
 

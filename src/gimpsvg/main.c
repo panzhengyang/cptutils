@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.5 2011/11/10 23:31:28 jjg Exp jjg $
+  $Id: main.c,v 1.6 2011/11/10 23:31:44 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -42,9 +42,9 @@ static int parse_minmax(char*,double*,double*);
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  char       *infile=NULL,*outfile=NULL;
-  int        err;
-  cptopt_t   opt;
+  char *infile=NULL, *outfile=NULL;
+  int err;
+  gimpsvg_opt_t opt;
 
   /* use gengetopt */
 
