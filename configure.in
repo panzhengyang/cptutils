@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.54 2011/11/10 13:00:50 jjg Exp jjg $
+dnl $Id: configure.in,v 1.55 2011/11/10 18:47:40 jjg Exp jjg $
 
 AC_INIT(cptutils, 1.41, j.j.green@gmx.fr)
 
@@ -24,7 +24,7 @@ fi
 AC_PATH_PROG(XML2C,xml2-config,no)
 if test "$XML2C" = no
 then
-  AC_MSG_WARN(no xml2-config! please install libxml2) 
+  AC_MSG_ERROR(no xml2-config! please install libxml2) 
 else
   CFLAGS="$CFLAGS `$XML2C --cflags`"
   LIBS="$LIBS `$XML2C --libs`"
@@ -37,8 +37,8 @@ fi
 dnl Checks for libraries.
 
 AC_CHECK_LIB(m,pow)
-AC_CHECK_LIB(png,png_create_read_struct)
-AC_SEARCH_LIBS(iconv,iconv)
+AC_CHECK_LIB(png,png_create_read_struct,[],AC_MSG_ERROR(libpng not found))
+AC_SEARCH_LIBS(iconv,iconv,[],AC_MSG_ERROR(iconv not found))
 
 dnl Checks for header files.
 
