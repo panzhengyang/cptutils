@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.4 2007/01/25 00:12:58 jjg Exp jjg $
+  $Id: main.c,v 1.5 2011/11/10 23:31:28 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 #include "options.h"
-#include "svgcpt.h"
+#include "gimpsvg.h"
 #include "colour.h"
 
 #define SAMPLES_MIN 5
