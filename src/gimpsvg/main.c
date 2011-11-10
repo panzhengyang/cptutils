@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.7 2011/11/10 23:35:26 jjg Exp jjg $
+  $Id: main.c,v 1.8 2011/11/10 23:48:35 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -57,27 +57,27 @@ int main(int argc,char** argv)
   /* check arguments & transfer to opt structure */ 
 
   opt.verbose = info.verbose_given;
-  opt.reverse = 0;
+  opt.reverse = false;
 
-  if (parse_rgb(info.background_arg,&opt.bg) != 0)
+  if (parse_rgb(info.background_arg, &opt.bg) != 0)
     {
       fprintf(stderr,"bad background %s\n",info.background_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_rgb(info.foreground_arg,&opt.fg) != 0)
+  if (parse_rgb(info.foreground_arg, &opt.fg) != 0)
     {
       fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_rgb(info.nan_arg,&opt.nan) != 0)
+  if (parse_rgb(info.nan_arg, &opt.nan) != 0)
     {
       fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_minmax(info.range_arg,&opt.min,&opt.max) != 0)
+  if (parse_minmax(info.range_arg, &opt.min, &opt.max) != 0)
     {
       fprintf(stderr,"bad range %s\n",info.range_arg);
       return EXIT_FAILURE;
@@ -117,7 +117,7 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is gimpsvg (version %s)\n",VERSION);
   
-  err = gimpsvg(infile,outfile,opt);
+  err = gimpsvg(infile, outfile, opt);
   
   if (opt.verbose)
     {
