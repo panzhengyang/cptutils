@@ -16,7 +16,6 @@
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
 
-#include "version.h"
 #include "svgwrite.h"
 
 #define ENCODING "utf-8"

@@ -5,15 +5,18 @@
   a file or stream.
 
   J.J.Green 2010
-  $Id: gptwrite.c,v 1.3 2010/11/01 19:43:40 jjg Exp jjg $
+  $Id: gptwrite.c,v 1.4 2010/11/01 19:45:12 jjg Exp jjg $
 */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
 #include "gpt.h"
-#include "version.h"
 
 extern int gpt_write(const char* file,gpt_t* gpt)
 {

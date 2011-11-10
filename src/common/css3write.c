@@ -5,15 +5,18 @@
   a file or stream.
 
   J.J.Green 2010
-  $Id: css3write.c,v 1.2 2011/05/06 19:13:24 jjg Exp jjg $
+  $Id: css3write.c,v 1.3 2011/05/06 19:13:59 jjg Exp jjg $
 */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
 #include "css3.h"
-#include "version.h"
 
 extern int css3_write(const char* file,css3_t* css3)
 {

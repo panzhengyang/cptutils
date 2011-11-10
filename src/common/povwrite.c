@@ -5,14 +5,17 @@
   a file or stream.
 
   J.J.Green 2005
-  $Id: povwrite.c,v 1.2 2005/09/20 22:18:04 jjg Exp jjg $
+  $Id: povwrite.c,v 1.3 2005/09/21 22:00:07 jjg Exp jjg $
 */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
-#include "version.h"
 #include "pov.h"
 
 extern int pov_write(const char* file,pov_t* pov)

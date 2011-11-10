@@ -2,15 +2,19 @@
   saowrite.c
 
   writes sao gradient files
-
+  
   J.J. Green 2011
+  $Id$
 */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <time.h>
 
 #include "saowrite.h"
-#include "version.h"
 
 static int writestop(double x, double v, FILE* st)
 {
