@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.6 2011/11/10 23:31:44 jjg Exp jjg $
+  $Id: main.c,v 1.7 2011/11/10 23:35:26 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -74,12 +74,6 @@ int main(int argc,char** argv)
   if (parse_rgb(info.nan_arg,&opt.nan) != 0)
     {
       fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
-      return EXIT_FAILURE;
-    }
-
-  if (parse_rgb(info.transparency_arg,&opt.trans) != 0)
-    {
-      fprintf(stderr,"bad transparency %s\n",info.transparency_arg);
       return EXIT_FAILURE;
     }
 
