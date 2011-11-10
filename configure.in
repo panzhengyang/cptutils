@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.52 2011/11/06 21:21:22 jjg Exp jjg $
+dnl $Id: configure.in,v 1.53 2011/11/10 13:00:33 jjg Exp jjg $
 
 AC_INIT(cptutils, 1.41, j.j.green@gmx.fr)
 
@@ -38,7 +38,7 @@ dnl Checks for libraries.
 
 AC_CHECK_LIB(m,pow)
 AC_CHECK_LIB(png,png_create_read_struct,,)
-AC_SEARCH_LIB(iconv,iconv)
+AC_SEARCH_LIBS(iconv,iconv)
 
 dnl Checks for header files.
 
