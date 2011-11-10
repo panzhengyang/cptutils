@@ -1,7 +1,7 @@
 /*
   main.c 
 
-  part of the gimpcpt package
+  part of the gimpsvg package
 
   This program is free software; you can redistribute it
   and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.3 2004/02/24 18:36:18 jjg Exp jjg $
+  $Id: main.c,v 1.4 2007/01/25 00:12:58 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 #include "options.h"
-#include "gimpcpt.h"
+#include "svgcpt.h"
 #include "colour.h"
 
 #define SAMPLES_MIN 5
@@ -121,9 +121,9 @@ int main(int argc,char** argv)
     }
   
   if (opt.verbose)
-    printf("This is gimpcpt (version %s)\n",VERSION);
+    printf("This is gimpsvg (version %s)\n",VERSION);
   
-  err = gimpcpt(infile,outfile,opt);
+  err = gimpsvg(infile,outfile,opt);
   
   if (opt.verbose)
     {

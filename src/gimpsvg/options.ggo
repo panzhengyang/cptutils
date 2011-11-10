@@ -1,9 +1,9 @@
 # -*- sh -*-
-# gengetopt input for gimpcpt
-# (c) J. J. Green 2004
-# $Id: options.ggo,v 1.2 2004/02/24 18:36:07 jjg Exp jjg $
-package "gimpcpt"
-purpose "convert gimp gradients to GMT colour palattes"
+# gengetopt input for gimpsvg
+# (c) J. J. Green 2011
+# $Id: options.ggo,v 1.3 2007/01/25 00:11:52 jjg Exp jjg $
+package "gimpsvg"
+purpose "convert GIMP gradient to SVG format"
 option  "background"    b "background colour"  		string  default="0/0/0" no
 option  "foreground"    f "foreground colour"  		string  default="255/255/255" no
 option  "nan"           n "nan colour"                  string  default="255/0/0" no

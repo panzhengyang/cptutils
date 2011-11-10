@@ -1,47 +1,43 @@
-# Makefile for gimpcpt
+# Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.9 2007/01/25 00:10:19 jjg Exp jjg $
+# $Id: Makefile,v 1.10 2008/04/13 20:55:55 jjg Exp jjg $
 
-OBJ      = gimpcpt.o main.o options.o
-RUBBISH += $(OBJ) gimpcpt
+OBJ      = $(NAME).o main.o options.o
+RUBBISH += $(OBJ) $(NAME)
 
 LDLIBS += 
 CFLAGS += 
 
 default : all
 
-all : gimpcpt
+all : $(NAME)
 
 install :
-	$(INSTALL_PROGRAM) gimpcpt $(bindir)/gimpcpt
-	$(INSTALL_DATA) gimpcpt.1 $(mandir)/man1/gimpcpt.1
+	$(INSTALL_PROGRAM) $(NAME) $(bindir)/$(NAME)
+	$(INSTALL_DATA) $(NAME).1 $(mandir)/man1/$(NAME).1
 
 clean :
 	$(RM) $(RUBBISH)
 
 veryclean : 
 
-.PHONEY    : all install clean veryclean
+.PHONEY : all install clean veryclean
 
-gimpcpt : $(OBJ)
+$(NAME) : $(OBJ)
 main.o : options.h
 
 # for testing 
 
 GRAD     = Sunrise
-RUBBISH += $(GRAD).cpt $(GRAD).ps $(GRAD).png
+RUBBISH += $(GRAD).svg $(GRAD).png
 TOL      = 0
 
-$(GRAD).cpt : gimpcpt
-	./gimpcpt -o $(GRAD).cpt -T $(TOL) -v $(GRAD)
+$(GRAD).svg : $(NAME)
+	./$(NAME) -o $(GRAD).svg -T $(TOL) -v $(GRAD)
 
-$(GRAD).ps : $(GRAD).cpt defaults
-	psscale +defaults -D6/1/10/0.7h -Ba0.2 -C$< -E > $@
+$(GRAD).png : $(GRAD).svg
+	svgpng -v -1 -o $(GRAD).png $(GRAD).svg
 
-$(GRAD).png : $(GRAD).ps
-	convert -trim -border 5x5 -bordercolor white $(GRAD).ps $(GRAD).png
-
-showps  : $(GRAD).ps  ; gv  $(GRAD).ps 
 showpng : $(GRAD).png ; feh $(GRAD).png 
 
 check test : showpng
