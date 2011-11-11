@@ -5,14 +5,14 @@
   files.
 
   (c) J.J.Geen 2001
-  $Id: findgrad.h,v 1.1 2002/06/18 22:25:44 jjg Exp jjg $
+  $Id: findgrad.h,v 1.2 2004/01/30 00:08:26 jjg Exp jjg $
 */
 
 #ifndef FINDGRAD_H 
 #define FINDGRAD_H
 
-extern char* findgrad_explicit(char*);
-extern char* findgrad_indir(char*,char*);
-extern char* findgrad_implicit(char*);
+extern char* findgrad_explicit(const char*);
+extern char* findgrad_indir(const char*, const char*);
+extern char* findgrad_implicit(const char*);
 
 #endif

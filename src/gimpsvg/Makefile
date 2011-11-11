@@ -1,6 +1,8 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.10 2008/04/13 20:55:55 jjg Exp jjg $
+# $Id: Makefile,v 1.11 2011/11/10 23:28:05 jjg Exp jjg $
+
+NAME = gimpsvg
 
 OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
