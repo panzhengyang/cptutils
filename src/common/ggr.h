@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.h,v 1.2 2004/02/12 01:18:20 jjg Exp jjg $
+  $Id: gradient.h,v 1.3 2004/06/17 23:17:55 jjg Exp jjg $
 */
 
 #ifndef GRADIENT_H
@@ -93,9 +93,9 @@ extern void            grad_free_gradient(gradient_t*);
 extern gradient_t*     grad_load_gradient(char*);
 extern int             grad_save_gradient(gradient_t*,char*);
 
-extern int gradient_colour(double,gradient_t*,double*,double*);
-extern int grad_segment_colour(double,grad_segment_t*,double*,double*);
-
+extern int gradient_colour(double, gradient_t*,double*,double*);
+extern int grad_segment_colour(double, grad_segment_t*,double*,double*);
+extern int grad_segment_rgba(double, grad_segment_t*, double*, double*);
 
 #endif
 
