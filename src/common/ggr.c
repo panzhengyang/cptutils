@@ -46,7 +46,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.9 2010/09/14 21:25:21 jjg Exp jjg $
+  $Id: gradient.c,v 1.10 2011/11/11 17:58:33 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -399,120 +399,122 @@ extern int grad_segment_colour(double z, const grad_segment_t* seg,
   return 0;
 }
 
-extern int grad_segment_rgba(double z, const grad_segment_t *seg, 
-			     double *rgbD, double *alpha)
+extern int grad_segment_rgba(double z, 
+			     const grad_segment_t *seg, 
+			     double *rgbD, 
+			     double *alpha)
 {
-    double factor = 0;
-    double seg_len, middle;
+  double factor = 0;
+  double seg_len, middle;
 
-    seg_len = seg->right - seg->left;
+  seg_len = seg->right - seg->left;
+  
+  if (seg_len < EPSILON)
+    {
+      middle = 0.5;
+      z = 0.5;
+    }
+  else
+    {
+      middle = (seg->middle - seg->left) / seg_len;
+      z = (z - seg->left) / seg_len;
+    }
+  
+  switch (seg->type)
+    {
+    case GRAD_LINEAR:
+      factor = calc_linear_factor(middle, z);
+      break;
+    case GRAD_CURVED:
+      factor = calc_curved_factor(middle, z);
+      break;
+    case GRAD_SINE:
+      factor = calc_sine_factor(middle, z);
+      break;
+    case GRAD_SPHERE_INCREASING:
+      factor = calc_sphere_increasing_factor(middle, z);
+      break;
+    case GRAD_SPHERE_DECREASING:
+      factor = calc_sphere_decreasing_factor(middle, z);
+      break;
+    default:
+      fprintf(stderr,"Corrupt gradient\n");
+      return 1;
+    }
 
-    if (seg_len < EPSILON)
-      {
-	middle = 0.5;
-	z      = 0.5;
-      }
-    else
-      {
-	middle = (seg->middle - seg->left) / seg_len;
-	z      = (z - seg->left) / seg_len;
-      }
-
-    switch (seg->type)
-      {
-      case GRAD_LINEAR:
-	factor = calc_linear_factor(middle, z);
-	break;
-      case GRAD_CURVED:
-	factor = calc_curved_factor(middle, z);
-	break;
-      case GRAD_SINE:
-	factor = calc_sine_factor(middle, z);
-	break;
-      case GRAD_SPHERE_INCREASING:
-	factor = calc_sphere_increasing_factor(middle, z);
-	break;
-      case GRAD_SPHERE_DECREASING:
-	factor = calc_sphere_decreasing_factor(middle, z);
-	break;
-      default:
-	fprintf(stderr,"Corrupt gradient\n");
-	return 1;
-      }
-    
-    /* alpha channel is easy */
-    
-    *alpha = seg->a0 + (seg->a1 - seg->a0)*factor;
-
-    /* Calculate color components */
-    
-    if (seg->color == GRAD_RGB)    
-      {
-	rgbD[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
-	rgbD[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
-	rgbD[2] = seg->b0 + (seg->b1 - seg->b0)*factor;
-      }
-    else
-      {
-	double  h0,s0,v0,h1,s1,v1;
-	double rgbD[3],hsvD[3];
-
-	rgbD[0] = seg->r0;
-	rgbD[1] = seg->g0;
-	rgbD[2] = seg->b0;
-	
-	rgbD_to_hsvD(rgbD,hsvD);
-
-	h0 = hsvD[0];
-	s0 = hsvD[1];
-	v0 = hsvD[2];
-
-	rgbD[0] = seg->r1;
-	rgbD[1] = seg->g1;
-	rgbD[2] = seg->b1;
-	
-	rgbD_to_hsvD(rgbD,hsvD);
-
-	h1 = hsvD[0];
-	s1 = hsvD[1];
-	v1 = hsvD[2];
-
-	s0 = s0 + (s1 - s0)*factor;
-	v0 = v0 + (v1 - v0)*factor;
+  /* alpha channel is easy */
+  
+  *alpha = seg->a0 + (seg->a1 - seg->a0)*factor;
+  
+  /* Calculate color components */
+  
+  if (seg->color == GRAD_RGB)    
+    {
+      rgbD[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
+      rgbD[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
+      rgbD[2] = seg->b0 + (seg->b1 - seg->b0)*factor;
+    }
+  else
+    {
+      double  h0,s0,v0,h1,s1,v1;
+      double hsvD[3];
       
-	switch (seg->color)
-	  {
-	  case GRAD_HSV_CCW:
-	    if (h0 < h1)
-	      h0 = h0 + (h1 - h0)*factor;
-	    else
-	      {
-		h0 = h0 + (1.0 - (h0 - h1))*factor;
-		if (h0 > 1.0)
-		  h0 -= 1.0;
-	      }
-	    break;
-	  case GRAD_HSV_CW:
-	    if (h1 < h0)
-	      h0 = h0 - (h0 - h1)*factor;
-	    else
-	      {
-		h0 = h0 - (1.0 - (h1 - h0))*factor;
-		if (h0 < 0.0)
-		  h0 += 1.0;
-	      }
-	    break;
-	  default:
-	    fprintf(stderr,"unknown colour model %i\n",seg->color);
-	    return 1;
-	  }
-	
-	hsvD[0] = h0;
-	hsvD[1] = s0;
-	hsvD[2] = v0;
-	
-	hsvD_to_rgbD(hsvD,rgbD);
-      }
+      rgbD[0] = seg->r0;
+      rgbD[1] = seg->g0;
+      rgbD[2] = seg->b0;
+      
+      rgbD_to_hsvD(rgbD,hsvD);
+      
+      h0 = hsvD[0];
+      s0 = hsvD[1];
+      v0 = hsvD[2];
+      
+      rgbD[0] = seg->r1;
+      rgbD[1] = seg->g1;
+      rgbD[2] = seg->b1;
+      
+      rgbD_to_hsvD(rgbD,hsvD);
+      
+      h1 = hsvD[0];
+      s1 = hsvD[1];
+      v1 = hsvD[2];
+      
+      s0 = s0 + (s1 - s0)*factor;
+      v0 = v0 + (v1 - v0)*factor;
+      
+      switch (seg->color)
+	{
+	case GRAD_HSV_CCW:
+	  if (h0 < h1)
+	    h0 = h0 + (h1 - h0)*factor;
+	  else
+	    {
+	      h0 = h0 + (1.0 - (h0 - h1))*factor;
+	      if (h0 > 1.0)
+		h0 -= 1.0;
+	    }
+	  break;
+	case GRAD_HSV_CW:
+	  if (h1 < h0)
+	    h0 = h0 - (h0 - h1)*factor;
+	  else
+	    {
+	      h0 = h0 - (1.0 - (h1 - h0))*factor;
+	      if (h0 < 0.0)
+		h0 += 1.0;
+	    }
+	  break;
+	default:
+	  fprintf(stderr,"unknown colour model %i\n",seg->color);
+	  return 1;
+	}
+      
+      hsvD[0] = h0;
+      hsvD[1] = s0;
+      hsvD[2] = v0;
+
+      hsvD_to_rgbD(hsvD,rgbD);
+   }
 
   return 0;
 }
@@ -521,26 +523,25 @@ extern int grad_segment_rgba(double z, const grad_segment_t *seg,
 extern int gradient_colour(double z, gradient_t *gradient,
 			   double *bg, double *rgbD)
 {
-    grad_segment_t *seg;
+  grad_segment_t *seg;
 
-
-    /* if there is no gradient return the background colour */
-
-    if (gradient == NULL) 
+  /* if there is no gradient return the background colour */
+  
+  if (gradient == NULL) 
     {
-	int i;
-
-	for (i=0 ; i<3 ; i++) rgbD[i] = bg[i];
-	return 0;
+      int i;
+      
+      for (i=0 ; i<3 ; i++) rgbD[i] = bg[i];
+      return 0;
     }
-
-
-    if (z < 0.0) z = 0.0;
-    else if (z > 1.0) z = 1.0;
-
-    seg = seg_get_segment_at(gradient, z);
-
-    return grad_segment_colour(z,seg,bg,rgbD);
+  
+  
+  if (z < 0.0) z = 0.0;
+  else if (z > 1.0) z = 1.0;
+  
+  seg = seg_get_segment_at(gradient, z);
+  
+  return grad_segment_colour(z,seg,bg,rgbD);
 }
 
 
@@ -662,18 +663,20 @@ static double calc_sine_factor(double middle,double z)
   return (sin((-PI/2.0) + PI*z) + 1.0)/2.0;
 }
 
+/* Works for convex increasing and concave decreasing */
+
 static double calc_sphere_increasing_factor(double middle, double z)
 {
   z = calc_linear_factor(middle, z) - 1.0;
 
-  /* Works for convex increasing and concave decreasing */
   return sqrt(1.0 - z*z); 
 }
+
+/* Works for convex decreasing and concave increasing */
+
 static double calc_sphere_decreasing_factor(double middle, double z)
 {
   z = calc_linear_factor(middle, z);
-
- /* Works for convex decreasing and concave increasing */
 
   return 1.0 - sqrt(1.0 - z*z);
 }

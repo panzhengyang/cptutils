@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.12 2011/11/11 15:42:47 jjg Exp jjg $
+# $Id: Makefile,v 1.13 2011/11/11 17:55:50 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -30,7 +30,7 @@ main.o : options.h
 
 # for testing 
 
-GRAD     = Tube_Red
+GRAD     = Full_saturation_spectrum_CCW
 RUBBISH += $(GRAD).svg $(GRAD).png
 TOL      = 0
 
