@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.12 2007/01/24 21:03:24 jjg Exp jjg $
+  $Id: gimpsvg.c,v 1.13 2007/01/25 00:10:40 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -10,31 +10,30 @@
 #include <string.h>
 #include <math.h>
 
-#include "gimpcpt.h"
+#include "gimpsvg.h"
+
 #include "gradient.h"
 #include "findgrad.h"
 #include "files.h"
-#include "cptio.h"
 
-/*
-  #define DEBUG
-*/
-
-#define SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
+#include "svg.h"
+#include "svgwrite.h"
 
 #define ERR_CMOD   1
 #define ERR_NULL   2
 #define ERR_INSERT 3
 
-static int gradcpt(gradient_t*,cpt_t*,cptopt_t);
+static int gimpsvg_convert(gradient_t*, svg_t*, gimpsvg_opt_t);
 
-static char* find_infile(char*);
+static char* find_infile(const char*);
 
-extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
+extern int gimpsvg(const char *infile, 
+		   const char *outfile, 
+		   gimpsvg_opt_t opt)
 {
-    gradient_t* gradient;
-    cpt_t*      cpt;
-    int         err;
+    gradient_t *gradient;
+    svg_t *svg;
+    int err;
 
     /* get the full filename */
     
@@ -77,25 +76,15 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     
     /* create a cpt struct */
 
-    if ((cpt = cpt_new()) == NULL)
+    if ((svg = svg_new()) == NULL)
       {
 	fprintf(stderr,"failed to get new cpt strcture\n");
 	return 1;
       }
-
-    cpt->model = rgb;
-
-    cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
-
-    cpt->fg.u.colour.rgb  = opt.fg;
-    cpt->bg.u.colour.rgb  = opt.bg;
-    cpt->nan.u.colour.rgb = opt.nan;
-
-    strncpy(cpt->name,(infile ? infile : "<stdin>"),CPT_NAME_LEN);
     
     /* transfer the gradient data to the cpt_t struct */
 
-    if ((err = gradcpt(gradient,cpt,opt)) != 0)
+    if ((err = gimpsvg_convert(gradient, svg, opt)) != 0)
       {
 	switch (err)
 	  {
@@ -137,7 +126,7 @@ extern int gimpcpt(char* infile,char* outfile,cptopt_t opt)
     return 0;
 }
 
-static char* find_infile(char* infile)
+static char* find_infile(const char* infile)
 {
   char  *gimp_grads,*found;
 
@@ -173,148 +162,91 @@ static char* find_infile(char* infile)
   return findgrad_implicit(infile);
 }
 
-static int gradcpt(gradient_t* grad,cpt_t* cpt,cptopt_t opt)
+static int gimpsvg_convert(gradient_t *grad, 
+			   svg_t *svg,
+			   gimpsvg_opt_t opt)
 {
   grad_segment_t* gseg;
   double bg[3];
   
   if (!grad) return 1;
   
-  strncpy(cpt->name,grad->name,CPT_NAME_LEN);
-  cpt->model = rgb;
-  
-  rgb_to_rgbD(opt.trans,bg);
+  strncpy((char *)svg->name, grad->name, SVG_NAME_LEN);
   
   gseg = grad->segments;
   
-  while (gseg->next) gseg = gseg->next;
-  
-  while (gseg)
+  /* final svg stop */
+
+  svg_stop_t stop; 
+  rgb_t rgb;
+  double rgbD[3], alpha;
+
+  for (n=0,gseg=grad->segment ; gseg ; gseg=gseg->next)
     {
-      cpt_seg_t *lseg,*rseg;
-      rgb_t rgb;
-      double col[3];
-      int inserr = 0;
+      /* always insert the left colour */
+
+      if (grad_segment_rgba(gseg->left, gseg, rgbD, &alpha) != 0) 
+	return ERR_CMOD;
+  
+      rgbD_to_rgb(rgbD, &stop.rgb);
+
+      stop.value   = 100.0;
+      stop.opacity = alpha:
+
+      if (svg_append(stop,svg) != 0) return ERR_INSERT;
       
-	if (gseg->type == GRAD_LINEAR && gseg->color == GRAD_RGB)
-	  {
-	    /* 
-	       for linear-rgb segments we can convert naturally without
-	       significant distortions, we just look at the 2 subsegments
-	       
-	       Note that we need to check that the generated segments
-	       have positive width (this is permitted in gimp gradients
-	       but will cause an error in a cpt files)
-	    */
+      /* insert interior segments */
+
+      if (gseg->type == GRAD_LINEAR && gseg->color == GRAD_RGB)
+	{
+	  if (grad_segment_rgba(gseg->middle, gseg, rgbD, &alpha) != 0) 
+	    return ERR_CMOD;
+  
+	  rgbD_to_rgb(rgbD, &stop.rgb);
+
+	  stop.value   = 100.0 * gseg->middle;
+	  stop.opacity = alpha:
+
+	  if (svg_append(stop,svg) != 0) return ERR_INSERT;
+	}
+      else
+	{
+	  /* 
+	     when the segment is non-linear and/or is not RGB, we
+	     divide the segment up into small subsegments and write
+	     the linear approximations. 
+	  */
 	    
-	    /* 
-	       create 2 cpt segments -- we dont check whether these are
-	       colinear, since we will be performing a cpt_optimise() at 
-	       the end anyway.
-	    */
+	  int m,i;
+	  double width;
 	    
-	    lseg =  cpt_seg_new();
-	    rseg =  cpt_seg_new();
+	  width = gseg->right - gseg->left;
+	  n = (int)(opt.samples*width) + 1;
 	    
-	    if (lseg == NULL || rseg == NULL) return ERR_NULL;
+	  for (i=1 ; i<n ; i++)
+	    {
+	      double z = gseg->left + i*width/n;
 
-	    /* the right (we work from right to left) */
-	    
-	    if (grad_segment_colour(gseg->right,gseg,bg,col) != 0) return ERR_CMOD;
-	    rgbD_to_rgb(col,&rgb);
+	      if (grad_segment_rgba(z, gseg, rgbD, &alpha) != 0) 
+		return ERR_CMOD;
+  
+	      rgbD_to_rgb(rgbD, &stop.rgb);
 
-	    rseg->rsmp.fill.type         = colour; 
-	    rseg->rsmp.fill.u.colour.rgb = rgb; 
-	    rseg->rsmp.val               = SCALE(gseg->right,opt);
+	      stop.value   = 100.0;
+	      stop.opacity = alpha:
 
-	    if (grad_segment_colour(gseg->middle,gseg,bg,col) != 0) return ERR_CMOD;
-	    rgbD_to_rgb(col,&rgb);
+	      if (svg_append(stop,svg) != 0) return ERR_INSERT;
+	    }
+	}
 
-	    rseg->lsmp.fill.type         = colour; 
-	    rseg->lsmp.fill.u.colour.rgb = rgb; 
-	    rseg->lsmp.val               = SCALE(gseg->middle,opt);
+      /*
+	insert right stop if it is not the same as the
+	left colour of the next segment
+      */ 
 
-	    if (rseg->lsmp.val < rseg->rsmp.val)
-		inserr |= cpt_prepend(rseg,cpt);
+      // FIXME
 
-	    /* the left */
-
-	    lseg->rsmp.fill.type         = colour; 
-	    lseg->rsmp.fill.u.colour.rgb = rgb; 
-	    lseg->rsmp.val               = SCALE(gseg->middle,opt);
-
-	    if (grad_segment_colour(gseg->left,gseg,bg,col) != 0) return ERR_CMOD;
-	    rgbD_to_rgb(col,&rgb);
-
-	    lseg->lsmp.fill.type         = colour; 
-	    lseg->lsmp.fill.u.colour.rgb = rgb; 
-	    lseg->lsmp.val               = SCALE(gseg->left,opt);
-
-	    if (lseg->lsmp.val < lseg->rsmp.val)
-		inserr |= cpt_prepend(lseg,cpt);
-	  }
-	else
-	  {
-	    /* 
-	       when the segment is non-linear and/or is not RGB, we
-	       divide the segment up into small subsegments and write
-	       the linear approximations. 
-	    */
-	    
-	    int n,i;
-	    double width,x;
-	    
-	    width = gseg->right - gseg->left;
-	    n = (int)(opt.samples*(gseg->right - gseg->left)) + 1;
-	    
-	    if ((rseg = cpt_seg_new()) == NULL) return ERR_NULL;
-	    
-	    x = gseg->right;
-	    
-	    if (grad_segment_colour(x,gseg,bg,col) != 0) return ERR_CMOD;
-	    rgbD_to_rgb(col,&rgb);
-
-	    rseg->rsmp.fill.type         = colour;
-	    rseg->rsmp.fill.u.colour.rgb = rgb; 
-	    rseg->rsmp.val               = SCALE(x,opt);
-
-	    x = gseg->right-width/n;
-	    
-	    if (grad_segment_colour(x,gseg,bg,col) != 0) return ERR_CMOD;
-	    rgbD_to_rgb(col,&rgb);
-	    
-	    rseg->lsmp.fill.type         = colour;
-	    rseg->lsmp.fill.u.colour.rgb = rgb; 
-	    rseg->lsmp.val               = SCALE(x,opt);
-	    
-	    inserr |= cpt_prepend(rseg,cpt);
-	    
-	    for (i=2 ; i<=n ; i++)
-	      {
-		if ((lseg = cpt_seg_new()) == NULL) return ERR_NULL;
-		
-		lseg->rsmp.fill.type         = rseg->lsmp.fill.type;
-		lseg->rsmp.fill.u.colour.rgb = rseg->lsmp.fill.u.colour.rgb;
-		lseg->rsmp.val               = rseg->lsmp.val;
-		
-		x = gseg->right-width*i/n;
-
-		if (grad_segment_colour(x,gseg,bg,col) != 0) return ERR_CMOD;
-		rgbD_to_rgb(col,&rgb);
-		
-		lseg->lsmp.fill.type         = colour;
-		lseg->lsmp.fill.u.colour.rgb = rgb; 
-		lseg->lsmp.val               = SCALE(x,opt);
-		
-		inserr |= cpt_prepend(lseg,cpt);
-		
-		rseg = lseg;
-	      }
-	  }
-	
-	if (inserr) return ERR_INSERT;
-
-	gseg = gseg->prev;
+      if (inserr) return ERR_INSERT;
     } 
   
   return 0;
