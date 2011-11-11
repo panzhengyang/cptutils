@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.8 2011/11/10 23:48:35 jjg Exp jjg $
+  $Id: main.c,v 1.9 2011/11/10 23:50:37 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -42,8 +42,7 @@ static int parse_minmax(char*,double*,double*);
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  char *infile=NULL, *outfile=NULL;
-  int err;
+  char *infile = NULL, *outfile = NULL;
   gimpsvg_opt_t opt;
 
   /* use gengetopt */
@@ -116,18 +115,22 @@ int main(int argc,char** argv)
   
   if (opt.verbose)
     printf("This is gimpsvg (version %s)\n",VERSION);
-  
-  err = gimpsvg(infile, outfile, opt);
-  
-  if (opt.verbose)
+
+  int err;
+
+  if ((err = gimpsvg(infile, outfile, opt)) != 0)
     {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
-      else
-        printf("palette written to %s\n",(outfile ? outfile : "<stdin>"));
+      fprintf(stderr,"failed (error %i)\n",err);
+      return EXIT_FAILURE;
     }
 
-  return (err ? EXIT_FAILURE : EXIT_SUCCESS);
+  if (opt.verbose)
+    {
+      printf("palette written to %s\n",(outfile ? outfile : "<stdin>"));
+      printf("done.\n");
+    }
+
+  return EXIT_SUCCESS;
 }
 
 static int parse_minmax(char* s,double* min,double* max)
