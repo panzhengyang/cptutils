@@ -46,7 +46,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.c,v 1.8 2007/01/24 20:59:23 jjg Exp jjg $
+  $Id: gradient.c,v 1.9 2010/09/14 21:25:21 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -64,7 +64,7 @@
 
 static void            seg_free_segment(grad_segment_t*);
 static void            seg_free_segments(grad_segment_t*);
-static char*           basename(char*);
+static char*           basename(const char*);
 static grad_segment_t* seg_get_segment_at(gradient_t*,double);
 static grad_color_t    grad_hsv_type(grad_color_t,double,double);
 
@@ -105,7 +105,7 @@ static void warn_truncated(const char* where)
   fprintf(stderr,"unexpected end of file %s\n",where);
 }
 
-extern gradient_t* grad_load_gradient(char* filename)
+extern gradient_t* grad_load_gradient(const char* path)
 {
   FILE           *stream;
   gradient_t     *grad;
@@ -115,13 +115,13 @@ extern gradient_t* grad_load_gradient(char* filename)
   int             type, color;
   char            line[1024];
 
-  if (filename == NULL)
+  if (path == NULL)
     {
        stream = stdin;
     }
-  else if ((stream = fopen(filename,"rb")) == NULL)
+  else if ((stream = fopen(path,"rb")) == NULL)
     {
-      fprintf(stderr,"file open (r) failed for %s\n",filename);
+      fprintf(stderr,"file open (r) failed for %s\n",path);
       return NULL;
     }
 
@@ -140,7 +140,7 @@ extern gradient_t* grad_load_gradient(char* filename)
   if ((grad = grad_new_gradient()) == NULL)
     return NULL;
 
-  grad->filename = (filename ? strdup(filename) : strdup("<stdin>"));
+  grad->filename = (path ? strdup(path) : strdup("<stdin>"));
  
   if (fgets(line, 1024, stream) == NULL)
     {
@@ -151,7 +151,7 @@ extern gradient_t* grad_load_gradient(char* filename)
   /*
     In 1.3 gradients there is a line with the name of the 
     gradient : if we find it then we use that name and read
-    another line, otherwise we use the filename (or the <stdin>
+    another line, otherwise we use the path (or the <stdin>
     string>)
   */
 
@@ -171,7 +171,7 @@ extern gradient_t* grad_load_gradient(char* filename)
 	}
     }
   else
-    grad->name = (filename ?  basename(filename) : strdup("libgimpcpt-output"));
+    grad->name = (path ?  basename(path) : strdup("libgimpcpt-output"));
 
   /* next line specifies number of segments */
 
@@ -181,7 +181,7 @@ extern gradient_t* grad_load_gradient(char* filename)
     {
       fprintf(stderr,
 	      "invalid number of segments in %s\n",
-	      filename);
+	      path);
       free(grad);
       return NULL;
     }
@@ -212,7 +212,7 @@ extern gradient_t* grad_load_gradient(char* filename)
 	{
 	  fprintf(stderr,
 		  "badly formatted gradient segment %d in %s\n",
-		  i, filename);
+		  i, path);
 	}
       else
 	{
@@ -322,23 +322,23 @@ static grad_color_t grad_hsv_type(grad_color_t color,double x,double y)
   return result;
 }
 
-extern int grad_save_gradient(gradient_t *grad,char* filename)
+extern int grad_save_gradient(const gradient_t *grad, const char* path)
 {
-  FILE           *stream;
-  int             num_segments;
+  FILE *stream;
+  int num_segments;
   grad_segment_t *seg;
 
   if (grad == NULL) return 1;
 
-  if (filename == NULL)
+  if (path == NULL)
     {
       stream = stdout;
     }
-  else if ((stream = fopen(filename, "wb")) == NULL)
+  else if ((stream = fopen(path, "wb")) == NULL)
     {
       fprintf(stderr,
 	      "file open (w) failed for %s\n",
-	      filename);
+	      path);
       return 1;
     }
   
@@ -382,55 +382,75 @@ extern int grad_save_gradient(gradient_t *grad,char* filename)
   return 0;
 }
 
-extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double* col)
+extern int grad_segment_colour(double z, const grad_segment_t* seg,
+			       double *bgD, double *rgbD)
 {
-    double          factor=0.0;
-    double          seg_len,middle,a;
-    int i;
+  double alpha;
+  int err;
+
+  if ((err = grad_segment_rgba(z, seg, rgbD, &alpha)) != 0)
+    return err;
+
+  int i;
+
+  for (i=0 ; i<3 ; i++) 
+    rgbD[i] = alpha*rgbD[i] + (1-alpha)*bgD[i];
+
+  return 0;
+}
+
+extern int grad_segment_rgba(double z, const grad_segment_t *seg, 
+			     double *rgbD, double *alpha)
+{
+    double factor = 0;
+    double seg_len, middle;
 
     seg_len = seg->right - seg->left;
 
     if (seg_len < EPSILON)
-    {
+      {
 	middle = 0.5;
-	pos    = 0.5;
-    }
+	z      = 0.5;
+      }
     else
-    {
+      {
 	middle = (seg->middle - seg->left) / seg_len;
-	pos    = (pos - seg->left) / seg_len;
-    }
+	z      = (z - seg->left) / seg_len;
+      }
+
     switch (seg->type)
-    {
-	case GRAD_LINEAR:
-	    factor = calc_linear_factor(middle, pos);
-	    break;
-	case GRAD_CURVED:
-	    factor = calc_curved_factor(middle, pos);
-	    break;
-	case GRAD_SINE:
-	    factor = calc_sine_factor(middle, pos);
-	    break;
-	case GRAD_SPHERE_INCREASING:
-	    factor = calc_sphere_increasing_factor(middle, pos);
-	    break;
-	case GRAD_SPHERE_DECREASING:
-	    factor = calc_sphere_decreasing_factor(middle, pos);
-	    break;
-	default:
-	    fprintf(stderr,"Corrupt gradient\n");
-	    return 1;
-    }
+      {
+      case GRAD_LINEAR:
+	factor = calc_linear_factor(middle, z);
+	break;
+      case GRAD_CURVED:
+	factor = calc_curved_factor(middle, z);
+	break;
+      case GRAD_SINE:
+	factor = calc_sine_factor(middle, z);
+	break;
+      case GRAD_SPHERE_INCREASING:
+	factor = calc_sphere_increasing_factor(middle, z);
+	break;
+      case GRAD_SPHERE_DECREASING:
+	factor = calc_sphere_decreasing_factor(middle, z);
+	break;
+      default:
+	fprintf(stderr,"Corrupt gradient\n");
+	return 1;
+      }
+    
+    /* alpha channel is easy */
+    
+    *alpha = seg->a0 + (seg->a1 - seg->a0)*factor;
 
     /* Calculate color components */
-
-    a = seg->a0 + (seg->a1 - seg->a0)*factor;
-
+    
     if (seg->color == GRAD_RGB)    
       {
-	col[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
-	col[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
-	col[2] = seg->b0 + (seg->b1 - seg->b0)*factor;
+	rgbD[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
+	rgbD[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
+	rgbD[2] = seg->b0 + (seg->b1 - seg->b0)*factor;
       }
     else
       {
@@ -491,17 +511,15 @@ extern int grad_segment_colour(double pos,grad_segment_t* seg,double* bg,double*
 	hsvD[1] = s0;
 	hsvD[2] = v0;
 	
-	hsvD_to_rgbD(hsvD,col);
+	hsvD_to_rgbD(hsvD,rgbD);
       }
 
-    for (i=0 ; i<3 ; i++) col[i] = a*col[i] + (1-a)*bg[i];
-
-    return 0;
+  return 0;
 }
 
 
-extern int gradient_colour(double pos,gradient_t *gradient,
-			   double* bg,double* col)
+extern int gradient_colour(double z, gradient_t *gradient,
+			   double *bg, double *rgbD)
 {
     grad_segment_t *seg;
 
@@ -512,17 +530,17 @@ extern int gradient_colour(double pos,gradient_t *gradient,
     {
 	int i;
 
-	for (i=0 ; i<3 ; i++) col[i] = bg[i];
+	for (i=0 ; i<3 ; i++) rgbD[i] = bg[i];
 	return 0;
     }
 
 
-    if (pos < 0.0) pos = 0.0;
-    else if (pos > 1.0) pos = 1.0;
+    if (z < 0.0) z = 0.0;
+    else if (z > 1.0) z = 1.0;
 
-    seg = seg_get_segment_at(gradient, pos);
+    seg = seg_get_segment_at(gradient, z);
 
-    return grad_segment_colour(pos,seg,bg,col);
+    return grad_segment_colour(z,seg,bg,rgbD);
 }
 
 
@@ -567,12 +585,12 @@ static void seg_free_segments(grad_segment_t *seg)
     }
 }
 
-static grad_segment_t* seg_get_segment_at(gradient_t *grad,double pos)
+static grad_segment_t* seg_get_segment_at(gradient_t *grad, double z)
 {
   grad_segment_t *seg;
 
-  pos = MIN(pos,1.0);
-  pos = MAX(pos,0.0);
+  z = MIN(z,1.0);
+  z = MAX(z,0.0);
 
   if (grad->last_visited)
       seg = grad->last_visited;
@@ -581,9 +599,9 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad,double pos)
 
   while (seg)
   {
-      if (pos >= seg->left)
+      if (z >= seg->left)
       {
-	  if (pos <= seg->right)
+	  if (z <= seg->right)
 	  {
 	      grad->last_visited = seg; /* for speed */
 	      return seg;
@@ -599,7 +617,7 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad,double pos)
       }
   }
   
-  fprintf(stderr,"No matching segment for position %0.15f", pos);
+  fprintf(stderr,"No matching segment for zition %0.15f", z);
   
   return NULL;
 }
@@ -608,57 +626,56 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad,double pos)
   calculation functions 
 */
 
-static double calc_linear_factor (double middle,double pos)
+static double calc_linear_factor(double middle, double z)
 {
-  if (pos <= middle)
+  if (z <= middle)
     {
       if (middle < EPSILON)
 	return 0.0;
       else
-	return 0.5 * pos / middle;
+	return 0.5 * z / middle;
     }
   else
     {
-      pos -= middle;
+      z -= middle;
       middle = 1.0 - middle;
 
       if (middle < EPSILON)
 	return 1.0;
       else
-	return 0.5 + 0.5 * pos / middle;
+	return 0.5 + 0.5 * z / middle;
     }
 }
 
-
-static double calc_curved_factor(double middle,double pos)
+static double calc_curved_factor(double middle,double z)
 {
   if (middle < EPSILON)
     middle = EPSILON;
 
-  return pow(pos,log(0.5)/log(middle));
+  return pow(z,log(0.5)/log(middle));
 }
 
-static double calc_sine_factor(double middle,double pos)
+static double calc_sine_factor(double middle,double z)
 {
-  pos = calc_linear_factor (middle, pos);
+  z = calc_linear_factor(middle, z);
 
-  return (sin((-PI/2.0) + PI*pos) + 1.0)/2.0;
+  return (sin((-PI/2.0) + PI*z) + 1.0)/2.0;
 }
 
-static double calc_sphere_increasing_factor(double middle,double pos)
+static double calc_sphere_increasing_factor(double middle, double z)
 {
-  pos = calc_linear_factor(middle,pos) - 1.0;
+  z = calc_linear_factor(middle, z) - 1.0;
 
   /* Works for convex increasing and concave decreasing */
-  return sqrt (1.0 - pos*pos); 
+  return sqrt(1.0 - z*z); 
 }
-static double calc_sphere_decreasing_factor(double middle,double pos)
+static double calc_sphere_decreasing_factor(double middle, double z)
 {
-  pos = calc_linear_factor (middle, pos);
+  z = calc_linear_factor(middle, z);
 
  /* Works for convex decreasing and concave increasing */
 
-  return 1.0 - sqrt(1.0 - pos*pos);
+  return 1.0 - sqrt(1.0 - z*z);
 }
 
 /*
@@ -666,7 +683,7 @@ static double calc_sphere_decreasing_factor(double middle,double pos)
   string up to that position
 */
 
-static char* basename(char* name)
+static char* basename(const char* name)
 {
    char *base,*last;
 

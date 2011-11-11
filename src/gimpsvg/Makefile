@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.11 2011/11/10 23:28:05 jjg Exp jjg $
+# $Id: Makefile,v 1.12 2011/11/11 15:42:47 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -30,12 +30,12 @@ main.o : options.h
 
 # for testing 
 
-GRAD     = Sunrise
+GRAD     = Tube_Red
 RUBBISH += $(GRAD).svg $(GRAD).png
 TOL      = 0
 
 $(GRAD).svg : $(NAME)
-	./$(NAME) -o $(GRAD).svg -T $(TOL) -v $(GRAD)
+	./$(NAME) -o $(GRAD).svg -v $(GRAD)
 
 $(GRAD).png : $(GRAD).svg
 	svgpng -v -1 -o $(GRAD).png $(GRAD).svg

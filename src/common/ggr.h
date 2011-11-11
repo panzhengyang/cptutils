@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
   Boston, MA 02111-1307, USA.
 
-  $Id: gradient.h,v 1.3 2004/06/17 23:17:55 jjg Exp jjg $
+  $Id: gradient.h,v 1.4 2011/11/11 15:20:54 jjg Exp jjg $
 */
 
 #ifndef GRADIENT_H
@@ -74,7 +74,6 @@ typedef struct grad_segment_t
     grad_type_t  type;                /* Segment's blending function */
     grad_color_t color;               /* Segment's coloring type */
 
-    
     struct grad_segment_t *prev, *next; /* For linked list of segments */
 } grad_segment_t;
 
@@ -90,12 +89,12 @@ extern grad_segment_t* seg_new_segment(void);
 
 extern gradient_t*     grad_new_gradient(void);
 extern void            grad_free_gradient(gradient_t*);
-extern gradient_t*     grad_load_gradient(char*);
-extern int             grad_save_gradient(gradient_t*,char*);
+extern gradient_t*     grad_load_gradient(const char*);
+extern int             grad_save_gradient(const gradient_t*, const char*);
 
-extern int gradient_colour(double, gradient_t*,double*,double*);
-extern int grad_segment_colour(double, grad_segment_t*,double*,double*);
-extern int grad_segment_rgba(double, grad_segment_t*, double*, double*);
+extern int gradient_colour(double, gradient_t*, double*, double*);
+extern int grad_segment_colour(double, const grad_segment_t*, double*, double*);
+extern int grad_segment_rgba(double, const grad_segment_t*, double*, double*);
 
 #endif
 

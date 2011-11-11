@@ -1,8 +1,8 @@
 /*
   gimpcpt.c
 
-  (c) J.J.Green 2001,2004
-  $Id: gimpsvg.c,v 1.13 2007/01/25 00:10:40 jjg Exp jjg $
+  (c) J.J.Green 2011
+  $Id: gimpsvg.c,v 1.14 2011/11/11 13:04:24 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -19,9 +19,9 @@
 #include "svg.h"
 #include "svgwrite.h"
 
-#define ERR_CMOD   1
-#define ERR_NULL   2
-#define ERR_INSERT 3
+#define ERR_SEGMENT_RGBA 1
+#define ERR_NULL         2
+#define ERR_INSERT       3
 
 static int gimpsvg_convert(gradient_t*, svg_t*, gimpsvg_opt_t);
 
@@ -39,18 +39,16 @@ extern int gimpsvg(const char *infile,
     
     if (infile)
       {
-	char* found = NULL;
-	
-	found = find_infile(infile);
-	
-	if (found)
-	  {
-	    if (opt.verbose) printf("gradient file %s\n",found);
-	  }
-	else
+	char* found;
+		
+	if ((found = find_infile(infile)) == NULL)
 	  {
 	    fprintf(stderr,"gradient file %s not found\n",infile);
 	    return 1;
+	  }
+	else
+	  {
+	    if (opt.verbose) printf("gradient file %s\n",found);
 	  }
 	
 	infile = found;
@@ -58,23 +56,14 @@ extern int gimpsvg(const char *infile,
     
     /* load the gradient */
     
-    gradient = grad_load_gradient(infile);
-    
-    if (!gradient)
+    if ((gradient = grad_load_gradient(infile)) == NULL)
       {
-	fprintf(stderr,"failed to load gradient from ");
-	if (infile)
-	  {
-	    fprintf(stderr,"%s\n",infile);
-	    free(infile);
-	  }
-	else
-	  fprintf(stderr,"<stdin>\n");
-	
+	fprintf(stderr,"failed to load gradient from %s",
+		(infile ? infile : "<stdin>"));
 	return 1;
       }
     
-    /* create a cpt struct */
+    /* create a svg struct */
 
     if ((svg = svg_new()) == NULL)
       {
@@ -82,14 +71,14 @@ extern int gimpsvg(const char *infile,
 	return 1;
       }
     
-    /* transfer the gradient data to the cpt_t struct */
+    /* transfer the gradient data to the svg_t struct */
 
     if ((err = gimpsvg_convert(gradient, svg, opt)) != 0)
       {
 	switch (err)
 	  {
-	  case ERR_CMOD:
-	    fprintf(stderr,"bad colour model\n");
+	  case ERR_SEGMENT_RGBA:
+	    fprintf(stderr,"error gretting colour from segment\n");
 	    break;
 	  case ERR_NULL:
 	    fprintf(stderr,"null structure\n");
@@ -104,14 +93,11 @@ extern int gimpsvg(const char *infile,
       }
 
     if (opt.verbose) 
-      {
-	int n = cpt_nseg(cpt);
-	printf("converted to %i segment rgb-spline\n",n);
-      }
+      printf("converted to %i stops\n",svg_num_stops(svg));
 
     /* write the cpt file */
     
-    if (cpt_write(outfile,cpt) != 0)
+    if (svg_write(outfile, svg) != 0)
       {
 	fprintf(stderr,"failed to write gradient to %s\n",
 		(outfile ? outfile : "<stdout>"));
@@ -120,7 +106,7 @@ extern int gimpsvg(const char *infile,
     
     /* tidy */
     
-    cpt_destroy(cpt);
+    svg_destroy(svg);
     grad_free_gradient(gradient);
     
     return 0;
@@ -128,7 +114,7 @@ extern int gimpsvg(const char *infile,
 
 static char* find_infile(const char* infile)
 {
-  char  *gimp_grads,*found;
+  char  *gimp_grads, *found;
 
   /* try just the name */
   
@@ -147,11 +133,13 @@ static char* find_infile(const char* infile)
 	return NULL;
       
       dir = strtok(gimp_grads,":");
+
       while (dir && !found)
 	{
 	  found = findgrad_indir(infile,dir);
 	  dir = strtok(NULL,":");
 	} 
+
       free(gimp_grads);
       
       if (found) return found;
@@ -162,12 +150,22 @@ static char* find_infile(const char* infile)
   return findgrad_implicit(infile);
 }
 
+#define EPSRGB   (0.5 / 256.0)
+#define EPSALPHA 1e-4
+
+static int grad_segment_jump(grad_segment_t *lseg, grad_segment_t *rseg)
+{
+  return ( (fabs(lseg->r1 - rseg->r0) > EPSRGB) ||
+	   (fabs(lseg->g1 - rseg->g0) > EPSRGB) ||
+	   (fabs(lseg->b1 - rseg->b0) > EPSRGB) ||
+	   (fabs(lseg->a1 - rseg->a0) > EPSALPHA) );
+}
+
 static int gimpsvg_convert(gradient_t *grad, 
 			   svg_t *svg,
 			   gimpsvg_opt_t opt)
 {
-  grad_segment_t* gseg;
-  double bg[3];
+  grad_segment_t *gseg;
   
   if (!grad) return 1;
   
@@ -178,20 +176,19 @@ static int gimpsvg_convert(gradient_t *grad,
   /* final svg stop */
 
   svg_stop_t stop; 
-  rgb_t rgb;
   double rgbD[3], alpha;
 
-  for (n=0,gseg=grad->segment ; gseg ; gseg=gseg->next)
+  for (gseg=grad->segments ; gseg ; gseg=gseg->next)
     {
       /* always insert the left colour */
 
       if (grad_segment_rgba(gseg->left, gseg, rgbD, &alpha) != 0) 
-	return ERR_CMOD;
+	return ERR_SEGMENT_RGBA;
   
-      rgbD_to_rgb(rgbD, &stop.rgb);
+      rgbD_to_rgb(rgbD, &stop.colour);
 
-      stop.value   = 100.0;
-      stop.opacity = alpha:
+      stop.value   = 100.0 * gseg->left;
+      stop.opacity = alpha;
 
       if (svg_append(stop,svg) != 0) return ERR_INSERT;
       
@@ -199,41 +196,41 @@ static int gimpsvg_convert(gradient_t *grad,
 
       if (gseg->type == GRAD_LINEAR && gseg->color == GRAD_RGB)
 	{
-	  if (grad_segment_rgba(gseg->middle, gseg, rgbD, &alpha) != 0) 
-	    return ERR_CMOD;
+	  if (grad_segment_rgba(gseg->middle, gseg, rgbD, &alpha) != 0)
+	    return ERR_SEGMENT_RGBA; 
   
-	  rgbD_to_rgb(rgbD, &stop.rgb);
+	  rgbD_to_rgb(rgbD, &stop.colour);
 
 	  stop.value   = 100.0 * gseg->middle;
-	  stop.opacity = alpha:
+	  stop.opacity = alpha;
 
 	  if (svg_append(stop,svg) != 0) return ERR_INSERT;
 	}
       else
 	{
-	  /* 
-	     when the segment is non-linear and/or is not RGB, we
-	     divide the segment up into small subsegments and write
-	     the linear approximations. 
+	  /*
+	    when the segment is non-linear and/or is not RGB, we
+	    divide the segment up into small subsegments and write
+	    the linear approximations. 
 	  */
 	    
 	  int m,i;
 	  double width;
 	    
 	  width = gseg->right - gseg->left;
-	  n = (int)(opt.samples*width) + 1;
+	  m = (int)(opt.samples*width) + 1;
 	    
-	  for (i=1 ; i<n ; i++)
+	  for (i=1 ; i<m ; i++)
 	    {
-	      double z = gseg->left + i*width/n;
+	      double z = gseg->left + i*width/m;
 
 	      if (grad_segment_rgba(z, gseg, rgbD, &alpha) != 0) 
-		return ERR_CMOD;
-  
-	      rgbD_to_rgb(rgbD, &stop.rgb);
+		return ERR_SEGMENT_RGBA;
 
-	      stop.value   = 100.0;
-	      stop.opacity = alpha:
+	      rgbD_to_rgb(rgbD, &stop.colour);
+
+	      stop.value   = 100.0 * z;
+	      stop.opacity = alpha;
 
 	      if (svg_append(stop,svg) != 0) return ERR_INSERT;
 	    }
@@ -244,16 +241,21 @@ static int gimpsvg_convert(gradient_t *grad,
 	left colour of the next segment
       */ 
 
-      // FIXME
+      if ( (! gseg->next) || grad_segment_jump(gseg,gseg->next) )
+	{
+	  if (grad_segment_rgba(gseg->right, gseg, rgbD, &alpha) != 0)
+	    return ERR_SEGMENT_RGBA; 
+  
+	  rgbD_to_rgb(rgbD, &stop.colour);
 
-      if (inserr) return ERR_INSERT;
+	  stop.value   = 100.0 * gseg->right;
+	  stop.opacity = alpha;
+
+	  if (svg_append(stop,svg) != 0) return ERR_INSERT;
+	}
     } 
   
   return 0;
 }
-    
-
-
-
 
 
