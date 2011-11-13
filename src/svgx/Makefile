@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.28 2011/11/04 15:20:17 jjg Exp jjg $
+# $Id: Makefile,v 1.29 2011/11/09 09:43:56 jjg Exp jjg $
 
 OBJ      = svgx.o main.o options.o utf8x.o
 CFLAGS  += 
@@ -20,7 +20,8 @@ SVGPOV  = ./svgx -t pov
 SVGPSP  = ./svgx -t psp
 SVGSAO  = ./svgx -t sao
 
-CPTARG = -b10 -f1/2/3 -n0/12/0 
+TSPARG = -T255/0/0
+CPTARG = -b10 -f1/2/3 -n0/12/0 $(TSPARG)
 
 check test : svgx
 	for file in `ls $(TESTD)/svg/*.svg` ; do \
@@ -28,13 +29,16 @@ check test : svgx
 	  $(SVGX) -l $$file > /dev/null || exit 1 ; \
 	  for name in `$(SVGX) -l $$file` ; do \
 	    echo "  $$name" ; \
-	    $(SVGCPT) -s $$name $(CPTARG) -o test/$$name.cpt $$file || exit 1 ; \
+	    $(SVGCPT) -s $$name $(CPTARG) -o test/$$name.cpt $$file \
+		|| exit 1 ; \
 	    $(SVGGGR) -s $$name -o test/$$name.ggr $$file  || exit 1 ; \
 	    $(SVGPOV) -s $$name -o test/$$name.inc $$file  || exit 1 ; \
-	    $(SVGGPT) -s $$name -o test/$$name.gpt $$file  || exit 1 ; \
+	    $(SVGGPT) -s $$name $(TSPARG) -o test/$$name.gpt $$file  \
+		|| exit 1 ; \
 	    $(SVGCSS3) -s $$name -o test/$$name.css3 $$file  || exit 1 ; \
 	    $(SVGPSP) -s $$name -o test/$$name.grd $$file  || exit 1 ; \
-	    $(SVGSAO) -s $$name -o test/$$name.sao $$file  || exit 1 ; \
+	    $(SVGSAO) -s $$name $(TSPARG) -o test/$$name.sao $$file  \
+		|| exit 1 ; \
 	    $(SVGPNG) -s $$name -o test/$$name.png $$file  || exit 1 ; \
 	  done ;\
 	done
