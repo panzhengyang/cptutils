@@ -1,9 +1,9 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.29 2011/11/09 09:43:56 jjg Exp jjg $
+# $Id: Makefile,v 1.30 2011/11/13 20:31:35 jjg Exp jjg $
 
-OBJ      = svgx.o main.o options.o utf8x.o
+OBJ      = svgx.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
 LDLIBS  += 
 RUBBISH += svgx $(OBJ) test/* test.png

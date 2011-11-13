@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.28 2011/11/04 15:20:35 jjg Exp jjg $
+  $Id: svgx.c,v 1.29 2011/11/09 00:10:17 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#include <png.h>
+#include <stdbool.h>
 
 #include "colour.h"
 #include "svgread.h"
@@ -22,15 +22,10 @@
 #include "css3write.h"
 #include "pspwrite.h"
 #include "saowrite.h"
+#include "pngwrite.h"
 
 #include "svgx.h"
 #include "utf8x.h"
-
-typedef struct
-{
-  size_t width, height;
-  unsigned char *row;
-} png_t;
 
 static int svgx_list(svgx_opt_t, svg_list_t*);
 static int svgx_named(svgx_opt_t, svg_list_t*);
@@ -45,100 +40,6 @@ static int svgcss3(svg_t*, css3_t*);
 static int svgsao(svg_t*, sao_t*);
 static int svgpng(svg_t*, png_t*);
 
-extern png_t* png_new(size_t w, size_t h)
-{
-  png_t *png;
-
-  if ((png = malloc(sizeof(png_t))) == NULL) return NULL;
-
-  png->width  = w;
-  png->height = h;
-
-  png->row = malloc(4 * w);
-
-  if (png->row == NULL) return NULL;
- 
-  return png;
-}
-
-extern void png_destroy(png_t* png)
-{
-  free(png->row);
-  free(png);
-}
-
-extern int png_write(const char *path, png_t *png, const char* name)
-{
-
-
-  png_structp pngH = NULL;
-  png_infop   infoH = NULL;
-
-  png_byte **rows = NULL;
-  
-  pngH = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-
-  if (pngH == NULL)
-    return 1;
-    
-  if ((infoH = png_create_info_struct(pngH)) == NULL)
-    return 1;
-
-  if (setjmp(png_jmpbuf(pngH)))
-    return 1;
-    
-  /* Set image attributes. */
-
-  png_set_IHDR(pngH,
-	       infoH,
-	       png->width,
-	       png->height,
-	       8,
-	       PNG_COLOR_TYPE_RGBA,
-	       PNG_INTERLACE_NONE,
-	       PNG_COMPRESSION_TYPE_DEFAULT,
-	       PNG_FILTER_TYPE_DEFAULT);
-
-  /*
-    since all rows are identical, using PNG_FILTER_UP 
-    gives us better compression
-  */
-
-  png_set_filter(pngH, PNG_FILTER_TYPE_BASE, PNG_FILTER_UP);
-
-  /*
-    initialize rows of PNG, assigning each to the same
-    simple row
-  */
-
-  if ((rows = malloc(png->height * sizeof(png_byte*))) == NULL)
-    return 1;
-
-  size_t j;
-
-  for (j = 0 ; j < png->height ; j++) rows[j] = png->row;
-    
-  /* Write the image data */
-
-  FILE *st;
-
-  if ((st = fopen(path, "wb")) == NULL) 
-    return 1;
-
-  png_init_io(pngH, st);
-  png_set_rows(pngH, infoH, rows);
-  png_write_png(pngH, infoH, PNG_TRANSFORM_IDENTITY, NULL);
-
-  fclose(st);
-
-  /* tidy up */
-
-  free(rows);
-  png_destroy_write_struct(&pngH, &infoH);
-
-  return 0;
-}
-
 extern int svgx(svgx_opt_t opt)
 {
   int err = 0;
@@ -151,7 +52,7 @@ extern int svgx(svgx_opt_t opt)
     }
   else
     {
-      if (svg_read(opt.input.file,list) != 0)
+      if (svg_read(opt.input.file, list) != 0)
 	{
 	  fprintf(stderr,"error reading svg\n");
 	  err++;
@@ -303,7 +204,37 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
       return 1;
     }
 
+  if (svg_explicit(svg) != 0)
+    {
+      fprintf(stderr,"failed adding explicit stops\n");
+      return 1;
+    }
+
   file = opt.output.file;
+
+  switch (opt.type)
+    {
+    case type_cpt:
+    case type_sao:
+    case type_gpt:
+      if (svg_flatten(svg, opt.alpha) != 0)
+	{
+	  fprintf(stderr,"failed to flatten transparency\n");
+	  return 1;
+	}
+      break;
+
+    case type_ggr:
+    case type_pov:
+    case type_css3:
+    case type_psp:
+    case type_png:
+      break;
+
+    default:
+	  fprintf(stderr,"strange type\n");
+	  return 1;
+    }
 
   switch (opt.type)
     {
@@ -551,10 +482,22 @@ static int svggpt_dump(svg_t*,svgx_opt_t*);
 static int svgcss3_dump(svg_t*,svgx_opt_t*);
 static int svgpsp_dump(svg_t*,svgx_opt_t*);
 static int svgsao_dump(svg_t*,svgx_opt_t*);
+static int svgpng_dump(svg_t*,svgx_opt_t*);
+
+static int svg_explicit2(svg_t* svg, void *dummy)
+{
+  return svg_explicit(svg);
+}
+
+static int svg_flatten2(svg_t* svg, rgb_t *alpha)
+{
+  return svg_flatten(svg,*alpha);
+}
 
 static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 {
   int (*dump)(svg_t*,void*);
+  bool flatten;
 
   if (!opt.all) return 0;
 
@@ -563,36 +506,49 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
     case type_cpt:
 
       dump = (int (*)(svg_t*,void*))svgcpt_dump;
+      flatten = true;
       break;
 
     case type_ggr:
 
       dump = (int (*)(svg_t*,void*))svgggr_dump;
+      flatten = false;
       break;
 
     case type_pov:
 
       dump = (int (*)(svg_t*,void*))svgpov_dump;
+      flatten = false;
       break;
 
     case type_gpt:
 
       dump = (int (*)(svg_t*,void*))svggpt_dump;
+      flatten = true;
       break;
 
     case type_css3:
 
       dump = (int (*)(svg_t*,void*))svgcss3_dump;
+      flatten = false;
       break;
 
     case type_psp:
 
       dump = (int (*)(svg_t*,void*))svgpsp_dump;
+      flatten = false;
       break;
 
     case type_sao:
 
       dump = (int (*)(svg_t*,void*))svgsao_dump;
+      flatten = true;
+      break;
+
+    case type_png:
+
+      dump = (int (*)(svg_t*,void*))svgpng_dump;
+      flatten = false;
       break;
 
     default:
@@ -601,10 +557,31 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
       return 1;
     }
 
+  /* coerce explicit */
+
+  if (svg_list_iterate(list, svg_explicit2, NULL) != 0)
+    {
+      fprintf(stderr,"failed coerce explicit\n");
+      return 1;
+    }
+
+  /* coerce flat */
+
+  if (flatten)
+    {
+      if (svg_list_iterate(list, 
+			   (int (*)(svg_t*, void*))svg_flatten2, 
+			   &(opt.alpha)) != 0)
+	{
+	  fprintf(stderr,"failed coerce explicit\n");
+	  return 1;
+	}
+    }
+
   if (opt.verbose)
     printf("converting all gradients:\n");
 
-  if (svg_list_iterate(list,dump,&opt) != 0)
+  if (svg_list_iterate(list, dump, &opt) != 0)
     {
       fprintf(stderr,"failed writing all gradients\n");
       return 1;
@@ -772,7 +749,7 @@ static int svgpov_dump(svg_t* svg, svgx_opt_t* opt)
   return 0;
 }
 
-static int svgsao_dump(svg_t* svg,svgx_opt_t* opt)
+static int svgsao_dump(svg_t* svg, svgx_opt_t* opt)
 {
   int  n = SVG_NAME_LEN+5;
   char file[n],*name;
@@ -949,50 +926,55 @@ static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
   return 0;
 }
 
+static int svgpng_dump(svg_t* svg, svgx_opt_t* opt)
+{
+  png_t *png;
+  int  n = SVG_NAME_LEN+6;
+  char file[n],*name;
+
+  if (!svg) return 1;
+
+  name = (char*)svg->name;
+
+  if (snprintf(file,n,"%s.png",name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+
+  if ((png = png_new(opt->width, opt->height)) == NULL)
+    {
+      fprintf(stderr,"failed to create png structure\n");
+      return 1;
+    }
+      
+  if (svgpng(svg, png) != 0)
+    {
+      fprintf(stderr,"failed to convert %s to png\n",opt->name);
+      return 1;
+    }
+  
+  if (png_write(file, png, (const char*)svg->name) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
+
+  png_destroy(png);
+
+  return 0;
+}
+
 /* coonvert an svg_t to a cpt_t */
 
-static int svgcpt(svg_t* svg,cpt_t* cpt)
+static int svgcpt(svg_t* svg, cpt_t* cpt)
 {
   svg_node_t *node,*next;
 
   node = svg->nodes;
   next = node->r; 
 
-  /* handle implicit first segment */
-
-  if (node->stop.value > 0.0)
-    {
-      double z1,z2;
-      rgb_t c;
-      cpt_seg_t* seg;
-
-      z1 = 0.0;
-      z2 = node->stop.value;
-      c  = node->stop.colour;
-
-      if ((seg = cpt_seg_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create cpt segment\n");
-	  return 1;
-	}
-
-      seg->lsmp.val = z1;
-      seg->rsmp.val = z2;
-      
-      seg->lsmp.fill.type         = colour;
-      seg->lsmp.fill.u.colour.rgb = c;
-
-      seg->rsmp.fill.type         = colour;
-      seg->rsmp.fill.u.colour.rgb = c;
-
-      if (cpt_append(seg,cpt) != 0)
-	{
-	  fprintf(stderr,"failed to append segment\n");
-	  return 1;
-	}
-    }
-
-  /* middle segments */
+  /* segments */
 
   while (next)
     {
@@ -1035,40 +1017,6 @@ static int svgcpt(svg_t* svg,cpt_t* cpt)
       next = node->r;
     } 
 
-  /* handle implicit final segment */
-
-  if (node->stop.value < 100.0)
-    {
-      double z1,z2;
-      rgb_t c;
-      cpt_seg_t* seg;
-
-      z1 = node->stop.value;
-      z2 = 100.0;
-      c  = node->stop.colour;
-
-      if ((seg = cpt_seg_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create cpt segment\n");
-	  return 1;
-	}
-
-      seg->lsmp.val = z1;
-      seg->rsmp.val = z2;
-      
-      seg->lsmp.fill.type         = colour;
-      seg->lsmp.fill.u.colour.rgb = c;
-
-      seg->rsmp.fill.type         = colour;
-      seg->rsmp.fill.u.colour.rgb = c;
-
-      if (cpt_append(seg,cpt) != 0)
-	{
-	  fprintf(stderr,"failed to append segment\n");
-	  return 1;
-	}
-    }
-
   return 0;
 }
 
@@ -1085,56 +1033,7 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
   node = svg->nodes;
   next = node->r; 
 
-  /* implicit first segment */
-
-  if (node->stop.value > 0.0)
-    {
-      double z1,z2;
-      rgb_t c;
-      double o;
-      double col[3];
-
-      z1 = 0.0;
-      z2 = node->stop.value;
-
-      c = node->stop.colour;
-      o = node->stop.opacity;
-
-      if ((gseg = seg_new_segment()) == NULL) return 1;
-
-      gseg->prev = prev;
-      
-      if (prev) prev->next = gseg;
-      else ggr->segments = gseg;
-
-      gseg->left   = z1/100.0; 
-      gseg->middle = (z1+z2)/200.0;
-      gseg->right  = z2/100.0; 
-
-      col[0] = col[1] = col[2] = 0.0;
-
-      gseg->a0 = o;
-      gseg->a1 = o;
-
-      rgb_to_rgbD(c,col);
-
-      gseg->r0 = col[0];
-      gseg->g0 = col[1];
-      gseg->b0 = col[2];
-	  
-      gseg->r1 = col[0];
-      gseg->g1 = col[1];
-      gseg->b1 = col[2];
-
-      gseg->type  = GRAD_LINEAR;
-      gseg->color = GRAD_RGB;
-      
-      prev = gseg;
-
-      n++;
-    } 
-
-  /* main segments */
+  /* segments */
 
   while (next)
     {
@@ -1195,53 +1094,6 @@ static int svgggr(svg_t* svg,gradient_t* ggr)
 
       node = next;
       next = node->r;
-    } 
-
-  if (node->stop.value < 100.0)
-    {
-      double z1,z2;
-      rgb_t c;
-      double o;
-      double col[3];
-
-      z1 = node->stop.value;
-      z2 = 100.0;
-
-      c = node->stop.colour;
-      o = node->stop.opacity;
-
-      if ((gseg = seg_new_segment()) == NULL) return 1;
-
-      gseg->prev = prev;
-      
-      if (prev) prev->next = gseg;
-      else ggr->segments = gseg;
-
-      gseg->left   = z1/100.0; 
-      gseg->middle = (z1+z2)/200.0;
-      gseg->right  = z2/100.0; 
-
-      col[0] = col[1] = col[2] = 0.0;
-
-      gseg->a0 = o;
-      gseg->a1 = o;
-
-      rgb_to_rgbD(c,col);
-
-      gseg->r0 = col[0];
-      gseg->g0 = col[1];
-      gseg->b0 = col[2];
-	  
-      gseg->r1 = col[0];
-      gseg->g1 = col[1];
-      gseg->b1 = col[2];
-
-      gseg->type  = GRAD_LINEAR;
-      gseg->color = GRAD_RGB;
-      
-      prev = gseg;
-
-      n++;
     } 
 
   return 0;
