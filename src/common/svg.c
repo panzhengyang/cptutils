@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.6 2011/11/09 00:10:46 jjg Exp jjg $
+  $Id: svg.c,v 1.7 2011/11/09 21:30:30 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -14,6 +14,32 @@
 #include <time.h>
 
 #include "svg.h"
+
+/*
+  modified the first argument, replacing transparency
+  with the specified rgb value
+*/
+
+static int svg_flatten_stop(svg_stop_t* stop, rgb_t* rgb)
+{
+  double op = stop->opacity;
+
+  if (op < 1.0)
+    {
+      if (rgb_interpolate(op, *rgb, stop->colour, &(stop->colour)) != 0)
+	return 1;
+      stop->opacity = 1.0;
+    }
+
+  return 0;
+}
+
+extern int svg_flatten(svg_t *svg, rgb_t rgb)
+{
+  return svg_each_stop(svg,
+		       (int (*)(svg_stop_t*, void*))svg_flatten_stop,
+		       &rgb);
+}
 
 /*
   modifies its argument in making explicit 
@@ -56,13 +82,15 @@ extern int svg_explicit(svg_t *svg)
   not tested
 */
 
-extern int svg_each_stop(svg_t* svg, int (*f)(svg_stop_t,void*), void* opt)
+extern int svg_each_stop(svg_t* svg, 
+			 int (*f)(svg_stop_t*,void*), 
+			 void* opt)
 {
   svg_node_t *node;
 
   for (node = svg->nodes ; node ; node = node->r)
     {
-      int err = f(node->stop,opt);
+      int err = f(&(node->stop),opt);
 
       switch (err)
 	{
@@ -246,7 +274,7 @@ extern void svg_destroy(svg_t* svg)
     return;
 }
 
-static int inc(svg_stop_t stop,int* n)
+static int inc(svg_stop_t *stop, int *n)
 {
   (*n)++;
 
@@ -257,7 +285,7 @@ extern int svg_num_stops(svg_t* svg)
 {
   int n = 0;
 
-  if (svg_each_stop(svg,(int (*)(svg_stop_t,void*))inc,&n) != 0) return -1;
+  if (svg_each_stop(svg,(int (*)(svg_stop_t*,void*))inc,&n) != 0) return -1;
 
   return n;
 }
