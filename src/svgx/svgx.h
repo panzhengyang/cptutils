@@ -2,7 +2,7 @@
   svgx.h
 
   (c) J.J.Green 2004
-  $Id: svgx.h,v 1.9 2011/10/27 22:50:19 jjg Exp jjg $
+  $Id: svgx.h,v 1.10 2011/11/06 21:25:16 jjg Exp jjg $
 */
 
 #ifndef SVGX_H
@@ -32,6 +32,7 @@ typedef struct
   int width,height;
   char *name;
   rgb_t fg,bg,nan;
+  rgb_t alpha;
   svgx_type_t type; 
   struct
   {

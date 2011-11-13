@@ -1,7 +1,7 @@
 # -*- sh -*-
 # gengetopt input for svgcpt
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.11 2011/05/04 20:53:46 jjg Exp jjg $
+# $Id: options.ggo,v 1.12 2011/11/06 21:30:18 jjg Exp jjg $
 package "svgx"
 purpose "convert SVG gradient to other formats"
 option	"all"	        a "convert all gradients"           	flag    off
@@ -15,6 +15,7 @@ option	"select"        s "convert gradient with specifed name"	string  no
 option	"output"	o "output filename (not with -a)"     	string  no
 option  "permissive"    p "ignore format limits on output"      flag    off
 option  "type"          t "output format (see manual)"          string  no
+option  "transparency"  T "replace transparency by colour"      string  default="255/255/255" no
 option	"verbose"	v "verbose operation"	                flag    off
 
 

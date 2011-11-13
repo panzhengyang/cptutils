@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.16 2011/10/27 22:52:53 jjg Exp jjg $
+  $Id: main.c,v 1.17 2011/11/06 21:43:35 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -148,6 +148,14 @@ int main(int argc,char** argv)
   if (parse_rgb(info.nan_arg,&opt.nan) != 0)
     {
       fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
+      return EXIT_FAILURE;
+    }
+
+  /* colour to replace transparency */
+
+  if (parse_rgb(info.transparency_arg, &opt.alpha) != 0)
+    {
+      fprintf(stderr,"bad transparency colour %s\n",info.nan_arg);
       return EXIT_FAILURE;
     }
 
