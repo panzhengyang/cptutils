@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.29 2011/11/09 00:10:17 jjg Exp jjg $
+  $Id: svgx.c,v 1.30 2011/11/13 21:17:10 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -28,6 +28,7 @@
 #include "utf8x.h"
 
 static int svgx_list(svgx_opt_t, svg_list_t*);
+static int svgx_first(svgx_opt_t, svg_list_t*);
 static int svgx_named(svgx_opt_t, svg_list_t*);
 static int svgx_all(svgx_opt_t, svg_list_t*);
 
@@ -61,9 +62,27 @@ extern int svgx(svgx_opt_t opt)
 	{
 	  /* run the job */
 
-	  err += svgx_list(opt,list);
-	  err += svgx_named(opt,list);
-	  err += svgx_all(opt,list);
+	  switch (opt.job)
+	    {
+	    case job_list:
+	      err = svgx_list(opt,list);
+	      break;
+	      
+	    case job_first:
+	      err = svgx_first(opt,list);
+	      break;
+
+	    case job_named:
+	      err = svgx_named(opt,list);
+	      break;
+	      
+	    case job_all:
+	      err = svgx_all(opt,list);
+	      break;
+
+	    default:
+	      return 1;
+	    }
 	}
 
       svg_list_destroy(list);
@@ -74,13 +93,15 @@ extern int svgx(svgx_opt_t opt)
 
 /* print the gradients in the list */ 
 
-static int svg_id(svg_t*,const char*);
+static int svg_id(svg_t* svg,const char* fmt)
+{
+  printf(fmt,svg->name);
+  return 0;
+}
 
-static int svgx_list(svgx_opt_t opt,svg_list_t* list)
+static int svgx_list(svgx_opt_t opt, svg_list_t* list)
 {
   int n,err=0;
-
-  if (!opt.list) return 0;
 
   n = svg_list_size(list);
 
@@ -89,7 +110,6 @@ static int svgx_list(svgx_opt_t opt,svg_list_t* list)
       if (n==0)
 	{
 	  /* worrying, but not an error */
-
 	  printf("no gradient found!\n");
 	}
       else
@@ -103,15 +123,10 @@ static int svgx_list(svgx_opt_t opt,svg_list_t* list)
       err = svg_list_iterate(list,(int (*)(svg_t*,void*))svg_id,"%s\n");
     }
 
-  if (err)  fprintf(stderr,"error listing svg\n");
+  if (err)  
+    fprintf(stderr,"error listing svg\n");
 
   return err;
-}
-
-static int svg_id(svg_t* svg,const char* fmt)
-{
-  printf(fmt,svg->name);
-  return 0;
 }
 
 /*
@@ -152,12 +167,44 @@ static int svgpov_valid(svg_t* svg,int permissive,int verbose)
 
 /* convert a named gradient */
 
-static int svg_select_name(svg_t*,char*);
-static int svg_select_first(svg_t*,char*);
+static int svg_select_name(svg_t*, char*);
+static int svg_select_first(svg_t*, char*);
+static int svgx_single(svgx_opt_t, svg_t*);
+
+static int svgx_first(svgx_opt_t opt, svg_list_t* list)
+{
+  svg_t *svg;
+
+  if ((svg = svg_list_select(list,
+			     (int (*)(svg_t*,void*))svg_select_first,
+			     NULL)) == NULL)
+    {
+      fprintf(stderr,"couldn't find first gradient!\n");
+      return 1;
+    }
+
+  return svgx_single(opt, svg);
+}
 
 static int svgx_named(svgx_opt_t opt,svg_list_t* list)
 {
-  svg_t  *svg;
+  svg_t *svg;
+
+  if ((svg = svg_list_select(list,
+			     (int (*)(svg_t*,void*))svg_select_name,
+			     opt.name)) == NULL)
+    {
+      fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
+      return 1;
+    }
+
+  return svgx_single(opt, svg);
+}
+
+
+
+static int svgx_single(svgx_opt_t opt, svg_t* svg)
+{
   cpt_t  *cpt;
   pov_t  *pov;
   gpt_t  *gpt;
@@ -166,43 +213,7 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   gradient_t *ggr;
   sao_t *sao;
   png_t *png;
-
   char *file;
-
-  /* get svg with this name */
-
-  if (opt.name)
-    {
-      svg = svg_list_select(list,
-			    (int (*)(svg_t*,void*))svg_select_name,
-			    opt.name);
-
-      if (!svg)
-	{
-	  fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
-	  return 1;
-	}
-    }
-  else if (opt.first)
-    {
-      svg = svg_list_select(list,
-			    (int (*)(svg_t*,void*))svg_select_first,
-			    NULL);
-
-      if (!svg)
-	{
-	  fprintf(stderr,"couldn't find first gradient!\n");
-	  return 1;
-	}
-    }
-  else 
-    return 0;
-
-  if (!svg)
-    {
-      fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
-      return 1;
-    }
 
   if (svg_explicit(svg) != 0)
     {
@@ -499,8 +510,6 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
   int (*dump)(svg_t*,void*);
   bool flatten;
 
-  if (!opt.all) return 0;
-
   switch (opt.type)
     {
     case type_cpt:
@@ -590,7 +599,7 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
   return 0;
 }
 
-static int svgcpt_dump(svg_t* svg,svgx_opt_t* opt)
+static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
 {
   int  n = SVG_NAME_LEN+5;
   char file[n],*name;
@@ -600,7 +609,7 @@ static int svgcpt_dump(svg_t* svg,svgx_opt_t* opt)
 
   name = (char*)svg->name;
 
-  if (snprintf(file,n,"%s.cpt",name) >= n)
+  if (snprintf(file, n, "%s.cpt", name) >= n)
     {
       fprintf(stderr,"filename truncated! %s\n",file);
       return 1;

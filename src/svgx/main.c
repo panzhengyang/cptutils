@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.17 2011/11/06 21:43:35 jjg Exp jjg $
+  $Id: main.c,v 1.18 2011/11/13 12:16:35 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -51,61 +51,67 @@ int main(int argc,char** argv)
 
   opt.verbose    = info.verbose_given;
   opt.permissive = info.permissive_given;
-  opt.list       = info.list_given;
-  opt.all        = info.all_given;
-  opt.first      = info.first_given;
-  opt.name       = (info.select_given ? info.select_arg : NULL);
+  opt.job        = job_first;
+  opt.name       = NULL;
 
-  if (opt.first && opt.all)
+  if (info.all_given + info.list_given + info.select_given > 1)
     {
-      fprintf(stderr,"can't specify all and first!\n");
-      options_print_help();
+      fprintf(stderr,"only one of --all, --list and --select allowed\n");
       return EXIT_FAILURE;
+    }
+
+  if (info.all_given)
+    opt.job = job_all;
+
+  if (info.list_given)  
+    opt.job = job_list;
+
+  if (info.select_given)
+    {
+      opt.job = job_named;
+      opt.name = info.select_arg;
     }
 
   if (info.type_given)
     {
-      const char* tstr = info.type_arg;
+      const char* name = info.type_arg;
 
-      /* sometimes I think I'm too nice */
-
-      if (strcmp("cpt",tstr) == 0)
-	opt.type = type_cpt;
-      else if (strcmp("ggr",tstr) == 0)
-	opt.type = type_ggr;
-      else if (strcmp("gimp",tstr) == 0)
-	opt.type = type_ggr;
-      else if (strcmp("inc",tstr) == 0)
-	opt.type = type_pov;
-      else if (strcmp("pov",tstr) == 0)
-	opt.type = type_pov;
-      else if (strcmp("css3",tstr) == 0)
-	opt.type = type_css3;
-      else if (strcmp("c3g",tstr) == 0)
-	opt.type = type_css3;
-      else if (strcmp("gpt",tstr) == 0)
-	opt.type = type_gpt;
-      else if (strcmp("gnuplot",tstr) == 0)
-	opt.type = type_gpt;
-      else if (strcmp("psp",tstr) == 0)
-	opt.type = type_psp;
-      else if (strcmp("PspGradient",tstr) == 0)
-	opt.type = type_psp;
-      else if (strcmp("jgd",tstr) == 0)
-	opt.type = type_psp;
-      else if (strcmp("grd",tstr) == 0)
-	opt.type = type_psp;
-      else if (strcmp("sao",tstr) == 0)
-	opt.type = type_sao;
-      else if (strcmp("ds9",tstr) == 0)
-	opt.type = type_sao;
-      else if (strcmp("png",tstr) == 0)
-	opt.type = type_png;
-      else
+      struct {const char* name; int type; } 
+      *p, types[] =
 	{
-	  fprintf(stderr,"no such type %s\n",tstr);
-	  options_print_help();
-	  return EXIT_FAILURE;
+	  {"cpt", type_cpt},
+	  {"ggr", type_ggr},
+	  {"gimp",type_ggr},
+	  {"inc", type_pov},
+	  {"pov", type_pov},
+	  {"css3", type_css3},
+	  {"c3g", type_css3},
+	  {"gpt", type_gpt},
+	  {"gnuplot", type_gpt},
+	  {"psp", type_psp},
+	  {"PspGradient", type_psp},
+	  {"jgd", type_psp},
+	  {"grd", type_psp},
+	  {"sao", type_sao},
+	  {"ds9", type_sao},
+	  {"png", type_png},
+	  {NULL, 0}};
+
+      for (p = types ; p->name ; p++)
+	{
+	  if (! p->name )
+	    {
+	      fprintf(stderr,"output type %s not understood\n",name);
+	      // fixme - list available types
+	      options_print_help();
+	      return EXIT_FAILURE;
+	    }
+
+	  if (strcmp(name,p->name) == 0)
+	    {
+	      opt.type = p->type;
+	      break;
+	    }
 	}
     }
   else
@@ -188,43 +194,37 @@ int main(int argc,char** argv)
     {
       printf("This is svgx (version %s)\n",VERSION);
 
-      if (opt.name || opt.all)
+      const char* tstr;
+
+      switch (opt.type)
 	{
-	  const char* tstr;
-
-	  switch (opt.type)
- 	    {
-	    case type_cpt  : tstr = "GMT colour palette table"; break;
-	    case type_ggr  : tstr = "GIMP gradient"; break;
-	    case type_pov  : tstr = "POV-Ray colour map"; break;
-	    case type_gpt  : tstr = "Gnuplot colour map"; break;
-	    case type_css3 : tstr = "CSS3 gradient"; break;
-	    case type_psp  : tstr = "grd v3"; break;
-	    case type_sao  : tstr = "SAO (DS9) colour map"; break;
-	    case type_png  : tstr = "png image"; break;
-
-	    default:
-	      fprintf(stderr,"weird output format!\n");
-	      return EXIT_FAILURE;
-	    }
+	case type_cpt  : tstr = "GMT colour palette table"; break;
+	case type_ggr  : tstr = "GIMP gradient"; break;
+	case type_pov  : tstr = "POV-Ray colour map"; break;
+	case type_gpt  : tstr = "Gnuplot colour map"; break;
+	case type_css3 : tstr = "CSS3 gradient"; break;
+	case type_psp  : tstr = "grd v3"; break;
+	case type_sao  : tstr = "SAO (DS9) colour map"; break;
+	case type_png  : tstr = "png image"; break;
 	  
-	  printf("convert svg to %s\n",tstr);
-	  printf("%s format limits\n",
+	default:
+	  fprintf(stderr,"weird output format!\n");
+	  return EXIT_FAILURE;
+	}
+	  
+      printf("convert svg to %s\n",tstr);
+      printf("%s format limits\n",
 		 (opt.permissive ? "ignoring" : "respecting"));
 
-	  if (opt.type == type_png)
-	    printf("output size is %i x %i\n", opt.width, opt.height);
-
-	}
+      if (opt.type == type_png)
+	printf("output size is %i x %i\n", opt.width, opt.height);
     }
 
   err = svgx(opt);
 
-  if (err != 0)
-    fprintf(stderr,"failed (error %i)\n",err);
+  if (err) fprintf(stderr,"failed (error %i)\n",err);
 
-  if (opt.verbose)
-    printf("done.\n");
+  if (opt.verbose) printf("done.\n");
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
