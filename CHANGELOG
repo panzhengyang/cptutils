@@ -1,12 +1,12 @@
-Changes $Id: CHANGELOG,v 1.58 2011/11/04 18:14:32 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.59 2011/11/09 21:33:26 jjg Exp jjg $
 
 1.41 (pending)
-  - added svgpng
+  - gimpsvg replaces gimpcpt
+  - pspsvg replaces pspcpt
+  - new program svgpng
   - fixed some UTF8 issues in common/svgread
-  - replaced pspcpt by pspsvg
   - fixed opacity conversion in svgpsp (svgx) 
-  - improved character-set handling in pspsvg, 
-    svgpsp, svgpov (svgx)
+  - improved character-set handling in svgx
   - fixed conversion of implicit initial and final stops 
     in svgx  
 
