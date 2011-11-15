@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.18 2011/11/13 12:16:35 jjg Exp jjg $
+  $Id: main.c,v 1.19 2011/11/14 20:45:55 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -97,13 +97,19 @@ int main(int argc,char** argv)
 	  {"png", type_png},
 	  {NULL, 0}};
 
-      for (p = types ; p->name ; p++)
+      for (p = types ; ; p++)
 	{
 	  if (! p->name )
 	    {
 	      fprintf(stderr,"output type %s not understood\n",name);
-	      // fixme - list available types
+
+	      fprintf(stderr,"supported types:\n");
+	      for (p = types ; p->name ; p++)
+		fprintf(stderr,"  %s\n",p->name);
+	      fprintf(stderr,"\n");
+
 	      options_print_help();
+
 	      return EXIT_FAILURE;
 	    }
 

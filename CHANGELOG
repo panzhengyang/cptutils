@@ -1,6 +1,7 @@
-Changes $Id: CHANGELOG,v 1.59 2011/11/09 21:33:26 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.60 2011/11/14 16:10:23 jjg Exp jjg $
 
 1.41 (pending)
+  - svgx -1 option becomes the default
   - gimpsvg replaces gimpcpt
   - pspsvg replaces pspcpt
   - new program svgpng
