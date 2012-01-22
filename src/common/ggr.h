@@ -37,10 +37,10 @@
  
   You should have received a copy of the GNU General Public 
   License along with this program; if not, write to the 
-  Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
-  Boston, MA 02111-1307, USA.
+  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+  Boston, MA 02110-1301 USA
 
-  $Id: gradient.h,v 1.4 2011/11/11 15:20:54 jjg Exp jjg $
+  $Id: gradient.h,v 1.5 2011/11/11 17:58:37 jjg Exp jjg $
 */
 
 #ifndef GRADIENT_H

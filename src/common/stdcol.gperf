@@ -4,7 +4,7 @@
   Modifications are
 
   Copyright (c) J.J. Green 2004
-  $Id$
+  $Id: stdcol.gperf,v 1.1 2005/06/26 15:39:14 jjg Exp jjg $
 
   The original header follows
 
@@ -20,11 +20,11 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
  
-  You should have received a copy of the GNU Lesser General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-  USA
-  
+  You should have received a copy of the GNU Lesser General Public 
+  License along with this program; if not, write to the Free 
+  Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
+  Boston, MA 02110-1301 USA
+
   Author: Dodji Seketeli
   See COPYRIGHTS file for copyrights information.
   ----
