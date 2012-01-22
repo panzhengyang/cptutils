@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.4 2010/04/13 23:17:00 jjg Exp jjg $
+  $Id: main.c,v 1.5 2010/04/18 15:17:25 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -93,7 +93,7 @@ int main(int argc,char** argv)
 
   if (opt.segments)
     {
-      if (sscanf(info.range_arg,"%i/%i",
+      if (sscanf(info.range_arg,"%zu/%zu",
 		 &opt.u.segs.min,
 		 &opt.u.segs.max) != 2)
 	{

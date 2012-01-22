@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.5 2005/06/27 17:50:27 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2010/04/18 15:35:06 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
@@ -13,8 +13,8 @@ default : all
 all : cptsvg
 
 install :
-	$(INSTALL_PROGRAM) cptsvg $(bindir)/cptsvg
-	$(INSTALL_DATA) cptsvg.1 $(mandir)/man1/cptsvg.1
+	$(INSTALL_PROGRAM) cptsvg $(DESTDIR)$(bindir)/cptsvg
+	$(INSTALL_DATA) cptsvg.1 $(DESTDIR)$(mandir)/man1/cptsvg.1
 
 clean :
 	$(RM) $(RUBBISH)

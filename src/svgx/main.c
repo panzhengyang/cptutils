@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.19 2011/11/14 20:45:55 jjg Exp jjg $
+  $Id: main.c,v 1.20 2011/11/15 20:03:15 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -179,7 +179,7 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
       
-  if (sscanf(info.geometry_arg,"%ix%i",&opt.width,&opt.height) != 2)
+  if (sscanf(info.geometry_arg,"%zux%zu",&opt.width,&opt.height) != 2)
     {
       fprintf(stderr,"bad argument \"%s\" to geometry option",info.geometry_arg);
       return EXIT_FAILURE;
@@ -223,7 +223,7 @@ int main(int argc,char** argv)
 		 (opt.permissive ? "ignoring" : "respecting"));
 
       if (opt.type == type_png)
-	printf("output size is %i x %i\n", opt.width, opt.height);
+	printf("output size is %zu x %zu\n", opt.width, opt.height);
     }
 
   err = svgx(opt);

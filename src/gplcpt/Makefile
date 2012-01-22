@@ -1,7 +1,7 @@
 # Makefile for gplcpt
 #
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.3 2005/06/27 17:51:52 jjg Exp $
+# $Id: Makefile,v 1.1 2009/12/28 16:44:35 jjg Exp jjg $
 
 OBJ      =  gplcpt.o main.o options.o
 RUBBISH += $(OBJ) gplcpt
@@ -13,8 +13,8 @@ default : all
 all : gplcpt
 
 install :
-	$(INSTALL_DATA) gplcpt.1 $(mandir)/man1/gplcpt.1
-	$(INSTALL_PROGRAM) gplcpt $(bindir)/gplcpt
+	$(INSTALL_DATA) gplcpt.1 $(DESTDIR)$(mandir)/man1/gplcpt.1
+	$(INSTALL_PROGRAM) gplcpt $(DESTDIR)$(bindir)/gplcpt
 
 clean :
 	$(RM) $(RUBBISH)

@@ -1,7 +1,7 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.3 2005/06/27 17:51:52 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2010/06/24 20:59:04 jjg Exp jjg $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
@@ -13,8 +13,8 @@ default : all
 all : xycpt
 
 install :
-	$(INSTALL_DATA) xycpt.1 $(mandir)/man1/xycpt.1
-	$(INSTALL_PROGRAM) xycpt $(bindir)/xycpt
+	$(INSTALL_DATA) xycpt.1 $(DESTDIR)$(mandir)/man1/xycpt.1
+	$(INSTALL_PROGRAM) xycpt $(DESTDIR)$(bindir)/xycpt
 
 clean :
 	$(RM) $(RUBBISH)

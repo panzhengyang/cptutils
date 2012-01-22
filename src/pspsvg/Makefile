@@ -1,7 +1,7 @@
 # Makefile for pspsvg
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.6 2010/04/18 16:02:44 jjg Exp $
+# $Id: Makefile,v 1.1 2011/11/01 23:10:52 jjg Exp jjg $
 
 OBJ      =  pspsvg.o main.o options.o gstack.o
 RUBBISH += $(OBJ) pspsvg
@@ -14,8 +14,8 @@ default : all
 all : pspsvg
 
 install :
-	$(INSTALL_DATA) pspsvg.1 $(mandir)/man1/pspsvg.1
-	$(INSTALL_PROGRAM) pspsvg $(bindir)/pspsvg
+	$(INSTALL_DATA) pspsvg.1 $(DESTDIR)$(mandir)/man1/pspsvg.1
+	$(INSTALL_PROGRAM) pspsvg $(DESTDIR)$(bindir)/pspsvg
 
 clean :
 	$(RM) $(RUBBISH)

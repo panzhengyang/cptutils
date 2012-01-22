@@ -3,7 +3,7 @@
 
   avl gradients structures
   J.J. Green 2005
-  $Id: avlgrad.c,v 1.1 2005/11/22 22:51:31 jjg Exp jjg $
+  $Id: avlgrad.c,v 1.2 2005/11/22 23:43:57 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -307,7 +307,7 @@ static int odb_avl(odb_t* odb,identtab_t* itab,identtab_t* stab,avl_grad_t* avl,
 
   if (verbose)
     {
-      printf("found %i/%i legend, %i/%i colour\n",nl,Rl->n,ns,Rs->n);
+      printf("found %i/%zu legend, %i/%zu colour\n",nl,Rl->n,ns,Rs->n);
     }
 
   if (ns != nl)

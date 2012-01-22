@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.30 2011/11/13 20:31:35 jjg Exp jjg $
+# $Id: Makefile,v 1.31 2011/11/13 21:16:47 jjg Exp jjg $
 
 OBJ      = svgx.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
@@ -60,24 +60,24 @@ ifneq (no,$(XML2C))
 
 all : svgx  
 install : all
-	$(INSTALL) -m755 svgx $(bindir)/svgx
-	$(INSTALL) -m755 svgcpt.sh $(bindir)/svgcpt
-	$(INSTALL) -m755 svgcss3.sh $(bindir)/svgcss3
-	$(INSTALL) -m755 svggimp.sh $(bindir)/svggimp
-	$(INSTALL) -m755 svggpt.sh $(bindir)/svggpt
-	$(INSTALL) -m755 svgpng.sh $(bindir)/svgpng
-	$(INSTALL) -m755 svgpov.sh $(bindir)/svgpov
-	$(INSTALL) -m755 svgpsp.sh $(bindir)/svgpsp
-	$(INSTALL) -m755 svgsao.sh $(bindir)/svgsao
-	$(INSTALL) -m644 svgx.1 $(mandir)/man1/svgx.1 
-	ln -f -s svgx.1 $(mandir)/man1/svgcpt.1
-	ln -f -s svgx.1 $(mandir)/man1/svgcss3.1
-	ln -f -s svgx.1 $(mandir)/man1/svggimp.1
-	ln -f -s svgx.1 $(mandir)/man1/svggpt.1
-	ln -f -s svgx.1 $(mandir)/man1/svgpov.1
-	ln -f -s svgx.1 $(mandir)/man1/svgpng.1
-	ln -f -s svgx.1 $(mandir)/man1/svgpsp.1
-	ln -f -s svgx.1 $(mandir)/man1/svgsao.1
+	$(INSTALL) -m755 svgx $(DESTDIR)$(bindir)/svgx
+	$(INSTALL) -m755 svgcpt.sh $(DESTDIR)$(bindir)/svgcpt
+	$(INSTALL) -m755 svgcss3.sh $(DESTDIR)$(bindir)/svgcss3
+	$(INSTALL) -m755 svggimp.sh $(DESTDIR)$(bindir)/svggimp
+	$(INSTALL) -m755 svggpt.sh $(DESTDIR)$(bindir)/svggpt
+	$(INSTALL) -m755 svgpng.sh $(DESTDIR)$(bindir)/svgpng
+	$(INSTALL) -m755 svgpov.sh $(DESTDIR)$(bindir)/svgpov
+	$(INSTALL) -m755 svgpsp.sh $(DESTDIR)$(bindir)/svgpsp
+	$(INSTALL) -m755 svgsao.sh $(DESTDIR)$(bindir)/svgsao
+	$(INSTALL) -m644 svgx.1 $(DESTDIR)$(mandir)/man1/svgx.1 
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svgcpt.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svgcss3.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svggimp.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svggpt.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svgpov.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svgpng.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svgpsp.1
+	ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/svgsao.1
 
 else
 

@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimpcpt.c,v 1.13 2007/01/25 00:10:40 jjg Exp $
+  $Id: gimplut.c,v 1.1 2008/04/13 20:54:25 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -89,7 +89,7 @@ extern int gimplut(char* infile,char* outfile,glopt_t opt)
     else err = gimplut_st(stdout,gradient,opt);
 
     if ((!err) && opt.verbose) 
-      printf("converted to %i entry LUT\n",opt.numsamp);
+      printf("converted to %zu entry LUT\n",opt.numsamp);
     
     grad_free_gradient(gradient);
     

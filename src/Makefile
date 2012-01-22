@@ -1,6 +1,6 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.20 2011/11/11 17:56:42 jjg Exp jjg $
+# $Id: Makefile,v 1.21 2011/11/14 18:01:52 jjg Exp jjg $
 
 SRC      = common avlcpt cptclip cptcont cptcss cptinfo \
 	   cpttext cptsvg cpthsv gimpsvg gimplut gplcpt \
@@ -22,7 +22,7 @@ install : install-dirs
 
 install-dirs :
 	for dir in $(bindir) $(mandir) $(mandir)/man1 ; do \
-	  $(INSTALL_DIR) $$dir ; \
+	  $(INSTALL_DIR) $(DESTDIR)$$dir ; \
 	done
 
 clean :

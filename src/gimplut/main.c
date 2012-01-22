@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
   Boston, MA 02111-1307, USA.
 
-  $Id: main.c,v 1.4 2007/01/25 00:12:58 jjg Exp $
+  $Id: main.c,v 1.1 2008/04/13 20:54:13 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -57,7 +57,7 @@ int main(int argc,char** argv)
 
   if (opt.numsamp < 1)
     {
-      fprintf(stderr,"bad number of samples %i\n",opt.numsamp);
+      fprintf(stderr,"bad number of samples %zu\n",opt.numsamp);
       return EXIT_FAILURE;
     }
 

@@ -1,6 +1,6 @@
 # Makefile for cpttext
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.1 2004/04/12 23:42:50 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2005/06/27 17:50:43 jjg Exp jjg $
 
 OBJ      = main.o options.o cpttext.o
 RUBBISH += $(OBJ) cpttext
@@ -12,8 +12,8 @@ default : all
 all : cpttext
 
 install :
-	$(INSTALL_PROGRAM) cpttext $(bindir)/cpttext
-	$(INSTALL_DATA) cpttext.1 $(mandir)/man1/cpttext.1
+	$(INSTALL_PROGRAM) cpttext $(DESTDIR)$(bindir)/cpttext
+	$(INSTALL_DATA) cpttext.1 $(DESTDIR)$(mandir)/man1/cpttext.1
 
 clean :
 	$(RM) $(RUBBISH)

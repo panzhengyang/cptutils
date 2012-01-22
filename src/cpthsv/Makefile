@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.1 2007/11/16 17:06:30 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2010/04/18 15:30:21 jjg Exp jjg $
 
 NAME = cpthsv
 
@@ -15,8 +15,8 @@ default : all
 all : $(NAME)
 
 install :
-	$(INSTALL_PROGRAM) $(NAME) $(bindir)/$(NAME)
-	$(INSTALL_DATA) $(NAME).1 $(mandir)/man1/$(NAME).1
+	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
+	$(INSTALL_DATA) $(NAME).1 $(DESTDIR)$(mandir)/man1/$(NAME).1
 
 clean :
 	$(RM) $(RUBBISH)

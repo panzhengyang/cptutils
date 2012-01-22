@@ -1,6 +1,6 @@
 # Makefile for gimplut
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.9 2007/01/25 00:10:19 jjg Exp $
+# $Id: Makefile,v 1.1 2008/04/13 20:54:28 jjg Exp jjg $
 
 NAME     = gimplut
 OBJ      = $(NAME).o main.o options.o
@@ -14,8 +14,8 @@ default : all
 all : $(NAME)
 
 install :
-	$(INSTALL_PROGRAM) $(NAME) $(bindir)/$(NAME)
-	$(INSTALL_DATA) $(NAME).1 $(mandir)/man1/$(NAME).1
+	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
+	$(INSTALL_DATA) $(NAME).1 $(DESTDIR)$(mandir)/man1/$(NAME).1
 
 clean :
 	$(RM) $(RUBBISH)

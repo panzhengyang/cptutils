@@ -1,6 +1,6 @@
 # Makefile for cptclip
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.2 2010/04/11 22:37:23 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2010/04/18 15:14:56 jjg Exp jjg $
 
 NAME = cptclip
 
@@ -15,8 +15,8 @@ default : all
 all : $(NAME)
 
 install :
-	$(INSTALL_PROGRAM) $(NAME) $(bindir)/$(NAME)
-	$(INSTALL_DATA) $(NAME).1 $(mandir)/man1/$(NAME).1
+	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
+	$(INSTALL_DATA) $(NAME).1 $(DESTDIR)$(mandir)/man1/$(NAME).1
 
 clean :
 	$(RM) $(RUBBISH)

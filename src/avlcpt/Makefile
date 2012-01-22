@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.8 2010/04/18 16:10:17 jjg Exp jjg $
+# $Id: Makefile,v 1.9 2010/04/18 16:10:56 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
@@ -13,8 +13,8 @@ default : all
 all : avlcpt
 
 install :
-	$(INSTALL_DATA) avlcpt.1 $(mandir)/man1/avlcpt.1
-	$(INSTALL_PROGRAM) avlcpt $(bindir)/avlcpt
+	$(INSTALL_DATA) avlcpt.1 $(DESTDIR)$(mandir)/man1/avlcpt.1
+	$(INSTALL_PROGRAM) avlcpt $(DESTDIR)$(bindir)/avlcpt
 
 clean : cpt-clean
 	$(RM) $(RUBBISH)

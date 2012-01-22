@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.13 2011/11/11 17:55:50 jjg Exp jjg $
+# $Id: Makefile,v 1.14 2011/11/11 22:41:47 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -15,8 +15,8 @@ default : all
 all : $(NAME)
 
 install :
-	$(INSTALL_PROGRAM) $(NAME) $(bindir)/$(NAME)
-	$(INSTALL_DATA) $(NAME).1 $(mandir)/man1/$(NAME).1
+	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
+	$(INSTALL_DATA) $(NAME).1 $(DESTDIR)$(mandir)/man1/$(NAME).1
 
 clean :
 	$(RM) $(RUBBISH)
