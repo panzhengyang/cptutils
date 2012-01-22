@@ -17,10 +17,10 @@
 
   You should have received a copy of the GNU General Public
   License along with this program; if not, write to the
-  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+  Free Software Foundation, Inc., Copyright (C) 1989, 1991 
+  Free Software Foundation, Inc.,
 
-  $Id: main.c,v 1.1 2004/04/12 23:43:05 jjg Exp jjg $
+  $Id: main.c,v 1.2 2004/08/15 23:50:19 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE

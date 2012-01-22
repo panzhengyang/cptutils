@@ -17,10 +17,10 @@
 
   You should have received a copy of the GNU General Public
   License along with this program; if not, write to the
-  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+  Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+  Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.2 2005/11/12 00:10:43 jjg Exp jjg $
+  $Id: main.c,v 1.3 2007/11/16 11:48:37 jjg Exp jjg $
 */
 
 #include <stdio.h>
