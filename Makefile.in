@@ -1,6 +1,6 @@
 # Makefile.in for cptutils
 
-# $Id: Makefile.in,v 1.7 2010/04/19 23:37:12 jjg Exp jjg $
+# $Id: Makefile.in,v 1.8 2011/11/04 14:22:42 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -10,8 +10,7 @@
 VERSION   = @PACKAGE_VERSION@
 RUBBISH   = *~
 CONFFILES = config.cache config.log config.status configure Makefile
-
-DIST      = 
+DIST      = cptutils-$(VERSION)
 
 # targets
 
@@ -38,6 +37,12 @@ veryclean spotless : clean version
 
 version :
 	echo $(VERSION) > VERSION
+
+dist : veryclean
+        cd .. ; \
+        cp -r cptutils $(DIST) ;\
+        tar --exclude=RCS -zcvf $(DIST).tar.gz $(DIST) ;\
+        mv $(DIST) /tmp 
 
 
 
