@@ -1,6 +1,12 @@
-Changes $Id: CHANGELOG,v 1.60 2011/11/14 16:10:23 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.61 2011/11/15 20:06:17 jjg Exp jjg $
 
-1.41 (pending)
+1.42 (Pending)
+  Several fixes suggested by Volker Froehlich of Fedora 
+  - applied patches adding DESTDIR and fixing size_t printing
+  - Updated FSF address in numerous files
+  - Bottom-level dist target now creates versioned tarballs
+
+1.41 (16 Nov 2011)
   - svgx -1 option becomes the default
   - gimpsvg replaces gimpcpt
   - pspsvg replaces pspcpt
