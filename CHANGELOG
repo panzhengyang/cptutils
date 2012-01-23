@@ -1,6 +1,6 @@
-Changes $Id: CHANGELOG,v 1.61 2011/11/15 20:06:17 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.62 2012/01/22 20:24:17 jjg Exp jjg $
 
-1.42 (Pending)
+1.42 (23 Jan 2012)
   Several fixes suggested by Volker Froehlich of Fedora 
   - applied patches adding DESTDIR and fixing size_t printing
   - Updated FSF address in numerous files

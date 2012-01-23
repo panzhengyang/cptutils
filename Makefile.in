@@ -1,6 +1,6 @@
 # Makefile.in for cptutils
 
-# $Id: Makefile.in,v 1.9 2012/01/22 22:13:18 jjg Exp jjg $
+# $Id: Makefile.in,v 1.10 2012/01/22 22:18:19 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -21,9 +21,6 @@ all :
 
 install : all
 	cd src ; $(MAKE) install ; cd ..
-
-check test show : all
-	cd src ; $(MAKE) test ; cd ..
 
 clean :
 	$(RM) $(RUBBISH)
