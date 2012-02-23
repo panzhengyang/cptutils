@@ -1,6 +1,6 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.8 2007/11/16 22:13:30 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.9 2010/09/14 18:39:19 jjg Exp jjg $ 
 
 CC       = @CC@
 CFLAGS  += @CFLAGS@ @DEFS@
@@ -14,6 +14,7 @@ INSTALL_DIR     = @INSTALL@ -d
 GGO             = @GGO@
 XML2C		= @XML2C@
 GPERF		= @GPERF@
+XSLTP           = @XSLTP@
 
 prefix      = @prefix@
 exec_prefix = @exec_prefix@
@@ -23,10 +24,23 @@ datarootdir = @datarootdir@
 
 RUBBISH += *~
 
-# useful, but not needed for the build
+# generate options code from .ggo
 
 ifneq (no,$(GGO))
+
 %.h %.c : %.ggo
 	$(GGO) -u -i $< -f $* -F $*
+
 endif
 
+# generate manpages from docbook source, the location
+# of the xsl is as used by Debian/Ubuntu
+
+ifneq (no,$(XSLTP))
+
+MANXSL = /usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/refentry.xsl
+
+.xml.1 :
+	$(XSLTP) $(MANXSL) $<
+
+endif
