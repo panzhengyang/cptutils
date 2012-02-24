@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: cptcont.xml,v 1.1 2012/02/24 20:41:40 jjg Exp $ -->
+
+<refentry id='cptcss1'>
+
+<refentryinfo><date>24 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>CPTCSS</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>24 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cptcss</refname>
+<refpurpose>
+  create CSS fragment for colouring HTML tables.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cptcss</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-f 
+    <replaceable>format</replaceable>
+    </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>cptcss</command> utility prints a fragment of 
+  CSS which can be used to colour the cells of an HTML table, 
+  the colours specified by a colour palette table (.cpt) file.
+</para>
+      
+<para> 
+  The cpt file to use is specified by the final argument. If 
+  no cpt file is specified then the program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename>.
+  Output is written to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+</para>
+
+<para>
+  The  input cpt should be a discrete (since the output CSS is) 
+  and each colour level in the file will lead to a CSS class 
+  directive for the &lt;td&gt; element. The class name can 
+  be modified from the default "cptcss-%i" by using the 
+  <option>-f</option> option.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-f</option>, <option>--format</option>
+  <replaceable>string</replaceable>
+  </term>
+  <listitem>
+  <para>
+    The format to use for the &lt;td&gt; class name, which 
+    should include a single integer specifier "%i" which will 
+    enumerate the classes. The default value is "cptcss-%i".
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>svgcss3</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
