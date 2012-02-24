@@ -2,6 +2,8 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
+<!-- $Id$ -->
+
 <refentry id='avlcpt1'>
 
 <refentryinfo><date>24 February 2012</date></refentryinfo>
@@ -21,7 +23,6 @@ convert ArcView Legend gradients to GMT colour palette tables
 </refpurpose>
 </refnamediv>
 
-<!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>avlcpt</command>    
@@ -59,7 +60,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-b</option>
+  <option>-b</option>, <option>--background</option>
   <replaceable>rgb</replaceable>
   </term>
   <listitem>
@@ -69,7 +70,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-f</option>
+  <option>-f</option>, <option>--foreground</option>
   <replaceable>rgb</replaceable>
   </term>
   <listitem>
@@ -79,7 +80,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-h</option>
+  <option>-h</option>, <option>--help</option>
   </term>
   <listitem>
     <para>Brief help.</para>
@@ -88,7 +89,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-l</option>
+  <option>-l</option>, <option>--lower</option>
   <replaceable>adjust</replaceable>
   </term>
   <listitem>
@@ -99,7 +100,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-n</option>
+  <option>-n</option>, <option>--nan</option>
   <replaceable>rgb</replaceable>
   </term>
   <listitem>
@@ -109,7 +110,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-o</option>
+  <option>-o</option>, <option>--output</option>
   <replaceable>file</replaceable>
   </term>
   <listitem>
@@ -122,7 +123,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-p</option>
+  <option>-p</option>, <option>--precision</option>
   <replaceable>precision</replaceable>
   </term>
   <listitem>
@@ -139,7 +140,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-l</option>
+  <option>-u</option>, <option>--upper</option>
   <replaceable>adjust</replaceable>
   </term>
   <listitem>
@@ -150,7 +151,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-v</option>
+  <option>-v</option>, <option>--verbose</option>
   </term>
   <listitem>
   <para>Verbose operation.</para>
@@ -159,7 +160,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-V</option>
+  <option>-V</option>, <option>--version</option>
   </term>
   <listitem>
   <para>Version information.</para>
