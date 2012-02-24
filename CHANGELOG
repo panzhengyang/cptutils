@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.62 2012/01/22 20:24:17 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.63 2012/01/23 13:06:42 jjg Exp jjg $
+
+1.43 (pending)
+  Manual pages converted to DocBook format.
 
 1.42 (23 Jan 2012)
   Several fixes suggested by Volker Froehlich of Fedora 
