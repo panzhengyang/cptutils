@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<refentry id='cptclip1'>
+
+<refentryinfo><date>24 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>CPTCLIP</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>24 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cptclip</refname>
+<refpurpose>
+  extract a sub-table from a GMT colour palette table (cpt).
+</refpurpose>
+</refnamediv>
+
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cptclip</command>    
+    <arg choice='plain'>-R 
+    <replaceable>min</replaceable>/<replaceable>max</replaceable>
+    </arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-o 
+    <replaceable>file</replaceable>
+    </arg>
+    <arg choice='opt'>-s </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>The 
+<command>cptclip</command>
+utility extracts a sub-table from a cpt format file.  The 
+arguments to the mandatory <option>-R</option> option, 
+<replaceable>min</replaceable>/<replaceable>max</replaceable>,
+are interpreted as the (z) limits of the output unless the
+<option>-s</option> switch is specified, in which case they 
+are the segment numbers.</para>
+
+<para>The program will read from 
+<filename moreinfo="refentry" path="/dev">stdin</filename> 
+if a <replaceable>file</replaceable> is not specified as the 
+final argument, and write to 
+<filename moreinfo="refentry" path="/dev">stdout</filename> 
+if the <option>-o</option> option is not specified.</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-R</option>
+  <replaceable>min</replaceable>/<replaceable>max</replaceable>
+  </term>
+  <listitem>
+  <para>
+    The (z) range of the output, or the segments if
+    the <option>-s</option> switch  is also given.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-s</option>
+  </term>
+  <listitem>
+  <para>
+    The <replaceable>min</replaceable> and 
+    <replaceable>max</replaceable> arguments of the 
+    <option>-R</option> switch are interpreted as the 
+    segment numbers (starting at one).
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Extract the table with z-range from 2.5 to 5:
+</para>
+
+<programlisting>
+  cptclip -v -o new.cpt -R 2.5/5 old.cpt
+</programlisting>
+
+<para>
+  Extract the table with the first 5 segments:
+</para>
+
+<programlisting>
+  cptclip -v -s -o new.cpt -R 1/5 old.cpt
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
