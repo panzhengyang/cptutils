@@ -1,6 +1,6 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.9 2010/09/14 18:39:19 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.10 2012/02/23 23:46:25 jjg Exp jjg $ 
 
 CC       = @CC@
 CFLAGS  += @CFLAGS@ @DEFS@
@@ -40,7 +40,7 @@ ifneq (no,$(XSLTP))
 
 MANXSL = /usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/refentry.xsl
 
-.xml.1 :
+%.1 : %.xml
 	$(XSLTP) $(MANXSL) $<
 
 endif
