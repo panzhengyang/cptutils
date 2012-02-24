@@ -2,16 +2,18 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
+<!-- $Id$ -->
+
 <refentry id='cptclip1'>
 
-<refentryinfo><date>24 February 2012</date></refentryinfo>
+<refentryinfo><date>23 February 2012</date></refentryinfo>
 
 <refmeta>
 <refentrytitle>CPTCLIP</refentrytitle>
 <manvolnum>1</manvolnum>
 <refmiscinfo class='manual'>User commands</refmiscinfo>
 <refmiscinfo class='source'>CPTUTILS</refmiscinfo>
-<refmiscinfo class='date'>24 February 2012</refmiscinfo>
+<refmiscinfo class='date'>23 February 2012</refmiscinfo>
 </refmeta>
 
 <refnamediv id='purpose'>
@@ -21,7 +23,6 @@
 </refpurpose>
 </refnamediv>
 
-<!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>cptclip</command>    
@@ -62,7 +63,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-h</option>
+  <option>-h</option>, <option>--help</option>
   </term>
   <listitem>
     <para>Brief help.</para>
@@ -71,11 +72,11 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-o</option>
+  <option>-o</option>, <option>--output</option>
   <replaceable>file</replaceable>
   </term>
   <listitem>
-  <para>Write the output to  <replaceable>file</replaceable>, 
+  <para>Write the output to <replaceable>file</replaceable>, 
   rather than 
   <filename moreinfo="refentry" path="/dev">stdout</filename>.
   </para>
@@ -84,7 +85,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-R</option>
+  <option>-R</option>, <option>--range</option>
   <replaceable>min</replaceable>/<replaceable>max</replaceable>
   </term>
   <listitem>
@@ -97,7 +98,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-s</option>
+  <option>-s</option>, <option>--segments</option>
   </term>
   <listitem>
   <para>
@@ -111,7 +112,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-v</option>
+  <option>-v</option>, <option>--verbose</option>
   </term>
   <listitem>
   <para>Verbose operation.</para>
@@ -120,7 +121,7 @@ if the <option>-o</option> option is not specified.</para>
 
   <varlistentry>
   <term>
-  <option>-V</option>
+  <option>-V</option>, <option>--version</option>
   </term>
   <listitem>
   <para>Version information.</para>
