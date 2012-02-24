@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<refentry id='avlcpt1'>
+
+<refentryinfo><date>24 Febuary 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>AVLCPT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>24 Febuary 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>avlcpt</refname>
+<refpurpose>
+convert ArcView Legend gradients to GMT colour palette tables
+</refpurpose>
+</refnamediv>
+
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>avlcpt</command>    
+    <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-l <replaceable>adjust</replaceable></arg>
+    <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-p <replaceable>precision</replaceable></arg>
+    <arg choice='opt'>-u <replaceable>adjust</replaceable></arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='plain'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>The 
+<command>avlcpt</command>
+utility will extract a gradient from an ArcView Legend (avl) 
+file and write it to the  GMT (Generic  Mapping Tools) cpt 
+format. Note that not every avl files will contain a gradient, 
+some just have patterns.</para>
+
+<para>The program will read from 
+<filename moreinfo="refentry" path="/dev">stdin</filename> 
+if a file is not specified as the final argument, and write to 
+<filename moreinfo="refentry" path="/dev">stdout</filename> 
+if the <option>-o</option> option is not specified.</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-b</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the background colour of the output.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-f</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the foreground colour of the output.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-l</option>
+  <replaceable>adjust</replaceable>
+  </term>
+  <listitem>
+    <para>Decrease the lower limit on each segment by the 
+    specified amount.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-n</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the NaN (no data) colour of the output.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-p</option>
+  <replaceable>precision</replaceable>
+  </term>
+  <listitem>
+  <para>Specify rounding.  ArcView legends have a rather interesting 
+  approach to height specification whereby colour ranges might be 
+  0-49, 50-99, and so on. The cpt format requires that the end of
+  one segment be at the same as the start of the next, so some 
+  rounding of the input will usually be required. The precision is 
+  specified directly rather than by number of digits,  so  that  
+  <option>-p10</option> will round to the nearest 10 and so on.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-l</option>
+  <replaceable>adjust</replaceable>
+  </term>
+  <listitem>
+    <para>Increase the upper limit on each segment by the 
+    specified amount.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
