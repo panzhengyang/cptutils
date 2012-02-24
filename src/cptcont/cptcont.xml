@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id$ -->
+
+<refentry id='cptcont1'>
+
+<refentryinfo><date>24 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>CPTCONT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>24 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cptcont</refname>
+<refpurpose>
+  create a continuous GMT colour palette table (cpt) file based 
+  on the colours of a non-continuous cpt file.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cptcont</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-m </arg>
+    <arg choice='opt'>-o 
+    <replaceable>file</replaceable>
+    </arg>
+    <arg choice='opt'>-p 
+    <replaceable>percent</replaceable>
+    </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>cptcont</command> program converts a (possibly) 
+  discontinuous colour palette in the input to a continuous 
+  palette in the output. This is achieved by replacing the 
+  endpoints of segments at which a discontinuity occurs by 
+  their mean colour.
+</para>
+
+<para>The program will read from 
+<filename moreinfo="refentry" path="/dev">stdin</filename> 
+if a <replaceable>file</replaceable> is not specified as the 
+final argument, and write to 
+<filename moreinfo="refentry" path="/dev">stdout</filename> 
+if the <option>-o</option> option is not specified.</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-m</option>, <option>--midpoint</option>
+  </term>
+  <listitem>
+  <para>
+    Split each input segment into two output segments with 
+    the colour at the common point being the colour of the 
+    original segment.  This gives a more faithful conversion  
+    of  gradients with "corners", such as diverging gradients, 
+    albeit at the cost of larger files.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-p</option>, <option>--partial</option>
+  <replaceable>percentage</replaceable>
+  </term>
+  <listitem>
+  <para>
+    The endpoints are moved the specified 
+    <replaceable>pecentage</replaceable> towards the mean colour, 
+    so that a value of 100 (the default) moves the endpoints to 
+    the mean colour, 50 moves them half-way there, and so on.
+  </para>
+  <para>
+    Negative values and values greater than 100 are permitted.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLE</title>
+
+<para>
+  Create an almost-continuous table:
+</para>
+
+<programlisting>
+  cptcont -v -p 66 -o new.cpt old.cpt
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
