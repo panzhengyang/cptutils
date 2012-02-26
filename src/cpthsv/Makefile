@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.2 2010/04/18 15:30:21 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2012/01/22 19:41:53 jjg Exp jjg $
 
 NAME = cpthsv
 
@@ -40,6 +40,6 @@ DESAT = $(BASE)-desat.cpt
 test : $(SAT)
 
 $(SAT) : $(NAME) $(ORIG)
-	./$(NAME) -o $(SAT) -T s90 -v $(CPT)
+	./$(NAME) -o $(SAT) -T s90,v110 -v $(CPT)
 
 RUBBISH += $(SAT)
