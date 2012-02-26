@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: cptsvg.xml,v 1.3 2012/02/24 20:49:43 jjg Exp $ -->
+
+<refentry id='cptsvg1'>
+
+<refentryinfo><date>26 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>CPTSVG</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>26 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cptsvg</refname>
+<refpurpose>
+  convert GMT colour palette tables (cpt) to SVG gradients.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cptsvg</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='plain'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>cptsvg</command> utility converts the colour 
+  palette table (cpt) files used by 
+  <citerefentry>
+    <refentrytitle>GMT</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  to the gradients in the Scalar Vector Graphics (SVG) format.
+</para>
+
+<para>
+  The program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a file is not specified as the final argument, and write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified.
+</para>
+
+<para>
+  The output is formatted for machines to read, rather than
+  humans. A post-processor such as
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  could be used in the latter case.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Create a machine-readable SVG file:
+</para>
+
+<programlisting>
+  cptsvg -v -o new.svg old.cpt
+</programlisting>
+
+<para>
+  Create a human-readable SVG file:
+</para>
+
+<programlisting>
+  cptsvg old.cpt | tidy -xml -indent -o new.svg
+</programlisting>
+</refsect1>
+
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+  <citerefentry>
+    <refentrytitle>GMT</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
