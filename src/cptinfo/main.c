@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.2 2004/03/21 22:22:31 jjg Exp jjg $
+  $Id: main.c,v 1.3 2012/01/22 20:17:48 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -85,10 +85,7 @@ int main(int argc,char** argv)
   opt.file.output = outfile;
 
   opt.format = plain;
-  if (info.html_given) opt.format = html;
   if (info.csv_given)  opt.format = csv;
-
-  opt.debug = (info.debug_given ? true : false);
 
   err = cptinfo(opt);
   

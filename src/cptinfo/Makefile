@@ -1,6 +1,6 @@
 # Makefile for cptgimp
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.3 2005/06/27 17:50:14 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2012/01/22 19:41:55 jjg Exp jjg $
 
 OBJ      = main.o options.o cptinfo.o
 RUBBISH += $(OBJ) cptinfo
@@ -26,10 +26,11 @@ cptinfo : $(OBJ)
 
 # for testing 
 
-CPT = /usr/share/gmt/GMT_rainbow.cpt
+CPT = $(TESTD)/cpt/GMT_gebco.cpt
 
 test check : cptinfo
 	./cptinfo --plain $(CPT)
+	./cptinfo --csv $(CPT)
 
 include ../Common.mk
 include ../Progs.mk

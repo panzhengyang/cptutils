@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.4 2004/03/21 22:22:22 jjg Exp jjg $
+  $Id: cptinfo.c,v 1.5 2010/04/12 19:39:47 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -60,7 +60,7 @@ extern int cptinfo(cptinfo_opt_t opt)
       return 1;
     }
 
-  if (cpt_read(opt.file.input,cpt,(opt.debug == true ? 1 : 0)) != 0)
+  if (cpt_read(opt.file.input,cpt,0) != 0)
     {
       fprintf(stderr,"failed to read %s\n",NNSTR(opt.file.input));
       return 1;
@@ -120,10 +120,6 @@ extern int cptinfo(cptinfo_opt_t opt)
 	  return 1;
 	}
       break;
-
-    case html:
-      fprintf(stderr,"html not implemented yet\n");
-      return 1;
 
    default:
       fprintf(stderr,"strange output specified\n");
