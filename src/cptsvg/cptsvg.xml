@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cptsvg.xml,v 1.3 2012/02/24 20:49:43 jjg Exp $ -->
+<!-- $Id: cptsvg.xml,v 1.1 2012/02/26 20:18:33 jjg Exp jjg $ -->
 
 <refentry id='cptsvg1'>
 
@@ -30,7 +30,7 @@
     <arg choice='opt'>-o <replaceable>file</replaceable></arg>
     <arg choice='opt'>-v </arg>
     <arg choice='opt'>-V </arg>
-    <arg choice='plain'><replaceable>file</replaceable></arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
