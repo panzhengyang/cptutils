@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., Copyright (C) 1989, 1991 
   Free Software Foundation, Inc.,
 
-  $Id: main.c,v 1.2 2004/08/15 23:50:19 jjg Exp jjg $
+  $Id: main.c,v 1.3 2012/01/22 20:16:38 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -68,10 +68,8 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
-  opt.text = info.text_arg;
-
+  opt.text   = info.text_arg;
   opt.format = html;
-  if (info.css_given) opt.format = css;
       
   err = cpttext(opt);
   
