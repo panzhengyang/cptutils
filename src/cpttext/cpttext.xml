@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: cpttext.xml,v 1.1 2012/02/24 20:41:40 jjg Exp $ -->
+
+<refentry id='cpttext1'>
+
+<refentryinfo><date>26 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>CPTTEXT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>26 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cpttext</refname>
+<refpurpose>
+  print text coloured by a  GMT colour palette table (cpt) file.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cpttext</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-H </arg>
+    <arg choice='opt'>-t 
+    <replaceable>text</replaceable>
+    </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>cpttext</command> program prints text in the 
+  colours specified by the 
+  <citerefentry>
+    <refentrytitle>GMT</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  colour palette table (cpt) file.  Currently only HTML 
+  output is supported.
+</para>
+
+<para>
+  The program will read the cpt file from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a <replaceable>file</replaceable> is not specified as the 
+  final argument, and writes to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-H</option>, <option>--html</option>
+  </term>
+  <listitem>
+  <para>
+    Output in HTML format (the default, so this switch is 
+    redundant).
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-t</option>, <option>--text</option>
+  <replaceable>string</replaceable>
+  </term>
+  <listitem>
+  <para>
+    The text to print, which should be quoted if containing 
+    whitespace.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLE</title>
+
+<para>
+  Colour some Lorem ipsum text in HTML:
+</para>
+
+<programlisting>
+  cpttext -H -t "Lorem ipsum dolor sit amet" test.cpt
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
