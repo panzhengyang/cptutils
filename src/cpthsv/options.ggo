@@ -1,11 +1,10 @@
-# -*- sh -*-
 # gengetopt input for cpthsv
 # (c) J. J. Green 2007
-# $Id: options.ggo,v 1.1 2005/05/30 23:17:26 jjg Exp $
+# $Id: options.ggo,v 1.1 2007/11/16 14:42:02 jjg Exp jjg $
 package "cpthsv"
 purpose "transform GMT colour palettes in HSV colour-space"
 option	"output"	o "output filename"		string	no
-option  "transform"     T "transform"                   string  no
+option  "transform"     T "transform"                   string  yes
 option	"verbose"	v "verbose operation"		flag	off
 
 
