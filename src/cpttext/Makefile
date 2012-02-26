@@ -1,9 +1,9 @@
 # Makefile for cpttext
-# (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2005/06/27 17:50:43 jjg Exp jjg $
+# (c) J.J.Green 2001,2004,2012
+# $Id: Makefile,v 1.3 2012/01/22 19:41:58 jjg Exp jjg $
 
 OBJ      = main.o options.o cpttext.o
-RUBBISH += $(OBJ) cpttext
+RUBBISH += $(OBJ) cpttext test.html
 
 LDLIBS += 
 
@@ -26,13 +26,16 @@ cpttext : $(OBJ)
 
 # for testing 
 
-CPT = /usr/share/gmt/GMT_cool.cpt
+CPT = $(TESTD)/cpt/subtle.cpt
 
-test check : cpttext
-	./cpttext -t "big dog's arse" -v $(CPT)
+test check : test.html
+
+test.html : cpttext 
+	echo "<html>" >  test.html
+	echo "<body>" >> test.html
+	./cpttext -t "Lorem ipsum dolor sit amet" $(CPT) >> test.html
+	echo "</body>" >> test.html
+	echo "</html>" >> test.html
 
 include ../Common.mk
 include ../Progs.mk
-
-
-
