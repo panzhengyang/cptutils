@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: cpthsv.xml,v 1.2 2012/02/24 21:03:26 jjg Exp $ -->
+
+<refentry id='cpthsv1'>
+
+<refentryinfo><date>23 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>CPTHSV</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>23 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cpthsv</refname>
+<refpurpose>
+  modify hue, saturation and colour value of GMT colour palette tables.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cpthsv</command>    
+    <arg choice='plain'>-T 
+    <replaceable>transform</replaceable>
+    </arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-o 
+    <replaceable>file</replaceable>
+    </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>cpthsv</command> utility reads the RGB 
+  colour palette in the input, converts its colours to the 
+  HSV colour-space, modifies these values in some simple ways, 
+  then converts back to RGB colour space and outputs a cpt file. 
+  So <command>cpthsv</command> can (de)saturate, brighten, darken 
+  or hue-shift.
+</para>
+
+<para>
+  The program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a <replaceable>file</replaceable> is not specified as the 
+  final argument, and write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified.
+</para>
+
+<para>
+  The hue value is taken to be between 0 and 360, while the 
+  saturation and value components are taken to be between 0 and 1,
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-T</option>, <option>--transform</option>
+  <replaceable>string</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Specify a transformation to perform. One of <option>h</option>,
+    <option>s</option> or <option>v</option> followed by a 
+    <replaceable>number</replaceable> and optional
+    <replaceable>operation</replaceable>.  The effect of the number 
+    depends on the operation: one of <option>x</option>  (multiply by
+    <replaceable>number</replaceable>),  <option>%</option>  (scale  
+    by percentage) or <option>+</option>/<option>-</option> (add or 
+    subtract value).  An RGB colour with saturation 0.5 would be 
+    transformed to one with saturation 0.55 by  applying  
+    <option>s1.1x</option> or <option>s110%</option> or 
+    <option>s0.05+</option>.  If the operator is not given then 
+    <option>%</option> is assumed.
+  </para>
+
+  <para>
+    Transforms which take colours outside the HSV colour-space 
+    are permitted, the result is truncation (eg, increasing a 
+    saturation of 0.8 with <option>s0.3+</option> results in  
+    a saturation  of 1.0). The exception is hue, which is taken 
+    modulo 360.
+  </para>
+
+  <para>
+    Multiple transforms can be applied by separating transforms
+    with commas. This is to be preferred over multiple calls to 
+    the program since the conversion between colour-spaces is  
+    necessarily lossy. Multiple trnsformations are applied in 
+    the order given in the argument.
+  </para>
+
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLE</title>
+
+<para>
+  Lighten by 10% and desaturate by 20%:
+</para>
+
+<programlisting>
+  cpthsv -v -T s80,v110 -o new.cpt old.cpt
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
