@@ -1,0 +1,8 @@
+<varlistentry>
+  <term>
+    <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+</varlistentry>

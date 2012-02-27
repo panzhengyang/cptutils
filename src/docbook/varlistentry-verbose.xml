@@ -1,0 +1,8 @@
+<varlistentry>
+  <term>
+    <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+    <para>Verbose operation.</para>
+  </listitem>
+</varlistentry>

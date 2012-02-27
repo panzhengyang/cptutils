@@ -1,0 +1,11 @@
+<varlistentry>
+  <term>
+    <option>-n</option>, <option>--nan</option>
+    <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Set the NaN (no data) colour of the output.
+    </para>
+  </listitem>
+</varlistentry>

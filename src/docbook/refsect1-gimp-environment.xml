@@ -1,0 +1,7 @@
+<refsect1 id='environment'><title>ENVIRONMENT</title>
+<para>
+  If the <envar>GIMP_GRADIENTS</envar> variable is defined then
+  each colon-separated directory therein will be searched for
+  gradient files.
+</para>
+</refsect1>

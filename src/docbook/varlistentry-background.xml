@@ -1,0 +1,9 @@
+<varlistentry>
+  <term>
+    <option>-b</option>, <option>--background</option>
+    <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+    <para>Set the background colour of the output.</para>
+  </listitem>
+</varlistentry>

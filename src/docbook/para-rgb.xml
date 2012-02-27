@@ -1,0 +1,9 @@
+<para>
+  In the following, all <replaceable>rgb</replaceable> specifications
+  should be of the form 
+  <replaceable
+      >red</replaceable>/<replaceable
+      >green</replaceable>/<replaceable
+      >blue</replaceable>
+  where the colour components are integers in the range 0 to 255.
+</para>

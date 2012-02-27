@@ -1,0 +1,9 @@
+<para>
+  The output is formatted for machines to read, rather than
+  humans. A post-processor such as
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  could be used in the latter case.
+</para>

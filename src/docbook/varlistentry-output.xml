@@ -1,0 +1,13 @@
+<varlistentry>
+  <term>
+    <option>-o</option>, <option>--output</option>
+    <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Write the output to  <replaceable>file</replaceable>, 
+    rather than 
+    <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+</varlistentry>

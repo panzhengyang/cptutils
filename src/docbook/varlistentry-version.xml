@@ -1,0 +1,8 @@
+<varlistentry>
+  <term>
+    <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+    <para>Version information.</para>
+  </listitem>
+</varlistentry>
