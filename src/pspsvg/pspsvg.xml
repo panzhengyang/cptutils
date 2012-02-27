@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: pspsvg.xml,v 1.2 2012/02/26 20:21:35 jjg Exp $ -->
+
+<refentry id='pspsvg1'>
+
+<refentryinfo><date>27 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>PSPSVG</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>27 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>pspsvg</refname>
+<refpurpose>
+  convert Paint Shop Pro gradients (jgd, PspGradient) to the 
+  SVG format.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>pspsvg</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>pspsvg</command> utility converts the gradient 
+  files used by Paint Shop Pro (which usually have the extension
+  jgd or PspGradient) to the Scalar Vector Graphics (SVG) format.
+</para>
+
+<para>
+  The program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a file is not specified as the final argument, and write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified.
+</para>
+
+<para>
+  The output is formatted for machines to read, rather than
+  humans. A post-processor such as
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  could be used in the latter case.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Create a machine-readable SVG file:
+</para>
+
+<programlisting>
+  pspsvg -v -o new.svg old.jgd
+</programlisting>
+
+<para>
+  Create a human-readable SVG file:
+</para>
+
+<programlisting>
+  pspsvg old.jgd | tidy -xml -indent -o new.svg
+</programlisting>
+</refsect1>
+
+<refsect1 id='notes'><title>NOTES</title>
+
+<para>
+  The author could find no public documentation for the Paint 
+  Shop Pro gradient file format and so has reverse-engineered 
+  it.  A technical description of the format can be found in 
+  the file <filename>src/common/README.psp</filename> included
+  in the <package>cptutils</package> source distribution.
+</para>
+
+<para>
+  The Paint Shop Pro format can be read by Photoshop, but 
+  Photoshop's native (grd) gradient format cannot be read
+  by this program.
+</para>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+  <citerefentry>
+    <refentrytitle>svgpsp</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
