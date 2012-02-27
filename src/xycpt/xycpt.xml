@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: xycpt.xml,v 1.3 2012/02/24 20:49:43 jjg Exp $ -->
+<!-- $Id: xycpt.xml,v 1.1 2012/02/27 17:12:25 jjg Exp jjg $ -->
 
 <refentry id='xycpt1'>
 
@@ -81,14 +81,8 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 	      href="../docbook/varlistentry-foreground.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-h</option>, <option>--help</option>
-  </term>
-  <listitem>
-    <para>Brief help.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-help.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
 	      href="../docbook/varlistentry-nan.xml"/>

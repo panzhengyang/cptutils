@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: svgx.xml,v 1.1 2012/02/27 16:03:24 jjg Exp jjg $ -->
+<!-- $Id: svgx.xml,v 1.2 2012/02/27 17:51:54 jjg Exp jjg $ -->
 
 <refentry id='svgx1'>
 
@@ -154,14 +154,8 @@
   </listitem>
   </varlistentry>
 
-  <varlistentry>
-  <term>
-  <option>-h</option>, <option>--help</option>
-  </term>
-  <listitem>
-    <para>Brief help.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-help.xml"/>
 
   <varlistentry>
   <term>
@@ -177,19 +171,8 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-nan.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-o</option>, <option>--output</option>
-  <replaceable>file</replaceable>
-  </term>
-  <listitem>
-  <para>
-    Write the output to  <replaceable>file</replaceable>, 
-    rather than 
-    <filename moreinfo="refentry" path="/dev">stdout</filename>.
-  </para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
