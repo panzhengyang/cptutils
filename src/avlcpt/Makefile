@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.9 2010/04/18 16:10:56 jjg Exp jjg $
+# $Id: Makefile,v 1.10 2012/01/22 19:41:47 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
@@ -10,7 +10,7 @@ LDLIBS +=
 
 default : all
 
-all : avlcpt
+all : avlcpt avlcpt.1
 
 install :
 	$(INSTALL_DATA) avlcpt.1 $(DESTDIR)$(mandir)/man1/avlcpt.1

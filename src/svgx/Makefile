@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.32 2012/01/22 19:42:06 jjg Exp jjg $
+# $Id: Makefile,v 1.33 2012/02/27 16:15:30 jjg Exp jjg $
 
 OBJ      = svgx.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
@@ -58,7 +58,7 @@ include ../Progs.mk
 
 ifneq (no,$(XML2C))
 
-all : svgx  
+all : svgx svgx.1 
 install : all
 	$(INSTALL) -m755 svgx $(DESTDIR)$(bindir)/svgx
 	$(INSTALL) -m644 svgx.1 $(DESTDIR)$(mandir)/man1/svgx.1 

@@ -1,6 +1,6 @@
 # Makefile for cptclip
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.3 2010/04/18 15:14:56 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2012/01/22 19:41:49 jjg Exp jjg $
 
 NAME = cptclip
 
@@ -12,7 +12,7 @@ LDLIBS  +=
 
 default : all
 
-all : $(NAME)
+all : $(NAME) $(NAME).1
 
 install :
 	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)

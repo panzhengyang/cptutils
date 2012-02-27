@@ -1,6 +1,6 @@
 # Makefile for gimplut
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2012/01/22 19:41:59 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2012/02/27 13:06:24 jjg Exp jjg $
 
 NAME     = gimplut
 OBJ      = $(NAME).o main.o options.o
@@ -11,7 +11,7 @@ CFLAGS +=
 
 default : all
 
-all : $(NAME)
+all : $(NAME) $(NAME).1
 
 install :
 	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)

@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.3 2012/01/22 19:41:53 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2012/02/26 19:09:40 jjg Exp jjg $
 
 NAME = cpthsv
 
@@ -12,7 +12,7 @@ LDLIBS  +=
 
 default : all
 
-all : $(NAME)
+all : $(NAME) $(NAME).1
 
 install :
 	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)

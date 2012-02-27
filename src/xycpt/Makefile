@@ -1,7 +1,7 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2010/06/24 20:59:04 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/01/22 19:42:08 jjg Exp jjg $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
@@ -10,7 +10,7 @@ LDLIBS +=
 
 default : all
 
-all : xycpt
+all : xycpt xycpt.1
 
 install :
 	$(INSTALL_DATA) xycpt.1 $(DESTDIR)$(mandir)/man1/xycpt.1

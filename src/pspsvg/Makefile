@@ -1,7 +1,7 @@
 # Makefile for pspsvg
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.1 2011/11/01 23:10:52 jjg Exp jjg $
+# $Id: Makefile,v 1.2 2012/01/22 19:42:05 jjg Exp jjg $
 
 OBJ      =  pspsvg.o main.o options.o gstack.o
 RUBBISH += $(OBJ) pspsvg
@@ -11,7 +11,7 @@ LDLIBS +=
 
 default : all
 
-all : pspsvg
+all : pspsvg pspsvg.1
 
 install :
 	$(INSTALL_DATA) pspsvg.1 $(DESTDIR)$(mandir)/man1/pspsvg.1

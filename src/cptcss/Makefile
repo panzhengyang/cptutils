@@ -1,6 +1,6 @@
 # Makefile for cptcss
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.2 2007/11/16 11:48:44 jjg Exp jjg $
+# $Id: Makefile,v 1.3 2012/01/22 19:41:51 jjg Exp jjg $
 
 OBJ      = main.o options.o cptcss.o
 RUBBISH += $(OBJ) cptcss
@@ -9,7 +9,7 @@ LDLIBS +=
 
 default : all
 
-all : cptcss
+all : cptcss cptcss.1
 
 install :
 	$(INSTALL_PROGRAM) cptcss $(DESTDIR)$(bindir)/cptcss

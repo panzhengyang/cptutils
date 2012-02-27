@@ -1,6 +1,6 @@
 # Makefile for cpttext
 # (c) J.J.Green 2001,2004,2012
-# $Id: Makefile,v 1.3 2012/01/22 19:41:58 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2012/02/26 22:04:36 jjg Exp jjg $
 
 OBJ      = main.o options.o cpttext.o
 RUBBISH += $(OBJ) cpttext test.html
@@ -9,7 +9,7 @@ LDLIBS +=
 
 default : all
 
-all : cpttext
+all : cpttext cpttext.1
 
 install :
 	$(INSTALL_PROGRAM) cpttext $(DESTDIR)$(bindir)/cpttext

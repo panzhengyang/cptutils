@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id$ -->
+<!-- $Id: avlcpt.xml,v 1.3 2012/02/24 20:49:43 jjg Exp jjg $ -->
 
 <refentry id='avlcpt1'>
 
@@ -36,56 +36,39 @@ convert ArcView Legend gradients to GMT colour palette tables
     <arg choice='opt'>-u <replaceable>adjust</replaceable></arg>
     <arg choice='opt'>-v </arg>
     <arg choice='opt'>-V </arg>
-    <arg choice='plain'><replaceable>file</replaceable></arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
-<para>The 
-<command>avlcpt</command>
-utility will extract a gradient from an ArcView Legend (avl) 
-file and write it to the  GMT (Generic  Mapping Tools) cpt 
-format. Note that not every avl files will contain a gradient, 
-some just have patterns.</para>
 
-<para>The program will read from 
-<filename moreinfo="refentry" path="/dev">stdin</filename> 
-if a file is not specified as the final argument, and write to 
-<filename moreinfo="refentry" path="/dev">stdout</filename> 
-if the <option>-o</option> option is not specified.</para>
+<para>
+  The <command>avlcpt</command> utility will extract a gradient 
+  from an ArcView Legend (avl) file and write it to the GMT 
+  (Generic  Mapping Tools) cpt format. Note that not every avl 
+  file will contain a gradient, some just have patterns.
+</para>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/para-stdio.xml"/>
+
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/para-rgb.xml"/>
+
 <variablelist remap='TP'>
 
-  <varlistentry>
-  <term>
-  <option>-b</option>, <option>--background</option>
-  <replaceable>rgb</replaceable>
-  </term>
-  <listitem>
-  <para>Set the background colour of the output.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-background.xml"/>
+  
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-foreground.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-f</option>, <option>--foreground</option>
-  <replaceable>rgb</replaceable>
-  </term>
-  <listitem>
-  <para>Set the foreground colour of the output.</para>
-  </listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term>
-  <option>-h</option>, <option>--help</option>
-  </term>
-  <listitem>
-    <para>Brief help.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-help.xml"/>
 
   <varlistentry>
   <term>
@@ -98,28 +81,11 @@ if the <option>-o</option> option is not specified.</para>
   </listitem>
   </varlistentry>
 
-  <varlistentry>
-  <term>
-  <option>-n</option>, <option>--nan</option>
-  <replaceable>rgb</replaceable>
-  </term>
-  <listitem>
-  <para>Set the NaN (no data) colour of the output.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-nan.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-o</option>, <option>--output</option>
-  <replaceable>file</replaceable>
-  </term>
-  <listitem>
-  <para>Write the output to  <replaceable>file</replaceable>, 
-  rather than 
-  <filename moreinfo="refentry" path="/dev">stdout</filename>.
-  </para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
@@ -149,30 +115,17 @@ if the <option>-o</option> option is not specified.</para>
   </listitem>
   </varlistentry>
 
-  <varlistentry>
-  <term>
-  <option>-v</option>, <option>--verbose</option>
-  </term>
-  <listitem>
-  <para>Verbose operation.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-verbose.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-V</option>, <option>--version</option>
-  </term>
-  <listitem>
-  <para>Version information.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
 
-<refsect1 id='author'><title>AUTHOR</title>
-<para>J.J. Green</para>
-</refsect1>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>

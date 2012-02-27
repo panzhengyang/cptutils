@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.15 2012/01/22 19:42:01 jjg Exp jjg $
+# $Id: Makefile,v 1.16 2012/02/27 13:53:02 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -12,7 +12,7 @@ CFLAGS +=
 
 default : all
 
-all : $(NAME)
+all : $(NAME) $(NAME).1
 
 install :
 	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
