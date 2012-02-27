@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: gimplut.xml,v 1.2 2012/02/26 20:21:35 jjg Exp $ -->
+
+<refentry id='gimplut1'>
+
+<refentryinfo><date>27 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>GIMPLUT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>27 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>gimplut</refname>
+<refpurpose>
+  convert GIMP gradient (ggr) files to binary lookup tables (lut).
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>gimplut</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-s <replaceable>samples</replaceable></arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>gimplut</command> utility converts gradient files 
+  from the 
+  <citerefentry>
+    <refentrytitle>GIMP</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  the GNU Image Manipulation Program, to a binary lookup table 
+  format commonly used by medical imaging software; in 
+  particular the 
+  <citerefentry>
+    <refentrytitle>Medcon</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  package.
+</para>
+
+<para>
+  The LUT format consists of 
+  <option>n</option> red, 
+  <option>n</option> green and 
+  <option>n</option> blue bytes, 
+  interpreted as integers from 0 to 255.
+</para>
+
+<para>
+  The program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a file is not specified as the final argument, and write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-s</option>, <option>--samples</option>
+  <replaceable>number</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Use the specified  <replaceable>number</replaceable>
+    of samples rather than 256.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+
+<para>
+  The <command>gimplut</command> program will search for 
+  gradient files 
+</para>
+
+<itemizedlist mark="dash">
+
+  <listitem>
+    <para>
+      in the directories specified in <envar>GIMP_GRADIENTS</envar>;
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+      in the user's GIMP directory,
+      <envar
+	  >HOME</envar><filename class="directory"
+	  >/.gimp-<replaceable
+	  >version</replaceable>/gradients</filename>;
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>	
+      in the standard locations
+      <filename class="directory"
+		>/usr/share/gimp/<replaceable
+		>version</replaceable>/gradients</filename>
+      and 
+      <filename class="directory"
+		>/usr/share/local/gimp/<replaceable
+		>version</replaceable>/gradients</filename>,
+    </para>
+  </listitem>
+
+</itemizedlist>
+  
+<para>
+  where <replaceable>version</replaceable> ranges over 
+  feasible version numbers.
+</para>
+
+</refsect1>
+
+<refsect1 id='environment'><title>ENVIRONMENT</title>
+<para>
+  If the <envar>GIMP_GRADIENTS</envar> variable is defined then
+  each colon-separated directory therein will be searched for
+  gradient files.
+</para>
+</refsect1>
+
+<refsect1 id='caveats'><title>CAVEATS</title>
+
+<para>
+  The alpha channel of the input is completely ignored
+  in the output.
+</para>
+
+<para>
+  At some point in the future the functionality of this
+  program will be transferred to the 
+  <citerefentry>
+    <refentrytitle>svgx</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  program.
+</para>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+  <citerefentry>
+    <refentrytitle>GIMP</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  <citerefentry>
+    <refentrytitle>medcon</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
