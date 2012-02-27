@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.14 2011/11/11 22:41:47 jjg Exp jjg $
+# $Id: Makefile,v 1.15 2012/01/22 19:42:01 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -30,19 +30,20 @@ main.o : options.h
 
 # for testing 
 
-GRAD     = Full_saturation_spectrum_CCW
+GRAD     = Sunrise
 RUBBISH += $(GRAD).svg $(GRAD).png
-TOL      = 0
+GGRDIR   = $(TESTD)/ggr
 
 $(GRAD).svg : $(NAME)
-	./$(NAME) -o $(GRAD).svg -v $(GRAD)
+	export GIMP_GRADIENTS="$(GGRDIR)" ; \
+	  ./$(NAME) -o $(GRAD).svg -v $(GRAD)
 
 $(GRAD).png : $(GRAD).svg
-	svgpng -v -1 -o $(GRAD).png $(GRAD).svg
+	svgpng -v -o $(GRAD).png $(GRAD).svg
 
 showpng : $(GRAD).png ; feh $(GRAD).png 
 
-check test : showpng
+check test : $(GRAD).svg 
 
 include ../Common.mk
 include ../Progs.mk
