@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: gplcpt.xml,v 1.3 2012/02/24 20:49:43 jjg Exp $ -->
+
+<refentry id='gplcpt1'>
+
+<refentryinfo><date>27 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>GPLCPT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>27 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>gplcpt</refname>
+<refpurpose>
+  convert GIMP colour palette (gpl) to GMT colour palette table (cpt).
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>gplcpt</command>    
+    <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='plain'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The 
+  <command>gplcpt</command>
+  converts 
+  <citerefentry>
+    <refentrytitle>GIMP</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  colour palette (gpl) files to the 
+  <citerefentry>
+    <refentrytitle>GMT</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  colour palette table (cpt) format. The output is a piecewise 
+  constant (step or discrete) gradient. One could use
+  <citerefentry>
+    <refentrytitle>cptcont</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  program to convert the output to a continuous cpt file
+  if so desired.
+</para>
+
+<para>
+  The program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a file is not specified as the final argument, and write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified.
+</para>
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-b</option>, <option>--background</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the background colour of the output.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-f</option>, <option>--foreground</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the foreground colour of the output.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-n</option>, <option>--nan</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the NaN (no data) colour of the output.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GIMP</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>cptcont</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
