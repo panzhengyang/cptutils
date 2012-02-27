@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: svgx.xml,v 1.3 2012/02/24 20:49:43 jjg Exp $ -->
+
+<refentry id='svgx1'>
+
+<refentryinfo><date>27 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>SVGX</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>27 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>svgx</refname>
+<refpurpose>
+  extract gradients from SVG files.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>svgx</command>
+  <arg choice='opt'>-a </arg>
+  <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
+  <arg choice='opt'>-h </arg>
+  <arg choice='opt'>-l </arg>
+  <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+  <arg choice='opt'>-p </arg>
+  <arg choice='opt'>-s <replaceable>name</replaceable></arg>
+  <arg choice='opt'>-t <replaceable>type</replaceable></arg>
+  <arg choice='opt'>-T <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-v </arg>
+  <arg choice='opt'>-V </arg>
+  <arg choice='plain'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>svgx</command> program extracts and converts 
+  gradients in an SVG file.  Unlike most of the other 
+  file formats handled by the <package>cptutils</package>
+  package, SVG files may contain multiple gradients, so
+  this program operates a little differently to the other
+  programs in the package.
+</para>
+
+<para>
+  There are 4 modes of operation: The default is to extract 
+  the first gradient found in the file, or one can specify 
+  <option>-l</option> to list the names of all gradients in 
+  the file; <option>-s</option> to extract the gradient with 
+  the specified name or <option>-a</option> to extract all 
+  of the gradients.
+</para>
+
+<para>
+  The output format is specified by the <option>-t</option> option, 
+  one of 
+  <option>cpt</option>, 
+  <option>css3</option>, 
+  <option>ggr</option>, 
+  <option>gpt</option>, 
+  <option>psp</option>, 
+  <option>pov</option>, 
+  <option>png</option> or
+  <option>sao</option>  
+  (in fact there are several aliases for each format: 
+  <option>jgd</option> for <option>psp</option>, 
+  <option>gimp</option> for <option>ggr</option>, 
+  <option>inc</option> for <option>pov</option>, and so on).  
+  The 
+  <command>svgcpt</command>, 
+  <command>svggimp</command>, 
+  <command>svggpt</command>, 
+  <command>svgcss3</command>, 
+  <command>svgpsp</command>,  
+  <command>svgpov</command>,  
+  <command>svgpng</command>  and  
+  <command>svgsao</command>
+  programs are wrappers around <command>svgx</command> which use 
+  the <option>-t</option> switch to specify output type.
+</para>
+
+<para>
+  Atypically, the input SVG file is a mandatory argument.
+  The program will write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified except 
+  when <option>-a</option> has been specified: then files will 
+  be produced (with names taken from those of the gradients).
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-a</option>, <option>--all</option>
+  </term>
+  <listitem>
+    <para>
+      Extract all gradients, which will have filenames derived 
+      from the gradient names. This option is incompatible with 
+      <option>-o</option>, of course.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-b</option>, <option>--background</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Set the background colour of the output (cpt mode only).
+  </para>
+  <para>
+    Note that this only modifies the "background" field in the 
+    output cpt file, it does replace transparency (see the 
+    <option>-T</option> option in that regard).
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-f</option>, <option>--foreground</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>Set the foreground colour of the output (cpt mode only).</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-g</option>, <option>--geometry</option>
+  <replaceable>width</replaceable>x<replaceable>height</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Specify the size of the output image (png mode only).
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-l</option>, <option>--list</option>
+  </term>
+  <listitem>
+    <para>
+      List the names of all gradients in the file.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-n</option>, <option>--nan</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Set the NaN (no data) colour of the output (cpt mode only).
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Write the output to  <replaceable>file</replaceable>, 
+    rather than 
+    <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-p</option>, <option>--permissive</option>
+  </term>
+  <listitem>
+  <para>
+    Be permissive: possibly create files which break limits 
+    of the format specification. In particular, create POV-Ray 
+    headers with more than 255 stops.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-s</option>, <option>--select</option>
+  <replaceable>name</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Extract the gradient with the specified 
+      <replaceable>name</replaceable>, see the 
+      <option>-l</option> output for a list of 
+      possible values.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-t</option>, <option>--type</option>
+  <replaceable>format</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Set the output   <replaceable>format</replaceable>, 
+      which should be one of 
+      <option>cpt</option>, 
+      <option>css3</option>, 
+      <option>ggr</option>, 
+      <option>gpt</option>, 
+      <option>psp</option>, 
+      <option>pov</option>, 
+      <option>png</option> or
+      <option>sao</option>.  
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-T</option>, <option>--transparency</option>
+  <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+  <para>
+    When converting to a format which does not support 
+    transparency, replace the transparency with the 
+    specified  <replaceable>rgb</replaceable> colour.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Inspect an SVG file for gradients
+</para>
+
+<programlisting>
+  svgx -v -l old.svg 
+</programlisting>
+
+<para>
+  Extract the gradient "Sunny Road" from the same SVG file,
+  converting the result to cpt. Note that the gradient name
+  needs to be quoted.
+</para>
+
+<programlisting>
+  svgx -v -t cpt -s "Sunny Road" -o sunny_road.cpt old.svg 
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='caveats'><title>CAVEATS</title>
+
+<para>
+  An ill-formed SVG gradient may be translated to rubbish 
+  while not reporting an error.
+</para>
+
+<para>
+  Extraction of SVG gradients is not yet implemented.
+  As a workaround, extract to GIMP format 
+  (<option>-t ggr</option>) and then convert the result
+  with 
+  <citerefentry>
+    <refentrytitle>gimpsvg</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>.
+</para>
+
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>cptsvg</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>gimpsvg</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>pspsvg</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
