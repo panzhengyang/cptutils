@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.10 2011/11/11 17:47:52 jjg Exp jjg $
+  $Id: main.c,v 1.11 2012/01/22 20:15:47 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -57,30 +57,6 @@ int main(int argc,char** argv)
 
   opt.verbose = info.verbose_given;
   opt.reverse = false;
-
-  if (parse_rgb(info.background_arg, &opt.bg) != 0)
-    {
-      fprintf(stderr,"bad background %s\n",info.background_arg);
-      return EXIT_FAILURE;
-    }
-
-  if (parse_rgb(info.foreground_arg, &opt.fg) != 0)
-    {
-      fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
-      return EXIT_FAILURE;
-    }
-
-  if (parse_rgb(info.nan_arg, &opt.nan) != 0)
-    {
-      fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
-      return EXIT_FAILURE;
-    }
-
-  if (parse_minmax(info.range_arg, &opt.min, &opt.max) != 0)
-    {
-      fprintf(stderr,"bad range %s\n",info.range_arg);
-      return EXIT_FAILURE;
-    }
 
   if ((opt.samples = info.samples_arg) < SAMPLES_MIN)
     {
@@ -131,15 +107,6 @@ int main(int argc,char** argv)
     }
 
   return EXIT_SUCCESS;
-}
-
-static int parse_minmax(char* s,double* min,double* max)
-{
-    *min = atof(s);
-    if ((s = strchr(s,'/')) == NULL) return 1; 
-    *max = atof(++s); 
-    	
-    return 0;
 }
     	
     	
