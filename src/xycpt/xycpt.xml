@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: xycpt.xml,v 1.3 2012/02/24 20:49:43 jjg Exp $ -->
+
+<refentry id='xycpt1'>
+
+<refentryinfo><date>27 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>XYCPT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>27 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>xycpt</refname>
+<refpurpose>
+  generate GMT colour palette table (cpt) files from column data.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>xycpt</command>    
+    <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-d </arg>
+    <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-r <replaceable>registration</replaceable></arg>
+    <arg choice='opt'>-u </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>xycpt</command> program generates discrete or 
+  continuous cpt files from simple input describing sample values
+  of the colour (or greyscale) range. The input consists of 1&ndash;4 
+  columns. For 2 and 4 columns, the first column is interpreted 
+  as a (double) z value, for 1 and 3 the z value is taken 
+  implicitly. For 1 and 2 columns the final column will be taken 
+  as a greyscale value. For 3 and 4, the last 3 columns are taken 
+  as RGB values.
+</para>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	    href="../docbook/para-stdio.xml"/>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	    href="../docbook/para-rgb.xml"/>
+
+<variablelist remap='TP'>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-background.xml"/>
+
+  <varlistentry>
+  <term>
+  <option>-d</option>, <option>--discrete</option>
+  </term>
+  <listitem>
+  <para>
+    Output a discrete cpt file, the default is continuous.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-foreground.xml"/>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-nan.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-output.xml"/>
+
+  <varlistentry>
+  <term>
+  <option>-r</option>, <option>--registration</option>
+  <replaceable>string</replaceable>
+  </term>
+  <listitem>
+  <para>
+    For discrete (using the <option>-d</option> option) conversion, 
+    specifies <option>upper</option>, <option>middle</option> or 
+    <option>lower</option> registration of the data value. For the 
+    <option>upper</option> and <option>lower</option> types the final  
+    (respectively the first) colour is omitted from the output; only 
+    the z value is used. For <option>middle</option> registration all 
+    the colours appear in the output.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-u</option>, <option>--unit</option>
+  </term>
+  <listitem>
+    <para>
+      Colour values are specified as floating point numbers 
+      in the range 0&ndash;1 rather than as integers in the 
+      range 0&ndash;255.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-verbose.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	      href="../docbook/varlistentry-version.xml"/>
+
+
+</variablelist>
+</refsect1>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+	    href="../docbook/refsect1-author.xml"/>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
