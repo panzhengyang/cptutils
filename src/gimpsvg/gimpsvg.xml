@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: gimpsvg.xml,v 1.2 2012/02/26 20:21:35 jjg Exp $ -->
+
+<refentry id='gimpsvg1'>
+
+<refentryinfo><date>27 February 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>GIMPSVG</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>27 February 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>gimpsvg</refname>
+<refpurpose>
+  convert a GIMP gradient (ggr) to the SVG format.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>gimpsvg</command>    
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-s <replaceable>samples</replaceable></arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>gimpsvg</command> utility converts gradient files 
+  from the 
+  <citerefentry>
+    <refentrytitle>GIMP</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  the GNU Image Manipulation Program, to the SVG (scalar 
+  vector graphics) format.
+</para>
+
+<para>
+  The program will read from 
+  <filename moreinfo="refentry" path="/dev">stdin</filename> 
+  if a file is not specified as the final argument, and write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified.
+</para>
+
+<para>
+  The output is formatted for machines to read, rather than
+  humans. A post-processor such as
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  could be used in the latter case.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-h</option>, <option>--help</option>
+  </term>
+  <listitem>
+    <para>Brief help.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-o</option>, <option>--output</option>
+  <replaceable>file</replaceable>
+  </term>
+  <listitem>
+  <para>Write the output to  <replaceable>file</replaceable>, 
+  rather than 
+  <filename moreinfo="refentry" path="/dev">stdout</filename>.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-s</option>, <option>--samples</option>
+  <replaceable>number</replaceable>
+  </term>
+  <listitem>
+  <para>
+    Specify the maximum <replaceable>number</replaceable> of samples. 
+    <command>GIMP</command> gradients allow for complex curves in a
+    number of colour-space co-ordinate systems.  In order that these 
+    can be converted into SVG's simple RGB linear splines we must 
+    sample these complex curves quite densely. The <option>-s</option>
+    option specifies (roughly) the maximum number of samples.  In the 
+    case that the GIMP gradient is an RGB linear spline gradient the 
+    option has no effect, since  we can then convert the segments 
+    without loss.
+  </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-v</option>, <option>--verbose</option>
+  </term>
+  <listitem>
+  <para>Verbose operation.</para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term>
+  <option>-V</option>, <option>--version</option>
+  </term>
+  <listitem>
+  <para>Version information.</para>
+  </listitem>
+  </varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+
+<para>
+  The <command>gimpsvg</command> program will search for 
+  gradient files 
+</para>
+
+<itemizedlist mark="dash">
+
+  <listitem>
+    <para>
+      in the directories specified in <envar>GIMP_GRADIENTS</envar>;
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+      in the user's GIMP directory,
+      <envar
+	  >HOME</envar><filename class="directory"
+	  >/.gimp-<replaceable
+	  >version</replaceable>/gradients</filename>;
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>	
+      in the standard locations
+      <filename class="directory"
+		>/usr/share/gimp/<replaceable
+		>version</replaceable>/gradients</filename>
+      and 
+      <filename class="directory"
+		>/usr/share/local/gimp/<replaceable
+		>version</replaceable>/gradients</filename>,
+    </para>
+  </listitem>
+
+</itemizedlist>
+  
+<para>
+  where <replaceable>version</replaceable> ranges over 
+  feasible version numbers.
+</para>
+
+</refsect1>
+
+<refsect1 id='environment'><title>ENVIRONMENT</title>
+<para>
+  If the <envar>GIMP_GRADIENTS</envar> variable is defined then
+  each colon-separated directory therein will be searched for
+  gradient files.
+</para>
+</refsect1>
+
+<refsect1 id='author'><title>AUTHOR</title>
+<para>J.J. Green</para>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+  <citerefentry>
+    <refentrytitle>GIMP</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  <citerefentry>
+    <refentrytitle>tidy</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
+  <citerefentry>
+    <refentrytitle>svggimp</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
