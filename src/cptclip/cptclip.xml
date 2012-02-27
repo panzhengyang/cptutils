@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id$ -->
+<!-- $Id: cptclip.xml,v 1.2 2012/02/24 21:03:26 jjg Exp jjg $ -->
 
 <refentry id='cptclip1'>
 
@@ -50,38 +50,19 @@ are interpreted as the (z) limits of the output unless the
 <option>-s</option> switch is specified, in which case they 
 are the segment numbers.</para>
 
-<para>The program will read from 
-<filename moreinfo="refentry" path="/dev">stdin</filename> 
-if a <replaceable>file</replaceable> is not specified as the 
-final argument, and write to 
-<filename moreinfo="refentry" path="/dev">stdout</filename> 
-if the <option>-o</option> option is not specified.</para>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/para-stdio.xml"/>
+
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
-  <varlistentry>
-  <term>
-  <option>-h</option>, <option>--help</option>
-  </term>
-  <listitem>
-    <para>Brief help.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-help.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-o</option>, <option>--output</option>
-  <replaceable>file</replaceable>
-  </term>
-  <listitem>
-  <para>Write the output to <replaceable>file</replaceable>, 
-  rather than 
-  <filename moreinfo="refentry" path="/dev">stdout</filename>.
-  </para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
@@ -110,23 +91,11 @@ if the <option>-o</option> option is not specified.</para>
   </listitem>
   </varlistentry>
 
-  <varlistentry>
-  <term>
-  <option>-v</option>, <option>--verbose</option>
-  </term>
-  <listitem>
-  <para>Verbose operation.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-verbose.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-V</option>, <option>--version</option>
-  </term>
-  <listitem>
-  <para>Version information.</para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
@@ -151,9 +120,8 @@ if the <option>-o</option> option is not specified.</para>
 
 </refsect1>
 
-<refsect1 id='author'><title>AUTHOR</title>
-<para>J.J. Green</para>
-</refsect1>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>
