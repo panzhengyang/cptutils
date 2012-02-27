@@ -2,7 +2,7 @@
   gimpsvg.h
 
   (c) J.J.Green 2011
-  $Id: gimpsvg.h,v 1.3 2011/11/10 23:34:27 jjg Exp jjg $
+  $Id: gimpsvg.h,v 1.4 2011/11/10 23:56:24 jjg Exp jjg $
 */
 
 #ifndef GIMPSVG_H
@@ -16,9 +16,7 @@
 typedef struct 
 {
   bool verbose, reverse;
-  rgb_t fg, bg, nan;
   size_t samples;
-  double min, max;
   double tol;
 } gimpsvg_opt_t;
 

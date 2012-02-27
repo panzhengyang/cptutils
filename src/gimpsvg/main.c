@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.11 2012/01/22 20:15:47 jjg Exp jjg $
+  $Id: main.c,v 1.12 2012/02/27 13:35:41 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -36,8 +36,6 @@
 #include "colour.h"
 
 #define SAMPLES_MIN 5
-
-static int parse_minmax(char*,double*,double*);
 
 int main(int argc,char** argv)
 {
