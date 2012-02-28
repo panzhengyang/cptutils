@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gplcpt.xml,v 1.1 2012/02/27 14:32:09 jjg Exp jjg $ -->
+<!-- $Id: gplcpt.xml,v 1.2 2012/02/27 18:07:36 jjg Exp jjg $ -->
 
 <refentry id='gplcpt1'>
 
@@ -33,7 +33,7 @@
     <arg choice='opt'>-o <replaceable>file</replaceable></arg>
     <arg choice='opt'>-v </arg>
     <arg choice='opt'>-V </arg>
-    <arg choice='plain'><replaceable>file</replaceable></arg>
+    <arg choice='opt'><replaceable>file</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
