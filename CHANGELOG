@@ -1,7 +1,10 @@
-Changes $Id: CHANGELOG,v 1.63 2012/01/23 13:06:42 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.64 2012/02/24 00:53:07 jjg Exp jjg $
 
-1.43 (pending)
-  Manual pages converted to DocBook format.
+1.43 (28 Feb 2012)
+  Code cleanup
+  - manual pages are now generated from DocBook
+  - several unimplemented options removed 
+  - all tests now use data in the package itself
 
 1.42 (23 Jan 2012)
   Several fixes suggested by Volker Froehlich of Fedora 
