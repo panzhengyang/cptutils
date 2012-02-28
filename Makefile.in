@@ -1,6 +1,6 @@
 # Makefile.in for cptutils
 
-# $Id: Makefile.in,v 1.10 2012/01/22 22:18:19 jjg Exp jjg $
+# $Id: Makefile.in,v 1.11 2012/01/23 13:07:18 jjg Exp jjg $
 # help older versions make
 
 @SET_MAKE@
@@ -38,7 +38,7 @@ version :
 dist : veryclean
 	cd .. ; \
 	cp -r cptutils $(DIST) ;\
-	tar --exclude=RCS -zcvf $(DIST).tar.gz $(DIST) ;\
+	tar --exclude=RCS -zpcvf $(DIST).tar.gz $(DIST) ;\
 	mv $(DIST) /tmp 
 
 
