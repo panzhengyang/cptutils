@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.58 2012/02/23 23:39:13 jjg Exp jjg $
+dnl $Id: configure.in,v 1.59 2012/02/24 21:04:20 jjg Exp jjg $
 
-AC_INIT(cptutils, 1.43, j.j.green@gmx.fr)
+AC_INIT(cptutils, 1.44, j.j.green@gmx.fr)
 
 CFXTRA="-Wall"
 
