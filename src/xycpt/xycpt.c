@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.6 2010/06/24 21:01:34 jjg Exp jjg $
+  $Id: xycpt.c,v 1.7 2010/06/27 09:58:57 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -295,6 +295,8 @@ static fill_stack_t* xyread3f(FILE*,char*,int);
 static fill_stack_t* xyread4f(FILE*,char*);
 
 static int unital(const char*);
+static int dchar(const char*);
+
 static int colour8(double);
 
 static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
@@ -306,7 +308,7 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
 
   /* chose the string to colour function */
 
-  int (*atocol)(const char*) = (opt.unital ? unital : atoi);
+  int (*atocol)(const char*) = (opt.unital ? unital : dchar);
 
   /* read first non-comment line */
 
@@ -405,7 +407,7 @@ static fill_stack_t* xyread1i(FILE* stream,char* buf,int n)
       return NULL;
   while (skipline(buf));
   
-  if (sscanf(buf,"%i",&i) != 1)
+  if (sscanf(buf,"%d",&i) != 1)
     {
       fprintf(stderr,"bad line\n  %s",buf);
       return NULL;
@@ -460,7 +462,7 @@ static fill_stack_t* xyread2i(FILE* stream,char* buf)
       return NULL;
   while (skipline(buf));
   
-  if (sscanf(buf,"%lf %i",&v,&i) != 2)
+  if (sscanf(buf,"%lf %d",&v,&i) != 2)
     {
       fprintf(stderr,"bad line\n  %s",buf);
       return NULL;
@@ -514,7 +516,7 @@ static fill_stack_t* xyread3i(FILE* stream,char* buf,int n)
       return NULL;
   while (skipline(buf));
   
-  if (sscanf(buf,"%i %i %i",&r,&g,&b) != 3)
+  if (sscanf(buf,"%d %d %d",&r,&g,&b) != 3)
     {
       fprintf(stderr,"bad line\n  %s",buf);
       return NULL;
@@ -577,7 +579,7 @@ static fill_stack_t* xyread4i(FILE* stream,char* buf)
       return NULL;
   while (skipline(buf));
   
-  if (sscanf(buf,"%lf %i %i %i",&z,&r,&g,&b) != 4)
+  if (sscanf(buf,"%lf %d %d %d",&z,&r,&g,&b) != 4)
     {
       fprintf(stderr,"bad line\n  %s",buf);
       return NULL;
@@ -673,4 +675,14 @@ static int colour8(double d)
   i = MIN(i,255);
 
   return i;
+}
+
+/*
+  "In general, there's no reason to use atoi in modern code"
+  http://stackoverflow.com/questions/4694926/
+*/
+
+static int dchar(const char* str)
+{
+  return strtol(str,NULL,10);
 }
