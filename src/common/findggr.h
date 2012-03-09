@@ -1,18 +1,18 @@
 /*
-  findgrad.h
+  findggr.h
   
   Look in the usual places to find gimp gradient 
   files.
 
   (c) J.J.Geen 2001
-  $Id: findgrad.h,v 1.2 2004/01/30 00:08:26 jjg Exp jjg $
+  $Id: findggr.h,v 1.3 2011/11/11 15:40:36 jjg Exp jjg $
 */
 
-#ifndef FINDGRAD_H 
-#define FINDGRAD_H
+#ifndef FINDGGR_H 
+#define FINDGGR_H
 
-extern char* findgrad_explicit(const char*);
-extern char* findgrad_indir(const char*, const char*);
-extern char* findgrad_implicit(const char*);
+extern char* findggr_explicit(const char*);
+extern char* findggr_indir(const char*, const char*);
+extern char* findggr_implicit(const char*);
 
 #endif

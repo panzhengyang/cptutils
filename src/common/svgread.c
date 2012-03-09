@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.9 2008/08/08 23:23:49 jjg Exp jjg $
+  $Id: svgread.c,v 1.10 2011/11/03 10:26:37 jjg Exp jjg $
   J.J. Green 2005
 */
 
@@ -27,7 +27,7 @@
 
 static int svg_read_lingrads(xmlNodeSetPtr,svg_list_t*);
 
-extern int svg_read(const char* file,svg_list_t* list)
+extern int svg_read(const char* file, svg_list_t* list)
 {
   int err = 0;
   xmlDocPtr doc;
@@ -121,7 +121,7 @@ extern int svg_read(const char* file,svg_list_t* list)
   return err;
 }
 
-static int svg_read_lingrad(xmlNodePtr,svg_t*); 
+static int svg_read_lingrad(xmlNodePtr, svg_t*); 
 
 /*
   the first argument is a list of pointers to svg linearGradient
@@ -132,7 +132,7 @@ static int svg_read_lingrad(xmlNodePtr,svg_t*);
   and call svg_read_lingrad()
 */
 
-static int svg_read_lingrads(xmlNodeSetPtr nodes,svg_list_t* list) 
+static int svg_read_lingrads(xmlNodeSetPtr nodes, svg_list_t* list) 
 {
   int   size,i;
     
@@ -213,7 +213,7 @@ static int parse_offset(const char*,double*);
 static int parse_colour(char*,rgb_t*,double*);
 static int parse_opacity(char*,double*);
 
-static int svg_read_lingrad(xmlNodePtr lgrad,svg_t* svg) 
+static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg) 
 {
   xmlNode *nodes,*node;
 
@@ -342,7 +342,7 @@ static int parse_offset(const char *po,double *z)
   them otherwise. Neither case is an error.
 
   We do a simple tokenisation with strtok_r, rather than 
-  introduce a dependancy on a css parsing library
+  introduce a dependency on a css parsing library
 */
 
 static int parse_style_statement(const char*,rgb_t*,double*);

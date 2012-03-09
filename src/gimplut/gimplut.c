@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimplut.c,v 1.1 2008/04/13 20:54:25 jjg Exp jjg $
+  $Id: gimplut.c,v 1.2 2012/01/22 19:39:15 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -11,8 +11,8 @@
 #include <math.h>
 
 #include "gimplut.h"
-#include "gradient.h"
-#include "findgrad.h"
+#include "ggr.h"
+#include "findggr.h"
 #include "files.h"
 
 /*
@@ -102,7 +102,7 @@ static char* find_infile(char* infile)
 
   /* try just the name */
   
-  found = findgrad_explicit(infile);
+  found = findggr_explicit(infile);
 
   if (found) return found;
   else if (absolute_filename(infile)) return NULL;
@@ -119,7 +119,7 @@ static char* find_infile(char* infile)
       dir = strtok(gimp_grads,":");
       while (dir && !found)
 	{
-	  found = findgrad_indir(infile,dir);
+	  found = findggr_indir(infile,dir);
 	  dir = strtok(NULL,":");
 	} 
       free(gimp_grads);
@@ -129,7 +129,7 @@ static char* find_infile(char* infile)
   
   /* now try the usual places */
   
-  return findgrad_implicit(infile);
+  return findggr_implicit(infile);
 }
 
 static int gimplut_st(FILE* st,gradient_t* g,glopt_t opt)

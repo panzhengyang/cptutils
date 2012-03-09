@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.30 2011/11/13 21:17:10 jjg Exp jjg $
+  $Id: svgx.c,v 1.31 2011/11/14 20:45:23 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -16,7 +16,7 @@
 
 #include "cpt.h"
 #include "cptio.h"
-#include "gradient.h"
+#include "ggr.h"
 #include "povwrite.h"
 #include "gptwrite.h"
 #include "css3write.h"

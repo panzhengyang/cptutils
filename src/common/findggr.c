@@ -5,7 +5,7 @@
   files.
 
   (c) J.J.Geen 2001
-  $Id: findggr.c,v 1.4 2011/11/11 15:40:31 jjg Exp jjg $
+  $Id: findggr.c,v 1.5 2012/03/09 22:10:38 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -15,7 +15,7 @@
 #include <glob.h>
 
 #include "files.h"
-#include "findgrad.h"
+#include "findggr.h"
 
 #define BUFFSIZE 512
 

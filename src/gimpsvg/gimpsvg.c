@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2011
-  $Id: gimpsvg.c,v 1.14 2011/11/11 13:04:24 jjg Exp jjg $
+  $Id: gimpsvg.c,v 1.15 2011/11/11 17:54:08 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -12,8 +12,8 @@
 
 #include "gimpsvg.h"
 
-#include "gradient.h"
-#include "findgrad.h"
+#include "ggr.h"
+#include "findggr.h"
 #include "files.h"
 
 #include "svg.h"
@@ -118,7 +118,7 @@ static char* find_infile(const char* infile)
 
   /* try just the name */
   
-  found = findgrad_explicit(infile);
+  found = findggr_explicit(infile);
 
   if (found) return found;
   else if (absolute_filename(infile)) return NULL;
@@ -136,7 +136,7 @@ static char* find_infile(const char* infile)
 
       while (dir && !found)
 	{
-	  found = findgrad_indir(infile,dir);
+	  found = findggr_indir(infile,dir);
 	  dir = strtok(NULL,":");
 	} 
 
@@ -147,7 +147,7 @@ static char* find_infile(const char* infile)
   
   /* now try the usual places */
   
-  return findgrad_implicit(infile);
+  return findggr_implicit(infile);
 }
 
 #define EPSRGB   (0.5 / 256.0)
