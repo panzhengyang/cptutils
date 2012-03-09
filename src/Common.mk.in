@@ -1,11 +1,11 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.13 2012/02/27 17:11:49 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.14 2012/02/27 17:46:50 jjg Exp jjg $ 
 
-CC       = @CC@
-CFLAGS  += @CFLAGS@ @DEFS@
-LDFLAGS += 
-LDLIBS  += @LIBS@
+CC        = @CC@
+CFLAGS   += @CFLAGS@ @DEFS@ 
+LDFLAGS  += 
+LDLIBS   += @LIBS@
 
 INSTALL         = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@ 
@@ -21,6 +21,7 @@ exec_prefix = @exec_prefix@
 bindir      = @bindir@
 mandir      = @mandir@
 datarootdir = @datarootdir@
+localedir   = @localedir@
 
 RUBBISH += *~
 

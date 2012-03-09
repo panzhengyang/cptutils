@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.9 2011/11/10 13:03:49 jjg Exp jjg $
+  $Id: main.c,v 1.10 2012/01/22 19:59:27 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -34,7 +34,6 @@
 #include "options.h"
 #include "avlcpt.h"
 
-
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
@@ -46,7 +45,7 @@ int main(int argc,char** argv)
 
   if (options(argc,argv,&info) != 0)
     {
-      fprintf(stderr,"failed to parse command line\n");
+      fprintf(stderr, "failed to parse command line\n");
       return EXIT_FAILURE;
     }
 
@@ -64,7 +63,9 @@ int main(int argc,char** argv)
   
   if ( ! (opt.precision > 0))
     {
-      fprintf(stderr,"precision must be positive but %f isn't\n",opt.precision);
+      fprintf(stderr,
+	      "precision must be positive but %f isn't\n",
+	      opt.precision);
       return EXIT_FAILURE;
     }
 
@@ -74,7 +75,8 @@ int main(int argc,char** argv)
 
   if (!outfile && opt.verbose)
     {
-      fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
+      fprintf(stderr,
+	      "verbosity suppressed (<stdout> for results)\n");
       opt.verbose = 0;
     }
 
@@ -89,7 +91,7 @@ int main(int argc,char** argv)
       infile = info.inputs[0];
       break;
     default:
-      fprintf(stderr,"Sorry, only one file at a time\n");
+      fprintf(stderr, "Sorry, only one file at a time\n");
       return EXIT_FAILURE;
     }
   
@@ -101,21 +103,21 @@ int main(int argc,char** argv)
 
   /* get fg/bg/nan */
 
-  if (parse_rgb(info.background_arg,&opt.bg) != 0)
+  if (parse_rgb(info.background_arg, &opt.bg) != 0)
     {
-      fprintf(stderr,"bad background %s\n",info.background_arg);
+      fprintf(stderr, "bad background %s\n", info.background_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_rgb(info.foreground_arg,&opt.fg) != 0)
+  if (parse_rgb(info.foreground_arg, &opt.fg) != 0)
     {
-      fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
+      fprintf(stderr, "bad foreground %s\n", info.foreground_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_rgb(info.nan_arg,&opt.nan) != 0)
+  if (parse_rgb(info.nan_arg, &opt.nan) != 0)
     {
-      fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
+      fprintf(stderr, "bad nan colour %s\n", info.nan_arg);
       return EXIT_FAILURE;
     }
 
@@ -124,14 +126,14 @@ int main(int argc,char** argv)
   if (opt.verbose)
     {
       if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
+        fprintf(stderr, "failed (error %i)\n", err);
 
       printf("done.\n");
     }
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
-    	
+
     	
     	
     	
