@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.13 2011/11/10 18:49:57 jjg Exp jjg $
+  $Id: cptio.c,v 1.14 2012/03/05 22:06:27 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #endif
 
 #include "cptio.h"
-#include "bridge.h"
+#include "cptbridge.h"
 #include "cptparse.h"
 #include "cptscan.h"
 

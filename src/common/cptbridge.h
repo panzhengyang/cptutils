@@ -1,14 +1,13 @@
 /*
-  bridge.h
+  cptbridge.h
 
-  handles the globals needed by cptparse(),
-  naughty parser generator
+  handles the globals needed by cptparse()
 
-  $Id$
+  $Id: cptbridge.h,v 1.1 2004/03/18 02:27:58 jjg Exp jjg $
 */
 
-#ifndef BRIDGE_H
-#define BRIDGE_H
+#ifndef CPTBRIDGE_H
+#define CPTBRIDGE_H
 
 #include "cpt.h"
 

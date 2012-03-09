@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.5 2004/03/22 01:09:02 jjg Exp jjg $
+  $Id: cptparse.y,v 1.6 2005/03/30 23:10:08 jjg Exp jjg $
 */
 
 %{
@@ -15,7 +15,7 @@
 
 #include "cptparse.h"
 #include "cptscan.h"
-#include "bridge.h"
+#include "cptbridge.h"
 
   static void cpterror(char const*);
   static cpt_sample_t sample3(double,double,double,double);
