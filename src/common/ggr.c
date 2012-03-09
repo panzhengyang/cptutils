@@ -1,5 +1,5 @@
 /*
-  gradient.c
+  ggr.c
 
   gradient structures
 
@@ -46,7 +46,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: gradient.c,v 1.11 2011/11/11 22:41:56 jjg Exp jjg $
+  $Id: ggr.c,v 1.12 2012/01/22 20:04:52 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -54,7 +54,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "gradient.h"
+#include "ggr.h"
 
 #define EPSILON 1e-10
 #define PI 3.141592653

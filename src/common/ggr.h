@@ -1,5 +1,5 @@
 /*
-  gradient.h
+  ggr.h
 
   gradient structures
 
@@ -40,11 +40,11 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: gradient.h,v 1.5 2011/11/11 17:58:37 jjg Exp jjg $
+  $Id: ggr.h,v 1.6 2012/01/22 20:03:04 jjg Exp jjg $
 */
 
-#ifndef GRADIENT_H
-#define GRADIENT_H
+#ifndef GGR_H
+#define GGR_H
 
 #include "colour.h"
 

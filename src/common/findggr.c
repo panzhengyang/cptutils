@@ -1,11 +1,11 @@
 /*
-  findgrad.c
+  findggr.c
   
   Look in the usual places to find gimp gradient 
   files.
 
   (c) J.J.Geen 2001
-  $Id: findgrad.c,v 1.3 2004/01/30 00:08:20 jjg Exp jjg $
+  $Id: findggr.c,v 1.4 2011/11/11 15:40:31 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -25,7 +25,7 @@ char buffer[BUFFSIZE];
   find gradient specified explicitly - dont try .ggr
 */
 
-extern char* findgrad_explicit(const char* name)
+extern char* findggr_explicit(const char* name)
 {
   if (!name) return NULL;
      
@@ -36,7 +36,7 @@ extern char* findgrad_explicit(const char* name)
   find gradient in specified directory, with .ggr test
 */
 
-extern char* findgrad_indir(const char* name, const char* dir)
+extern char* findggr_indir(const char* name, const char* dir)
 {
   if ((!name) || (!dir)) return NULL;
   
@@ -58,7 +58,7 @@ extern char* findgrad_indir(const char* name, const char* dir)
   could all be redone with regexps
 */
 
-extern char* findgrad_implicit(const char* name)
+extern char* findggr_implicit(const char* name)
 {
     char  *home,
 	  *found=NULL,

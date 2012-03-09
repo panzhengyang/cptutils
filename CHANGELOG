@@ -1,9 +1,11 @@
-Changes $Id: CHANGELOG,v 1.66 2012/03/05 22:07:56 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.67 2012/03/08 15:34:46 jjg Exp jjg $
 
 1.44 (pending)
   - improved human-readable z-values in cpt output
   - fixed incorrect xycpt behaviour when input had 
     leading zeros 
+  - reinstated (now local) bottom level test target
+  - renamed several files in src/common, for consistency
 
 1.43 (28 Feb 2012)
   Code cleanup
