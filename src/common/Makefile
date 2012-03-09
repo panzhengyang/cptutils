@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.27 2011/10/27 23:00:33 jjg Exp jjg $
+# $Id: Makefile,v 1.28 2012/03/09 21:38:44 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = cptbridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -11,7 +11,7 @@ OBJPOV  = pov.o povwrite.o
 OBJGPT  = gpt.o gptwrite.o
 OBJCSS3 = css3.o css3write.o
 OBJID   = ident.o identtab.o
-OBJODB  = odb_bridge.o odb.o odbparse.o odbscan.o
+OBJODB  = odbbridge.o odb.o odbparse.o odbscan.o
 OBJSAO  = sao.o saowrite.o
 
 CFLAGS += 

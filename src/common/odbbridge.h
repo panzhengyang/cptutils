@@ -1,18 +1,17 @@
 /*
-  odb_bridge.h
+  odbbridge.h
 
-  handles the globals needed by avlparse(),
-  naughty parser generator
+  handles the globals needed by avlparse()
 
-  $Id: bridge.h,v 1.1 2004/03/18 02:27:58 jjg Exp $
+  $Id: odbbridge.h,v 1.1 2005/11/16 00:28:28 jjg Exp jjg $
 */
 
-#ifndef ODB_BRIDGE_H
-#define ODB_BRIDGE_H
+#ifndef ODBBRIDGE_H
+#define ODBBRIDGE_H
 
 #include "odb.h"
 
 extern odb_t *odb;
-extern identtab_t *identtab,*stringtab;
+extern identtab_t *identtab, *stringtab;
 
 #endif
