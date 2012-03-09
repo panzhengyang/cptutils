@@ -2,7 +2,7 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.7 2011/10/28 11:52:44 jjg Exp jjg $
+   $Id: odbscan.l,v 1.8 2011/10/28 11:55:20 jjg Exp jjg $
 
    Note that this treats bitblocks badly -- a bitblock may
    be indistinguishable from a UINT, so we scan for a "proper" 
@@ -24,7 +24,7 @@
 
 #include "odb.h"
 #include "odbparse.h"
-#include "odb_bridge.h"
+#include "odbbridge.h"
 
 #define YYSTYPE odb_value_t
 

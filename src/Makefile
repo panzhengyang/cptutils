@@ -1,6 +1,6 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.21 2011/11/14 18:01:52 jjg Exp jjg $
+# $Id: Makefile,v 1.22 2012/01/22 19:42:03 jjg Exp jjg $
 
 SRC      = common avlcpt cptclip cptcont cptcss cptinfo \
 	   cpttext cptsvg cpthsv gimpsvg gimplut gplcpt \
@@ -29,6 +29,11 @@ clean :
 	$(RM) $(RUBBISH)
 	for dir in $(SRC) ; do \
 	  cd $$dir ; $(MAKE) clean || exit 1 ; cd .. ; \
+	done
+
+test check :
+	for dir in $(SRC) ; do \
+	  cd $$dir ; $(MAKE) test || exit 1 ; cd .. ; \
 	done
 
 veryclean : 

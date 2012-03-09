@@ -3,7 +3,7 @@
 
   avl gradients structures
   J.J. Green 2005
-  $Id: avlgrad.c,v 1.2 2005/11/22 23:43:57 jjg Exp jjg $
+  $Id: avlgrad.c,v 1.3 2012/01/22 19:39:11 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -14,7 +14,7 @@
 
 #include "avlgrad.h"
 #include "odb.h"
-#include "odb_bridge.h"
+#include "odbbridge.h"
 #include "odbparse.h"
 #include "odbscan.h"
 

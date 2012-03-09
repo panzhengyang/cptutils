@@ -1,6 +1,6 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.28 2012/03/09 21:38:44 jjg Exp jjg $
+# $Id: Makefile,v 1.29 2012/03/09 21:45:13 jjg Exp jjg $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = cptbridge.o cpt.o cptparse.o cptscan.o cptio.o files.o
@@ -28,6 +28,8 @@ default : all
 all : $(CPTULIBS)
 
 install :
+
+test check :
 
 clean :
 	$(RM) $(RUBBISH)

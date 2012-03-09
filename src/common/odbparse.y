@@ -4,7 +4,7 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: odbparse.y,v 1.5 2005/11/21 22:46:44 jjg Exp jjg $
+  $Id: odbparse.y,v 1.6 2005/11/22 21:16:49 jjg Exp jjg $
 */
 
 %{
@@ -15,7 +15,7 @@
 
 #include "odbparse.h"
 #include "odbscan.h"
-#include "odb_bridge.h"
+#include "odbbridge.h"
 
   static void odberror(char const*);
 
