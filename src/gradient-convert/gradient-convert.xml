@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<!-- $Id: gradient-convert.xml,v 1.3 2012/02/27 18:00:05 jjg Exp $ -->
+
+<refentry id='gradient-convert1'>
+
+<refentryinfo><date>12 March 2012</date></refentryinfo>
+
+<refmeta>
+<refentrytitle>GRADIENT-CONVERT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>12 March 2012</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>gradient-convert</refname>
+<refpurpose>
+  convert gradients between formats
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>gradient-convert</command>
+  <arg choice='opt'>-h </arg>
+  <arg choice='opt'>-v </arg>
+  <arg choice='opt'>-V </arg>
+  <arg choice='plain'><replaceable>infile</replaceable></arg>
+  <arg choice='plain'><replaceable>outfile</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+
+<para>
+  The <command>gradient-convert</command> program converts
+  gradients to other formats.  It is a wrapper script which
+  make a number of calls the individual programs from the 
+  <package>cptutils</package> package so, for example, to 
+  convert an Arcview legend (avl) to a PNG image, the programs
+  <command>avlcpt</command>, <command>cptsvg</command> and
+  <command>svgpng</command> would be called in sequence
+  to generate the required file.
+</para>
+
+<para>
+  The formats of the mandatory <replaceable>infile</replaceable>
+  and <replaceable>outfile</replaceable> arguments are determined
+  from the file extensions.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+
+<variablelist remap='TP'>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-help.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-verbose.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-version.xml"/>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Convert an Arcview Legend to a PNG image
+</para>
+
+<programlisting>
+  gradient-convert -v legend.avl legend.png 
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='caveats'><title>CAVEATS</title>
+
+<para>
+  The component programs in the conversion will generally
+  have a number of options available for modifying the 
+  conversion behaviour, but these options cannot be set by 
+  options passed to the <command>gradient-convert</command>
+  program.
+</para>
+
+</refsect1>
+
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/refsect1-author.xml"/>
+
+</refentry>
+
