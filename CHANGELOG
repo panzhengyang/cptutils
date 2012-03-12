@@ -1,6 +1,6 @@
-Changes $Id: CHANGELOG,v 1.68 2012/03/09 22:04:26 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.69 2012/03/12 17:23:14 jjg Exp jjg $
 
-1.44 (pending)
+1.44 (13 March 2012)
   - improved human-readable z-values in cpt output
   - fixed incorrect xycpt behaviour when input had 
     leading zeros 
