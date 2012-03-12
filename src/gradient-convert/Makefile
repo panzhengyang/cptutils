@@ -19,3 +19,5 @@ clean :
 # is a no-op
 
 test check :
+
+include ../Common.mk
