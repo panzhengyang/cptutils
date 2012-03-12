@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.1 2012/03/12 01:11:32 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.2 2012/03/12 15:53:03 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -85,6 +85,14 @@ graph = {}
 for t0, t1d in gajmat.iteritems() :
     graph[t0] = t1d.keys()
 
+# also create a list of programs 
+
+programs = []
+
+for t in gajmat.values() :
+    for s in t.values() :
+        programs.append(s)
+
 # taken from http://www.python.org/doc/essays/graphs.html
 # this simple shortest path code determines the call sequence
 
@@ -123,7 +131,8 @@ def gradtype(path) :
 
 def convert(ipath,opath,opt) :
 
-    verbose = opt
+    verbose,subopts = opt
+
     itype = gradtype(ipath)
     otype = gradtype(opath)
     
@@ -211,22 +220,23 @@ def convert(ipath,opath,opt) :
 
     for cd in cdlist :
 
-        clist = [
-            cd['program'],
-            '-o', 
-            cd['topath'],
-            cd['frompath']
-            ]
+        program  = cd['program']
+        topath   = cd['topath']
+        frompath = cd['frompath']
+
+        clist = [ program, '-o', topath ]
+        clist.extend(subopts[program])
+        clist.append(frompath)
 
         if verbose :
             print "  %s" % (" ".join(clist))
 
         if subprocess.call(clist) != 0 :
-            print "failed call to %s : aborting" % (cd['program'])
+            print "failed call to %s : aborting" % (program)
             return None
 
-        if not os.path.exists(cd['topath']) :
-            print "failed to create %s : aborting" % (cd['topath'])
+        if not os.path.exists(topath) :
+            print "failed to create %s : aborting" % (topath)
             return None
 
 # command-line interface
@@ -234,15 +244,26 @@ def convert(ipath,opath,opt) :
 def usage() :
     print "usage : gradient-convert [options] <input> <output>"
     print "options"
+    print " -b rgb      : background (cpt)"
+    print " -f rgb      : foreground (cpt)"
+    print " -g geometry : geometry (png)"
     print " -h          : brief help"
+    print " -n rgb      : nan colour (cpt)"
     print " -v          : verbose"
     print " -V          : version"
+    print "the type in brackets indicates the file type affected"
 
 def main() :
     try:
         opts,args = getopt.getopt(sys.argv[1:],
-                                  "hvV",
-                                  ["help","verbose","version"])
+                                  "b:f:g:hn:vV",
+                                  ["background=",
+                                   "foreground=",
+                                   "geometry=",
+                                   "help",
+                                   "nan=",
+                                   "verbose",
+                                   "version"])
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -250,6 +271,7 @@ def main() :
 
     # defaults
     verbose = False
+    subopts = dict( (p,[]) for p in programs);
 
     for o, a in opts:
         if o in ("-h", "--help") :
@@ -258,21 +280,33 @@ def main() :
         elif o in ("-V", "--version") :
             print "gradient-convert %s" % (version)
             sys.exit(0)
+        elif o in ("-g", "--geometry") :
+            # geometry only used by svgpng
+            subopts['svgpng'].extend([o,a])
+        elif o in ("-b", "--background",
+                   "-f", "--foreground",
+                   "-n", "--nan") :
+            # only affects output to cpt
+            subopts['svgcpt'].extend([o,a])
+            subopts['gplcpt'].extend([o,a])
+            subopts['avlcpt'].extend([o,a])
         elif o in ("-v", "--verbose") :
             verbose = True
         else:
             assert False, "unhandled option"
-            
+
     if len(args) != 2 :
         usage()
         sys.exit(1)
+
+    print subopts
 
     ipath, opath = args
 
     if verbose :
         print "This is gradient-convert (version %s)" % (version)
 
-    opt = (verbose)
+    opt = (verbose,subopts)
 
     retval = convert(ipath,opath,opt)
 
