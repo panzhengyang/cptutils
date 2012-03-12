@@ -9,7 +9,7 @@ $(NAME) : $(NAME).py
 	chmod 755 $(NAME)  
 
 install :
-	$(INSTALL_DATA) avlcpt.1 $(DESTDIR)$(mandir)/man1/$(NAME).1
+	$(INSTALL_DATA) $(NAME).1 $(DESTDIR)$(mandir)/man1/$(NAME).1
 	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
 
 clean :

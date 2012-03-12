@@ -1,4 +1,4 @@
-Changes $Id: CHANGELOG,v 1.67 2012/03/08 15:34:46 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.68 2012/03/09 22:04:26 jjg Exp jjg $
 
 1.44 (pending)
   - improved human-readable z-values in cpt output
@@ -6,6 +6,8 @@ Changes $Id: CHANGELOG,v 1.67 2012/03/08 15:34:46 jjg Exp jjg $
     leading zeros 
   - reinstated (now local) bottom level test target
   - renamed several files in src/common, for consistency
+  - added the gradient-convert wrapper script (python
+    is needed to use it)
 
 1.43 (28 Feb 2012)
   Code cleanup
