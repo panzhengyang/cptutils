@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.3 2012/02/27 18:00:05 jjg Exp $ -->
+<!-- $Id: gradient-convert.xml,v 1.1 2012/03/12 17:18:48 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'>
 
@@ -57,10 +57,25 @@
 
 <refsect1 id='options'><title>OPTIONS</title>
 
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+            href="../docbook/para-rgb.xml"/>
+
 <variablelist remap='TP'>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-background-svgx.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-foreground-svgx.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-geometry.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-help.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-nan-svgx.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-verbose.xml"/>
@@ -74,11 +89,11 @@
 <refsect1 id='examples'><title>EXAMPLES</title>
 
 <para>
-  Convert an Arcview Legend to a PNG image
+  Convert an Arcview Legend to a 200x20 pixel PNG image
 </para>
 
 <programlisting>
-  gradient-convert -v legend.avl legend.png 
+  gradient-convert -v -g 200x20 legend.avl legend.png 
 </programlisting>
 
 </refsect1>
