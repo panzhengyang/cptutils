@@ -1,12 +1,18 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.22 2012/01/22 19:42:03 jjg Exp jjg $
+# $Id: Makefile,v 1.23 2012/03/09 21:52:45 jjg Exp jjg $
 
 SRC      = common avlcpt cptclip cptcont cptcss cptinfo \
 	   cpttext cptsvg cpthsv gimpsvg gimplut gplcpt \
 	   pspsvg svgx xycpt
 RUBBISH += *~
 CONFIG  += Common.mk
+
+ifneq (no,$(PYTHON))
+
+SRC += gradient-convert
+
+endif
 
 default : all
 

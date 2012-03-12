@@ -16,8 +16,9 @@ clean :
 
 # this script requires that the other programs have 
 # already been installed, so the "standard" test target
-# is a no-op
+# does no conversion, it just prints the version
 
 test check :
+	./$(NAME) --version
 
 include ../Common.mk
