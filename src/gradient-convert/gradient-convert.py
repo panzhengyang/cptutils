@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.3 2012/03/12 21:23:30 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.4 2012/03/12 21:53:26 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -305,8 +305,6 @@ def main() :
     if len(args) != 2 :
         usage()
         sys.exit(1)
-
-    print subopts
 
     ipath, opath = args
 
