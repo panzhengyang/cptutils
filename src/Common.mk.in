@@ -1,6 +1,8 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.14 2012/02/27 17:46:50 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.15 2012/03/09 21:14:58 jjg Exp jjg $ 
+
+VERSION   = @VERSION@
 
 CC        = @CC@
 CFLAGS   += @CFLAGS@ @DEFS@ 
