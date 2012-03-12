@@ -1,13 +1,15 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.15 2012/03/09 21:14:58 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.16 2012/03/12 15:54:13 jjg Exp jjg $ 
 
-VERSION   = @VERSION@
+VERSION   = @PACKAGE_VERSION@
 
 CC        = @CC@
 CFLAGS   += @CFLAGS@ @DEFS@ 
 LDFLAGS  += 
 LDLIBS   += @LIBS@
+
+PYTHON    = @PYTHON@
 
 INSTALL         = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@ 
