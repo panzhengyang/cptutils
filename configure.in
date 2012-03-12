@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.62 2012/03/09 21:14:25 jjg Exp jjg $
+dnl $Id: configure.in,v 1.63 2012/03/12 15:56:18 jjg Exp jjg $
 
 AC_INIT(cptutils, 1.44, j.j.green@gmx.fr)
 
@@ -71,7 +71,10 @@ AC_CHECK_FUNCS(ntohs)
 dnl used by gengetop output
 
 AC_DEFINE(VERSION,PACKAGE_VERSION,"version of package")
-AC_SUBST(VERSION)
+
+dnl added to Common.mk 
+
+AC_SUBST(VERSION,PACKAGE_VERSION)
 
 dnl Make a config.h
 
