@@ -1,0 +1,11 @@
+<varlistentry>
+  <term>
+    <option>-f</option>, <option>--foreground</option>
+    <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Set the foreground colour of the output (cpt output).
+    </para>
+  </listitem>
+</varlistentry>

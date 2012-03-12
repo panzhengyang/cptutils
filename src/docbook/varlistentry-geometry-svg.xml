@@ -1,0 +1,11 @@
+<varlistentry>
+  <term>
+    <option>-g</option>, <option>--geometry</option>
+    <replaceable>width</replaceable>x<replaceable>height</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Specify the size of the output image (png output).
+    </para>
+  </listitem>
+</varlistentry>

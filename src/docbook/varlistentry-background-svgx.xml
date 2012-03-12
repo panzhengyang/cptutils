@@ -1,0 +1,16 @@
+<varlistentry>
+  <term>
+    <option>-b</option>, <option>--background</option>
+    <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Set the background colour of the output (cpt output).
+    </para>
+    <para>
+      Note that this only modifies the "background" field in the 
+      output cpt file, it does replace transparency (see the 
+      <option>-T</option> option in that regard).
+    </para>
+  </listitem>
+</varlistentry>

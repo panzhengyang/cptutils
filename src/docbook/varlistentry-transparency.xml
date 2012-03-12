@@ -1,0 +1,14 @@
+<varlistentry>
+  <term>
+    <option>-T</option>, <option>--transparency</option>
+    <replaceable>rgb</replaceable>
+  </term>
+  <listitem>
+    <para>
+      When converting to a format which does not support 
+      transparency, replace the transparency with the 
+      specified  <replaceable>rgb</replaceable> colour.
+    </para>
+  </listitem>
+</varlistentry>
+
