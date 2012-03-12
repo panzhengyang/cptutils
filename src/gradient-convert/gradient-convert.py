@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.2 2012/03/12 15:53:03 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.3 2012/03/12 21:23:30 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -249,6 +249,7 @@ def usage() :
     print " -g geometry : geometry (png)"
     print " -h          : brief help"
     print " -n rgb      : nan colour (cpt)"
+    print " -T rgb      : transparency (cpt, gpt, sao)"
     print " -v          : verbose"
     print " -V          : version"
     print "the type in brackets indicates the file type affected"
@@ -256,12 +257,13 @@ def usage() :
 def main() :
     try:
         opts,args = getopt.getopt(sys.argv[1:],
-                                  "b:f:g:hn:vV",
+                                  "b:f:g:hn:T:vV",
                                   ["background=",
                                    "foreground=",
                                    "geometry=",
                                    "help",
                                    "nan=",
+                                   "transparency=",
                                    "verbose",
                                    "version"])
     except getopt.GetoptError, err:
@@ -290,6 +292,11 @@ def main() :
             subopts['svgcpt'].extend([o,a])
             subopts['gplcpt'].extend([o,a])
             subopts['avlcpt'].extend([o,a])
+        elif o in ("-T", "--transparency") :
+            # only svg to cpt, gpt, sao
+            subopts['svgcpt'].extend([o,a])
+            subopts['svggpt'].extend([o,a])
+            subopts['svgsao'].extend([o,a])
         elif o in ("-v", "--verbose") :
             verbose = True
         else:

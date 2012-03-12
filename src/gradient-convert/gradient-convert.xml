@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.2 2012/03/12 21:36:11 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.3 2012/03/12 21:36:32 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'>
 
@@ -26,7 +26,12 @@
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>gradient-convert</command>
+  <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
   <arg choice='opt'>-h </arg>
+  <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-T <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-v </arg>
   <arg choice='opt'>-V </arg>
   <arg choice='plain'><replaceable>infile</replaceable></arg>
@@ -106,10 +111,16 @@
 <para>
   The component programs in the conversion will generally
   have a number of options available for modifying the 
-  conversion behaviour, but these options cannot be set by 
-  options passed to the <command>gradient-convert</command>
-  program.
+  conversion behaviour, but only the most-often used of
+  these options can be passed to the 
+  <command>gradient-convert</command> program.
+  Note also that those options which are passed to 
+  component programs are not checked for relevance.
+  Converting a GMT cpt file to GIMP format while using
+  using the irrelevant <option>-g</option> option will
+  not cause an error, it will simply be ignored.
 </para>
+
 
 </refsect1>
 

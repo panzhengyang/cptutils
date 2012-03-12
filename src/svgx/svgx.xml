@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: svgx.xml,v 1.2 2012/02/27 17:51:54 jjg Exp jjg $ -->
+<!-- $Id: svgx.xml,v 1.3 2012/02/27 18:00:05 jjg Exp jjg $ -->
 
 <refentry id='svgx1'>
 
@@ -122,37 +122,14 @@
   </listitem>
   </varlistentry>
 
-  <varlistentry>
-  <term>
-  <option>-b</option>, <option>--background</option>
-  <replaceable>rgb</replaceable>
-  </term>
-  <listitem>
-  <para>
-    Set the background colour of the output (cpt mode only).
-  </para>
-  <para>
-    Note that this only modifies the "background" field in the 
-    output cpt file, it does replace transparency (see the 
-    <option>-T</option> option in that regard).
-  </para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-background-svgx.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-foreground.xml"/>
+              href="../docbook/varlistentry-foreground-svgx.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-g</option>, <option>--geometry</option>
-  <replaceable>width</replaceable>x<replaceable>height</replaceable>
-  </term>
-  <listitem>
-  <para>
-    Specify the size of the output image (png mode only).
-  </para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-geometry.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-help.xml"/>
@@ -169,7 +146,7 @@
   </varlistentry>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-nan.xml"/>
+              href="../docbook/varlistentry-nan-svgx.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-output.xml"/>
@@ -223,19 +200,8 @@
   </listitem>
   </varlistentry>
 
-  <varlistentry>
-  <term>
-  <option>-T</option>, <option>--transparency</option>
-  <replaceable>rgb</replaceable>
-  </term>
-  <listitem>
-  <para>
-    When converting to a format which does not support 
-    transparency, replace the transparency with the 
-    specified  <replaceable>rgb</replaceable> colour.
-  </para>
-  </listitem>
-  </varlistentry>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-transparency.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-verbose.xml"/>
