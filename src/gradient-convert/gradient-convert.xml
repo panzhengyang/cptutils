@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.1 2012/03/12 17:18:48 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.2 2012/03/12 21:36:11 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'>
 
@@ -76,6 +76,9 @@
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-nan-svgx.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-transparency.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-verbose.xml"/>
