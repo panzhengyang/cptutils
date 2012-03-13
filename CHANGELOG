@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.69 2012/03/12 17:23:14 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.70 2012/03/12 22:12:29 jjg Exp jjg $
+
+1.45 (pending)
+  - minor fixes to gradient-convert
 
 1.44 (13 March 2012)
   - improved human-readable z-values in cpt output
