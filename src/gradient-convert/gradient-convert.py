@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.4 2012/03/12 21:53:26 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.5 2012/03/12 22:47:14 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -160,7 +160,7 @@ def convert(ipath,opath,opt) :
         print "cannot convert %s to %s yet, sorry" % (itype,otype)
         return None
 
-    for t0,t1 in pairs(shortest_path(graph,itype,otype)) :
+    for t0,t1 in pairs( callpath ) :
         cd = {
             'fromtype' : t0,
             'totype'   : t1,
@@ -180,7 +180,7 @@ def convert(ipath,opath,opt) :
     # users local data)
 
     basename = os.path.splitext(opath)[0]
-    tempdir = tempfile.mkdtemp()
+    tempdir  = tempfile.mkdtemp()
 
     # register the cleanup function to empty the temporary
     # directory of files and remove it
@@ -238,6 +238,8 @@ def convert(ipath,opath,opt) :
         if not os.path.exists(topath) :
             print "failed to create %s : aborting" % (topath)
             return None
+
+        return topath
 
 # command-line interface
 
@@ -319,9 +321,9 @@ def main() :
         print "done."
 
     if retval is None :
-        exit(1)
+        sys.exit(1)
     else :
-        exit(0)
+        sys.exit(0)
 
 # run main
 if __name__ == "__main__":
