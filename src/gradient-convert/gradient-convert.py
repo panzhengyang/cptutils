@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.6 2012/03/13 23:42:09 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.7 2012/03/15 00:00:22 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -266,7 +266,7 @@ def convert(ipath, opath, opt) :
             print "failed to create %s : aborting" % (topath)
             return None
 
-        return topath
+    return topath
 
 # command-line interface
 

@@ -5,7 +5,7 @@
   </term>
   <listitem>
     <para>
-      Set the background colour of the output (cpt output).
+      Set the background colour of cpt output.
     </para>
     <para>
       Note that this only modifies the "background" field in the 
