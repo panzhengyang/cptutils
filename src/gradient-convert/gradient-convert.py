@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.5 2012/03/12 22:47:14 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.6 2012/03/13 23:42:09 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -40,7 +40,7 @@ gtypealias = {
     'cpt' : [],
     'svg' : [],
     'ggr' : [],
-    'grd' : ['jgd','PspGradient'],
+    'grd' : ['jgd', 'PspGradient'],
     'c3g' : ['css3'],
     'gpf' : [],
     'inc' : ['pov'],
@@ -80,10 +80,10 @@ gajmat = {
 # create the conversion (di)graph from the adjacency
 # matrix
 
-graph = {}
+gdgraph = {}
 
 for t0, t1d in gajmat.iteritems() :
-    graph[t0] = t1d.keys()
+    gdgraph[t0] = t1d.keys()
 
 # also create a list of programs 
 
@@ -92,6 +92,31 @@ programs = []
 for t in gajmat.values() :
     for s in t.values() :
         programs.append(s)
+
+# print the formats supported from the adjacency
+# matrix M and name -> description dict N
+
+def formats_supported(M,N) :
+
+    rfmt = {}
+    wfmt = {}
+
+    for name in N.keys() :
+        rfmt[name] = False
+        wfmt[name] = False
+
+    for nr in M.keys() :
+        rfmt[nr] = True
+        for nw in M[nr].keys() :
+            wfmt[nw] = True
+
+    print "supported formats:"
+
+    for name in sorted(N.keys()) :
+        print "| %3s | %-25s | %s%s |" % \
+            (name, N[name],
+             "R" if rfmt[name] else "-",
+             "W" if wfmt[name] else "-")
 
 # taken from http://www.python.org/doc/essays/graphs.html
 # this simple shortest path code determines the call sequence
@@ -118,20 +143,21 @@ def gradtype(path) :
     ext = os.path.splitext(path)[1][1:]
     if not ext:
         print("cannot detemine file extension for %s" % path)
-        exit(1)
+        sys.exit(1)
 
-    gtype = gtypedict.get(ext,None)
+    gtype = gtypedict.get(ext, None)
     if gtype is None:
         print("unknown gradient extension %s" % ext)
-        exit(1)
+        formats_supported(gajmat, gnames)
+        sys.exit(1)
 
     return gtype
 
 # main function
 
-def convert(ipath,opath,opt) :
+def convert(ipath, opath, opt) :
 
-    verbose,subopts = opt
+    verbose, subopts = opt
 
     itype = gradtype(ipath)
     otype = gradtype(opath)
@@ -154,13 +180,14 @@ def convert(ipath,opath,opt) :
 
     cdlist = []
 
-    callpath = shortest_path(graph,itype,otype)
+    callpath = shortest_path(gdgraph, itype, otype)
 
     if callpath is None :
-        print "cannot convert %s to %s yet, sorry" % (itype,otype)
+        print "cannot convert %s to %s yet, sorry" % (itype, otype)
+        formats_supported(gajmat, gnames)
         return None
 
-    for t0,t1 in pairs( callpath ) :
+    for t0, t1 in pairs( callpath ) :
         cd = {
             'fromtype' : t0,
             'totype'   : t1,
@@ -197,16 +224,16 @@ def convert(ipath,opath,opt) :
         if verbose :
             print "  %s" % (tempdir)
 
-    atexit.register(cleanup,False)
+    atexit.register(cleanup, False)
 
     # add temporary filenames (also added to the global
     # delfiles list used by the cleanup function)
 
-    for cd0,cd1 in pairs(cdlist) :
+    for cd0, cd1 in pairs(cdlist) :
 
         totype = cd0['totype']
 
-        path = ("%s/%s.%s" % (tempdir,basename,totype))
+        path = ("%s/%s.%s" % (tempdir, basename, totype))
 
         cd0['topath']   = path
         cd1['frompath'] = path
@@ -258,16 +285,16 @@ def usage() :
 
 def main() :
     try:
-        opts,args = getopt.getopt(sys.argv[1:],
-                                  "b:f:g:hn:T:vV",
-                                  ["background=",
-                                   "foreground=",
-                                   "geometry=",
-                                   "help",
-                                   "nan=",
-                                   "transparency=",
-                                   "verbose",
-                                   "version"])
+        opts, args = getopt.getopt(sys.argv[1:],
+                                   "b:f:g:hn:T:vV",
+                                   ["background=",
+                                    "foreground=",
+                                    "geometry=",
+                                    "help",
+                                    "nan=",
+                                    "transparency=",
+                                    "verbose",
+                                    "version"])
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -275,9 +302,9 @@ def main() :
 
     # defaults
     verbose = False
-    subopts = dict( (p,[]) for p in programs);
+    subopts = dict( (p, []) for p in programs)
 
-    for o, a in opts:
+    for o, a in opts :
         if o in ("-h", "--help") :
             usage()
             sys.exit(0)
@@ -286,19 +313,19 @@ def main() :
             sys.exit(0)
         elif o in ("-g", "--geometry") :
             # geometry only used by svgpng
-            subopts['svgpng'].extend([o,a])
+            subopts['svgpng'].extend([o, a])
         elif o in ("-b", "--background",
                    "-f", "--foreground",
                    "-n", "--nan") :
             # only affects output to cpt
-            subopts['svgcpt'].extend([o,a])
-            subopts['gplcpt'].extend([o,a])
-            subopts['avlcpt'].extend([o,a])
+            subopts['svgcpt'].extend([o, a])
+            subopts['gplcpt'].extend([o, a])
+            subopts['avlcpt'].extend([o, a])
         elif o in ("-T", "--transparency") :
             # only svg to cpt, gpt, sao
-            subopts['svgcpt'].extend([o,a])
-            subopts['svggpt'].extend([o,a])
-            subopts['svgsao'].extend([o,a])
+            subopts['svgcpt'].extend([o, a])
+            subopts['svggpt'].extend([o, a])
+            subopts['svgsao'].extend([o, a])
         elif o in ("-v", "--verbose") :
             verbose = True
         else:
@@ -313,9 +340,9 @@ def main() :
     if verbose :
         print "This is gradient-convert (version %s)" % (version)
 
-    opt = (verbose,subopts)
+    opt = (verbose, subopts)
 
-    retval = convert(ipath,opath,opt)
+    retval = convert(ipath, opath, opt)
 
     if verbose :
         print "done."
