@@ -4,7 +4,7 @@
   fill types for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: fill.h,v 1.2 2004/04/12 23:42:14 jjg Exp jjg $
+  $Id: fill.h,v 1.3 2004/08/15 23:48:52 jjg Exp jjg $
 */
 
 #ifndef FILL_H
@@ -12,7 +12,11 @@
 
 #include "colour.h"
 
-typedef enum {colour,grey,hatch,file,empty} filltype_t;
+typedef enum {fill_colour,
+	      fill_grey,
+	      fill_hatch,
+	      fill_file,
+	      fill_empty} filltype_t;
 
 typedef struct
 {

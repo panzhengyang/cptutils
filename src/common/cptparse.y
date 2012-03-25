@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.8 2012/03/25 23:35:19 jjg Exp jjg $
+  $Id: cptparse.y,v 1.9 2012/03/25 23:36:11 jjg Exp jjg $
 */
 
 %{
@@ -119,11 +119,11 @@ extra : 'F' fill { bridge->fg  = $2; }
       | 'N' fill { bridge->nan = $2; }
 ;
 
-fill  : '-'   { $$.type = empty; }
-| hatch       { $$.type = hatch; $$.u.hatch = $1; }
-| NUM         { $$.type = grey;  $$.u.grey  = (int)$1; }
+fill  : '-'   { $$.type = fill_empty; }
+| hatch       { $$.type = fill_hatch; $$.u.hatch = $1; }
+| NUM         { $$.type = fill_grey;  $$.u.grey  = (int)$1; }
 | NUM NUM NUM { 
-  $$.type = colour;
+  $$.type = fill_colour;
   switch (bridge->model)
     {
     case model_hsv:

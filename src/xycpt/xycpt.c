@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.7 2010/06/27 09:58:57 jjg Exp jjg $
+  $Id: xycpt.c,v 1.8 2012/03/08 15:33:24 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -48,7 +48,7 @@ extern int xycpt(xycpt_opt_t opt)
       return 1;
     }
 
-  cpt->model = rgb;
+  cpt->model = model_rgb;
 
   /* set bg/fg/nan values */
   

@@ -2,7 +2,7 @@
   cpthsv.c
 
   (c) J.J.Green 2007
-  $Id: cptsvg.c,v 1.5 2005/06/15 21:21:06 jjg Exp $
+  $Id: cpthsv.c,v 1.1 2007/11/16 17:04:49 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -76,7 +76,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
 
   /* check colour model */
 
-  if (cpt->model != rgb)
+  if (cpt->model != model_rgb)
     {
       fprintf(stderr,"cannot process non-rgb palette, sorry\n");
       return 1;

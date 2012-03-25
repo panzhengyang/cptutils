@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.31 2011/11/14 20:45:23 jjg Exp jjg $
+  $Id: svgx.c,v 1.32 2012/03/09 22:16:12 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -259,7 +259,7 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
 
       /* housekeeping */
 
-      cpt->model = rgb;
+      cpt->model = model_rgb;
 
       cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
       
@@ -623,7 +623,7 @@ static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
 
   /* housekeeping */
 
-  cpt->model = rgb;
+  cpt->model = model_rgb;
   
   cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
   

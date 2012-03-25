@@ -2,7 +2,7 @@
   cptcont.c
 
   (c) J.J.Green 2010
-  $Id: cptcont.c,v 1.2 2010/04/04 18:10:18 jjg Exp jjg $
+  $Id: cptcont.c,v 1.3 2010/04/18 17:10:18 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -110,7 +110,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
       if (! fill_eq(s1->rsmp.fill,s2->lsmp.fill))
 	{
 	  fill_t F1,F2;
-	  int err;
+	  int err = 0;
 
 	  err += fill_interpolate(p,
 				  s1->rsmp.fill,

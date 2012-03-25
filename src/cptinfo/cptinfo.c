@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.5 2010/04/12 19:39:47 jjg Exp jjg $
+  $Id: cptinfo.c,v 1.6 2012/02/26 19:33:07 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -247,10 +247,10 @@ static int output_plain(info_t info,FILE* stream)
 
   switch (info.model)
     {
-    case rgb:
+    case model_rgb:
       modstr = "RGB";
       break;
-    case hsv:
+    case model_hsv:
       modstr = "HSV";
       break;
     default:
@@ -278,10 +278,10 @@ static int output_csv(info_t info,FILE* stream)
 
   switch (info.model)
     {
-    case rgb:
+    case model_rgb:
       modstr = "rgb";
       break;
-    case hsv:
+    case model_hsv:
       modstr = "hsv";
       break;
     default:

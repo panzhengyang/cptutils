@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.5 2005/06/15 21:21:06 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.6 2011/11/04 14:27:59 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -111,9 +111,9 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
   switch (cpt->model)
     {
-    case rgb: 
+    case model_rgb: 
       break;
-    case hsv: 
+    case model_hsv: 
       break;
     default:
       fprintf(stderr,"unknown colour model\n");
@@ -145,11 +145,11 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 	  
           switch (cpt->model)
             {
-            case rgb:
+            case model_rgb:
               lcol = lsmp.fill.u.colour.rgb;
               rcol = rsmp.fill.u.colour.rgb;
               break;
-            case hsv:
+            case model_hsv:
 	      /* fixme */
 	      fprintf(stderr,"conversion of hsv not yet implemeted\n");
               return 1;

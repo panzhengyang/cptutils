@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.14 2012/03/05 22:06:27 jjg Exp jjg $
+  $Id: cptio.c,v 1.15 2012/03/09 21:38:16 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -161,8 +161,8 @@ extern int cpt_write(const char *outfile, cpt_t *cpt)
   
   switch (cpt->model)
     {
-    case rgb : model = "RGB"; break;
-    case hsv : model = "HSV"; break;
+    case model_rgb : model = "RGB"; break;
+    case model_hsv : model = "HSV"; break;
     default :
       fprintf(stderr,"cpt file corrupt : bad model specified\n");
       return 1;
@@ -369,14 +369,14 @@ static int fprintf_cpt_fill(FILE* stream,fill_t fill,model_t model)
     case colour:
       switch (model)
 	{
-	case rgb:
+	case model_rgb:
 	  n += fprintf(stream,
 		       "%3i %3i %3i",
 		       fill.u.colour.rgb.red,
 		       fill.u.colour.rgb.green,
 		       fill.u.colour.rgb.blue);
 	    break;
-	case hsv:
+	case model_hsv:
 	  n += fprintf(stream,
 		       "%7.3f %7.5f %7.5f",
 		       fill.u.colour.hsv.hue,
