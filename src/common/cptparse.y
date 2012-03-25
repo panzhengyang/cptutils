@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.9 2012/03/25 23:36:11 jjg Exp jjg $
+  $Id: cptparse.y,v 1.10 2012/03/25 23:53:40 jjg Exp jjg $
 */
 
 %{
@@ -163,7 +163,7 @@ static cpt_sample_t sample3(double z,double c1,double c2,double c3)
   cpt_sample_t s;
   fill_t fill;
 
-  fill.type = colour;
+  fill.type = fill_colour;
 
   switch (bridge->model)
     {
@@ -189,7 +189,7 @@ static cpt_sample_t sample1(double z,double g)
   cpt_sample_t s;
   fill_t fill;
 
-  fill.type   = grey;
+  fill.type   = fill_grey;
   fill.u.grey = (int)g;
 
   s.val  = z;
@@ -203,7 +203,7 @@ static cpt_sample_t sampleh(double z,hatch_t h)
   cpt_sample_t s;
   fill_t fill;
 
-  fill.type    = hatch;
+  fill.type    = fill_hatch;
   fill.u.hatch = h;
 
   s.val  = z;
@@ -217,7 +217,7 @@ static cpt_sample_t samplee(double z)
   cpt_sample_t s;
 
   s.val = z;
-  s.fill.type = empty;
+  s.fill.type = fill_empty;
 
   return s;
 }

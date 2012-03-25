@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.6 2011/11/04 14:27:59 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.7 2012/03/25 23:39:12 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -141,7 +141,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
       switch (type)
         {
-        case colour:
+        case fill_colour:
 	  
           switch (cpt->model)
             {
@@ -158,10 +158,10 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
             }
           break;
 	  
-        case grey:
-        case hatch:
-        case file:
-        case empty:
+        case fill_grey:
+        case fill_hatch:
+        case fill_file:
+        case fill_empty:
 	  /* fixme */
 	  fprintf(stderr,"fill type not implemeted yet\n");
           return 1;

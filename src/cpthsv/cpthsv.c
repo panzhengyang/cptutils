@@ -2,7 +2,7 @@
   cpthsv.c
 
   (c) J.J.Green 2007
-  $Id: cpthsv.c,v 1.1 2007/11/16 17:04:49 jjg Exp jjg $
+  $Id: cpthsv.c,v 1.2 2012/03/25 23:40:04 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -95,7 +95,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
           return 1;
         }
 
-      if (seg->lsmp.fill.type == colour)
+      if (seg->lsmp.fill.type == fill_colour)
 	{
 	  m++;
 

@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.15 2012/03/09 21:38:16 jjg Exp jjg $
+  $Id: cptio.c,v 1.16 2012/03/25 23:36:57 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -350,23 +350,23 @@ static int fprintf_cpt_fill(FILE* stream,fill_t fill,model_t model)
 
   switch (fill.type)
     {
-    case empty:
+    case fill_empty:
       n += fprintf(stream,"-");
       break;
-    case grey:
+    case fill_grey:
       n += fprintf(stream,"%3i",fill.u.grey);
       break;
-    case hatch:
+    case fill_hatch:
       n += fprintf(stream,"%c%i/%i",
 		   (fill.u.hatch.sign == 1 ? 'p' : 'P' ), 
 		   fill.u.hatch.dpi,
 		   fill.u.hatch.n
 		   );
       break;
-    case file:
+    case fill_file:
       n += fprintf(stream,"%s",fill.u.file);
       break;
-    case colour:
+    case fill_colour:
       switch (model)
 	{
 	case model_rgb:

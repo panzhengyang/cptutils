@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.7 2005/12/04 18:32:26 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.8 2012/03/25 23:37:39 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -40,7 +40,7 @@ extern int avlcpt(avlcpt_opt_t opt)
 
   cpt->model = model_rgb;
   
-  cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+  cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
 
   cpt->bg.u.colour.rgb  = opt.bg;
   cpt->fg.u.colour.rgb  = opt.fg;
@@ -141,13 +141,13 @@ static int avlcpt_convert(avl_grad_t* avl,cpt_t *cpt,avlcpt_opt_t opt)
       if ((cseg = cpt_seg_new_err()) == NULL) return 1;
 
       cseg->lsmp.val = z0;
-      cseg->lsmp.fill.type = colour;
+      cseg->lsmp.fill.type = fill_colour;
       cseg->lsmp.fill.u.colour.rgb.red   = aseg.r/256;
       cseg->lsmp.fill.u.colour.rgb.green = aseg.g/256;
       cseg->lsmp.fill.u.colour.rgb.blue  = aseg.b/256;
       
       cseg->rsmp.val = z1;
-      cseg->rsmp.fill.type = colour;
+      cseg->rsmp.fill.type = fill_colour;
       cseg->rsmp.fill.u.colour.rgb.red   = aseg.r/256;
       cseg->rsmp.fill.u.colour.rgb.green = aseg.g/256;
       cseg->rsmp.fill.u.colour.rgb.blue  = aseg.b/256;

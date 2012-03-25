@@ -1,7 +1,7 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.6 2012/02/26 19:33:07 jjg Exp jjg $
+  $Id: cptinfo.c,v 1.7 2012/03/25 23:38:28 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -182,15 +182,15 @@ static int analyse_segment(cpt_seg_t* seg,info_t* info)
 
   switch (seg->lsmp.fill.type)
     {
-    case empty : break;
-    case hatch :
-    case file :
+    case fill_empty : break;
+    case fill_hatch :
+    case fill_file :
       info->segments.hatch++;
       break;
-    case grey :
+    case fill_grey :
       info->segments.grey++;
       break;
-    case colour :
+    case fill_colour :
       info->segments.colour++;
       break;
     }
