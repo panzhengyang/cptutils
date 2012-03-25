@@ -4,7 +4,7 @@
   simple RGB colours for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.9 2004/08/15 23:46:05 jjg Exp jjg $
+  $Id: colour.h,v 1.10 2011/11/07 23:41:12 jjg Exp jjg $
 */
 
 #ifndef COLOUR_H
@@ -22,16 +22,16 @@
   these correspond to colours as interpreted in cpt files.
 */
 
-typedef enum {rgb,hsv} model_t;
+typedef enum {model_rgb, model_hsv} model_t;
 
 typedef struct rgb_t
 {
-    int red,green,blue;
+  int red, green, blue;
 } rgb_t;
  
 typedef struct hsv_t
 {
-    double hue,sat,val;
+  double hue, sat, val;
 } hsv_t;
 
 typedef union colour_t
@@ -45,26 +45,26 @@ typedef union colour_t
   int the range 0-1
 */
 
-extern int hsvD_to_rgbD(double*,double*);
-extern int rgbD_to_hsvD(double*,double*);
+extern int hsvD_to_rgbD(double*, double*);
+extern int rgbD_to_hsvD(double*, double*);
 
-extern int rgbD_to_rgb(double*,rgb_t*);
-extern int rgb_to_rgbD(rgb_t,double*);
+extern int rgbD_to_rgb(double*, rgb_t*);
+extern int rgb_to_rgbD(rgb_t, double*);
 
-extern int rgbD_to_hsv(double*,hsv_t*);
-extern int hsv_to_rgbD(hsv_t,double*);
+extern int rgbD_to_hsv(double*, hsv_t*);
+extern int hsv_to_rgbD(hsv_t, double*);
 
-extern int rgbD_to_hsvD(double*,double*);
-extern int hsvD_to_rgbD(double*,double*);
+extern int rgbD_to_hsvD(double*, double*);
+extern int hsvD_to_rgbD(double*, double*);
 
-extern int grey_to_rgbD(int,double*);
+extern int grey_to_rgbD(int, double*);
 
-extern int parse_rgb(char*,rgb_t*);
-extern double colour_rgb_dist(colour_t,colour_t,model_t);
+extern int parse_rgb(char*, rgb_t*);
+extern double colour_rgb_dist(colour_t, colour_t, model_t);
 
 extern int rgb_interpolate(double, rgb_t, rgb_t, rgb_t*);
 extern int hsv_interpolate(double, hsv_t, hsv_t, hsv_t*);
-extern int colour_interpolate(double,colour_t,colour_t,model_t,colour_t*);
+extern int colour_interpolate(double, colour_t, colour_t, model_t, colour_t*);
 
 #endif
 
