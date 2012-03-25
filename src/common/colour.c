@@ -4,7 +4,7 @@
   colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.c,v 1.7 2010/04/04 17:22:15 jjg Exp jjg $
+  $Id: colour.c,v 1.8 2011/11/07 23:41:07 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -30,14 +30,14 @@ extern double colour_rgb_dist(colour_t a,colour_t b,model_t model)
   switch (model)
     {
 
-    case rgb :
-      rgb_to_rgbD(a.rgb,da); 
-      rgb_to_rgbD(b.rgb,db); 
+    case model_rgb :
+      rgb_to_rgbD(a.rgb, da); 
+      rgb_to_rgbD(b.rgb, db); 
       break;
       
-    case hsv :
-      hsv_to_rgbD(a.hsv,da); 
-      hsv_to_rgbD(b.hsv,db); 
+    case model_hsv :
+      hsv_to_rgbD(a.hsv, da); 
+      hsv_to_rgbD(b.hsv, db); 
       break;
 
     default:
@@ -60,7 +60,7 @@ extern double colour_rgb_dist(colour_t a,colour_t b,model_t model)
   convert a gimp triple of [0..1] vals to/from an rgb_t struct
 */
 
-extern int rgbD_to_rgb(double* col,rgb_t* rgb)
+extern int rgbD_to_rgb(double* col, rgb_t* rgb)
 {
     if (!col || !rgb) return 1;
 
@@ -82,7 +82,7 @@ extern int rgb_to_rgbD(rgb_t rgb,double* col)
     return 0;
 }
 
-extern int grey_to_rgbD(int g,double* col)
+extern int grey_to_rgbD(int g, double* col)
 {
   rgb_t rgb;
 
@@ -90,7 +90,7 @@ extern int grey_to_rgbD(int g,double* col)
   rgb.green = g;
   rgb.blue  = g;
 
-  return rgb_to_rgbD(rgb,col);
+  return rgb_to_rgbD(rgb, col);
 }
 
 /*
@@ -101,13 +101,13 @@ extern int grey_to_rgbD(int g,double* col)
   latter for automated processing of GUI generation.
 */
 
-extern int rgbD_to_hsv(double* rgbD,hsv_t* hsv)
+extern int rgbD_to_hsv(double* rgbD, hsv_t* hsv)
 {
   double hsvD[3];
 
   if (!rgbD || !hsv) return 1;
   
-  if (rgbD_to_hsvD(rgbD,hsvD) != 0)
+  if (rgbD_to_hsvD(rgbD, hsvD) != 0)
     return 1;
   
   hsv->hue = hsvD[0] * 360.0;
@@ -117,7 +117,7 @@ extern int rgbD_to_hsv(double* rgbD,hsv_t* hsv)
   return 0;
 }
 
-extern int hsv_to_rgbD(hsv_t hsv,double* rgbD)
+extern int hsv_to_rgbD(hsv_t hsv, double* rgbD)
 {
   double hsvD[3];
   
@@ -127,7 +127,7 @@ extern int hsv_to_rgbD(hsv_t hsv,double* rgbD)
 
   if (!rgbD) return 1;
 
-  if (hsvD_to_rgbD(hsvD,rgbD) != 0)
+  if (hsvD_to_rgbD(hsvD, rgbD) != 0)
     return 1;
   
   return 0;
@@ -165,18 +165,18 @@ static double colourD(int i)
   read an rgb_t in a string "r/g/b/"
 */ 
 
-extern int parse_rgb(char* string,rgb_t* col)
+extern int parse_rgb(char *string, rgb_t *col)
 {
     char *dup,*token;
    
     if (string == NULL) return 1;
     if ((dup = strdup(string)) == NULL) return 1;
  
-    token = strtok(dup,"/");
+    token = strtok(dup, "/");
 
     col->red = atoi(token);
 
-    if ((token = strtok(NULL,"/")) == NULL)
+    if ((token = strtok(NULL, "/")) == NULL)
     {
 	col->blue = col->green = col->red;
 	free(dup);
@@ -185,7 +185,7 @@ extern int parse_rgb(char* string,rgb_t* col)
 
     col->green = atoi(token);
 
-    if ((token = strtok(NULL,"/")) == NULL)
+    if ((token = strtok(NULL, "/")) == NULL)
     {
 	fprintf(stderr,"ill-formed colour string \"%s\"\n",string);
 	free(dup);
@@ -202,10 +202,10 @@ extern int parse_rgb(char* string,rgb_t* col)
   taken from libgimp/gimpcolorspace.c with minor modifications
 */
 
-extern int rgbD_to_hsvD(double *rgbD,double* hsvD)
+extern int rgbD_to_hsvD(double *rgbD, double *hsvD)
 {
     double min, max;
-    double delta,r,g,b,h,s,v;
+    double r,g,b,h,s,v;
     
     r = rgbD[0];
     g = rgbD[1];
@@ -214,45 +214,45 @@ extern int rgbD_to_hsvD(double *rgbD,double* hsvD)
     h = 0.0;
 
     if (r > g)
-    {
+      {
 	max = MAX(r, b);
 	min = MIN(g, b);
-    }
+      }
     else
-    {
+      {
 	max = MAX(g, b);
 	min = MIN(r, b);
-    }
+      }
     v = max;
-
+    
     if (max != 0.0)
-	s = (max - min) / max;
+      s = (max - min) / max;
     else
-	s = 0.0;
-
+      s = 0.0;
+    
     if (s == 0.0)
-    {
+      {
 	h = 0.0;
-    }
+      }
     else
-    {
-	delta = max - min;
-
+      {
+	double delta = max - min;
+	
 	if (r == max)
-	    h = (g - b) / delta;
+	  h = (g - b) / delta;
 	else if (g == max)
-	    h = 2 + (b - r) / delta;
+	  h = 2 + (b - r) / delta;
 	else if (b == max)
-	    h = 4 + (r - g) / delta;
+	  h = 4 + (r - g) / delta;
 	
 	h /= 6.0;
 	
 	if (h < 0.0)
-	    h += 1.0;
+	  h += 1.0;
 	else if (h > 1.0)
-	    h -= 1.0;
-    }
-
+	  h -= 1.0;
+      }
+    
     hsvD[0] = h;
     hsvD[1] = s;
     hsvD[2] = v;
@@ -260,7 +260,7 @@ extern int rgbD_to_hsvD(double *rgbD,double* hsvD)
     return 0;
 }
 
-extern int hsvD_to_rgbD(double* hsvD,double* rgbD)
+extern int hsvD_to_rgbD(double *hsvD, double *rgbD)
 {
   double f,p,q,t,h,s,v;
 
@@ -287,39 +287,39 @@ extern int hsvD_to_rgbD(double* hsvD,double* rgbD)
   t = v*(1.0 - s*(1.0 - f));
   
   switch ((int)h)
-  {
-      case 0:
-	  rgbD[0] = v;
-	  rgbD[1] = t;
-	  rgbD[2] = p;
-	  break;
-      case 1:
-	  rgbD[0] = q;
-	  rgbD[1] = v;
-	  rgbD[2] = p;
-	  break;
-      case 2:
-	  rgbD[0] = p;
-	  rgbD[1] = v;
-	  rgbD[2] = t;
-	  break;	      
-      case 3:
-	  rgbD[0] = p;
-	  rgbD[1] = q;
-	  rgbD[2] = v;
-	  break;
-      case 4:
-	  rgbD[0] = t;
-	  rgbD[1] = p;
-	  rgbD[2] = v;
-	  break;
-      case 5:
-	  rgbD[0] = v;
-	  rgbD[1] = p;
-	  rgbD[2] = q;
-	  break;
-  }
-
+    {
+    case 0:
+      rgbD[0] = v;
+      rgbD[1] = t;
+      rgbD[2] = p;
+      break;
+    case 1:
+      rgbD[0] = q;
+      rgbD[1] = v;
+      rgbD[2] = p;
+      break;
+    case 2:
+      rgbD[0] = p;
+      rgbD[1] = v;
+      rgbD[2] = t;
+      break;	      
+    case 3:
+      rgbD[0] = p;
+      rgbD[1] = q;
+      rgbD[2] = v;
+      break;
+    case 4:
+      rgbD[0] = t;
+      rgbD[1] = p;
+      rgbD[2] = v;
+      break;
+    case 5:
+      rgbD[0] = v;
+      rgbD[1] = p;
+      rgbD[2] = q;
+      break;
+    }
+  
   return 0;
 }
 
@@ -327,62 +327,62 @@ extern int hsvD_to_rgbD(double* hsvD,double* rgbD)
   interpolate between two given colours
 */
 
-static int double_interpolate(double z,double a,double b,double *c)
+static int double_interpolate(double z, double a, double b, double *c)
 {
   *c = (1.0-z)*a + z*b;
 
   return 0;
 }
 
-static int rgbD_interpolate(double z,double *aD,double *bD,double *cD)
+static int rgbD_interpolate(double z, double *aD, double *bD, double *cD)
 {
   int i,err = 0;
 
   for (i=0 ; i<3 ; i++)
-    err |= double_interpolate(z,aD[i],bD[i],cD+i);
+    err |= double_interpolate(z, aD[i], bD[i], cD+i);
 
   return err;
 }
 
-extern int rgb_interpolate(double z,rgb_t a,rgb_t b,rgb_t *c)
+extern int rgb_interpolate(double z, rgb_t a, rgb_t b, rgb_t *c)
 {
   double aD[3], bD[3], cD[3];
   int err = 0;
 
-  err |= rgb_to_rgbD(a,aD);
-  err |= rgb_to_rgbD(b,bD);
-  err |= rgbD_interpolate(z,aD,bD,cD);
-  err |= rgbD_to_rgb(cD,c);
+  err |= rgb_to_rgbD(a, aD);
+  err |= rgb_to_rgbD(b, bD);
+  err |= rgbD_interpolate(z, aD, bD, cD);
+  err |= rgbD_to_rgb(cD, c);
 
   return err;
 }
 
-extern int hsv_interpolate(double z,hsv_t a,hsv_t b,hsv_t *c)
+extern int hsv_interpolate(double z, hsv_t a, hsv_t b, hsv_t *c)
 {
   double aD[3], bD[3], cD[3];
   int err = 0;
 
-  err |=  hsv_to_rgbD(a,aD);
-  err |=  hsv_to_rgbD(b,bD);
-  err |=  rgbD_interpolate(z,aD,bD,cD);
-  err |=  rgbD_to_hsv(cD,c);
+  err |=  hsv_to_rgbD(a, aD);
+  err |=  hsv_to_rgbD(b, bD);
+  err |=  rgbD_interpolate(z, aD, bD, cD);
+  err |=  rgbD_to_hsv(cD, c);
   
   return err;
 }
 
-extern int colour_interpolate(double z,colour_t a,colour_t b,
-			      model_t model,colour_t *c)
+extern int colour_interpolate(double z, colour_t a, colour_t b,
+			      model_t model, colour_t *c)
 {
   int err;
 
   switch (model)
     {
-    case rgb: 
-      err = rgb_interpolate(z,a.rgb,b.rgb,&(c->rgb));
+    case model_rgb: 
+      err = rgb_interpolate(z, a.rgb, b.rgb, &(c->rgb));
       break;
 
-    case hsv:
-      err = hsv_interpolate(z,a.hsv,b.hsv,&(c->hsv));
+    case model_hsv:
+      err = hsv_interpolate(z, a.hsv, b.hsv, &(c->hsv));
       break;
 
     default:

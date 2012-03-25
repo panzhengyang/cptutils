@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.6 2005/03/30 23:10:08 jjg Exp jjg $
+  $Id: cptparse.y,v 1.7 2012/03/09 21:37:12 jjg Exp jjg $
 */
 
 %{
@@ -68,8 +68,8 @@ content : segment { cpt_append($1,bridge); }
 | extra 
 ;
 
-model :  RGB { bridge->model = rgb; }
-| HSV { bridge->model = hsv; }
+model :  RGB { bridge->model = model_rgb; }
+| HSV { bridge->model = model_hsv; }
 ;
 
 segment : spline {
