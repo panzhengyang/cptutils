@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.7 2012/03/09 21:37:12 jjg Exp jjg $
+  $Id: cptparse.y,v 1.8 2012/03/25 23:35:19 jjg Exp jjg $
 */
 
 %{
@@ -126,12 +126,12 @@ fill  : '-'   { $$.type = empty; }
   $$.type = colour;
   switch (bridge->model)
     {
-    case hsv:
+    case model_hsv:
       $$.u.colour.hsv.hue = $1;
       $$.u.colour.hsv.sat = $2;
       $$.u.colour.hsv.val = $3;
       break;
-    case rgb:
+    case model_rgb:
       $$.u.colour.rgb.red   = (int)$1;
       $$.u.colour.rgb.green = (int)$2;
       $$.u.colour.rgb.blue  = (int)$3;
@@ -167,12 +167,12 @@ static cpt_sample_t sample3(double z,double c1,double c2,double c3)
 
   switch (bridge->model)
     {
-    case hsv:
+    case model_hsv:
       fill.u.colour.hsv.hue = c1;
       fill.u.colour.hsv.sat = c2;
       fill.u.colour.hsv.val = c3;
       break;
-    case rgb:
+    case model_rgb:
       fill.u.colour.rgb.red   = (int)c1;
       fill.u.colour.rgb.green = (int)c2;
       fill.u.colour.rgb.blue  = (int)c3;
