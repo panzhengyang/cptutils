@@ -2,7 +2,7 @@
   gplcpt.h
   convert GIMP palette (gpl) to GMT colour table (cpt)
   Copyright (c) J.J. Green 2010
-  $Id: gplcpt.c,v 1.5 2012/03/25 23:40:42 jjg Exp jjg $
+  $Id: gplcpt.c,v 1.6 2012/03/26 00:00:43 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -75,7 +75,7 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 
   /* set bg/fg/nan values */
   
-  cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+  cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
 
   cpt->bg.u.colour.rgb  = opt.bg;
   cpt->fg.u.colour.rgb  = opt.fg;

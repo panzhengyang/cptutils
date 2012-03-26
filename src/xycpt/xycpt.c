@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.8 2012/03/08 15:33:24 jjg Exp jjg $
+  $Id: xycpt.c,v 1.9 2012/03/25 23:42:09 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -52,7 +52,7 @@ extern int xycpt(xycpt_opt_t opt)
 
   /* set bg/fg/nan values */
   
-  cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+  cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
 
   cpt->bg.u.colour.rgb  = opt.bg;
   cpt->fg.u.colour.rgb  = opt.fg;
@@ -340,7 +340,7 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
   switch (i)
     {
     case 1:
-      f->fill.type = grey;
+      f->fill.type = fill_grey;
       f->val       = 0;
 
       f->fill.u.grey = atocol(tok[0]);
@@ -351,7 +351,7 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       break;
 
     case 2:
-      f->fill.type   = grey;
+      f->fill.type   = fill_grey;
       f->val         = atof(tok[0]);
 
       f->fill.u.grey = atocol(tok[1]);
@@ -362,7 +362,7 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       break;
 
     case 3:
-      f->fill.type = colour;
+      f->fill.type = fill_colour;
       f->val       = 0;
 
       f->fill.u.colour.rgb.red   = atocol(tok[0]);
@@ -375,7 +375,7 @@ static fill_stack_t* xyread_stream(FILE* stream,xycpt_opt_t opt)
       break;
  
     case 4:
-      f->fill.type = colour;
+      f->fill.type = fill_colour;
       f->val       = atof(tok[0]);
 
       f->fill.u.colour.rgb.red   = atocol(tok[1]);
@@ -416,7 +416,7 @@ static fill_stack_t* xyread1i(FILE* stream,char* buf,int n)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type   = grey;
+  f->fill.type   = fill_grey;
   f->fill.u.grey = i;
   f->val         = n;
   f->next        = xyread1i(stream,buf,n+1);
@@ -443,7 +443,7 @@ static fill_stack_t* xyread1f(FILE* stream,char* buf,int n)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type   = grey;
+  f->fill.type   = fill_grey;
   f->fill.u.grey = colour8(d);
   f->val         = n;
   f->next        = xyread1f(stream,buf,n+1);
@@ -471,7 +471,7 @@ static fill_stack_t* xyread2i(FILE* stream,char* buf)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type   = grey;
+  f->fill.type   = fill_grey;
   f->fill.u.grey = i;
   f->val         = v;
   f->next        = xyread2i(stream,buf);
@@ -498,7 +498,7 @@ static fill_stack_t* xyread2f(FILE* stream,char* buf)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type   = grey;
+  f->fill.type   = fill_grey;
   f->fill.u.grey = colour8(d);
   f->val         = v;
   f->next        = xyread2f(stream,buf);
@@ -525,7 +525,7 @@ static fill_stack_t* xyread3i(FILE* stream,char* buf,int n)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type = colour;
+  f->fill.type = fill_colour;
   f->val       = n;
 
   f->fill.u.colour.rgb.red   = r;
@@ -556,7 +556,7 @@ static fill_stack_t* xyread3f(FILE* stream,char* buf,int n)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type = colour;
+  f->fill.type = fill_colour;
   f->val       = n;
 
   f->fill.u.colour.rgb.red   = colour8(r);
@@ -588,7 +588,7 @@ static fill_stack_t* xyread4i(FILE* stream,char* buf)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type = colour;
+  f->fill.type = fill_colour;
   f->val       = z;
 
   f->fill.u.colour.rgb.red   = r;
@@ -620,7 +620,7 @@ static fill_stack_t* xyread4f(FILE* stream,char* buf)
   if ((f = malloc(sizeof(fill_stack_t))) == NULL)
     return NULL;
 
-  f->fill.type = colour;
+  f->fill.type = fill_colour;
   f->val       = z;
 
   f->fill.u.colour.rgb.red   = colour8(r);

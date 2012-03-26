@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.32 2012/03/09 22:16:12 jjg Exp jjg $
+  $Id: svgx.c,v 1.33 2012/03/25 23:41:32 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -261,7 +261,7 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
 
       cpt->model = model_rgb;
 
-      cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+      cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
       
       cpt->bg.u.colour.rgb  = opt.bg;
       cpt->fg.u.colour.rgb  = opt.fg;
@@ -625,7 +625,7 @@ static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
 
   cpt->model = model_rgb;
   
-  cpt->fg.type = cpt->bg.type = cpt->nan.type = colour;
+  cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
   
   cpt->bg.u.colour.rgb  = opt->bg;
   cpt->fg.u.colour.rgb  = opt->fg;
@@ -1009,10 +1009,10 @@ static int svgcpt(svg_t* svg, cpt_t* cpt)
 	  seg->lsmp.val = z1;
 	  seg->rsmp.val = z2;
 
-	  seg->lsmp.fill.type         = colour;
+	  seg->lsmp.fill.type         = fill_colour;
 	  seg->lsmp.fill.u.colour.rgb = c1;
 
-	  seg->rsmp.fill.type         = colour;
+	  seg->rsmp.fill.type         = fill_colour;
 	  seg->rsmp.fill.u.colour.rgb = c2;
 
 	  if (cpt_append(seg,cpt) != 0)
