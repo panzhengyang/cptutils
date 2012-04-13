@@ -1,3 +1,3 @@
 #! /bin/sh
-svgx --type png $@
+svgx --type png "$@"
 

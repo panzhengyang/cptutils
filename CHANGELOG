@@ -1,7 +1,9 @@
-Changes $Id: CHANGELOG,v 1.71 2012/03/13 23:47:59 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.72 2012/03/25 23:44:06 jjg Exp jjg $
 
 1.45 (pending)
-  - minor fixes to gradient-convert
+  - quoted argument lists in svgx wrappers so they handle
+    filenames containing spaces correctly
+  - minor fixes and enhancements to gradient-convert
   - a few minor fixes from static analysis (cppcheck)
 
 1.44 (13 March 2012)

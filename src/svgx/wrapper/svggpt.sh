@@ -1,3 +1,3 @@
 #! /bin/sh
-svgx --type gnuplot $@
+svgx --type gnuplot "$@"
 

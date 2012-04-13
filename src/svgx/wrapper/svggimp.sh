@@ -1,3 +1,3 @@
 #! /bin/sh
-svgx --type ggr $@
+svgx --type ggr "$@"
 

@@ -1,3 +1,3 @@
 #! /bin/sh
-svgx --type pov $@
+svgx --type pov "$@"
 

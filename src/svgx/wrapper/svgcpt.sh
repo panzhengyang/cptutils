@@ -1,3 +1,3 @@
 #! /bin/sh
-svgx --type cpt $@
+svgx --type cpt "$@"
 

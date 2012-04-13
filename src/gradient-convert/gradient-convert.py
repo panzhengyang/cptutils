@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.7 2012/03/15 00:00:22 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.8 2012/03/15 00:07:26 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -282,6 +282,7 @@ def usage() :
     print " -v          : verbose"
     print " -V          : version"
     print "the type in brackets indicates the file type affected"
+    print
 
 def main() :
     try:
@@ -307,6 +308,7 @@ def main() :
     for o, a in opts :
         if o in ("-h", "--help") :
             usage()
+            formats_supported(gajmat, gnames)
             sys.exit(0)
         elif o in ("-V", "--version") :
             print "gradient-convert %s" % (version)

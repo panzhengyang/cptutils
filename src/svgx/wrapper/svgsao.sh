@@ -1,3 +1,3 @@
 #! /bin/sh
-svgx --type sao $@
+svgx --type sao "$@"
 
