@@ -2,7 +2,7 @@
   gimpsvg.h
 
   (c) J.J.Green 2011
-  $Id: gimpsvg.h,v 1.5 2012/02/27 13:36:42 jjg Exp jjg $
+  $Id: gimpsvg.h,v 1.6 2012/04/15 17:58:19 jjg Exp jjg $
 */
 
 #ifndef GIMPSVG_H
@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #include "colour.h"
-#inlcude "svgpreview.h"
+#include "svgpreview.h"
 
 typedef struct 
 {

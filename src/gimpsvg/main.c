@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.12 2012/02/27 13:35:41 jjg Exp jjg $
+  $Id: main.c,v 1.13 2012/02/27 13:36:08 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -61,6 +61,10 @@ int main(int argc,char** argv)
       fprintf(stderr,"at least %i samples required\n",SAMPLES_MIN);
       opt.samples = SAMPLES_MIN;
     }
+
+  // fixme
+
+  opt.preview.use = false;
 
   /* null outfile for stdout */
 

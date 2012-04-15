@@ -4,7 +4,7 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.8 2011/11/03 11:19:47 jjg Exp jjg $
+  $Id: pspsvg.c,v 1.9 2011/11/03 21:59:40 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -58,7 +58,7 @@ extern int pspsvg(pspsvg_opt_t opt)
   
   /* write the svg file */
   
-  if (svg_write(opt.file.output,svg) != 0)
+  if (svg_write(opt.file.output, svg &(opt.preview)) != 0)
     {
       fprintf(stderr,"failed to write palette to %s\n",
 	      (opt.file.output ? opt.file.output : "<stdout>"));
