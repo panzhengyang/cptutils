@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cptsvg.xml,v 1.2 2012/02/26 20:21:35 jjg Exp jjg $ -->
+<!-- $Id: cptsvg.xml,v 1.3 2012/02/27 18:28:12 jjg Exp jjg $ -->
 
 <refentry id='cptsvg1'>
 
@@ -61,6 +61,12 @@
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-output.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-preview.xml"/>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
+              href="../docbook/varlistentry-preview-geometry.xml"/>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
               href="../docbook/varlistentry-verbose.xml"/>

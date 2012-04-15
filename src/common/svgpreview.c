@@ -4,7 +4,7 @@
   specify a preview image in SVG output
 
   Copyright (c) J.J. Green 2012
-  $Id: svgpreview.c,v 1.1 2012/04/15 18:47:34 jjg Exp jjg $
+  $Id: svgpreview.c,v 1.2 2012/04/15 20:50:10 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -103,7 +103,7 @@ extern int svg_preview_geometry(const char *geom, svg_preview_t *preview)
 
   /* find seperator */
 
-  char *sep = strchr(s,'/');
+  char *sep = strchr(s,'x');
 
   if (sep)
     {

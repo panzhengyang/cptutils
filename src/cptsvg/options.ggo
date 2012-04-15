@@ -1,11 +1,11 @@
 # gengetopt input for cptsvg
 # (c) J. J. Green 2012
-# $Id: options.ggo,v 1.1 2005/05/30 23:17:26 jjg Exp jjg $
+# $Id: options.ggo,v 1.2 2012/04/15 18:54:59 jjg Exp jjg $
 package "cptsvg"
 purpose "convert GMT colour palette to SVG gradient"
 option	"output"	   o "output filename"		   string  no
 option  "preview"          p "include preview in output"   flag    off
-option  "preview-geometry" - "geometry of preview"         string  default="12c/3c" no
+option  "preview-geometry" - "geometry of preview"         string  default="250x30" no
 option	"verbose"	   v "verbose operation"	   flag	   off
 
 
