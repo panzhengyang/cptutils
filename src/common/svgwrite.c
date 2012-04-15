@@ -101,83 +101,85 @@ extern int svg_write(const char* file,svg_t* svg)
   return err;
 }
 
-static int svg_write_stop(xmlTextWriter*,svg_stop_t);
+static int svg_write_lineargradient(xmlTextWriter*, svg_t*);
+static int svg_write_metadata(xmlTextWriter*, svg_t*);
+
 static const char* timestring(void);
 
-static int svg_write_mem(xmlTextWriter* writer,svg_t* svg)
+static int svg_write_mem(xmlTextWriter* writer, svg_t* svg)
 {
-  svg_node_t *node,*root;
-  double min,max;
-  int n;
-
   /* check we have at least one segment */
 
-  if ((root = svg->nodes) == NULL)
+  if ( svg->nodes == NULL )
     {
       fprintf(stderr,"svg has no segments\n");
       return 1;
     }
 
-  /* find the min/max of the svg range */
-
-  min = max = root->stop.value;
-  for (node=root ; node ; node=node->r) max = node->stop.value;
-  
   /* write the xml */
 
-  if (xmlTextWriterStartDocument(writer,NULL,ENCODING,NULL) < 0)
+  if ( xmlTextWriterStartDocument(writer,NULL,ENCODING,NULL) < 0 )
     {
       fprintf(stderr,"error from start document\n");
       return 1;
     }
 
-  if (xmlTextWriterStartElement(writer,BAD_CAST "svg") < 0)
+  if ( xmlTextWriterStartElement(writer,BAD_CAST "svg") < 0 )
     {
       fprintf(stderr,"error from open svg\n");
       return 1;
     }
 
   if (
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "version",BAD_CAST "1.1") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "xmlns",BAD_CAST  "http://www.w3.org/2000/svg") < 0
+      xmlTextWriterWriteAttribute(writer,
+				  BAD_CAST "version",
+				  BAD_CAST "1.1") < 0 ||
+      xmlTextWriterWriteAttribute(writer,
+				  BAD_CAST "xmlns",
+				  BAD_CAST  "http://www.w3.org/2000/svg") < 0
       )
     {
       fprintf(stderr,"error from svg attribute\n");
       return 1;
     }
 
-  if (xmlTextWriterStartElement(writer,BAD_CAST "linearGradient") < 0)
+  if ( svg_write_lineargradient(writer, svg) != 0 )
+    return 1;
+
+  if ( svg_write_metadata(writer, svg) != 0 )
+    return 1;
+
+  if ( xmlTextWriterEndElement(writer) < 0 )
     {
-      fprintf(stderr,"error from open linearGradient\n");
+      fprintf(stderr,"error from close svg\n");
       return 1;
     }
 
-  if (
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "id",BAD_CAST svg->name) < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "gradientUnits",BAD_CAST "objectBoundingBox") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "spreadMethod",BAD_CAST "pad") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "x1",BAD_CAST "0%") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "x2",BAD_CAST "100%") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "y1",BAD_CAST "0%") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "y2",BAD_CAST "100%") < 0
-      )
+  if ( xmlTextWriterEndDocument(writer) < 0 )
     {
-      fprintf(stderr,"error from linearGradient attribute\n");
+      fprintf(stderr,"error from end document\n");
       return 1;
     }
 
-  for (n=0,node=root ; node ; node=node->r)
-    {
-      svg_write_stop(writer,node->stop);
-      n++;
-    }
+  return 0;
+}
 
-  if (xmlTextWriterEndElement(writer) < 0)
-    {
-      fprintf(stderr,"error from close linearGradient\n");
-      return 1;
-    }
+static const char* timestring(void)
+{
+  time_t  tm;
+  char* tmstr;
+  static char ts[25]; 
 
+  time(&tm);
+  tmstr = ctime(&tm);
+
+  sprintf(ts,"%.24s",tmstr);
+
+  return ts;
+}
+
+static int svg_write_metadata(xmlTextWriter* writer,svg_t *svg)
+{
   if (xmlTextWriterStartElement(writer,BAD_CAST "metadata") < 0)
     {
       fprintf(stderr,"error from open metadata\n");
@@ -208,7 +210,7 @@ static int svg_write_mem(xmlTextWriter* writer,svg_t* svg)
 
   if (xmlTextWriterStartElement(writer,BAD_CAST "created") < 0)
     {
-      fprintf(stderr,"error from open metadata\n");
+      fprintf(stderr,"error from open created\n");
       return 1;
     }
 
@@ -230,33 +232,54 @@ static int svg_write_mem(xmlTextWriter* writer,svg_t* svg)
       return 1;
     }
 
-  if (xmlTextWriterEndElement(writer) < 0)
+  return 0;
+}
+
+static int svg_write_stop(xmlTextWriter*,svg_stop_t);
+
+static int svg_write_lineargradient(xmlTextWriter* writer,svg_t *svg)
+{
+
+  if (xmlTextWriterStartElement(writer,BAD_CAST "linearGradient") < 0)
     {
-      fprintf(stderr,"error from close svg\n");
+      fprintf(stderr,"error from open linearGradient\n");
       return 1;
     }
 
-  if (xmlTextWriterEndDocument(writer) < 0)
+  if (
+      xmlTextWriterWriteAttribute(writer,
+				  BAD_CAST "id",
+				  BAD_CAST svg->name) < 0 ||
+      xmlTextWriterWriteAttribute(writer,
+				  BAD_CAST "gradientUnits",
+				  BAD_CAST "objectBoundingBox") < 0 ||
+      xmlTextWriterWriteAttribute(writer,
+				  BAD_CAST "spreadMethod",
+				  BAD_CAST "pad") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "x1",BAD_CAST "0%") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "x2",BAD_CAST "100%") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "y1",BAD_CAST "0%") < 0 ||
+      xmlTextWriterWriteAttribute(writer,BAD_CAST "y2",BAD_CAST "0%") < 0
+      )
     {
-      fprintf(stderr,"error from end document\n");
+      fprintf(stderr,"error from linearGradient attribute\n");
+      return 1;
+    }
+
+  svg_node_t *node;
+
+  for (node=svg->nodes ; node ; node=node->r)
+    {
+      svg_write_stop(writer,node->stop);
+    }
+
+  if (xmlTextWriterEndElement(writer) < 0)
+    {
+      fprintf(stderr,"error from close linearGradient\n");
       return 1;
     }
 
   return 0;
-}
-
-static const char* timestring(void)
-{
-  time_t  tm;
-  char* tmstr;
-  static char ts[25]; 
-
-  time(&tm);
-  tmstr = ctime(&tm);
-
-  sprintf(ts,"%.24s",tmstr);
-
-  return ts;
 }
 
 #define BUFSZ 128
@@ -299,44 +322,5 @@ static int svg_write_stop(xmlTextWriter* writer,svg_stop_t stop)
   
   return 0;
 }  
-
-/*
-#define TEST_MAIN
-*/
-
-#ifdef TEST_MAIN
-
-int main(void)
-{
-  svg_t* svg;
-  svg_stop_t a,b;
-
-  svg = svg_new();
-
-  a.value        = 0.0;
-  a.colour.red   = 0;
-  a.colour.green = 0;
-  a.colour.blue  = 0;
-  a.opacity      = 1.0;
-
-  b.value        = 100.0;
-  b.colour.red   = 255;
-  b.colour.green = 255;
-  b.colour.blue  = 255;
-  b.opacity      = 1.0;
-
-  sprintf(svg->name,"arse.svg");
-
-  svg_append(a,svg);
-  svg_append(b,svg);
-
-  svg_write("arse.svg",svg);
-
-  svg_destroy(svg);
-
-  return 0;
-}
-
-#endif 
 
 
