@@ -2,11 +2,12 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cptinfo.xml,v 1.1 2012/02/26 19:36:53 jjg Exp jjg $ -->
+<!-- $Id: cptinfo.xml,v 1.2 2012/02/27 18:32:42 jjg Exp jjg $ -->
 
-<refentry id='cptinfo1'>
+<refentry id='cptinfo1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<refentryinfo><date>26 February 2012</date></refentryinfo>
+<xi:include href="../docbook/refentryinfo-date.xml"/>
 
 <refmeta>
 <refentrytitle>CPTINFO</refentrytitle>
@@ -46,8 +47,7 @@
   is its input.
 </para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-stdio.xml"/>
+<xi:include href="../docbook/para-stdio.xml"/>
 
 </refsect1>
 
@@ -67,11 +67,9 @@
   </listitem>
   </varlistentry>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-help.xml"/>
+  <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-output.xml"/>
+  <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
@@ -84,17 +82,14 @@
   </listitem>
   </varlistentry>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-verbose.xml"/>
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-version.xml"/>
+  <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/refsect1-author.xml"/>
+<xi:include href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>

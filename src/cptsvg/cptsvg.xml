@@ -2,11 +2,13 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cptsvg.xml,v 1.3 2012/02/27 18:28:12 jjg Exp jjg $ -->
+<!-- $Id: cptsvg.xml,v 1.4 2012/04/15 21:02:09 jjg Exp jjg $ -->
 
-<refentry id='cptsvg1'>
+<refentry 
+    id='cptsvg1'
+    xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<refentryinfo><date>26 February 2012</date></refentryinfo>
+<xi:include href="../docbook/refentryinfo-date.xml"/>
 
 <refmeta>
 <refentrytitle>CPTSVG</refentrytitle>
@@ -28,6 +30,7 @@
   <command>cptsvg</command>    
     <arg choice='opt'>-h </arg>
     <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+    <arg choice='opt'>-p </arg>
     <arg choice='opt'>-v </arg>
     <arg choice='opt'>-V </arg>
     <arg choice='opt'><replaceable>file</replaceable></arg>
@@ -45,34 +48,26 @@
   to the gradients in the Scalar Vector Graphics (SVG) format.
 </para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-stdio.xml"/>
+<xi:include href="../docbook/para-stdio.xml"/>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-tidy.xml"/>
+<xi:include href="../docbook/para-tidy.xml"/>
 
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-help.xml"/>
+  <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-output.xml"/>
+  <xi:include href="../docbook/varlistentry-output.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-preview.xml"/>
+  <xi:include href="../docbook/varlistentry-preview.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-preview-geometry.xml"/>
+  <xi:include href="../docbook/varlistentry-preview-geometry.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-verbose.xml"/>
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-version.xml"/>
+  <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
@@ -88,16 +83,15 @@
 </programlisting>
 
 <para>
-  Create a human-readable SVG file:
+  Create a human-readable SVG file with a preview:
 </para>
 
 <programlisting>
-  cptsvg old.cpt | tidy -xml -indent -o new.svg
+  cptsvg -p old.cpt | tidy -xml -indent -o new.svg
 </programlisting>
 </refsect1>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/refsect1-author.xml"/>
+<xi:include href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>

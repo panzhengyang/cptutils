@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.8 2012/02/27 19:01:20 jjg Exp jjg $
+# $Id: Makefile,v 1.9 2012/04/15 19:04:03 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
@@ -30,12 +30,12 @@ include ../Progs.mk
 
 # for testing 
 
-BASE       = subtle
-CPT        = $(TESTD)/cpt/$(BASE).cpt
-SVG        = $(BASE).svg 
+BASE = subtle
+CPT  = $(TESTD)/cpt/$(BASE).cpt
+SVG  = $(BASE).svg 
 
 $(SVG) : cptsvg
-	./cptsvg --preview-geometry 7c/3c -o $(SVG) -v $(CPT)
+	./cptsvg --preview-geometry 500x100 -o $(SVG) -v $(CPT)
 
 check test : $(SVG)
 

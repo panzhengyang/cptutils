@@ -2,11 +2,12 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cpthsv.xml,v 1.1 2012/02/26 19:09:52 jjg Exp jjg $ -->
+<!-- $Id: cpthsv.xml,v 1.2 2012/02/27 18:37:15 jjg Exp jjg $ -->
 
-<refentry id='cpthsv1'>
+<refentry id='cpthsv1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<refentryinfo><date>23 February 2012</date></refentryinfo>
+<xi:include href="../docbook/refentryinfo-date.xml"/>
 
 <refmeta>
 <refentrytitle>CPTHSV</refentrytitle>
@@ -49,8 +50,7 @@
   or hue-shift.
 </para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-stdio.xml"/>
+<xi:include href="../docbook/para-stdio.xml"/>
 
 <para>
   The hue value is taken to be between 0 and 360, while the 
@@ -62,11 +62,9 @@
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-help.xml"/>
+  <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-output.xml"/>
+  <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
@@ -108,11 +106,9 @@
   </listitem>
   </varlistentry>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-verbose.xml"/>
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-version.xml"/>
+  <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
@@ -129,8 +125,7 @@
 
 </refsect1>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/refsect1-author.xml"/>
+<xi:include href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>
