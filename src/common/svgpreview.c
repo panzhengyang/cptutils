@@ -4,10 +4,12 @@
   specify a preview image in SVG output
 
   Copyright (c) J.J. Green 2012
-  $Id: svgpreview.h,v 1.1 2012/04/15 17:50:10 jjg Exp jjg $
+  $Id: svgpreview.c,v 1.1 2012/04/15 18:47:34 jjg Exp jjg $
 */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "svgpreview.h"
 
 typedef struct 
@@ -82,14 +84,48 @@ static int scan_length(const char *p, const char *name, double *x)
 
 /*
   scan a string of the form <double>[<unit>][/<double>[<unit>]]
-  and fill in the geometry section of the svg preview struct
+  and fill in the geometry section of the svg preview struct.
+  the preview->use should be true, else the string will not 
+  be inspected (it might be NULL).
 */
 
-extern int svg_preview_geometry(const char *str, svg_preview_t *preview)
+extern int svg_preview_geometry(const char *geom, svg_preview_t *preview)
 {
-  preview->use = true;
-  preview->width = 200;
-  preview->height = 50;
+  if (! preview->use) return 0;
+  
+  /* create non-const copy of geom */
+
+  size_t n = strlen(geom); 
+  char s[n+1]; 
+  
+  if (strncpy(s,geom,n+1) == NULL) 
+    return 1;
+
+  /* find seperator */
+
+  char *sep = strchr(s,'/');
+
+  if (sep)
+    {
+      /* split the string and scan each part */
+
+      *sep = '\0';
+      
+      if (scan_length(s,"width",&(preview->width)) != 0)
+	return 1;
+
+      if (scan_length(sep+1,"height",&(preview->height)) != 0)
+	return 1;
+    }
+  else
+    {
+      /* scan the whole string */
+
+      if (scan_length(s,"width",&(preview->width)) != 0)
+	return 1;
+
+      preview->height = preview->width;
+    }
 
   return 0;
 }

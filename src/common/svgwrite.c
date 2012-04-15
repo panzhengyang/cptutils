@@ -19,6 +19,7 @@
 #include "svgwrite.h"
 
 #define ENCODING "utf-8"
+#define BUFSZ 128
 
 static int svg_write_mem(xmlTextWriter*, const svg_t*, const svg_preview_t*);
 
@@ -103,6 +104,25 @@ extern int svg_write(const char *file,
   return err;
 }
 
+/* handle error messages setting attributes */
+
+static int svg_attribute(xmlTextWriter *writer,
+			 const char *name,
+			 const char *value,
+			 const char *element)
+{    
+  if (xmlTextWriterWriteAttribute(writer,
+				  BAD_CAST name,
+				  BAD_CAST value) < 0)
+    {
+      fprintf(stderr,"error setting %s %s attribute\n",element,name);
+      return 1;
+    }
+   
+  return 0;
+}
+
+
 static int svg_write_lineargradient(xmlTextWriter*, const svg_t*);
 static int svg_write_metadata(xmlTextWriter*, const svg_t*);
 
@@ -120,7 +140,7 @@ static int svg_write_mem(xmlTextWriter *writer,
       return 1;
     }
 
-  /* write the xml */
+  /* start xml */
 
   if ( xmlTextWriterStartDocument(writer,NULL,ENCODING,NULL) < 0 )
     {
@@ -128,27 +148,49 @@ static int svg_write_mem(xmlTextWriter *writer,
       return 1;
     }
 
+  /* svg */
+
   if ( xmlTextWriterStartElement(writer,BAD_CAST "svg") < 0 )
     {
       fprintf(stderr,"error from open svg\n");
       return 1;
     }
 
-  if (
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "version",
-				  BAD_CAST "1.1") < 0 ||
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "xmlns",
-				  BAD_CAST  "http://www.w3.org/2000/svg") < 0
-      )
+  if (svg_attribute(writer,"version","1.1","svg") != 0)
+    return 1;
+
+  if (svg_attribute(writer,"xmlns","http://www.w3.org/2000/svg","svg") != 0)
+    return 1;
+
+  if ( preview->use )
     {
-      fprintf(stderr,"error from svg attribute\n");
-      return 1;
+      char str[BUFSZ];
+      
+      if (snprintf(str,BUFSZ,"%.3fpt",preview->width) >= BUFSZ)
+	return 1;
+      
+      if (svg_attribute(writer,"width",str,"svg") != 0)
+	return 1;
+      
+      if (snprintf(str,BUFSZ,"%.3fpt",preview->height) >= BUFSZ)
+	return 1;
+      
+      if (svg_attribute(writer,"height",str,"svg") != 0)
+	return 1;
+
+      if (snprintf(str,BUFSZ,"0 0 %.3f %3f",
+		   preview->width,
+		   preview->height) >= BUFSZ)
+	return 1;
+
+      if (svg_attribute(writer,"viewport",str,"svg") != 0)
+	return 1;
     }
 
   if ( preview->use )
     {
+      char str[BUFSZ];
+
       if ( xmlTextWriterStartElement(writer,BAD_CAST "g") < 0 )
 	{
 	  fprintf(stderr,"error from open g\n");
@@ -170,7 +212,43 @@ static int svg_write_mem(xmlTextWriter *writer,
 	  return 1;
 	}
 
-      // rectangle
+      /* preview rectangle */
+
+      if ( xmlTextWriterStartElement(writer,BAD_CAST "rect") < 0 )
+	{
+	  fprintf(stderr,"error from open rect\n");
+	  return 1;
+	}
+
+      if (snprintf(str,BUFSZ,"url(#%s)",svg->name) >= BUFSZ)
+	return 1;
+
+      if (svg_attribute(writer,"fill",str,"rect") != 0)
+	return 1;
+
+      if (svg_attribute(writer,"x","0","rect") != 0)
+	return 1;
+
+      if (svg_attribute(writer,"y","0","rect") != 0)
+	return 1;
+      
+      if (snprintf(str,BUFSZ,"%.3f",preview->width) >= BUFSZ)
+	return 1;
+
+      if (svg_attribute(writer, "width", str, "rect") != 0)
+	return 1;
+
+      if (snprintf(str,BUFSZ,"%.3f",preview->height) >= BUFSZ)
+	return 1;
+
+      if (svg_attribute(writer, "height", str, "rect") != 0)
+	return 1;
+
+      if ( xmlTextWriterEndElement(writer) < 0 )
+	{
+	  fprintf(stderr,"error from close rect\n");
+	  return 1;
+	}
 
       if ( xmlTextWriterEndElement(writer) < 0 )
 	{
@@ -233,19 +311,11 @@ static int svg_write_metadata(xmlTextWriter *writer, const svg_t *svg)
       return 1;
     }
 
-  if (
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "name",
-				  BAD_CAST "cptutils") < 0 ||
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "version",
-				  BAD_CAST VERSION) < 0
-      )
-    {
+  if (svg_attribute(writer,"name","cptutils","creator") != 0)
+    return 1;
 
-      fprintf(stderr,"error from creator attribute\n");
-      return 1;
-    }
+  if (svg_attribute(writer,"version",VERSION,"creator") != 0)
+    return 1;
 
   if (xmlTextWriterEndElement(writer) < 0)
     {
@@ -259,13 +329,8 @@ static int svg_write_metadata(xmlTextWriter *writer, const svg_t *svg)
       return 1;
     }
 
-  if (xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "date",
-				  BAD_CAST timestring()) < 0)
-    {
-      fprintf(stderr,"error from created attribute\n");
-      return 1;
-    }
+  if (svg_attribute(writer,"date",timestring(),"created") != 0)
+    return 1;
 
   if (xmlTextWriterEndElement(writer) < 0)
     {
@@ -286,6 +351,7 @@ static int svg_write_stop(xmlTextWriter*,svg_stop_t);
 
 static int svg_write_lineargradient(xmlTextWriter *writer, const svg_t *svg)
 {
+  int err = 0;
 
   if (xmlTextWriterStartElement(writer,BAD_CAST "linearGradient") < 0)
     {
@@ -293,25 +359,26 @@ static int svg_write_lineargradient(xmlTextWriter *writer, const svg_t *svg)
       return 1;
     }
 
-  if (
-      xmlTextWriterWriteAttribute(writer,
+  /* atypical attribute, svg->name is unsigned char* */
+  
+  if (xmlTextWriterWriteAttribute(writer,
 				  BAD_CAST "id",
-				  BAD_CAST svg->name) < 0 ||
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "gradientUnits",
-				  BAD_CAST "objectBoundingBox") < 0 ||
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "spreadMethod",
-				  BAD_CAST "pad") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "x1",BAD_CAST "0%") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "x2",BAD_CAST "100%") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "y1",BAD_CAST "0%") < 0 ||
-      xmlTextWriterWriteAttribute(writer,BAD_CAST "y2",BAD_CAST "0%") < 0
-      )
+				  svg->name) < 0)
     {
-      fprintf(stderr,"error from linearGradient attribute\n");
+      fprintf(stderr,"error writing linearGradient id attribute\n");
       return 1;
     }
+
+  err += (svg_attribute(writer,"gradientUnits","objectBoundingBox",
+			"linearGradient") != 0);
+  err += (svg_attribute(writer,"spreadMethod","pad",
+			"linearGradient") != 0);
+  err += (svg_attribute(writer,"x1","0%","linearGradient") != 0);
+  err += (svg_attribute(writer,"x2","100%","linearGradient") != 0);
+  err += (svg_attribute(writer,"y1","0%","linearGradient") != 0);
+  err += (svg_attribute(writer,"y2","0%","linearGradient") != 0);
+
+  if (err) return 1;
 
   svg_node_t *node;
 
@@ -328,8 +395,6 @@ static int svg_write_lineargradient(xmlTextWriter *writer, const svg_t *svg)
 
   return 0;
 }
-
-#define BUFSZ 128
 
 static int svg_write_stop(xmlTextWriter* writer, svg_stop_t stop)
 {
@@ -350,22 +415,14 @@ static int svg_write_stop(xmlTextWriter* writer, svg_stop_t stop)
       fprintf(stderr,"error from open stop\n");
       return 1;
     }
-  
-  if (
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "offset",
-				  BAD_CAST obuf) < 0 ||
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "stop-color",
-				  BAD_CAST scbuf) < 0 ||
-      xmlTextWriterWriteAttribute(writer,
-				  BAD_CAST "stop-opacity",
-				  BAD_CAST sobuf) < 0
-      )
-    {
-      fprintf(stderr,"error from stop attribute\n");
-      return 1;
-    }
+
+  int err = 0;
+
+  err += (svg_attribute(writer,"offset",obuf,"stop") != 0);
+  err += (svg_attribute(writer,"stop-color",scbuf,"stop") != 0);
+  err += (svg_attribute(writer,"stop-opacity",sobuf,"stop") != 0);
+
+  if (err) return 1;
   
   if (xmlTextWriterEndElement(writer) < 0)
     {
