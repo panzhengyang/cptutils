@@ -2,11 +2,12 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gimpsvg.xml,v 1.1 2012/02/27 13:47:56 jjg Exp jjg $ -->
+<!-- $Id: gimpsvg.xml,v 1.2 2012/02/27 18:15:52 jjg Exp jjg $ -->
 
-<refentry id='gimpsvg1'>
+<refentry id='gimpsvg1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<refentryinfo><date>27 February 2012</date></refentryinfo>
+<xi:include href="../docbook/refentryinfo-date.xml"/>
 
 <refmeta>
 <refentrytitle>GIMPSVG</refentrytitle>
@@ -47,22 +48,18 @@
   vector graphics) format.
 </para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-stdio.xml"/>
+<xi:include href="../docbook/para-stdio.xml"/>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-tidy.xml"/>
+<xi:include href="../docbook/para-tidy.xml"/>
 
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-help.xml"/>
+  <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-output.xml"/>
+  <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
@@ -84,23 +81,18 @@
   </listitem>
   </varlistentry>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-verbose.xml"/>
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-version.xml"/>
+  <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	    href="../docbook/refsect1-gimp-files.xml"/>
+<xi:include href="../docbook/refsect1-gimp-files.xml"/>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	    href="../docbook/refsect1-gimp-environment.xml"/>
+<xi:include href="../docbook/refsect1-gimp-environment.xml"/>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	    href="../docbook/refsect1-author.xml"/>
+<xi:include href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>

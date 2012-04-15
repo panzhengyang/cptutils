@@ -2,11 +2,12 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.4 2012/03/12 21:53:17 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.5 2012/03/13 23:29:53 jjg Exp jjg $ -->
 
-<refentry id='gradient-convert1'>
+<refentry id='gradient-convert1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<refentryinfo><date>12 March 2012</date></refentryinfo>
+<xi:include href="../docbook/refentryinfo-date.xml"/>
 
 <refmeta>
 <refentrytitle>GRADIENT-CONVERT</refentrytitle>
@@ -62,34 +63,25 @@
 
 <refsect1 id='options'><title>OPTIONS</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/para-rgb.xml"/>
+<xi:include href="../docbook/para-rgb.xml"/>
 
 <variablelist remap='TP'>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-background-svgx.xml"/>
+  <xi:include href="../docbook/varlistentry-background-svgx.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-foreground-svgx.xml"/>
+  <xi:include href="../docbook/varlistentry-foreground-svgx.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-geometry.xml"/>
+  <xi:include href="../docbook/varlistentry-geometry.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-help.xml"/>
+  <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-nan-svgx.xml"/>
+  <xi:include href="../docbook/varlistentry-nan-svgx.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-transparency.xml"/>
+  <xi:include href="../docbook/varlistentry-transparency.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-verbose.xml"/>
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-              href="../docbook/varlistentry-version.xml"/>
+  <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
@@ -127,8 +119,7 @@
 
 </refsect1>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-            href="../docbook/refsect1-author.xml"/>
+<xi:include href="../docbook/refsect1-author.xml"/>
 
 </refentry>
 

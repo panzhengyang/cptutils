@@ -2,11 +2,12 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: xycpt.xml,v 1.1 2012/02/27 17:12:25 jjg Exp jjg $ -->
+<!-- $Id: xycpt.xml,v 1.2 2012/02/27 18:01:55 jjg Exp jjg $ -->
 
-<refentry id='xycpt1'>
+<refentry id='xycpt1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
 
-<refentryinfo><date>27 February 2012</date></refentryinfo>
+<xi:include href="../docbook/refentryinfo-date.xml"/>
 
 <refmeta>
 <refentrytitle>XYCPT</refentrytitle>
@@ -52,20 +53,17 @@
   as RGB values.
 </para>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	    href="../docbook/para-stdio.xml"/>
+<xi:include href="../docbook/para-stdio.xml"/>
 
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	    href="../docbook/para-rgb.xml"/>
+<xi:include href="../docbook/para-rgb.xml"/>
 
 <variablelist remap='TP'>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-background.xml"/>
+  <xi:include href="../docbook/varlistentry-background.xml"/>
 
   <varlistentry>
   <term>
@@ -78,17 +76,13 @@
   </listitem>
   </varlistentry>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-foreground.xml"/>
+  <xi:include href="../docbook/varlistentry-foreground.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-help.xml"/>
+  <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-nan.xml"/>
+  <xi:include href="../docbook/varlistentry-nan.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-output.xml"/>
+  <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <varlistentry>
   <term>
@@ -121,18 +115,14 @@
   </listitem>
   </varlistentry>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-verbose.xml"/>
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	      href="../docbook/varlistentry-version.xml"/>
-
+  <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
 </refsect1>
 
-<xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-	    href="../docbook/refsect1-author.xml"/>
+<xi:include href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>
