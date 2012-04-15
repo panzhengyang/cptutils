@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.2 2005/12/04 18:50:16 jjg Exp $
+  $Id: main.c,v 1.1 2012/01/22 20:08:16 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -52,6 +52,10 @@ int main(int argc,char** argv)
   /* check arguments & transfer to opt structure */ 
 
   opt.verbose = info.verbose_given;
+
+  // fixme
+
+  opt.preview.use = false;
 
   /* null outfile for stdout */
 
