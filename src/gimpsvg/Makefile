@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.16 2012/02/27 13:53:02 jjg Exp jjg $
+# $Id: Makefile,v 1.17 2012/02/27 19:00:34 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -36,7 +36,7 @@ GGRDIR   = $(TESTD)/ggr
 
 $(GRAD).svg : $(NAME)
 	export GIMP_GRADIENTS="$(GGRDIR)" ; \
-	  ./$(NAME) -o $(GRAD).svg -v $(GRAD)
+	  ./$(NAME) -p -o $(GRAD).svg -v $(GRAD)
 
 $(GRAD).png : $(GRAD).svg
 	svgpng -v -o $(GRAD).png $(GRAD).svg

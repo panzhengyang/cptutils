@@ -1,6 +1,8 @@
-Changes $Id: CHANGELOG,v 1.72 2012/03/25 23:44:06 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.73 2012/04/13 23:22:25 jjg Exp jjg $
 
 1.45 (pending)
+  - all programs writing svg now have a --preview option
+    which includes a simple preview in the file
   - quoted argument lists in svgx wrappers so they handle
     filenames containing spaces correctly
   - minor fixes and enhancements to gradient-convert

@@ -1,11 +1,12 @@
-# -*- sh -*-
 # gengetopt input for pspsvg
 # (c) J. J. Green 2011
-# $Id: options.ggo,v 1.3 2005/12/04 18:50:57 jjg Exp $
+# $Id: options.ggo,v 1.1 2011/10/31 21:00:06 jjg Exp jjg $
 package "pspsvg"
 purpose "convert PaintShop Pro gradients to SVG gradient"
-option	"output"	o "output filename"	             string  no
-option	"verbose"	v "verbose operation"	             flag    off
+option	"output"	   o "output filename"			string  no
+option  "preview"          p "include preview in output"	flag    off
+option  "preview-geometry" - "geometry of preview"		string  default="250x30" no
+option	"verbose"	   v "verbose operation"		flag    off
 
 
 

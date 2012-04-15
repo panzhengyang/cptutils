@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.13 2012/02/27 13:36:08 jjg Exp jjg $
+  $Id: main.c,v 1.14 2012/04/15 18:02:37 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -62,10 +62,19 @@ int main(int argc,char** argv)
       opt.samples = SAMPLES_MIN;
     }
 
-  // fixme
+  /* handle preview */
 
-  opt.preview.use = false;
-
+  if (info.preview_flag || info.preview_geometry_given)
+    {
+      opt.preview.use = true;
+      if (svg_preview_geometry(info.preview_geometry_arg, &(opt.preview)) != 0)
+        {
+          fprintf(stderr,"failed parse of preview geometry : %s\n",
+                  info.preview_geometry_arg);
+          return EXIT_FAILURE;
+        }
+    }
+  
   /* null outfile for stdout */
 
   outfile = (info.output_given ? info.output_arg : NULL);
@@ -105,6 +114,12 @@ int main(int argc,char** argv)
   if (opt.verbose)
     {
       printf("palette written to %s\n",(outfile ? outfile : "<stdin>"));
+      if (opt.preview.use)
+	{
+	  printf("with preview (%.2f x %.2f pt)\n", 
+		 opt.preview.width,
+		 opt.preview.height);
+	}
       printf("done.\n");
     }
 
