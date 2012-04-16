@@ -178,7 +178,7 @@ static int svg_write_mem(xmlTextWriter *writer,
       if (svg_attribute(writer,"height",str,"svg") != 0)
 	return 1;
 
-      if (snprintf(str,BUFSZ,"0 0 %.3f %3f",
+      if (snprintf(str,BUFSZ,"0 0 %.3f %.3f",
 		   preview->width,
 		   preview->height) >= BUFSZ)
 	return 1;
