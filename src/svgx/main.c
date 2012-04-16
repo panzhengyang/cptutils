@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.21 2012/01/22 19:39:19 jjg Exp jjg $
+  $Id: main.c,v 1.22 2012/01/22 20:15:23 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -49,9 +49,8 @@ int main(int argc,char** argv)
 
   /* check arguments & transfer to opt structure */ 
 
-  opt.verbose    = info.verbose_given;
-  opt.permissive = info.permissive_given;
-  opt.job        = job_first;
+  opt.verbose    = info.verbose_flag;
+  opt.permissive = ! info.strict_flag;
   opt.name       = NULL;
 
   if (info.all_given + info.list_given + info.select_given > 1)
@@ -60,17 +59,21 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
-  if (info.all_given)
+  /* job type */
+
+  if (info.all_flag)
     opt.job = job_all;
-
-  if (info.list_given)  
+  else if (info.list_flag)  
     opt.job = job_list;
-
-  if (info.select_given)
+  else if (info.select_given)
     {
       opt.job = job_named;
       opt.name = info.select_arg;
     }
+  else
+    opt.job = job_first;
+
+  /* output formar */
 
   if (info.type_given)
     {
@@ -95,6 +98,7 @@ int main(int argc,char** argv)
 	  {"sao", type_sao},
 	  {"ds9", type_sao},
 	  {"png", type_png},
+	  {"svg", type_svg},
 	  {NULL, 0}};
 
       for (p = types ; ; p++)
@@ -145,19 +149,19 @@ int main(int argc,char** argv)
 
   /* fg/bg/nan for cpt output */
 
-  if (parse_rgb(info.background_arg,&opt.bg) != 0)
+  if (parse_rgb(info.background_arg,&(opt.format.cpt.bg)) != 0)
     {
       fprintf(stderr,"bad background %s\n",info.background_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_rgb(info.foreground_arg,&opt.fg) != 0)
+  if (parse_rgb(info.foreground_arg,&(opt.format.cpt.fg)) != 0)
     {
       fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
       return EXIT_FAILURE;
     }
 
-  if (parse_rgb(info.nan_arg,&opt.nan) != 0)
+  if (parse_rgb(info.nan_arg,&(opt.format.cpt.nan)) != 0)
     {
       fprintf(stderr,"bad nan colour %s\n",info.nan_arg);
       return EXIT_FAILURE;
@@ -165,7 +169,7 @@ int main(int argc,char** argv)
 
   /* colour to replace transparency */
 
-  if (parse_rgb(info.transparency_arg, &opt.alpha) != 0)
+  if (parse_rgb(info.transparency_arg, &(opt.format.alpha)) != 0)
     {
       fprintf(stderr,"bad transparency colour %s\n",info.nan_arg);
       return EXIT_FAILURE;
@@ -178,11 +182,28 @@ int main(int argc,char** argv)
       fprintf(stderr,"geometry option used only in conversion to png\n");
       return EXIT_FAILURE;
     }
-      
-  if (sscanf(info.geometry_arg,"%zux%zu",&opt.width,&opt.height) != 2)
+  
+  if (sscanf(info.geometry_arg,"%zux%zu",
+	     &opt.format.png.width,
+	     &opt.format.png.height) != 2)
     {
-      fprintf(stderr,"bad argument \"%s\" to geometry option",info.geometry_arg);
+      fprintf(stderr,"bad argument \"%s\" to geometry option",
+	      info.geometry_arg);
       return EXIT_FAILURE;
+    }
+
+  /* svg output */
+
+  if (info.preview_flag || info.preview_geometry_given)
+    {
+      opt.format.svg.preview.use = true;
+      if (svg_preview_geometry(info.preview_geometry_arg, 
+			       &(opt.format.svg.preview)) != 0)
+        {
+          fprintf(stderr,"failed parse of preview geometry : %s\n",
+                  info.preview_geometry_arg);
+          return EXIT_FAILURE;
+        }
     }
 
   /* 
@@ -212,6 +233,7 @@ int main(int argc,char** argv)
 	case type_psp  : tstr = "grd v3"; break;
 	case type_sao  : tstr = "SAO (DS9) colour map"; break;
 	case type_png  : tstr = "png image"; break;
+	case type_svg  : tstr = "SVG gradient"; break;
 	  
 	default:
 	  fprintf(stderr,"weird output format!\n");
@@ -223,7 +245,15 @@ int main(int argc,char** argv)
 		 (opt.permissive ? "ignoring" : "respecting"));
 
       if (opt.type == type_png)
-	printf("output size is %zu x %zu\n", opt.width, opt.height);
+	printf("png output size is %zu x %zu px\n", 
+	       opt.format.png.width, 
+	       opt.format.png.height);
+      else if ( (opt.type == type_svg) && 
+		(opt.format.svg.preview.use) )
+	printf("svg preview size is %.2f x %.2f pts\n",
+	       opt.format.svg.preview.width,
+	       opt.format.svg.preview.height);
+
     }
 
   err = svgx(opt);

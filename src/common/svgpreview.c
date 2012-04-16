@@ -4,7 +4,7 @@
   specify a preview image in SVG output
 
   Copyright (c) J.J. Green 2012
-  $Id: svgpreview.c,v 1.3 2012/04/15 21:06:23 jjg Exp jjg $
+  $Id: svgpreview.c,v 1.4 2012/04/16 19:18:44 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -64,7 +64,7 @@ extern int svg_preview_geometry(const char *geom, svg_preview_t *preview)
   size_t ssd = MIN(preview->height, preview->width);
 
   preview->border = 0.1 * ssd;
-  preview->stroke = 2;
+  preview->stroke = 1;
 
   return 0;
 }

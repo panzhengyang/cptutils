@@ -166,19 +166,19 @@ static int svg_write_mem(xmlTextWriter *writer,
     {
       char str[BUFSZ];
       
-      if (snprintf(str,BUFSZ,"%.3fpt",preview->width) >= BUFSZ)
+      if (snprintf(str,BUFSZ,"%zupx",preview->width) >= BUFSZ)
 	return 1;
       
       if (svg_attribute(writer,"width",str,"svg") != 0)
 	return 1;
       
-      if (snprintf(str,BUFSZ,"%.3fpt",preview->height) >= BUFSZ)
+      if (snprintf(str,BUFSZ,"%zupx",preview->height) >= BUFSZ)
 	return 1;
       
       if (svg_attribute(writer,"height",str,"svg") != 0)
 	return 1;
 
-      if (snprintf(str,BUFSZ,"0 0 %.3f %.3f",
+      if (snprintf(str,BUFSZ,"0 0 %zu %zu",
 		   preview->width,
 		   preview->height) >= BUFSZ)
 	return 1;
@@ -226,22 +226,33 @@ static int svg_write_mem(xmlTextWriter *writer,
       if (svg_attribute(writer,"fill",str,"rect") != 0)
 	return 1;
 
-      if (svg_attribute(writer,"x","0","rect") != 0)
+      if (snprintf(str,BUFSZ,"%zu",preview->border) >= BUFSZ)
 	return 1;
 
-      if (svg_attribute(writer,"y","0","rect") != 0)
+      if (svg_attribute(writer,"x",str,"rect") != 0)
+	return 1;
+
+      if (svg_attribute(writer,"y",str,"rect") != 0)
 	return 1;
       
-      if (snprintf(str,BUFSZ,"%.3f",preview->width) >= BUFSZ)
+      if (snprintf(str,BUFSZ,"%zu",
+		   preview->width - 2 * preview->border) >= BUFSZ)
 	return 1;
 
       if (svg_attribute(writer, "width", str, "rect") != 0)
 	return 1;
-
-      if (snprintf(str,BUFSZ,"%.3f",preview->height) >= BUFSZ)
+      
+      if (snprintf(str,BUFSZ,"%zu",
+		   preview->height - 2 * preview->border) >= BUFSZ)
 	return 1;
 
       if (svg_attribute(writer, "height", str, "rect") != 0)
+	return 1;
+
+      if (snprintf(str, BUFSZ, "%zu", preview->stroke) >= BUFSZ)
+	return 1;
+
+      if (svg_attribute(writer, "stroke", str, "rect") != 0)
 	return 1;
 
       if ( xmlTextWriterEndElement(writer) < 0 )
