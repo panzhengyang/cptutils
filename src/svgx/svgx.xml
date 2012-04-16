@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: svgx.xml,v 1.4 2012/03/12 21:58:05 jjg Exp jjg $ -->
+<!-- $Id: svgx.xml,v 1.5 2012/04/15 22:15:21 jjg Exp jjg $ -->
 
 <refentry id='svgx1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -65,20 +65,10 @@
 </para>
 
 <para>
-  The output format is specified by the <option>-t</option> option, 
-  one of 
-  <option>cpt</option>, 
-  <option>css3</option>, 
-  <option>ggr</option>, 
-  <option>gpt</option>, 
-  <option>psp</option>, 
-  <option>pov</option>, 
-  <option>png</option> or
-  <option>sao</option>  
-  (in fact there are several aliases for each format: 
-  <option>jgd</option> for <option>psp</option>, 
-  <option>gimp</option> for <option>ggr</option>, 
-  <option>inc</option> for <option>pov</option>, and so on).  
+  The output format is specified by the <option>-t</option> option
+  as listed below (in fact there are several aliases for each 
+  format: <option>jgd</option> for <option>psp</option>, 
+  <option>gimp</option> for <option>ggr</option>, and so on).  
   The 
   <command>svgcpt</command>, 
   <command>svggimp</command>, 
@@ -86,8 +76,9 @@
   <command>svgcss3</command>, 
   <command>svgpsp</command>,  
   <command>svgpov</command>,  
-  <command>svgpng</command>  and  
-  <command>svgsao</command>
+  <command>svgpng</command>,
+  <command>svgsao</command> and
+  <command>svgsvg</command>
   programs are wrappers around <command>svgx</command> which use 
   the <option>-t</option> switch to specify output type.
 </para>
@@ -126,7 +117,7 @@
 
   <xi:include href="../docbook/varlistentry-foreground-svgx.xml"/>
 
-  <xi:include href="../docbook/varlistentry-geometry.xml"/>
+  <xi:include href="../docbook/varlistentry-geometry-svgx.xml"/>
 
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
@@ -145,15 +136,16 @@
 
   <xi:include href="../docbook/varlistentry-output.xml"/>
 
+  <xi:include href="../docbook/varlistentry-preview.xml"/>
+
   <varlistentry>
   <term>
-  <option>-p</option>, <option>--permissive</option>
+  <option>--strict</option>
   </term>
   <listitem>
   <para>
-    Be permissive: possibly create files which break limits 
-    of the format specification. In particular, create POV-Ray 
-    headers with more than 255 stops.
+    Do not create files which break limits of the format specification. 
+    In particular, do not create POV-Ray headers with more than 255 stops.
   </para>
   </listitem>
   </varlistentry>
@@ -188,8 +180,9 @@
       <option>gpt</option>, 
       <option>psp</option>, 
       <option>pov</option>, 
-      <option>png</option> or
-      <option>sao</option>.  
+      <option>png</option>, 
+      <option>sao</option> or
+      <option>svg</option>.
     </para>
   </listitem>
   </varlistentry>
@@ -230,17 +223,6 @@
 <para>
   An ill-formed SVG gradient may be translated to rubbish 
   while not reporting an error.
-</para>
-
-<para>
-  Extraction of SVG gradients is not yet implemented.
-  As a workaround, extract to GIMP format 
-  (<option>-t ggr</option>) and then convert the result
-  with 
-  <citerefentry>
-    <refentrytitle>gimpsvg</refentrytitle>
-    <manvolnum>1</manvolnum>
-  </citerefentry>.
 </para>
 
 </refsect1>
