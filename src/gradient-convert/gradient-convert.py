@@ -3,7 +3,7 @@
 # experimental python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.8 2012/03/15 00:07:26 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.9 2012/04/13 23:18:35 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -275,9 +275,10 @@ def usage() :
     print "options"
     print " -b rgb      : background (cpt)"
     print " -f rgb      : foreground (cpt)"
-    print " -g geometry : geometry (png)"
+    print " -g geometry : geometry (png, svg)"
     print " -h          : brief help"
     print " -n rgb      : nan colour (cpt)"
+    print " -p          : preview (svg)"
     print " -T rgb      : transparency (cpt, gpt, sao)"
     print " -v          : verbose"
     print " -V          : version"
@@ -287,12 +288,13 @@ def usage() :
 def main() :
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "b:f:g:hn:T:vV",
+                                   "b:f:g:hn:pT:vV",
                                    ["background=",
                                     "foreground=",
                                     "geometry=",
                                     "help",
                                     "nan=",
+                                    "preview"
                                     "transparency=",
                                     "verbose",
                                     "version"])
@@ -316,6 +318,9 @@ def main() :
         elif o in ("-g", "--geometry") :
             # geometry only used by svgpng
             subopts['svgpng'].extend([o, a])
+            subopts['cptsvg'].extend([o, a])
+            subopts['gimpsvg'].extend([o, a])
+            subopts['pspsvg'].extend([o, a])
         elif o in ("-b", "--background",
                    "-f", "--foreground",
                    "-n", "--nan") :
@@ -323,6 +328,10 @@ def main() :
             subopts['svgcpt'].extend([o, a])
             subopts['gplcpt'].extend([o, a])
             subopts['avlcpt'].extend([o, a])
+        elif o in ("-p", "--preview") :
+            subopts['cptsvg'].extend([o])
+            subopts['gimpsvg'].extend([o])
+            subopts['pspsvg'].extend([o])
         elif o in ("-T", "--transparency") :
             # only svg to cpt, gpt, sao
             subopts['svgcpt'].extend([o, a])
