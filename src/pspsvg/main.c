@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.3 2012/04/15 23:02:04 jjg Exp jjg $
+  $Id: main.c,v 1.4 2012/04/16 21:12:02 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -56,7 +56,7 @@ int main(int argc,char** argv)
   if (info.preview_flag || info.geometry_given)
     {
       opt.preview.use = true;
-      if (svg_preview_geometry(infogeometry_arg, &(opt.preview)) != 0)
+      if (svg_preview_geometry(info.geometry_arg, &(opt.preview)) != 0)
         {
           fprintf(stderr,"failed parse of preview geometry : %s\n",
                   info.geometry_arg);

@@ -2,7 +2,7 @@
   pspsvg.h
 
   (c) J.J.Green 2011
-  $Id: pspsvg.h,v 1.1 2012/01/22 20:08:51 jjg Exp jjg $
+  $Id: pspsvg.h,v 1.2 2012/04/15 18:04:26 jjg Exp jjg $
 */
 
 #ifndef PSPSVG_H
@@ -18,7 +18,7 @@ typedef struct
   {
     char *input,*output;
   } file;
-  sgv_preview_t preview;
+  svg_preview_t preview;
 } pspsvg_opt_t;
 
 extern int pspsvg(pspsvg_opt_t);

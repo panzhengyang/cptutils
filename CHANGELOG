@@ -1,6 +1,7 @@
-Changes $Id: CHANGELOG,v 1.73 2012/04/13 23:22:25 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.74 2012/04/15 23:04:17 jjg Exp jjg $
 
 1.45 (pending)
+  - svgx now writes svg
   - all programs writing svg now have a --preview option
     which includes a simple preview in the file
   - quoted argument lists in svgx wrappers so they handle
