@@ -1,6 +1,6 @@
 # gengetopt input for svgcpt
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.15 2012/04/16 14:55:49 jjg Exp jjg $
+# $Id: options.ggo,v 1.16 2012/04/16 15:00:39 jjg Exp jjg $
 package "svgx"
 purpose "convert SVG gradient to other formats"
 option	"all"	           a "convert all gradients"			flag    off
@@ -10,8 +10,8 @@ option  "geometry"         g "image size (png)"				string  default="340x36" no
 option  "nan"              n "nan colour (cpt)"				string  default="255/0/0" no
 option	"list"	           l "list gradients in file"			flag    off
 option	"select"           s "convert gradient with specifed name"	string  no
+option  "strict"	   - "obey format limits on output"		flag    off
 option	"output"	   o "output filename (not with -a)" 		string  no
-option  "permissive"       - "ignore format limits on output"		flag    off
 option  "preview"          p "include preview (svg)"			flag    off
 option  "preview-geometry" - "size of preview (svg)"			string  default="250x30" no
 option  "type"             t "output format (see manual)"		string  no
