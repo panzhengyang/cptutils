@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.23 2012/04/16 19:27:37 jjg Exp jjg $
+  $Id: main.c,v 1.24 2012/04/16 19:30:25 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -175,35 +175,54 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
-  /* parse image size for png output */
+  /* parse image (preview) size for png, svg output */
 
-  if (info.geometry_given && (opt.type != type_png))
+  if (info.geometry_given)
     {
-      fprintf(stderr,"geometry option used only in conversion to png\n");
-      return EXIT_FAILURE;
+      switch (opt.type)
+	{
+	case type_png:
+	case type_svg:
+	  break;
+
+	default:
+	  fprintf(stderr,"geometry option not valid for this output type\n");
+	  return EXIT_FAILURE;
+	}
     }
   
-  if (sscanf(info.geometry_arg,"%zux%zu",
-	     &opt.format.png.width,
-	     &opt.format.png.height) != 2)
+  switch (opt.type)
     {
-      fprintf(stderr,"bad argument \"%s\" to geometry option",
-	      info.geometry_arg);
-      return EXIT_FAILURE;
-    }
+    case type_png:
 
-  /* svg output */
+      if (sscanf(info.geometry_arg,"%zux%zu",
+		 &opt.format.png.width,
+		 &opt.format.png.height) != 2)
+	{
+	  fprintf(stderr,"bad argument \"%s\" to geometry option",
+		  info.geometry_arg);
+	  return EXIT_FAILURE;
+	}
+      break;
 
-  if (info.preview_flag || info.preview_geometry_given)
-    {
-      opt.format.svg.preview.use = true;
-      if (svg_preview_geometry(info.preview_geometry_arg, 
-			       &(opt.format.svg.preview)) != 0)
-        {
-          fprintf(stderr,"failed parse of preview geometry : %s\n",
-                  info.preview_geometry_arg);
-          return EXIT_FAILURE;
-        }
+    case type_svg:
+
+      if (info.preview_flag)
+	{
+	  opt.format.svg.preview.use = true;
+	  if (svg_preview_geometry(info.geometry_arg, 
+				   &(opt.format.svg.preview)) != 0)
+	    {
+	      fprintf(stderr,"bad argument \"%s\" to geometry option",
+		      info.geometry_arg);
+	      return EXIT_FAILURE;
+	    }
+	}
+
+      break;
+
+    default:
+      break;
     }
 
   /* 
