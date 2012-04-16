@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gimpsvg.xml,v 1.3 2012/04/15 22:02:47 jjg Exp jjg $ -->
+<!-- $Id: gimpsvg.xml,v 1.4 2012/04/15 22:50:40 jjg Exp jjg $ -->
 
 <refentry id='gimpsvg1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -27,6 +27,7 @@
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>gimpsvg</command>    
+    <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
     <arg choice='opt'>-h </arg>
     <arg choice='opt'>-o <replaceable>file</replaceable></arg>
     <arg choice='opt'>-p </arg>
@@ -58,13 +59,13 @@
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
+  <xi:include href="../docbook/varlistentry-geometry-svg.xml"/>
+
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
   <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <xi:include href="../docbook/varlistentry-preview.xml"/>
-
-  <xi:include href="../docbook/varlistentry-preview-geometry.xml"/>
 
   <varlistentry>
   <term>

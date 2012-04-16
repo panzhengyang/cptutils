@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cptsvg.xml,v 1.4 2012/04/15 21:02:09 jjg Exp jjg $ -->
+<!-- $Id: cptsvg.xml,v 1.5 2012/04/15 21:24:33 jjg Exp jjg $ -->
 
 <refentry 
     id='cptsvg1'
@@ -28,6 +28,7 @@
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>cptsvg</command>    
+    <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
     <arg choice='opt'>-h </arg>
     <arg choice='opt'>-o <replaceable>file</replaceable></arg>
     <arg choice='opt'>-p </arg>
@@ -57,13 +58,13 @@
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
+  <xi:include href="../docbook/varlistentry-geometry-svg.xml"/>
+
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
   <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <xi:include href="../docbook/varlistentry-preview.xml"/>
-
-  <xi:include href="../docbook/varlistentry-preview-geometry.xml"/>
 
   <xi:include href="../docbook/varlistentry-verbose.xml"/>
 

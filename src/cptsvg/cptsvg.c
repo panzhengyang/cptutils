@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.7 2012/03/25 23:39:12 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.8 2012/03/25 23:58:35 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -17,7 +17,7 @@
 
 static int cptsvg_convert(cpt_t*,svg_t*,cptsvg_opt_t);
 
-extern int cptsvg(char* infile,char* outfile,cptsvg_opt_t opt)
+extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 {
     cpt_t *cpt;
     svg_t *svg;
@@ -31,7 +31,7 @@ extern int cptsvg(char* infile,char* outfile,cptsvg_opt_t opt)
 	      {
 		if (cptsvg_convert(cpt,svg,opt) == 0)
 		  {
-		    if (svg_write(outfile,svg) == 0)
+		    if (svg_write(outfile, svg, &(opt.preview)) == 0)
 		      {
 			/* success */
 		      }
