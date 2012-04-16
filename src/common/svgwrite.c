@@ -252,7 +252,7 @@ static int svg_write_mem(xmlTextWriter *writer,
       if (snprintf(str, BUFSZ, "%zu", preview->stroke) >= BUFSZ)
 	return 1;
 
-      if (svg_attribute(writer, "stroke", str, "rect") != 0)
+      if (svg_attribute(writer, "stroke-width", str, "rect") != 0)
 	return 1;
 
       if ( xmlTextWriterEndElement(writer) < 0 )

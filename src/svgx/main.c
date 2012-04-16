@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.22 2012/01/22 20:15:23 jjg Exp jjg $
+  $Id: main.c,v 1.23 2012/04/16 19:27:37 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -250,7 +250,7 @@ int main(int argc,char** argv)
 	       opt.format.png.height);
       else if ( (opt.type == type_svg) && 
 		(opt.format.svg.preview.use) )
-	printf("svg preview size is %.2f x %.2f pts\n",
+	printf("svg preview size is %zu x %zu px\n",
 	       opt.format.svg.preview.width,
 	       opt.format.svg.preview.height);
 
