@@ -1,0 +1,11 @@
+<varlistentry>
+  <term>
+    <option>-p</option>, <option>--preview</option>
+  </term>
+  <listitem>
+    <para>
+      Include a preview in the SVG output.
+      See also the <option>--geometry</option> option.
+    </para>
+  </listitem>
+</varlistentry>
