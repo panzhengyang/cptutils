@@ -183,7 +183,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 		   preview->height) >= BUFSZ)
 	return 1;
 
-      if (svg_attribute(writer,"viewport",str,"svg") != 0)
+      if (svg_attribute(writer,"viewBox",str,"svg") != 0)
 	return 1;
     }
 
