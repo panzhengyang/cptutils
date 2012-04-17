@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.63 2012/03/12 15:56:18 jjg Exp jjg $
+dnl $Id: configure.in,v 1.64 2012/03/12 15:57:45 jjg Exp jjg $
 
 AC_INIT(cptutils, 1.44, j.j.green@gmx.fr)
 
@@ -10,6 +10,11 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
+
+AC_PATH_PROG(PYTHON,python,no)
+if test "$PYTHON" = no; then
+  AC_MSG_WARN(no python! (no convert-gradient for you))       
+fi
 
 AC_PATH_PROG(GGO,gengetopt,no)
 if test "$GGO" = no; then
@@ -72,9 +77,9 @@ dnl used by gengetop output
 
 AC_DEFINE(VERSION,PACKAGE_VERSION,"version of package")
 
-dnl added to Common.mk 
+dnl used in Common.mk 
 
-AC_SUBST(VERSION,PACKAGE_VERSION)
+AC_SUBST(PACKAGE_VERSION)
 
 dnl Make a config.h
 

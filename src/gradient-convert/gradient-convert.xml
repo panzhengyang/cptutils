@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.5 2012/03/13 23:29:53 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.6 2012/04/15 22:09:21 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -32,6 +32,7 @@
   <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
   <arg choice='opt'>-h </arg>
   <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-p </arg>
   <arg choice='opt'>-T <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-v </arg>
   <arg choice='opt'>-V </arg>
@@ -71,11 +72,13 @@
 
   <xi:include href="../docbook/varlistentry-foreground-svgx.xml"/>
 
-  <xi:include href="../docbook/varlistentry-geometry.xml"/>
+  <xi:include href="../docbook/varlistentry-geometry-svg-png.xml"/>
 
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
   <xi:include href="../docbook/varlistentry-nan-svgx.xml"/>
+
+  <xi:include href="../docbook/varlistentry-preview.xml"/>
 
   <xi:include href="../docbook/varlistentry-transparency.xml"/>
 

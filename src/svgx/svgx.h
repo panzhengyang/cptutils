@@ -2,7 +2,7 @@
   svgx.h
 
   (c) J.J.Green 2004
-  $Id: svgx.h,v 1.11 2011/11/13 12:12:52 jjg Exp jjg $
+  $Id: svgx.h,v 1.12 2011/11/14 16:08:10 jjg Exp jjg $
 */
 
 #ifndef SVGX_H
@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+#include "svgpreview.h"
 #include "colour.h"
 
 typedef enum {
@@ -20,7 +21,8 @@ typedef enum {
   type_css3, 
   type_psp,
   type_sao, 
-  type_png 
+  type_png, 
+  type_svg
 } svgx_type_t;
 
 typedef enum {
@@ -35,10 +37,23 @@ typedef struct
   svgx_type_t type; 
   svgx_job_t job;
   bool verbose, permissive, debug;
-  size_t width,height;
   char *name;
-  rgb_t fg,bg,nan;
-  rgb_t alpha;
+  struct
+  {
+    rgb_t alpha;
+    struct
+    {
+      rgb_t fg,bg,nan;
+    } cpt;
+    struct
+    {
+      size_t width,height;
+    } png;
+    struct
+    {
+      svg_preview_t preview;
+    } svg;
+  } format;
   struct
   {
     char *file;

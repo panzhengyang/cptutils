@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2011
-  $Id: gimpsvg.c,v 1.15 2011/11/11 17:54:08 jjg Exp jjg $
+  $Id: gimpsvg.c,v 1.16 2012/03/09 22:14:00 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -97,7 +97,7 @@ extern int gimpsvg(const char *infile,
 
     /* write the cpt file */
     
-    if (svg_write(outfile, svg) != 0)
+    if (svg_write(outfile, svg, &(opt.preview)) != 0)
       {
 	fprintf(stderr,"failed to write gradient to %s\n",
 		(outfile ? outfile : "<stdout>"));

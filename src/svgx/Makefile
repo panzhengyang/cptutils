@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.33 2012/02/27 16:15:30 jjg Exp jjg $
+# $Id: Makefile,v 1.34 2012/02/27 18:59:25 jjg Exp jjg $
 
 OBJ      = svgx.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
@@ -19,6 +19,7 @@ SVGPNG  = ./svgx -t png
 SVGPOV  = ./svgx -t pov
 SVGPSP  = ./svgx -t psp
 SVGSAO  = ./svgx -t sao
+SVGSVG  = ./svgx -t svg
 
 TSPARG = -T255/0/0
 CPTARG = -b10 -f1/2/3 -n0/12/0 $(TSPARG)
@@ -40,6 +41,7 @@ check test : svgx
 	    $(SVGSAO) -s $$name $(TSPARG) -o test/$$name.sao $$file  \
 		|| exit 1 ; \
 	    $(SVGPNG) -s $$name -o test/$$name.png $$file  || exit 1 ; \
+	    $(SVGSVG) -s $$name -p -o test/$$name.svg $$file  || exit 1 ; \
 	  done ;\
 	done
 
