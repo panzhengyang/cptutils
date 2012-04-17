@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.34 2012/03/26 00:02:41 jjg Exp jjg $
+  $Id: svgx.c,v 1.35 2012/04/17 11:19:35 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -32,15 +32,6 @@ static int svgx_list(svgx_opt_t, svg_list_t*);
 static int svgx_first(svgx_opt_t, svg_list_t*);
 static int svgx_named(svgx_opt_t, svg_list_t*);
 static int svgx_all(svgx_opt_t, svg_list_t*);
-
-static int svgcpt(svg_t*, cpt_t*);
-static int svgggr(svg_t*, gradient_t*);
-static int svgpsp(svg_t*, psp_t*);
-static int svgpov(svg_t*, pov_t*);
-static int svggpt(svg_t*, gpt_t*);
-static int svgcss3(svg_t*, css3_t*);
-static int svgsao(svg_t*, sao_t*);
-static int svgpng(svg_t*, png_t*);
 
 extern int svgx(svgx_opt_t opt)
 {
@@ -94,13 +85,13 @@ extern int svgx(svgx_opt_t opt)
 
 /* print the gradients in the list */ 
 
-static int svg_id(svg_t* svg,const char* fmt)
+static int svg_id(svg_t *svg, const char* fmt)
 {
   printf(fmt,svg->name);
   return 0;
 }
 
-static int svgx_list(svgx_opt_t opt, svg_list_t* list)
+static int svgx_list(svgx_opt_t opt, svg_list_t *list)
 {
   int n,err=0;
 
@@ -130,41 +121,6 @@ static int svgx_list(svgx_opt_t opt, svg_list_t* list)
   return err;
 }
 
-/*
-  check limits for povray
-*/
-
-static int svgpov_valid(svg_t* svg,int permissive,int verbose)
-{
-  int m = svg_num_stops(svg);
-
-  if (m > POV_STOPS_MAX)
-    {
-      if (permissive)
-	{
-	  if (verbose)
-	    printf("warning : format limit broken %i stops (max is %i)\n",
-		   m,POV_STOPS_MAX);
-	}
-      else
-	{
-	  fprintf(stderr,
-		  "format limit : POV-ray allows no more than %i stops,\n",
-		  POV_STOPS_MAX);
-	  fprintf(stderr,
-		  "but this gradient has %i (use -p to ignore format limits)\n",m);
-	  return 0;
-	}
-    }
-
-  if (m < 2)
-    {
-        fprintf(stderr,"sanity check : found %i stops, but at least 2 required\n",m);
-	return 0;
-    }
-
-  return 1;
-}
 
 /* convert a named gradient */
 
@@ -172,7 +128,7 @@ static int svg_select_name(svg_t*, char*);
 static int svg_select_first(svg_t*, char*);
 static int svgx_single(svgx_opt_t, svg_t*);
 
-static int svgx_first(svgx_opt_t opt, svg_list_t* list)
+static int svgx_first(svgx_opt_t opt, svg_list_t *list)
 {
   svg_t *svg;
 
@@ -187,7 +143,7 @@ static int svgx_first(svgx_opt_t opt, svg_list_t* list)
   return svgx_single(opt, svg);
 }
 
-static int svgx_named(svgx_opt_t opt,svg_list_t* list)
+static int svgx_named(svgx_opt_t opt,svg_list_t *list)
 {
   svg_t *svg;
 
@@ -202,27 +158,73 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   return svgx_single(opt, svg);
 }
 
-/*
-  FIXME - we can do away with most of the code in this
-  function by
-  - modifying the dump() functions to accept an 
-    explicit filename, but to generate an autoname
-    if the explicit name is NULL
-  - in the below, use these dump()s with the explicit name
-  - in the -a case, set the explicit name to NULL
-*/
+/* return whether a particular type should be flattened */
 
-static int svgx_single(svgx_opt_t opt, svg_t* svg)
+static int flatten_type(svgx_type_t type)
 {
-  cpt_t  *cpt;
-  pov_t  *pov;
-  gpt_t  *gpt;
-  css3_t *css3;
-  psp_t  *psp;
-  gradient_t *ggr;
-  sao_t *sao;
-  png_t *png;
-  char *file;
+  switch (type)
+    {
+    case type_cpt:
+    case type_sao:
+    case type_gpt:
+      return 1;
+    case type_ggr:
+    case type_pov:
+    case type_css3:
+    case type_psp:
+    case type_png:
+    case type_svg:
+      return 0;
+    default:
+      fprintf(stderr,"strange type\n");
+      return -1;
+    }
+}
+
+/* the dump function */
+
+static int svgcpt_dump(const svg_t*, svgx_opt_t*);
+static int svgggr_dump(const svg_t*, svgx_opt_t*);
+static int svgpov_dump(const svg_t*, svgx_opt_t*);
+static int svggpt_dump(const svg_t*, svgx_opt_t*);
+static int svgcss3_dump(const svg_t*, svgx_opt_t*);
+static int svgpsp_dump(const svg_t*, svgx_opt_t*);
+static int svgsao_dump(const svg_t*, svgx_opt_t*);
+static int svgpng_dump(const svg_t*, svgx_opt_t*);
+static int svgsvg_dump(const svg_t*, svgx_opt_t*);
+
+/* return dump function for a particular type */
+
+typedef int (*dump_f)(const svg_t*, svgx_opt_t*);
+
+static dump_f dump_type(svgx_type_t type)
+{
+  dump_f dump;
+
+  switch (type)
+    {
+    case type_cpt:  dump = svgcpt_dump;  break;
+    case type_ggr:  dump = svgggr_dump;  break;
+    case type_psp:  dump = svgpsp_dump;  break;
+    case type_pov:  dump = svgpov_dump;  break;
+    case type_gpt:  dump = svggpt_dump;  break;
+    case type_css3: dump = svgcss3_dump; break;
+    case type_sao:  dump = svgsao_dump;  break;
+    case type_png:  dump = svgpng_dump;  break;
+    case type_svg:  dump = svgsvg_dump;  break;
+ 
+    default:
+
+      fprintf(stderr,"strange output format!\n");
+      dump = NULL;
+    }
+  
+  return dump;
+}
+
+static int svgx_single(svgx_opt_t opt, svg_t *svg)
+{
+  const char *file;
 
   if (svg_explicit(svg) != 0)
     {
@@ -232,260 +234,23 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
 
   file = opt.output.file;
 
-  switch (opt.type)
+  if (flatten_type(opt.type))
     {
-    case type_cpt:
-    case type_sao:
-    case type_gpt:
       if (svg_flatten(svg, opt.format.alpha) != 0)
 	{
 	  fprintf(stderr,"failed to flatten transparency\n");
 	  return 1;
 	}
-      break;
-
-    case type_ggr:
-    case type_pov:
-    case type_css3:
-    case type_psp:
-    case type_png:
-    case type_svg:
-      break;
-
-    default:
-	  fprintf(stderr,"strange type\n");
-	  return 1;
     }
 
-  switch (opt.type)
+  dump_f dump;
+
+  if ((dump = dump_type(opt.type)) == NULL)
+    return 1;
+
+  if (dump(svg,&opt) != 0)
     {
-    case type_cpt:
-
-      if ((cpt = cpt_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create cpt structure\n");
-	  return 1;
-	}
-
-      /* housekeeping */
-
-      cpt->model = model_rgb;
-
-      cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
-      
-      cpt->bg.u.colour.rgb  = opt.format.cpt.bg;
-      cpt->fg.u.colour.rgb  = opt.format.cpt.fg;
-      cpt->nan.u.colour.rgb = opt.format.cpt.nan;
-  
-      if (snprintf(cpt->name,CPT_NAME_LEN,"%s",svg->name) >= CPT_NAME_LEN)
-	{
-	  fprintf(stderr,"cpt name truncated\n");
-	}
-
-      if (svgcpt(svg,cpt) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to cpt\n",opt.name);
-	  return 1;
-	}
-            
-      if (cpt_write(file,cpt) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-      
-      cpt_destroy(cpt);
-
-      break;
-
-    case type_ggr:
-
-      if ((ggr = grad_new_gradient()) == NULL)
-	{
-	  fprintf(stderr,"failed to create ggr structure\n");
-	  return 1;
-	}
-      
-      if (svgggr(svg,ggr) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to ggr\n",opt.name);
-	  return 1;
-	}
-            
-      if (grad_save_gradient(ggr,file) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-      
-      grad_free_gradient(ggr);
-
-      break;
-
-    case type_psp:
-
-      if ((psp = psp_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create psp structure\n");
-	  return 1;
-	}
-      
-      if (svgpsp(svg,psp) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to psp\n",opt.name);
-	  return 1;
-	}
-            
-      if (psp_write(file,psp) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      psp_destroy(psp);
-
-      break;
-
-    case type_pov:
-      
-      if (! svgpov_valid(svg, opt.permissive, opt.verbose))
-	{
-	  fprintf(stderr,"cannot create valid povray file\n");
-	  return 1;
-	}
-
-      if ((pov = pov_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create pov structure\n");
-	  return 1;
-	}
-
-      if (svgpov(svg,pov) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to pov\n",opt.name);
-	  return 1;
-	}
-            
-      if (pov_write(file,pov) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      pov_destroy(pov);
-
-      break;
-
-    case type_gpt:
-      
-      if ((gpt = gpt_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create gpt structure\n");
-	  return 1;
-	}
-
-      if (svggpt(svg,gpt) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to gpt\n",opt.name);
-	  return 1;
-	}
-            
-      if (gpt_write(file,gpt) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      gpt_destroy(gpt);
-
-      break;
-
-    case type_css3:
-      
-      if ((css3 = css3_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create css3 structure\n");
-	  return 1;
-	}
-
-      if (svgcss3(svg,css3) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to css3\n",opt.name);
-	  return 1;
-	}
-            
-      if (css3_write(file,css3) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      css3_destroy(css3);
-
-      break;
-
-    case type_sao:
-
-      if ((sao = sao_new()) == NULL)
-	{
-	  fprintf(stderr,"failed to create sao structure\n");
-	  return 1;
-	}
-      
-      if (svgsao(svg,sao) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to psp\n",opt.name);
-	  return 1;
-	}
-            
-      if (sao_write(file, sao, (const char*)svg->name) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      sao_destroy(sao);
-
-      break;
-
-    case type_png:
-
-      if ((png = png_new(opt.format.png.width, 
-			 opt.format.png.height)) == NULL)
-	{
-	  fprintf(stderr,"failed to create png structure\n");
-	  return 1;
-	}
-      
-      if (svgpng(svg, png) != 0)
-	{
-	  fprintf(stderr,"failed to convert %s to png\n",opt.name);
-	  return 1;
-	}
-            
-      if (png_write(file, png, (const char*)svg->name) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      png_destroy(png);
-
-      break;
-
-    case type_svg:
-
-      if (svg_write(file, svg, &(opt.format.svg.preview)) != 0)
-	{
-	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
-	  return 1;
-	}
-
-      break;
-
-    default:
-
-      fprintf(stderr,"strange output format!\n");
+      fprintf(stderr,"failed conversion\n");
       return 1;
     }
 
@@ -493,107 +258,32 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
     printf("wrote %s to %s\n",
 	   (opt.name ? opt.name : "gradient"),
 	   (file ? file : "<stdout>"));
-
+  
   return 0;
 }
 
-static int svg_select_first(svg_t* svg, char* name)
+static int svg_select_first(svg_t *svg, char* name)
 {
   return 1;
 }
 
-static int svg_select_name(svg_t* svg, char* name)
+static int svg_select_name(svg_t *svg, char* name)
 {
-  return (strcmp((const char*)svg->name,name) == 0 ? 1 : 0);
+  return (strcmp((const char*)svg->name, name) == 0 ? 1 : 0);
 }
 
-static int svgcpt_dump(svg_t*,svgx_opt_t*);
-static int svgggr_dump(svg_t*,svgx_opt_t*);
-static int svgpov_dump(svg_t*,svgx_opt_t*);
-static int svggpt_dump(svg_t*,svgx_opt_t*);
-static int svgcss3_dump(svg_t*,svgx_opt_t*);
-static int svgpsp_dump(svg_t*,svgx_opt_t*);
-static int svgsao_dump(svg_t*,svgx_opt_t*);
-static int svgpng_dump(svg_t*,svgx_opt_t*);
-static int svgsvg_dump(svg_t*,svgx_opt_t*);
-
-static int svg_explicit2(svg_t* svg, void *dummy)
+static int svg_explicit2(svg_t *svg, void *dummy)
 {
   return svg_explicit(svg);
 }
 
-static int svg_flatten2(svg_t* svg, rgb_t *alpha)
+static int svg_flatten2(svg_t *svg, rgb_t *alpha)
 {
   return svg_flatten(svg,*alpha);
 }
 
-static int svgx_all(svgx_opt_t opt,svg_list_t* list)
+static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 {
-  int (*dump)(svg_t*,void*);
-  bool flatten;
-
-  switch (opt.type)
-    {
-    case type_cpt:
-
-      dump = (int (*)(svg_t*,void*))svgcpt_dump;
-      flatten = true;
-      break;
-
-    case type_ggr:
-
-      dump = (int (*)(svg_t*,void*))svgggr_dump;
-      flatten = false;
-      break;
-
-    case type_pov:
-
-      dump = (int (*)(svg_t*,void*))svgpov_dump;
-      flatten = false;
-      break;
-
-    case type_gpt:
-
-      dump = (int (*)(svg_t*,void*))svggpt_dump;
-      flatten = true;
-      break;
-
-    case type_css3:
-
-      dump = (int (*)(svg_t*,void*))svgcss3_dump;
-      flatten = false;
-      break;
-
-    case type_psp:
-
-      dump = (int (*)(svg_t*,void*))svgpsp_dump;
-      flatten = false;
-      break;
-
-    case type_sao:
-
-      dump = (int (*)(svg_t*,void*))svgsao_dump;
-      flatten = true;
-      break;
-
-    case type_png:
-
-      dump = (int (*)(svg_t*,void*))svgpng_dump;
-      flatten = false;
-      break;
-
-    case type_svg:
-
-      dump = (int (*)(svg_t*,void*))svgsvg_dump;
-      flatten = false;
-      break;
-
-    default:
-
-      fprintf(stderr,"strange output format!\n");
-      return 1;
-    }
-
   /* coerce explicit */
 
   if (svg_list_iterate(list, svg_explicit2, NULL) != 0)
@@ -604,7 +294,7 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 
   /* coerce flat */
 
-  if (flatten)
+  if (flatten_type(opt.type))
     {
       if (svg_list_iterate(list, 
 			   (int (*)(svg_t*, void*))svg_flatten2, 
@@ -614,6 +304,11 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
 	  return 1;
 	}
     }
+
+  int (*dump)(svg_t*, void*);
+
+  if ((dump = (int (*)(svg_t*, void*))dump_type(opt.type)) == NULL) 
+    return 1;
 
   if (opt.verbose)
     printf("converting all gradients:\n");
@@ -627,29 +322,70 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
   return 0;
 }
 
-static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
+/*
+  create a new opt with an autogenerated filename and call 
+  f(svg,opt), this is common code for the dump function in
+  the case opt.job == job_all;
+*/
+
+static int call_autonamed(const svg_t *svg, 
+			  svgx_opt_t *opt, 
+			  const char *suffix,
+			  int (*f)(const svg_t*, svgx_opt_t*))
 {
-  int  n = SVG_NAME_LEN+5;
-  char file[n],*name;
-  cpt_t *cpt;
+  const char *name = (char*)svg->name;
+  int  n = strlen(name) + strlen(suffix) + 2;
+  char file[n];
 
-  if (!svg) return 1;
-
-  name = (char*)svg->name;
-
-  if (snprintf(file, n, "%s.cpt", name) >= n)
+  if (snprintf(file, n, "%s.%s", name, suffix) >= n)
     {
       fprintf(stderr,"filename truncated! %s\n",file);
       return 1;
     }
+
+  svgx_opt_t opt2 = *opt;
+
+  opt2.job = job_named;
+  opt2.output.file = file;
+
+  int err = f(svg, &opt2);
+
+  if (opt->verbose) printf("  %s\n",file);
+
+  return err;
+}
+
+/* conversion function */
+
+static int svgcpt(const svg_t*, cpt_t*);
+static int svgggr(const svg_t*, gradient_t*);
+static int svgpsp(const svg_t*, psp_t*);
+static int svgpov(const svg_t*, pov_t*);
+static int svggpt(const svg_t*, gpt_t*);
+static int svgcss3(const svg_t*, css3_t*);
+static int svgsao(const svg_t*, sao_t*);
+static int svgpng(const svg_t*, png_t*);
+
+/* check functions */
+
+static int svgpov_valid(const svg_t*, int, int);
+
+/* dump functions */
+
+static int svgcpt_dump(const svg_t *svg, svgx_opt_t *opt)
+{
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "cpt", svgcpt_dump);
+
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
+  cpt_t *cpt;
 
   if ((cpt = cpt_new()) == NULL)
     {
       fprintf(stderr,"failed to create cpt structure\n");
       return 1;
     }
-
-  /* housekeeping */
 
   cpt->model = model_rgb;
   
@@ -664,15 +400,11 @@ static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
       fprintf(stderr,"gradient name (%s) truncated\n",name);
     }
   
-  /* translate */
-
   if (svgcpt(svg,cpt) != 0)
     {
       fprintf(stderr,"failed to convert %s to cpt\n",name);
       return 1;
     }
-
-  /* write */
 
   if (cpt_write(file,cpt) != 0)
     {
@@ -682,27 +414,17 @@ static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
 
   cpt_destroy(cpt);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
-static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
+static int svgggr_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+5;
-  char file[n],*name;
-  gradient_t* ggr;
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "ggr", svgggr_dump);
 
-  if (!svg) return 1;
-
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.ggr",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
+  gradient_t *ggr;
 
   if ((ggr = grad_new_gradient()) == NULL)
     {
@@ -710,15 +432,11 @@ static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
       return 1;
     }
 
-  /* translate */
-
   if (svgggr(svg,ggr) != 0)
     {
       fprintf(stderr,"failed to convert %s to cpt\n",name);
       return 1;
     }
-
-  /* write */
 
   if (grad_save_gradient(ggr,file) != 0)
     {
@@ -728,31 +446,21 @@ static int svgggr_dump(svg_t* svg,svgx_opt_t* opt)
 
   grad_free_gradient(ggr);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
-static int svgpov_dump(svg_t* svg, svgx_opt_t* opt)
+static int svgpov_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+5;
-  char file[n],*name;
-  pov_t* pov;
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "inc", svgpov_dump);
 
-  if (!svg) return 1;
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
+  pov_t *pov;
 
   if (! svgpov_valid(svg, opt->verbose, opt->permissive))
     {
-      fprintf(stderr,"cannot create valid povray filen");
-      return 1;
-    }
-
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.inc",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
+      fprintf(stderr,"cannot create valid povray file \n");
       return 1;
     }
 
@@ -762,15 +470,11 @@ static int svgpov_dump(svg_t* svg, svgx_opt_t* opt)
       return 1;
     }
 
-  /* translate */
-
   if (svgpov(svg,pov) != 0)
     {
       fprintf(stderr,"failed to convert %s to pov\n",name);
       return 1;
     }
-
-  /* write */
 
   if (pov_write(file, pov) != 0)
     {
@@ -780,27 +484,17 @@ static int svgpov_dump(svg_t* svg, svgx_opt_t* opt)
 
   pov_destroy(pov);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
-static int svgsao_dump(svg_t* svg, svgx_opt_t* opt)
+static int svgsao_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+5;
-  char file[n],*name;
-  sao_t* sao;
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "sao", svgsao_dump);
 
-  if (!svg) return 1;
-  
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.sao",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
+  sao_t *sao;
   
   if ((sao = sao_new()) == NULL)
     {
@@ -822,28 +516,18 @@ static int svgsao_dump(svg_t* svg, svgx_opt_t* opt)
   
   sao_destroy(sao);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
 
-static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
+static int svggpt_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+5;
-  char file[n],*name;
-  gpt_t* gpt;
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "gpt", svggpt_dump);
 
-  if (!svg) return 1;
-
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.gpt",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
+  gpt_t *gpt;
 
   if ((gpt = gpt_new()) == NULL)
     {
@@ -851,15 +535,11 @@ static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
       return 1;
     }
 
-  /* translate */
-
   if (svggpt(svg,gpt) != 0)
     {
       fprintf(stderr,"failed to convert %s to gpt\n",name);
       return 1;
     }
-
-  /* write */
 
   if (gpt_write(file,gpt) != 0)
     {
@@ -869,27 +549,17 @@ static int svggpt_dump(svg_t* svg,svgx_opt_t* opt)
 
   gpt_destroy(gpt);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
-static int svgcss3_dump(svg_t* svg, svgx_opt_t* opt)
+static int svgcss3_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+6;
-  char file[n],*name;
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "c3g", svgcss3_dump);
+
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
   css3_t *css3;
-
-  if (!svg) return 1;
-
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.css3",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
 
   if ((css3 = css3_new()) == NULL)
     {
@@ -897,15 +567,11 @@ static int svgcss3_dump(svg_t* svg, svgx_opt_t* opt)
       return 1;
     }
 
-  /* translate */
-
   if (svgcss3(svg,css3) != 0)
     {
       fprintf(stderr,"failed to convert %s to css3\n",name);
       return 1;
     }
-
-  /* write */
 
   if (css3_write(file,css3) != 0)
     {
@@ -915,27 +581,17 @@ static int svgcss3_dump(svg_t* svg, svgx_opt_t* opt)
 
   css3_destroy(css3);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
-static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
+static int svgpsp_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+5;
-  char file[n],*name;
-  psp_t* psp;
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "grd", svgpsp_dump);
 
-  if (!svg) return 1;
-
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.grd",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
+  psp_t *psp;
 
   if ((psp = psp_new()) == NULL)
     {
@@ -943,13 +599,13 @@ static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
       return 1;
     }
       
-  if (svgpsp(svg,psp) != 0)
+  if (svgpsp(svg, psp) != 0)
     {
-      fprintf(stderr,"failed to convert %s to psp\n",opt->name);
+      fprintf(stderr,"failed to convert %s to psp\n", name);
       return 1;
     }
             
-  if (psp_write(file,psp) != 0)
+  if (psp_write(file, psp) != 0)
     {
       fprintf(stderr,"failed to write to %s\n",file);
       return 1;
@@ -957,27 +613,17 @@ static int svgpsp_dump(svg_t* svg,svgx_opt_t* opt)
 
   psp_destroy(psp);
 
-  if (opt->verbose)  
-    printf("  %s\n",file);
-
   return 0;
 }
 
-static int svgpng_dump(svg_t* svg, svgx_opt_t* opt)
+static int svgpng_dump(const svg_t *svg, svgx_opt_t *opt)
 {
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "png", svgpng_dump);
+
+  const char *name = (char*)svg->name;
+  const char *file = opt->output.file;
   png_t *png;
-  int  n = SVG_NAME_LEN+6;
-  char file[n],*name;
-
-  if (!svg) return 1;
-
-  name = (char*)svg->name;
-
-  if (snprintf(file,n,"%s.png",name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
 
   if ((png = png_new(opt->format.png.width, 
 		     opt->format.png.height)) == NULL)
@@ -988,13 +634,13 @@ static int svgpng_dump(svg_t* svg, svgx_opt_t* opt)
       
   if (svgpng(svg, png) != 0)
     {
-      fprintf(stderr,"failed to convert %s to png\n",opt->name);
+      fprintf(stderr,"failed to convert %s to png\n", name);
       return 1;
     }
   
-  if (png_write(file, png, (const char*)svg->name) != 0)
+  if (png_write(file, png, name) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      fprintf(stderr,"failed to write to %s\n", file);
       return 1;
     }
 
@@ -1003,18 +649,12 @@ static int svgpng_dump(svg_t* svg, svgx_opt_t* opt)
   return 0;
 }
 
-static int svgsvg_dump(svg_t *svg, svgx_opt_t *opt)
+static int svgsvg_dump(const svg_t *svg, svgx_opt_t *opt)
 {
-  int  n = SVG_NAME_LEN+6;
-  char file[n];
+  if (opt->job == job_all)
+    return call_autonamed(svg, opt, "svg", svgsvg_dump);
 
-  if (!svg) return 1;
-
-  if (snprintf(file,n,"%s.svg", svg->name) >= n)
-    {
-      fprintf(stderr,"filename truncated! %s\n",file);
-      return 1;
-    }
+  const char *file = opt->output.file;
   
   if (svg_write(file, svg, &(opt->format.svg.preview)) != 0)
     {
@@ -1025,9 +665,43 @@ static int svgsvg_dump(svg_t *svg, svgx_opt_t *opt)
   return 0;
 }
 
-/* coonvert an svg_t to a cpt_t */
+/* check functions */
 
-static int svgcpt(svg_t* svg, cpt_t* cpt)
+static int svgpov_valid(const svg_t *svg, int permissive, int verbose)
+{
+  int m = svg_num_stops(svg);
+  
+  if (m > POV_STOPS_MAX)
+    {
+      if (permissive)
+	{
+	  if (verbose)
+	    printf("warning : format limit broken %i stops (max is %i)\n",
+		   m,POV_STOPS_MAX);
+	}
+      else
+	{
+	  fprintf(stderr,
+		  "format limit : POV-ray allows no more than %i stops,\n",
+		  POV_STOPS_MAX);
+	  fprintf(stderr,
+		  "but this gradient has %i (use -p to ignore format limits)\n",m);
+	  return 0;
+	}
+    }
+  
+  if (m < 2)
+    {
+      fprintf(stderr,"sanity check : found %i stops, but at least 2 required\n",m);
+      return 0;
+    }
+  
+  return 1;
+}
+
+/* conversion function */
+
+static int svgcpt(const svg_t *svg, cpt_t *cpt)
 {
   svg_node_t *node,*next;
 
@@ -1046,7 +720,7 @@ static int svgcpt(svg_t* svg, cpt_t* cpt)
       if (z1 < z2)
 	{
 	  rgb_t c1,c2;
-	  cpt_seg_t* seg;
+	  cpt_seg_t *seg;
 
 	  c1 = node->stop.colour;
 	  c2 = next->stop.colour;
@@ -1082,7 +756,7 @@ static int svgcpt(svg_t* svg, cpt_t* cpt)
 
 /* convert an svg_t to a gradient_t */
 
-static int svgggr(svg_t* svg,gradient_t* ggr)
+static int svgggr(const svg_t *svg,gradient_t *ggr)
 {
   svg_node_t *node,*next;
   grad_segment_t *gseg,*prev=NULL; 
@@ -1175,7 +849,7 @@ static int clampi(int z, int min, int max)
   return z;
 }
 
-static int svgpsp(svg_t* svg,psp_t* psp)
+static int svgpsp(const svg_t *svg, psp_t *psp)
 {
   int m,n;
   svg_node_t *node;
@@ -1244,7 +918,7 @@ static int svgpsp(svg_t* svg,psp_t* psp)
   return 0;
 }
 
-static int svgpov(svg_t* svg, pov_t* pov)
+static int svgpov(const svg_t *svg, pov_t *pov)
 {
   int n,m,nmod;
   svg_node_t *node;
@@ -1361,7 +1035,7 @@ static int svgpov(svg_t* svg, pov_t* pov)
   return 0;
 }
 
-static int svggpt(svg_t* svg, gpt_t* gpt)
+static int svggpt(const svg_t *svg, gpt_t *gpt)
 {
   int n,m;
   svg_node_t *node;
@@ -1420,7 +1094,7 @@ static int svggpt(svg_t* svg, gpt_t* gpt)
   return 0;
 }
 
-static int svgsao(svg_t* svg, sao_t* sao)
+static int svgsao(const svg_t *svg, sao_t *sao)
 {
   svg_node_t *node;
   int n=0;
@@ -1451,7 +1125,7 @@ static int svgsao(svg_t* svg, sao_t* sao)
   return 0;
 }
 
-static int svgcss3(svg_t* svg, css3_t* css3)
+static int svgcss3(const svg_t *svg, css3_t *css3)
 {
   int n,m;
   svg_node_t *node;
@@ -1498,7 +1172,7 @@ static int svgcss3(svg_t* svg, css3_t* css3)
   return 0;
 }
 
-static int svgpng(svg_t *svg, png_t *png)
+static int svgpng(const svg_t *svg, png_t *png)
 {
 
   size_t nz = png->width;
