@@ -1,7 +1,7 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.33 2012/03/25 23:41:32 jjg Exp jjg $
+  $Id: svgx.c,v 1.34 2012/03/26 00:02:41 jjg Exp jjg $
   J.J. Green 2005, 2011
 */
 
@@ -23,6 +23,7 @@
 #include "pspwrite.h"
 #include "saowrite.h"
 #include "pngwrite.h"
+#include "svgwrite.h"
 
 #include "svgx.h"
 #include "utf8x.h"
@@ -201,7 +202,15 @@ static int svgx_named(svgx_opt_t opt,svg_list_t* list)
   return svgx_single(opt, svg);
 }
 
-
+/*
+  FIXME - we can do away with most of the code in this
+  function by
+  - modifying the dump() functions to accept an 
+    explicit filename, but to generate an autoname
+    if the explicit name is NULL
+  - in the below, use these dump()s with the explicit name
+  - in the -a case, set the explicit name to NULL
+*/
 
 static int svgx_single(svgx_opt_t opt, svg_t* svg)
 {
@@ -228,7 +237,7 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
     case type_cpt:
     case type_sao:
     case type_gpt:
-      if (svg_flatten(svg, opt.alpha) != 0)
+      if (svg_flatten(svg, opt.format.alpha) != 0)
 	{
 	  fprintf(stderr,"failed to flatten transparency\n");
 	  return 1;
@@ -240,6 +249,7 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
     case type_css3:
     case type_psp:
     case type_png:
+    case type_svg:
       break;
 
     default:
@@ -263,9 +273,9 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
 
       cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
       
-      cpt->bg.u.colour.rgb  = opt.bg;
-      cpt->fg.u.colour.rgb  = opt.fg;
-      cpt->nan.u.colour.rgb = opt.nan;
+      cpt->bg.u.colour.rgb  = opt.format.cpt.bg;
+      cpt->fg.u.colour.rgb  = opt.format.cpt.fg;
+      cpt->nan.u.colour.rgb = opt.format.cpt.nan;
   
       if (snprintf(cpt->name,CPT_NAME_LEN,"%s",svg->name) >= CPT_NAME_LEN)
 	{
@@ -440,7 +450,8 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
 
     case type_png:
 
-      if ((png = png_new(opt.width, opt.height)) == NULL)
+      if ((png = png_new(opt.format.png.width, 
+			 opt.format.png.height)) == NULL)
 	{
 	  fprintf(stderr,"failed to create png structure\n");
 	  return 1;
@@ -459,6 +470,16 @@ static int svgx_single(svgx_opt_t opt, svg_t* svg)
 	}
 
       png_destroy(png);
+
+      break;
+
+    case type_svg:
+
+      if (svg_write(file, svg, &(opt.format.svg.preview)) != 0)
+	{
+	  fprintf(stderr,"failed to write to %s\n",(file ? file : "<stdout>"));
+	  return 1;
+	}
 
       break;
 
@@ -494,6 +515,7 @@ static int svgcss3_dump(svg_t*,svgx_opt_t*);
 static int svgpsp_dump(svg_t*,svgx_opt_t*);
 static int svgsao_dump(svg_t*,svgx_opt_t*);
 static int svgpng_dump(svg_t*,svgx_opt_t*);
+static int svgsvg_dump(svg_t*,svgx_opt_t*);
 
 static int svg_explicit2(svg_t* svg, void *dummy)
 {
@@ -560,6 +582,12 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
       flatten = false;
       break;
 
+    case type_svg:
+
+      dump = (int (*)(svg_t*,void*))svgsvg_dump;
+      flatten = false;
+      break;
+
     default:
 
       fprintf(stderr,"strange output format!\n");
@@ -580,7 +608,7 @@ static int svgx_all(svgx_opt_t opt,svg_list_t* list)
     {
       if (svg_list_iterate(list, 
 			   (int (*)(svg_t*, void*))svg_flatten2, 
-			   &(opt.alpha)) != 0)
+			   &(opt.format.alpha)) != 0)
 	{
 	  fprintf(stderr,"failed coerce explicit\n");
 	  return 1;
@@ -627,9 +655,9 @@ static int svgcpt_dump(svg_t* svg, svgx_opt_t* opt)
   
   cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
   
-  cpt->bg.u.colour.rgb  = opt->bg;
-  cpt->fg.u.colour.rgb  = opt->fg;
-  cpt->nan.u.colour.rgb = opt->nan;
+  cpt->bg.u.colour.rgb  = opt->format.cpt.bg;
+  cpt->fg.u.colour.rgb  = opt->format.cpt.fg;
+  cpt->nan.u.colour.rgb = opt->format.cpt.nan;
   
   if (snprintf(cpt->name,CPT_NAME_LEN,"%s",name) >= CPT_NAME_LEN)
     {
@@ -951,7 +979,8 @@ static int svgpng_dump(svg_t* svg, svgx_opt_t* opt)
       return 1;
     }
 
-  if ((png = png_new(opt->width, opt->height)) == NULL)
+  if ((png = png_new(opt->format.png.width, 
+		     opt->format.png.height)) == NULL)
     {
       fprintf(stderr,"failed to create png structure\n");
       return 1;
@@ -970,6 +999,28 @@ static int svgpng_dump(svg_t* svg, svgx_opt_t* opt)
     }
 
   png_destroy(png);
+
+  return 0;
+}
+
+static int svgsvg_dump(svg_t *svg, svgx_opt_t *opt)
+{
+  int  n = SVG_NAME_LEN+6;
+  char file[n];
+
+  if (!svg) return 1;
+
+  if (snprintf(file,n,"%s.svg", svg->name) >= n)
+    {
+      fprintf(stderr,"filename truncated! %s\n",file);
+      return 1;
+    }
+  
+  if (svg_write(file, svg, &(opt->format.svg.preview)) != 0)
+    {
+      fprintf(stderr,"failed to write to %s\n",file);
+      return 1;
+    }
 
   return 0;
 }
