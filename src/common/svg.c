@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.7 2011/11/09 21:30:30 jjg Exp jjg $
+  $Id: svg.c,v 1.8 2011/11/13 20:21:08 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -82,7 +82,7 @@ extern int svg_explicit(svg_t *svg)
   not tested
 */
 
-extern int svg_each_stop(svg_t* svg, 
+extern int svg_each_stop(const svg_t* svg, 
 			 int (*f)(svg_stop_t*,void*), 
 			 void* opt)
 {
@@ -125,7 +125,7 @@ static int svg_interpolate_stops(svg_stop_t ls,
 
 /* interpolate an svg with explicit initial and final stops */
 
-extern int svg_interpolate(svg_t *svg, double z, rgb_t *rgb, double *op)
+extern int svg_interpolate(const svg_t *svg, double z, rgb_t *rgb, double *op)
 {
   if ((z < 0.0) || (z > 100.0))
     return 1;
@@ -281,7 +281,7 @@ static int inc(svg_stop_t *stop, int *n)
   return 0;
 }
 
-extern int svg_num_stops(svg_t* svg)
+extern int svg_num_stops(const svg_t* svg)
 {
   int n = 0;
 
