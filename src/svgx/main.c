@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.24 2012/04/16 19:30:25 jjg Exp jjg $
+  $Id: main.c,v 1.25 2012/04/16 20:07:32 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -236,10 +236,15 @@ int main(int argc,char** argv)
       opt.verbose = 0;
     }
 
+  /* say hello */
+
   if (opt.verbose)
-    {
       printf("This is svgx (version %s)\n",VERSION);
 
+  /* for conversion, give details of what we will do */
+
+  if (opt.verbose && (opt.job != job_list))
+    {
       const char* tstr;
 
       switch (opt.type)
@@ -272,7 +277,6 @@ int main(int argc,char** argv)
 	printf("svg preview size is %zu x %zu px\n",
 	       opt.format.svg.preview.width,
 	       opt.format.svg.preview.height);
-
     }
 
   err = svgx(opt);

@@ -6,7 +6,7 @@
   work is done in svgx
 
   Copyright (c) J.J. Green 2012
-  $Id$
+  $Id: svgxdump.c,v 1.1 2012/04/17 23:50:23 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -290,22 +290,22 @@ static int svgpov_valid(const svg_t *svg, int permissive, int verbose)
 	{
 	  if (verbose)
 	    printf("warning : format limit broken %i stops (max is %i)\n",
-		   m,POV_STOPS_MAX);
+		   m, POV_STOPS_MAX);
 	}
       else
 	{
 	  fprintf(stderr,
-		  "format limit : POV-ray allows no more than %i stops,\n",
-		  POV_STOPS_MAX);
-	  fprintf(stderr,
-		  "but this gradient has %i (use -p to ignore format limits)\n",m);
+		  "format limit: POV-ray allows no more than %i stops,\n"
+		  "but this gradient has %i (use -p to ignore limits)\n",
+		  POV_STOPS_MAX, m);
+
 	  return 0;
 	}
     }
   
   if (m < 2)
     {
-      fprintf(stderr,"sanity check : found %i stops, but at least 2 required\n",m);
+      fprintf(stderr,"found %i stops, but at least 2 required\n",m);
       return 0;
     }
   
@@ -393,7 +393,7 @@ static int svgpov(const svg_t *svg, pov_t *pov)
 
       if (utf8_to_x("ASCII", svg->name, aname, SVG_NAME_LEN) != 0)
 	{
-	  printf("failed to convert name %s to ascii\n",aname);
+	  fprintf(stderr,"failed to convert name %s to ascii\n",aname);
 	  return 1;
 	}
 
