@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.25 2012/04/16 20:07:32 jjg Exp jjg $
+  $Id: main.c,v 1.26 2012/04/18 00:10:58 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -218,6 +218,8 @@ int main(int argc,char** argv)
 	      return EXIT_FAILURE;
 	    }
 	}
+      else
+	opt.format.svg.preview.use = false;
 
       break;
 

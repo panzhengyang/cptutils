@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.5 2012/04/15 19:15:57 jjg Exp jjg $
+  $Id: main.c,v 1.6 2012/04/16 20:55:32 jjg Exp jjg $
 */
 
 #define _GNU_SOURCE
@@ -96,6 +96,8 @@ int main(int argc,char** argv)
 	  return EXIT_FAILURE;
 	}
     }
+  else  
+    opt.preview.use = false;
   
   err = cptsvg(infile,outfile,opt);
   
