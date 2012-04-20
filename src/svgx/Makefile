@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.35 2012/04/17 17:42:20 jjg Exp jjg $
+# $Id: Makefile,v 1.36 2012/04/20 00:01:46 jjg Exp jjg $
 
 OBJ      = svgx.o svgxdump.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
@@ -64,7 +64,7 @@ all : svgx svgx.1
 install : all
 	$(INSTALL) -m755 svgx $(DESTDIR)$(bindir)/svgx
 	$(INSTALL) -m644 svgx.1 $(DESTDIR)$(mandir)/man1/svgx.1 
-	for type in cpt css3 gimp gpt png pov psp sao s; do \
+	for type in cpt css3 gimp gpt png pov psp sao svg ; do \
 	  base="svg$$type" ; \
 	  $(INSTALL) -m755 wrapper/$$base.sh $(DESTDIR)$(bindir)/$$base ; \
 	  ln -f -s svgx.1 $(DESTDIR)$(mandir)/man1/$$base.1 ; \
