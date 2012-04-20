@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: svgx.xml,v 1.6 2012/04/16 20:35:59 jjg Exp jjg $ -->
+<!-- $Id: svgx.xml,v 1.7 2012/04/16 20:44:22 jjg Exp jjg $ -->
 
 <refentry id='svgx1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -199,7 +199,7 @@
 <refsect1 id='examples'><title>EXAMPLES</title>
 
 <para>
-  Inspect an SVG file for gradients
+  Inspect an SVG file for gradients:
 </para>
 
 <programlisting>
@@ -208,12 +208,22 @@
 
 <para>
   Extract the gradient "Sunny Road" from the same SVG file,
-  converting the result to cpt. Note that the gradient name
-  needs to be quoted.
+  converting the result to cpt: (note that the gradient name
+  needs to be quoted)
 </para>
 
 <programlisting>
   svgx -v -t cpt -s "Sunny Road" -o sunny_road.cpt old.svg 
+</programlisting>
+
+<para>
+  Extract all of the svg gradients from the file 
+  <filename>kittens.svg</filename> and give each of
+  them a preview:
+</para>
+
+<programlisting>
+  svgx -v -t svg -a kittens.svg  
 </programlisting>
 
 </refsect1>
