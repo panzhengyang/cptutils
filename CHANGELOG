@@ -1,6 +1,6 @@
-Changes $Id: CHANGELOG,v 1.75 2012/04/16 21:15:54 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.76 2012/04/17 17:35:00 jjg Exp jjg $
 
-1.45 (pending)
+1.45 (24 April 2012)
   - svgx code cleanup
   - svgx now writes svg
   - all programs writing svg now have a --preview option
