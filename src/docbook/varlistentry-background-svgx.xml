@@ -9,8 +9,8 @@
     </para>
     <para>
       Note that this only modifies the "background" field in the 
-      output cpt file, it does replace transparency (see the 
-      <option>-T</option> option in that regard).
+      output cpt file, it does not affect the transparency (see 
+      the <option>-T</option> option in that regard).
     </para>
   </listitem>
 </varlistentry>
