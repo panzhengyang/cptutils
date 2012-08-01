@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: svgx.xml,v 1.7 2012/04/16 20:44:22 jjg Exp jjg $ -->
+<!-- $Id: svgx.xml,v 1.8 2012/04/20 00:13:44 jjg Exp jjg $ -->
 
 <refentry id='svgx1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -223,7 +223,7 @@
 </para>
 
 <programlisting>
-  svgx -v -t svg -a kittens.svg  
+  svgx -v -t svg -a -p kittens.svg  
 </programlisting>
 
 </refsect1>
