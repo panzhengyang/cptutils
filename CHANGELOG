@@ -1,4 +1,7 @@
-Changes $Id: CHANGELOG,v 1.76 2012/04/17 17:35:00 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.77 2012/04/21 00:05:19 jjg Exp jjg $
+
+1.46 (pending)
+  - fixed svgpov failure on oversized output
 
 1.45 (24 April 2012)
   - svgx code cleanup

@@ -6,7 +6,7 @@
   work is done in svgx
 
   Copyright (c) J.J. Green 2012
-  $Id: svgxdump.c,v 1.1 2012/04/17 23:50:23 jjg Exp jjg $
+  $Id: svgxdump.c,v 1.2 2012/04/18 00:10:31 jjg Exp jjg $
 */
 
 #include <stdlib.h>
@@ -296,7 +296,7 @@ static int svgpov_valid(const svg_t *svg, int permissive, int verbose)
 	{
 	  fprintf(stderr,
 		  "format limit: POV-ray allows no more than %i stops,\n"
-		  "but this gradient has %i (use -p to ignore limits)\n",
+		  "but this gradient has %i\n",
 		  POV_STOPS_MAX, m);
 
 	  return 0;
@@ -438,7 +438,7 @@ extern int svgpov_dump(const svg_t *svg, svgx_opt_t *opt)
   const char *file = opt->output.file;
   pov_t *pov;
 
-  if (! svgpov_valid(svg, opt->verbose, opt->permissive))
+  if (! svgpov_valid(svg, opt->permissive, opt->verbose))
     {
       fprintf(stderr,"cannot create valid povray file \n");
       return 1;
