@@ -1,7 +1,8 @@
-Changes $Id: CHANGELOG,v 1.77 2012/04/21 00:05:19 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.78 2012/08/15 21:26:46 jjg Exp jjg $
 
 1.46 (pending)
   - fixed svgpov failure on oversized output
+  - corrected absolute path to testfile in cptcss (gentoo patch)
 
 1.45 (24 April 2012)
   - svgx code cleanup
