@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.4 2012/02/26 19:09:40 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/02/27 19:01:48 jjg Exp jjg $
 
 NAME = cpthsv
 
@@ -27,8 +27,8 @@ veryclean :
 
 $(NAME) : $(OBJ)
 
-include ../Common.mk
 include ../Progs.mk
+include ../Common.mk
 
 # for testing 
 

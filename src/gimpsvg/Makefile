@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.17 2012/02/27 19:00:34 jjg Exp jjg $
+# $Id: Makefile,v 1.18 2012/04/15 22:54:59 jjg Exp jjg $
 
 NAME = gimpsvg
 
@@ -45,8 +45,7 @@ showpng : $(GRAD).png ; feh $(GRAD).png
 
 check test : $(GRAD).svg 
 
-include ../Common.mk
 include ../Progs.mk
-
+include ../Common.mk
 
 

@@ -1,6 +1,6 @@
 # Makefile for cpttext
 # (c) J.J.Green 2001,2004,2012
-# $Id: Makefile,v 1.4 2012/02/26 22:04:36 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/02/27 19:01:06 jjg Exp jjg $
 
 OBJ      = main.o options.o cpttext.o
 RUBBISH += $(OBJ) cpttext test.html
@@ -37,5 +37,5 @@ test.html : cpttext
 	echo "</body>" >> test.html
 	echo "</html>" >> test.html
 
-include ../Common.mk
 include ../Progs.mk
+include ../Common.mk

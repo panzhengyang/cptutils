@@ -1,7 +1,7 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.5 2012/01/22 19:42:08 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2012/02/27 18:58:59 jjg Exp jjg $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
@@ -38,8 +38,7 @@ test check : xycpt
 	  ./xycpt -u -v -o test/u/$$n.cpt test/u/$$n.dat || exit 1 ; \
 	done
 
-include ../Common.mk
 include ../Progs.mk
-
+include ../Common.mk
 
 

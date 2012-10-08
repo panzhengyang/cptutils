@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.10 2012/04/15 21:24:45 jjg Exp jjg $
+# $Id: Makefile,v 1.11 2012/04/16 20:56:35 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
@@ -25,8 +25,8 @@ veryclean :
 
 cptsvg : $(OBJ)
 
-include ../Common.mk
 include ../Progs.mk
+include ../Common.mk
 
 # for testing 
 

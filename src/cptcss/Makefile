@@ -1,6 +1,6 @@
 # Makefile for cptcss
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2012/02/27 19:02:04 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/09/03 16:12:39 jjg Exp jjg $
 
 OBJ      = main.o options.o cptcss.o
 RUBBISH += $(OBJ) cptcss
@@ -32,8 +32,7 @@ test check : cptcss
 	./cptcss -f "level-%.2i" -v $(CPT)
 	./cptcss -v $(CPT)
 
-include ../Common.mk
 include ../Progs.mk
-
+include ../Common.mk
 
 

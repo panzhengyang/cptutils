@@ -1,7 +1,7 @@
 # Makefile for pspsvg
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.3 2012/02/27 18:59:57 jjg Exp jjg $
+# $Id: Makefile,v 1.4 2012/04/15 23:01:58 jjg Exp jjg $
 
 OBJ      =  pspsvg.o main.o options.o gstack.o
 RUBBISH += $(OBJ) pspsvg
@@ -26,8 +26,8 @@ veryclean :
 
 pspsvg : $(OBJ)
 
-include ../Common.mk
 include ../Progs.mk
+include ../Common.mk
 
 TESTSVG  = t1.svg t2.svg t3.svg t4.svg
 RUBBISH += $(TESTSVG)

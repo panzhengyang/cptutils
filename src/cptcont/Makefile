@@ -1,6 +1,6 @@
 # Makefile for cptcont
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.4 2012/01/22 19:41:50 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/02/27 19:02:22 jjg Exp jjg $
 
 NAME = cptcont
 
@@ -27,8 +27,8 @@ veryclean :
 
 $(NAME) : $(OBJ)
 
-include ../Common.mk
 include ../Progs.mk
+include ../Common.mk
 
 # for testing 
 

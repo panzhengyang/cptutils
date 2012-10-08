@@ -1,7 +1,7 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.36 2012/04/20 00:01:46 jjg Exp jjg $
+# $Id: Makefile,v 1.37 2012/04/20 00:01:54 jjg Exp jjg $
 
 OBJ      = svgx.o svgxdump.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
@@ -53,8 +53,8 @@ clean :
 
 svgx : $(OBJ)
 
-include ../Common.mk
 include ../Progs.mk
+include ../Common.mk
 
 # depends on having libxml2
 

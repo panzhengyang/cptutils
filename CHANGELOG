@@ -1,6 +1,7 @@
-Changes $Id: CHANGELOG,v 1.78 2012/08/15 21:26:46 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.79 2012/09/03 16:20:01 jjg Exp jjg $
 
 1.46 (pending)
+  - switched order of libraries on gcc commandline (x86_64 issue)
   - fixed svgpov failure on oversized output
   - corrected absolute path to testfile in cptcss (gentoo patch)
 
