@@ -1,11 +1,11 @@
 # Makefile for cptgimp
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.6 2012/02/27 19:01:34 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2012/10/08 16:21:54 jjg Exp jjg $
 
 OBJ      = main.o options.o cptinfo.o
 RUBBISH += $(OBJ) cptinfo
 
-LDLIBS += 
+LDLIBS += -lcpt -lfill
 
 default : all
 
@@ -32,7 +32,6 @@ test check : cptinfo
 	./cptinfo --plain $(CPT)
 	./cptinfo --csv $(CPT)
 
-include ../Progs.mk
 include ../Common.mk
 
 

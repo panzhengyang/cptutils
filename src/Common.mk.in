@@ -1,6 +1,6 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.16 2012/03/12 15:54:13 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.17 2012/03/12 16:05:50 jjg Exp jjg $ 
 
 VERSION   = @PACKAGE_VERSION@
 
@@ -8,6 +8,11 @@ CC        = @CC@
 CFLAGS   += @CFLAGS@ @DEFS@ 
 LDFLAGS  += 
 LDLIBS   += @LIBS@
+
+CFLAGS   += -I../common/
+LDFLAGS  += -L../common/  
+
+TESTD     = ../t
 
 PYTHON    = @PYTHON@
 
@@ -37,6 +42,8 @@ ifneq (no,$(GGO))
 	$(GGO) -u -i $< -f $* -F $*
 
 endif
+
+.SECONDARY : options.c options.h
 
 # generate manpages from docbook source, the location
 # of the xsl is as used by Debian/Ubuntu

@@ -1,12 +1,12 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.11 2012/02/27 19:02:55 jjg Exp jjg $
+# $Id: Makefile,v 1.12 2012/03/09 21:55:19 jjg Exp jjg $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
 
-LDLIBS += 
+LDLIBS  += -lcpt -lfill -lodb -lident
 
 default : all
 
@@ -34,7 +34,6 @@ odbparse.c : odbparse.y
 	bison odbparse.y
 
 include ../Common.mk
-include ../Progs.mk
 
 # for testing (96004SP.avl is in the test directory
 # but fails, it contains no gradient) 

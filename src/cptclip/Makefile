@@ -1,6 +1,6 @@
 # Makefile for cptclip
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.5 2012/02/27 19:02:38 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2012/10/08 16:20:03 jjg Exp jjg $
 
 NAME = cptclip
 
@@ -8,7 +8,7 @@ OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
 CFLAGS  += 
-LDLIBS  +=
+LDLIBS  += -lcpt -lfill
 
 default : all
 
@@ -27,7 +27,6 @@ veryclean :
 
 $(NAME) : $(OBJ)
 
-include ../Progs.mk
 include ../Common.mk
 
 # for testing 

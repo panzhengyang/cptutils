@@ -1,11 +1,11 @@
 # Makefile for cptcss
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.5 2012/09/03 16:12:39 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2012/10/08 16:21:32 jjg Exp jjg $
 
 OBJ      = main.o options.o cptcss.o
 RUBBISH += $(OBJ) cptcss
 
-LDLIBS += 
+LDLIBS += -lcpt -lfill
 
 default : all
 
@@ -32,7 +32,6 @@ test check : cptcss
 	./cptcss -f "level-%.2i" -v $(CPT)
 	./cptcss -v $(CPT)
 
-include ../Progs.mk
 include ../Common.mk
 
 

@@ -1,12 +1,12 @@
 # Makefile for gimplut
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2012/02/27 19:00:51 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/10/08 16:25:00 jjg Exp jjg $
 
 NAME     = gimplut
 OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
-LDLIBS += 
+LDLIBS += -lggr -lfill
 CFLAGS += 
 
 default : all
@@ -37,7 +37,6 @@ $(GRAD).lut : $(NAME)
 	./$(NAME) -o $(GRAD).lut -v $(GRAD)
 check test : $(GRAD).lut 
 
-include ../Progs.mk
 include ../Common.mk
 
 

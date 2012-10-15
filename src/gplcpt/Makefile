@@ -1,12 +1,12 @@
 # Makefile for gplcpt
 #
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.4 2012/02/27 19:00:14 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/10/08 16:25:28 jjg Exp jjg $
 
 OBJ      =  gplcpt.o main.o options.o
 RUBBISH += $(OBJ) gplcpt
 
-LDLIBS += 
+LDLIBS += -lcpt -lfill
 
 default : all
 
@@ -35,7 +35,6 @@ test check : $(GRAD).cpt
 $(GRAD).cpt : gplcpt 
 	./gplcpt -v -o $(GRAD).cpt $(TESTD)/gpl/$(GRAD).gpl 
 
-include ../Progs.mk
 include ../Common.mk
 
 

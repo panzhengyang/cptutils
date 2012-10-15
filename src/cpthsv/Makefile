@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.5 2012/02/27 19:01:48 jjg Exp jjg $
+# $Id: Makefile,v 1.6 2012/10/08 16:23:38 jjg Exp jjg $
 
 NAME = cpthsv
 
@@ -8,7 +8,7 @@ OBJ      = cpthsv.o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
 CFLAGS  += 
-LDLIBS  +=
+LDLIBS  += -lcpt -lfill
 
 default : all
 
@@ -27,7 +27,6 @@ veryclean :
 
 $(NAME) : $(OBJ)
 
-include ../Progs.mk
 include ../Common.mk
 
 # for testing 

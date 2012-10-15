@@ -1,13 +1,13 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.18 2012/04/15 22:54:59 jjg Exp jjg $
+# $Id: Makefile,v 1.19 2012/10/08 16:24:36 jjg Exp jjg $
 
 NAME = gimpsvg
 
 OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
-LDLIBS += 
+LDLIBS += -lsvg -lggr -lfill
 CFLAGS += 
 
 default : all
@@ -45,7 +45,6 @@ showpng : $(GRAD).png ; feh $(GRAD).png
 
 check test : $(GRAD).svg 
 
-include ../Progs.mk
 include ../Common.mk
 
 

@@ -1,12 +1,12 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.11 2012/04/16 20:56:35 jjg Exp jjg $
+# $Id: Makefile,v 1.12 2012/10/08 16:23:05 jjg Exp jjg $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
 
 CFLAGS  += 
-LDLIBS  += -lsvg
+LDLIBS  += -lcpt -lfill -lsvg
 
 default : all
 
@@ -25,7 +25,6 @@ veryclean :
 
 cptsvg : $(OBJ)
 
-include ../Progs.mk
 include ../Common.mk
 
 # for testing 

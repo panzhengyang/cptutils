@@ -1,13 +1,13 @@
 # Makefile for pspsvg
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.4 2012/04/15 23:01:58 jjg Exp jjg $
+# $Id: Makefile,v 1.5 2012/10/08 16:25:59 jjg Exp jjg $
 
 OBJ      =  pspsvg.o main.o options.o gstack.o
 RUBBISH += $(OBJ) pspsvg
 
 CFLAGS += 
-LDLIBS += 
+LDLIBS += -lsvg -lpsp -lfill
 
 default : all
 
@@ -26,7 +26,6 @@ veryclean :
 
 pspsvg : $(OBJ)
 
-include ../Progs.mk
 include ../Common.mk
 
 TESTSVG  = t1.svg t2.svg t3.svg t4.svg
