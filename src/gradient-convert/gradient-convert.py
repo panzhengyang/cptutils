@@ -1,9 +1,9 @@
 #! /usr/bin/python
 #
-# experimental python wrapper script for cptutils
+# python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.9 2012/04/13 23:18:35 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.10 2012/04/16 21:27:11 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -93,10 +93,9 @@ for t in gajmat.values() :
     for s in t.values() :
         programs.append(s)
 
-# print the formats supported from the adjacency
-# matrix M and name -> description dict N
+# utlity function for the subsequent print functions
 
-def formats_supported(M,N) :
+def rwformats(M, N) :
 
     rfmt = {}
     wfmt = {}
@@ -110,6 +109,15 @@ def formats_supported(M,N) :
         for nw in M[nr].keys() :
             wfmt[nw] = True
 
+    return (rfmt, wfmt)
+
+# print the formats supported from the adjacency
+# matrix M and name -> description dict N
+
+def formats_supported(M, N) :
+
+    rfmt, wfmt = rwformats(M, N)
+
     print "supported formats:"
 
     for name in sorted(N.keys()) :
@@ -117,6 +125,27 @@ def formats_supported(M,N) :
             (name, N[name],
              "R" if rfmt[name] else "-",
              "W" if wfmt[name] else "-")
+
+# likewise, but in YAML format
+
+def capabilities(M, N, A) :
+
+    rfmt, wfmt = rwformats(M, N)
+
+    def quoted(s) :
+        return '"'+ s + '"'
+
+    lines = []
+    for name in sorted(N.keys()) :
+        alias = ", ".join( map(quoted, A[name]) )
+        lines.append("%s: {read: %s, write: %s, desc: %s, alias: [%s]}" % \
+                         (name,
+                          "true" if rfmt[name] else "false",
+                          "true" if wfmt[name] else "false",
+                          quoted(N[name]),
+                          alias))
+    print "# gradient-convert %s capabilities" % (version)
+    print "{\n  %s\n}" % (",\n  ".join(lines))
 
 # taken from http://www.python.org/doc/essays/graphs.html
 # this simple shortest path code determines the call sequence
@@ -142,7 +171,7 @@ def gradtype(path) :
 
     ext = os.path.splitext(path)[1][1:]
     if not ext:
-        print("cannot detemine file extension for %s" % path)
+        print("cannot determine file extension for %s" % path)
         sys.exit(1)
 
     gtype = gtypedict.get(ext, None)
@@ -288,8 +317,9 @@ def usage() :
 def main() :
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "b:f:g:hn:pT:vV",
+                                   "b:cf:g:hn:pT:vV",
                                    ["background=",
+                                    "capabilities",
                                     "foreground=",
                                     "geometry=",
                                     "help",
@@ -314,6 +344,9 @@ def main() :
             sys.exit(0)
         elif o in ("-V", "--version") :
             print "gradient-convert %s" % (version)
+            sys.exit(0)
+        elif o in ("-c", "--capabilities") :
+            capabilities(gajmat, gnames, gtypealias)
             sys.exit(0)
         elif o in ("-g", "--geometry") :
             # geometry only used by svgpng

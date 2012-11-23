@@ -1,8 +1,9 @@
-Changes $Id: CHANGELOG,v 1.80 2012/10/08 16:28:44 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.81 2012/10/15 22:13:03 jjg Exp jjg $
 
 1.46 (pending)
+  - added --capabilities option to gradient-convert
   - rationalised and simplified libraries to cope with stricter
-    rules in recent versison of gcc (4.6.3)
+    rules in recent versions of gcc (4.6.3)
   - fixed svgpov failure on oversized output
   - corrected absolute path to testfile in cptcss (gentoo patch)
 
