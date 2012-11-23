@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.7 2012/04/17 17:42:20 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.8 2012/11/23 20:30:14 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -79,7 +79,7 @@
       <para>
 	Print the capabilites of the program to 
 	<filename moreinfo="refentry" path="/dev">stdout</filename>. 
-	This data (in JSON format) may be used to autoconfigure 
+	This data (in YAML format) may be used to autoconfigure 
 	other programs which wish to use this program.  The format
 	should be self-explanatory.
       </para>
