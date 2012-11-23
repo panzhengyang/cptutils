@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.6 2012/04/15 22:09:21 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.7 2012/04/17 17:42:20 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -28,6 +28,7 @@
 <cmdsynopsis>
   <command>gradient-convert</command>
   <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-c </arg>
   <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
   <arg choice='opt'>-h </arg>
@@ -69,6 +70,21 @@
 <variablelist remap='TP'>
 
   <xi:include href="../docbook/varlistentry-background-svgx.xml"/>
+
+  <varlistentry>
+    <term>
+      <option>-c</option>, <option>--capabilities</option>
+    </term>
+    <listitem>
+      <para>
+	Print the capabilites of the program to 
+	<filename moreinfo="refentry" path="/dev">stdout</filename>. 
+	This data (in JSON format) may be used to autoconfigure 
+	other programs which wish to use this program.  The format
+	should be self-explanatory.
+      </para>
+    </listitem>
+  </varlistentry>
 
   <xi:include href="../docbook/varlistentry-foreground-svgx.xml"/>
 
