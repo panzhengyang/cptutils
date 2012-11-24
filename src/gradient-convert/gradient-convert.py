@@ -3,7 +3,7 @@
 # python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.10 2012/04/16 21:27:11 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.11 2012/11/23 22:18:01 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -126,7 +126,8 @@ def formats_supported(M, N) :
              "R" if rfmt[name] else "-",
              "W" if wfmt[name] else "-")
 
-# likewise, but in YAML format
+# likewise, but in YAML format (it would not be difficult
+# to make this JSON)
 
 def capabilities(M, N, A) :
 
@@ -303,6 +304,7 @@ def usage() :
     print "usage : gradient-convert [options] <input> <output>"
     print "options"
     print " -b rgb      : background (cpt)"
+    print " -c          : print program capabilites in YAML format"
     print " -f rgb      : foreground (cpt)"
     print " -g geometry : geometry (png, svg)"
     print " -h          : brief help"
