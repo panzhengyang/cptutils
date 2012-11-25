@@ -3,7 +3,7 @@
 # python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.11 2012/11/23 22:18:01 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.12 2012/11/24 13:14:14 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -187,15 +187,18 @@ def gradtype(path) :
 
 def convert(ipath, opath, opt) :
 
-    verbose, subopts = opt
+    verbose, subopts, ifmt, ofmt = opt
 
-    itype = gradtype(ipath)
-    otype = gradtype(opath)
+    if ifmt is None :
+        ifmt = gradtype(ipath)
+
+    if ofmt is None :
+        ofmt = gradtype(opath)
     
     if verbose :
-        print "input: %s" % (gnames[itype])
+        print "input: %s" % (gnames[ifmt])
         print "  %s" % (ipath)
-        print "output: %s" % (gnames[otype])
+        print "output: %s" % (gnames[ofmt])
         print "  %s" % (opath)
 
     # create the system-call sequence, first we create
@@ -210,10 +213,10 @@ def convert(ipath, opath, opt) :
 
     cdlist = []
 
-    callpath = shortest_path(gdgraph, itype, otype)
+    callpath = shortest_path(gdgraph, ifmt, ofmt)
 
     if callpath is None :
-        print "cannot convert %s to %s yet, sorry" % (itype, otype)
+        print "cannot convert %s to %s yet, sorry" % (ifmt, ofmt)
         formats_supported(gajmat, gnames)
         return None
 
@@ -308,7 +311,9 @@ def usage() :
     print " -f rgb      : foreground (cpt)"
     print " -g geometry : geometry (png, svg)"
     print " -h          : brief help"
+    print " -i format   : format of input file"
     print " -n rgb      : nan colour (cpt)"
+    print " -o format   : format of output file"
     print " -p          : preview (svg)"
     print " -T rgb      : transparency (cpt, gpt, sao)"
     print " -v          : verbose"
@@ -319,13 +324,15 @@ def usage() :
 def main() :
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "b:cf:g:hn:pT:vV",
+                                   "b:cf:g:hi:n:o:pT:vV",
                                    ["background=",
                                     "capabilities",
                                     "foreground=",
                                     "geometry=",
                                     "help",
+                                    "input-format=",
                                     "nan=",
+                                    "output-format=",
                                     "preview"
                                     "transparency=",
                                     "verbose",
@@ -337,6 +344,8 @@ def main() :
 
     # defaults
     verbose = False
+    ifmt    = None
+    ofmt    = None
     subopts = dict( (p, []) for p in programs)
 
     for o, a in opts :
@@ -372,6 +381,12 @@ def main() :
             subopts['svgcpt'].extend([o, a])
             subopts['svggpt'].extend([o, a])
             subopts['svgsao'].extend([o, a])
+        elif o in ("-o", "--output-format") :
+            ofmt = gtypedict.get(a)
+            assert ofmt, "no such output format: %s" % (a)
+        elif o in ("-i", "--input-format") :
+            ifmt = gtypedict.get(a)
+            assert ifmt, "no such input format: %s" % (a)
         elif o in ("-v", "--verbose") :
             verbose = True
         else:
@@ -386,7 +401,7 @@ def main() :
     if verbose :
         print "This is gradient-convert (version %s)" % (version)
 
-    opt = (verbose, subopts)
+    opt = (verbose, subopts, ifmt, ofmt)
 
     retval = convert(ipath, opath, opt)
 
