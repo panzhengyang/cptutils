@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.9 2012/11/23 21:34:50 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.10 2012/11/25 16:38:35 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -60,7 +60,7 @@
 <para>
   The formats of the mandatory <replaceable>infile</replaceable>
   and <replaceable>outfile</replaceable> arguments are determined
-  from the file extensions, or can be specified explititly by the
+  from the file extensions, or can be specified explicitly by the
   <option>-i</option> and <option>-o</option> options.
 </para>
 
