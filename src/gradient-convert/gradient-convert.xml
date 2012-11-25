@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: gradient-convert.xml,v 1.8 2012/11/23 20:30:14 jjg Exp jjg $ -->
+<!-- $Id: gradient-convert.xml,v 1.9 2012/11/23 21:34:50 jjg Exp jjg $ -->
 
 <refentry id='gradient-convert1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -32,7 +32,9 @@
   <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
   <arg choice='opt'>-h </arg>
+  <arg choice='opt'>-i <replaceable>format</replaceable></arg>
   <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-o <replaceable>format</replaceable></arg>
   <arg choice='opt'>-p </arg>
   <arg choice='opt'>-T <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-v </arg>
@@ -58,7 +60,8 @@
 <para>
   The formats of the mandatory <replaceable>infile</replaceable>
   and <replaceable>outfile</replaceable> arguments are determined
-  from the file extensions.
+  from the file extensions, or can be specified explititly by the
+  <option>-i</option> and <option>-o</option> options.
 </para>
 
 </refsect1>
@@ -92,7 +95,29 @@
 
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
+  <varlistentry>
+    <term>
+      <option>-i</option>, <option>--input-format</option>
+    </term>
+    <listitem>
+      <para>
+	Specify the format of the input file.
+      </para>
+    </listitem>
+  </varlistentry>
+
   <xi:include href="../docbook/varlistentry-nan-svgx.xml"/>
+
+  <varlistentry>
+    <term>
+      <option>-o</option>, <option>--output-format</option>
+    </term>
+    <listitem>
+      <para>
+	Specify the format of the output file.
+      </para>
+    </listitem>
+  </varlistentry>
 
   <xi:include href="../docbook/varlistentry-preview.xml"/>
 
