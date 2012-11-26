@@ -3,7 +3,7 @@
 # python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
 #
-# $Id: gradient-convert.py,v 1.12 2012/11/24 13:14:14 jjg Exp jjg $
+# $Id: gradient-convert.py,v 1.13 2012/11/25 17:09:26 jjg Exp jjg $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -239,7 +239,7 @@ def convert(ipath, opath, opt) :
     # in a tmpname() directory (so that we won't stomp on
     # users local data)
 
-    basename = os.path.splitext(opath)[0]
+    basename = os.path.splitext( os.path.split(opath)[1] )[0]
     tempdir  = tempfile.mkdtemp()
 
     # register the cleanup function to empty the temporary

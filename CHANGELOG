@@ -1,6 +1,8 @@
-Changes $Id: CHANGELOG,v 1.81 2012/10/15 22:13:03 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.82 2012/11/23 22:19:55 jjg Exp jjg $
 
 1.46 (pending)
+  - fixed intermediate filenames for output not in current 
+    directory 
   - added --capabilities option to gradient-convert
   - rationalised and simplified libraries to cope with stricter
     rules in recent versions of gcc (4.6.3)
