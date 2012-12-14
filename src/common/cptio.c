@@ -3,7 +3,7 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.16 2012/03/25 23:36:57 jjg Exp jjg $
+  $Id: cptio.c,v 1.17 2012/03/25 23:55:33 jjg Exp jjg $
 */
 
 #include <stdio.h>
@@ -278,7 +278,7 @@ static int common_format(cpt_t *cpt, char *fmt)
 
   /*
     default number of dp - SIGFIG_MIN orders
-    of magintude less than wmin
+    of magnitude less than wmin
   */
 
   int dp = ceil(SIGFIG_MIN - log10(wmin));
@@ -316,16 +316,16 @@ static int common_format(cpt_t *cpt, char *fmt)
 
   for (i=0 ; i<nstop ; i++)
     {
-      if (snprintf(fmt,ZFMTLEN,"%.*f",dp,z[i]) >= ZFMTLEN)
+      if (snprintf(fmt,ZFMTLEN,"%.*f", dp, z[i]) >= ZFMTLEN)
 	return 1;
 
       size_t len = strlen(fmt);
-      maxlen = MAX(len,maxlen);
+      maxlen = MAX(len, maxlen);
     }
 
   /* generate the format string */
 
-  if (snprintf(fmt,ZFMTLEN,"%%%zi.%zif ",maxlen,dp) >= ZFMTLEN)
+  if (snprintf(fmt,ZFMTLEN,"%%%zi.%df ", maxlen, dp) >= ZFMTLEN)
     return 1;
 
   return 0;
