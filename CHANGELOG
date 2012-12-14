@@ -1,6 +1,6 @@
-Changes $Id: CHANGELOG,v 1.82 2012/11/23 22:19:55 jjg Exp jjg $
+Changes $Id: CHANGELOG,v 1.83 2012/11/26 20:59:06 jjg Exp jjg $
 
-1.46 (pending)
+1.46 (14 Dec 2012)
   - fixed intermediate filenames for output not in current 
     directory 
   - added --capabilities option to gradient-convert
