@@ -2,7 +2,7 @@
   svgx.h
 
   (c) J.J.Green 2004
-  $Id: svgx.h,v 1.12 2011/11/14 16:08:10 jjg Exp jjg $
+  $Id: svgx.h,v 1.13 2012/04/17 17:42:20 jjg Exp $
 */
 
 #ifndef SVGX_H

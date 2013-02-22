@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.c,v 1.8 2011/11/13 20:21:08 jjg Exp jjg $
+  $Id: svg.c,v 1.9 2012/04/17 11:58:00 jjg Exp $
 */
 
 #include <stdio.h>

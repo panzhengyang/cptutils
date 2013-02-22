@@ -4,7 +4,7 @@
   paintshop pro gradient structures
   2005 (c) J.J. Green
 
-  $Id: psp.c,v 1.12 2006/09/01 23:08:01 jjg Exp jjg $
+  $Id: psp.c,v 1.13 2006/09/28 23:06:30 jjg Exp $
 */
 
 #include "psp.h"

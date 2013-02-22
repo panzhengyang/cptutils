@@ -3,7 +3,7 @@
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
-  $Id: pspread.c,v 1.5 2010/09/14 21:25:00 jjg Exp jjg $
+  $Id: pspread.c,v 1.6 2011/11/03 09:55:04 jjg Exp $
 */
 
 /* 

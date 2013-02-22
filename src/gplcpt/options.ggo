@@ -1,7 +1,7 @@
 # -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J.J. Green 2010
-# $Id: options.ggo,v 1.3 2005/12/03 00:18:10 jjg Exp $
+# $Id: options.ggo,v 1.1 2009/12/28 16:44:30 jjg Exp $
 package "gplcpt"
 purpose "convert GIMP color palette to GMT colour palette table"
 option  "background"    b "background colour"                string  default="0/0/0" no

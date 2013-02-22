@@ -1,0 +1,15 @@
+# gitignore for cpt-city
+configure
+VERSION
+*.1
+src/*/options.[ch]
+RCS/
+src/common/config.h
+src/common/cptparse.[ch]
+src/common/cptscan.[ch]
+src/common/odbparse.[ch]
+src/common/odbscan.[ch]
+src/common/*.output
+src/common/stdcol.c
+# use these at some point ...
+src/svgx/dp-simplify.[ch]

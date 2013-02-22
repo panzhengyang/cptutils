@@ -5,7 +5,7 @@
   low-level manipulations
 
   J.J.Green 2011
-  $Id: css3.c,v 1.1 2010/11/01 18:42:52 jjg Exp $
+  $Id: css3.c,v 1.1 2011/05/04 20:50:31 jjg Exp $
 */
 
 #include <stdlib.h>

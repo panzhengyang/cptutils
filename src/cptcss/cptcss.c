@@ -2,7 +2,7 @@
   cptcss.c - colour text with a cpt file
 
   J.J. Green 2004
-  $Id: cptcss.c,v 1.1 2005/07/19 22:17:56 jjg Exp jjg $
+  $Id: cptcss.c,v 1.2 2010/03/26 20:16:50 jjg Exp $
 */
 
 #include <stdlib.h>

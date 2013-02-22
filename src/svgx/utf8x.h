@@ -2,7 +2,7 @@
   convert a utf8 multibyte string to ascii/latin1 etc 
   with character transliteration
 
-  $Id: utf8x.h,v 1.2 2011/11/04 15:16:50 jjg Exp jjg $
+  $Id: utf8x.h,v 1.3 2011/11/04 15:20:12 jjg Exp $
 */
 
 #ifndef UTF8X_H

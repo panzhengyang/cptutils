@@ -1,6 +1,6 @@
 # -*- makefile -*-
 # Commom Makefile macros
-# $Id: Common.mk.in,v 1.17 2012/03/12 16:05:50 jjg Exp jjg $ 
+# $Id: Common.mk.in,v 1.18 2012/10/15 21:41:14 jjg Exp $ 
 
 VERSION   = @PACKAGE_VERSION@
 

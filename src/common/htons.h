@@ -4,7 +4,7 @@
   functions for switching the endianness of integers
   (using library functions if possible)
   
-  $Id$
+  $Id: htons.h,v 1.1 2006/09/01 20:39:55 jjg Exp $
 */
 
 #ifndef HTONS_H

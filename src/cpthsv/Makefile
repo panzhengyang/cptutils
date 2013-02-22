@@ -1,6 +1,6 @@
 # Makefile for cpthsv
 # (c) J.J.Green 2007
-# $Id: Makefile,v 1.6 2012/10/08 16:23:38 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2012/10/15 21:53:07 jjg Exp $
 
 NAME = cpthsv
 

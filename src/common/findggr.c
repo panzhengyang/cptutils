@@ -5,7 +5,7 @@
   files.
 
   (c) J.J.Geen 2001
-  $Id: findggr.c,v 1.5 2012/03/09 22:10:38 jjg Exp jjg $
+  $Id: findggr.c,v 1.6 2012/03/09 22:12:00 jjg Exp $
 */
 
 #include <stdio.h>

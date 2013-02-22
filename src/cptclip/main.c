@@ -20,7 +20,7 @@
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: main.c,v 1.6 2012/01/22 19:39:13 jjg Exp jjg $
+  $Id: main.c,v 1.7 2012/01/22 20:16:14 jjg Exp $
 */
 
 #define _GNU_SOURCE

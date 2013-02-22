@@ -5,7 +5,7 @@
   a file or stream.
 
   J.J.Green 2005
-  $Id: povwrite.h,v 1.2 2006/08/27 23:03:15 jjg Exp jjg $
+  $Id: povwrite.h,v 1.3 2006/08/27 23:04:06 jjg Exp $
 */
 
 #ifndef POVWRITE_H

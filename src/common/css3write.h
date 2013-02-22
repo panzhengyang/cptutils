@@ -4,7 +4,7 @@
   write a css3 gradient struct to a file
 
   J.J.Green 2011
-  $Id: css3write.h,v 1.1 2010/11/01 18:42:56 jjg Exp $
+  $Id: css3write.h,v 1.1 2011/05/04 20:50:40 jjg Exp $
 */
 
 #ifndef CSS3WRITE_H

@@ -1,6 +1,6 @@
 # Makefile for cptcont
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.6 2012/10/08 16:21:04 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2012/10/15 21:48:48 jjg Exp $
 
 NAME = cptcont
 

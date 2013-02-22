@@ -3,7 +3,7 @@
 
   handles the globals needed by avlparse()
 
-  $Id: odbbridge.h,v 1.1 2005/11/16 00:28:28 jjg Exp jjg $
+  $Id: odbbridge.h,v 1.2 2012/03/09 21:44:58 jjg Exp $
 */
 
 #ifndef ODBBRIDGE_H

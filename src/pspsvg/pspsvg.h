@@ -2,7 +2,7 @@
   pspsvg.h
 
   (c) J.J.Green 2011
-  $Id: pspsvg.h,v 1.2 2012/04/15 18:04:26 jjg Exp jjg $
+  $Id: pspsvg.h,v 1.3 2012/04/16 21:14:40 jjg Exp $
 */
 
 #ifndef PSPSVG_H

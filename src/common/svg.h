@@ -6,7 +6,7 @@
   x1/x2 stuff, as we dont use it. Perhaps add later.
 
   (c) J.J.Green 2001-2005
-  $Id: svg.h,v 1.9 2012/04/17 11:54:46 jjg Exp jjg $
+  $Id: svg.h,v 1.10 2012/04/17 11:58:12 jjg Exp $
 */
 
 #ifndef SVG_H

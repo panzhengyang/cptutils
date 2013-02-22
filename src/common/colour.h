@@ -4,7 +4,7 @@
   simple RGB colours for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.10 2011/11/07 23:41:12 jjg Exp jjg $
+  $Id: colour.h,v 1.11 2012/03/25 23:26:56 jjg Exp $
 */
 
 #ifndef COLOUR_H

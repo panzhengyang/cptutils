@@ -2,7 +2,7 @@
   gimplut.h
 
   (c) J.J.Green 2008
-  $Id: gimpcpt.h,v 1.2 2004/02/24 18:36:23 jjg Exp $
+  $Id: gimplut.h,v 1.1 2008/04/13 20:54:32 jjg Exp $
 */
 
 #ifndef GIMPLUT_H

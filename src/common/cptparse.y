@@ -4,7 +4,7 @@
   a forgiving parser for cpt files
 
   (c) J.J.Green 2004
-  $Id: cptparse.y,v 1.10 2012/03/25 23:53:40 jjg Exp jjg $
+  $Id: cptparse.y,v 1.11 2012/03/25 23:54:34 jjg Exp $
 */
 
 %{

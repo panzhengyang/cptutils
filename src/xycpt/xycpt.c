@@ -4,7 +4,7 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.9 2012/03/25 23:42:09 jjg Exp jjg $
+  $Id: xycpt.c,v 1.10 2012/03/26 00:05:48 jjg Exp $
 */
 
 #include <stdio.h>

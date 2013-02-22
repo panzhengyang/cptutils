@@ -1,6 +1,6 @@
 /*
   cptcss.h - summary cssrmation on a cpt file
-  $Id$
+  $Id: cptcss.h,v 1.1 2005/07/19 22:20:16 jjg Exp $
 */
 
 #ifndef CPTCSS_H

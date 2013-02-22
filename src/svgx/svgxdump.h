@@ -4,7 +4,7 @@
   per-format conversion of svg
 
   Copyright (c) J.J. Green 2012
-  $Id$
+  $Id: svgxdump.h,v 1.1 2012/04/17 23:50:30 jjg Exp $
 */
 
 #ifndef SVGXDUMP_H

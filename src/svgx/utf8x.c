@@ -2,7 +2,7 @@
   convert a utf8 multibyte string to ascii with
   character transliteration
 
-  $Id: utf8ascii.c,v 1.1 2011/11/03 23:43:04 jjg Exp jjg $
+  $Id: utf8x.c,v 1.2 2011/11/04 15:17:03 jjg Exp $
 */
 
 #include <stdio.h>

@@ -1,6 +1,6 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.12 2012/10/08 16:23:05 jjg Exp jjg $
+# $Id: Makefile,v 1.13 2012/10/15 21:56:11 jjg Exp $
 
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg

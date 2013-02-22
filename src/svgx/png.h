@@ -1,7 +1,7 @@
 /*
   png structures for cptutils
   J.J.Green
-  $Id$
+  $Id: png.h,v 1.1 2011/11/13 21:16:52 jjg Exp $
 */
 
 /* note that PNG_H is defined by libpng */

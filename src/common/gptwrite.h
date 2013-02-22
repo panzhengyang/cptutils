@@ -5,7 +5,7 @@
   a file or stream.
 
   J.J.Green 2010\
-  $Id: gptwrite.h,v 1.3 2006/08/27 23:04:06 jjg Exp $
+  $Id: gptwrite.h,v 1.1 2010/11/01 18:42:56 jjg Exp $
 */
 
 #ifndef GPTWRITE_H

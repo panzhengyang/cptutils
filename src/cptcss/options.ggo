@@ -1,7 +1,7 @@
 # -*- sh -*-
 # gengetopt input for cpttext
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.3 2005/11/12 00:07:21 jjg Exp jjg $
+# $Id: options.ggo,v 1.4 2005/11/12 00:09:30 jjg Exp $
 package "cptcss"
 purpose "create CSS table style from GMT cpt file"
 option	"format"        f "class text format"	 string  no

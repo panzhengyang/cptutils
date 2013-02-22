@@ -1,6 +1,6 @@
 # gengetopt input for svgcpt
 # (c) J. J. Green 2012
-# $Id: options.ggo,v 1.18 2012/04/16 19:35:22 jjg Exp jjg $
+# $Id: options.ggo,v 1.19 2012/04/16 20:05:39 jjg Exp $
 package "svgx"
 purpose "convert SVG gradient to other formats"
 option	"all"	           a "convert all gradients"			flag    off

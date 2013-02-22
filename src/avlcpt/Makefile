@@ -1,7 +1,7 @@
 # Makefile for avlcpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.12 2012/03/09 21:55:19 jjg Exp jjg $
+# $Id: Makefile,v 1.13 2012/10/15 21:44:49 jjg Exp $
 
 OBJ      =  avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt

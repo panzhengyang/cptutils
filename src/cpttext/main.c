@@ -20,7 +20,7 @@
   Free Software Foundation, Inc., Copyright (C) 1989, 1991 
   Free Software Foundation, Inc.,
 
-  $Id: main.c,v 1.3 2012/01/22 20:16:38 jjg Exp jjg $
+  $Id: main.c,v 1.4 2012/02/26 22:27:25 jjg Exp $
 */
 
 #define _GNU_SOURCE

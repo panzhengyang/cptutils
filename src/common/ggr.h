@@ -40,7 +40,7 @@
   Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
 
-  $Id: ggr.h,v 1.6 2012/01/22 20:03:04 jjg Exp jjg $
+  $Id: ggr.h,v 1.7 2012/03/09 22:07:50 jjg Exp $
 */
 
 #ifndef GGR_H

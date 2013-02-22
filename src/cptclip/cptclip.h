@@ -2,7 +2,7 @@
   cptclip.h
 
   J.J.Green 2010
-  $Id: cptclip.h,v 1.1 2010/04/04 17:28:11 jjg Exp $
+  $Id: cptclip.h,v 1.1 2010/04/11 22:26:04 jjg Exp $
 */
 
 #ifndef CPTCLIP_H

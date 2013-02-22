@@ -1,7 +1,7 @@
 /*
   png structures for cptutils
   J.J.Green
-  $Id$
+  $Id: pngwrite.h,v 1.1 2011/11/13 21:16:56 jjg Exp $
 */
 
 #ifndef PNGWRITE_H

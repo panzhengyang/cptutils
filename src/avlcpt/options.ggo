@@ -1,7 +1,7 @@
 # -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.5 2005/11/21 22:16:13 jjg Exp jjg $
+# $Id: options.ggo,v 1.6 2006/07/28 22:58:37 jjg Exp $
 package "avlcpt"
 purpose "convert ArcView Legend to GMT colour palette table"
 option  "background"    b "background colour"                string  default="0/0/0" no

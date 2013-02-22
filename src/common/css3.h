@@ -3,7 +3,7 @@
   structures for css3 gradients
 
   J.J.Green 2010
-  $Id: css3.h,v 1.1 2011/05/04 20:50:28 jjg Exp jjg $
+  $Id: css3.h,v 1.2 2011/05/06 19:08:11 jjg Exp $
 */
 
 #ifndef CSS3_H

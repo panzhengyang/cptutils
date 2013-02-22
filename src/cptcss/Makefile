@@ -1,6 +1,6 @@
 # Makefile for cptcss
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.6 2012/10/08 16:21:32 jjg Exp jjg $
+# $Id: Makefile,v 1.7 2012/10/15 21:51:35 jjg Exp $
 
 OBJ      = main.o options.o cptcss.o
 RUBBISH += $(OBJ) cptcss

@@ -4,7 +4,7 @@
   convert arcview legend gradients to the cpt format
 
   (c) J.J. Green 2005
-  $Id: avlcpt.c,v 1.8 2012/03/25 23:37:39 jjg Exp jjg $
+  $Id: avlcpt.c,v 1.9 2012/03/25 23:56:47 jjg Exp $
 */
 
 #define _GNU_SOURCE

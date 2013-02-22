@@ -2,7 +2,7 @@
   gimpcpt.c
 
   (c) J.J.Green 2011
-  $Id: gimpsvg.c,v 1.16 2012/03/09 22:14:00 jjg Exp jjg $
+  $Id: gimpsvg.c,v 1.17 2012/04/17 17:42:20 jjg Exp $
 */
 
 #include <stdio.h>

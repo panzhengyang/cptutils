@@ -5,7 +5,7 @@
   on them
 
   (c) J.J.Green 2001,2004
-  $Id: cpt.h,v 1.11 2010/04/12 21:00:35 jjg Exp jjg $
+  $Id: cpt.h,v 1.12 2010/04/13 22:09:35 jjg Exp $
 */
 
 #ifndef CPT_H

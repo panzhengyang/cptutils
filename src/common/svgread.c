@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  $Id: svgread.c,v 1.10 2011/11/03 10:26:37 jjg Exp jjg $
+  $Id: svgread.c,v 1.11 2012/03/09 22:20:56 jjg Exp $
   J.J. Green 2005
 */
 

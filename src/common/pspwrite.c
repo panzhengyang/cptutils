@@ -4,7 +4,7 @@
   writes paintshop pro gradients.
   2006 (c) J.J. Green
 
-  $Id: pspwrite.c,v 1.5 2006/09/01 23:58:05 jjg Exp jjg $
+  $Id: pspwrite.c,v 1.6 2011/11/03 10:25:48 jjg Exp $
 */
 
 #include <stdio.h>

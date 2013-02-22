@@ -2,7 +2,7 @@
   odb.h
   structures for obd data
   J.J. Green 2005
-  $Id: odb.h,v 1.6 2005/11/21 22:46:49 jjg Exp jjg $
+  $Id: odb.h,v 1.7 2005/11/22 21:16:55 jjg Exp $
 */
 
 #ifndef ODB_H

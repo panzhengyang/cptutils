@@ -2,7 +2,7 @@
   cptclip.c
 
   (c) J.J.Green 2010
-  $Id: cptclip.c,v 1.4 2010/04/13 23:16:12 jjg Exp jjg $
+  $Id: cptclip.c,v 1.5 2010/04/16 23:56:51 jjg Exp $
 */
 
 #include <stdio.h>

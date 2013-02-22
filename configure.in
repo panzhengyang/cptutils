@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl $Id: configure.in,v 1.66 2012/04/21 00:04:09 jjg Exp jjg $
+dnl $Id: configure.in,v 1.67 2012/08/15 21:27:07 jjg Exp $
 
 AC_INIT(cptutils, 1.46, j.j.green@gmx.fr)
 

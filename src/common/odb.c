@@ -5,7 +5,7 @@
   odb obhjects
 
   J.J.Green 2005
-  $Id: odb.c,v 1.3 2005/11/17 00:15:25 jjg Exp jjg $
+  $Id: odb.c,v 1.4 2005/11/18 00:27:40 jjg Exp $
 */
 
 #include <stdlib.h>

@@ -2,7 +2,7 @@
   cptsvg.h
 
   J.J.Green 2004
-  $Id: cptsvg.h,v 1.1 2005/05/30 23:17:19 jjg Exp jjg $
+  $Id: cptsvg.h,v 1.2 2012/04/15 17:53:20 jjg Exp $
 */
 
 #ifndef CPTSVG_H

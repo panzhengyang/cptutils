@@ -2,7 +2,7 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.8 2012/03/25 23:58:35 jjg Exp jjg $
+  $Id: cptsvg.c,v 1.9 2012/04/16 20:56:00 jjg Exp $
 */
 
 #include <stdio.h>

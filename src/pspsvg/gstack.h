@@ -3,7 +3,7 @@
   generic stack module
 
   J.J.Green
-  $Id: gstack.h,v 1.1 2011/11/01 20:40:28 jjg Exp jjg $
+  $Id: gstack.h,v 1.2 2011/11/01 23:10:46 jjg Exp $
 */
 
 #ifndef GSTACK_H

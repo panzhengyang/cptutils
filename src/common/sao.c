@@ -2,7 +2,7 @@
   sao.c
 
   J.J. Green 2011
-  $Id: sao.c,v 1.1 2011/10/27 22:31:26 jjg Exp jjg $
+  $Id: sao.c,v 1.2 2011/10/28 09:20:17 jjg Exp $
 */
 
 #include <stdlib.h>

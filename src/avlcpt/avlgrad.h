@@ -3,7 +3,7 @@
 
   read ArcView Legend gradients.
   2005 (c) J.J. Green
-  $Id: avl.h,v 1.4 2005/11/20 16:40:26 jjg Exp $
+  $Id: avlgrad.h,v 1.1 2005/11/22 22:19:14 jjg Exp $
 */
 
 #ifndef AVLGRAD_H

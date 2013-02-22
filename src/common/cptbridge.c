@@ -3,7 +3,7 @@
 
   handles the globals needed by cptparse()
 
-  $Id: cptbridge.c,v 1.1 2004/03/18 02:27:54 jjg Exp jjg $
+  $Id: cptbridge.c,v 1.2 2012/03/09 21:35:16 jjg Exp $
 */
 
 #include <stdio.h>

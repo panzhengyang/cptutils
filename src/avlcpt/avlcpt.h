@@ -2,7 +2,7 @@
   avlcpt.h
 
   (c) J.J.Green 2005
-  $Id: avlcpt.h,v 1.3 2005/11/21 22:16:56 jjg Exp jjg $
+  $Id: avlcpt.h,v 1.4 2006/07/28 22:58:37 jjg Exp $
 */
 
 #ifndef AVLCPT_H

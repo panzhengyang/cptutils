@@ -1,6 +1,6 @@
 # Makefile for cptgimp
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.7 2012/10/08 16:21:54 jjg Exp jjg $
+# $Id: Makefile,v 1.8 2012/10/15 21:54:32 jjg Exp $
 
 OBJ      = main.o options.o cptinfo.o
 RUBBISH += $(OBJ) cptinfo

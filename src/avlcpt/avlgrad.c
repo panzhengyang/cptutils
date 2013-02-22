@@ -3,7 +3,7 @@
 
   avl gradients structures
   J.J. Green 2005
-  $Id: avlgrad.c,v 1.3 2012/01/22 19:39:11 jjg Exp jjg $
+  $Id: avlgrad.c,v 1.4 2012/03/09 21:50:41 jjg Exp $
 */
 
 #include <stdio.h>

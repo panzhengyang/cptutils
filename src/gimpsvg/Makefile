@@ -1,6 +1,6 @@
 # Makefile for gimpsvg
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.19 2012/10/08 16:24:36 jjg Exp jjg $
+# $Id: Makefile,v 1.20 2012/10/15 22:03:18 jjg Exp $
 
 NAME = gimpsvg
 
