@@ -2,7 +2,6 @@
    scanner for odb files 
 
    (c) J.J.Green 2005
-   $Id: odbscan.l,v 1.9 2012/03/09 21:46:52 jjg Exp $
 
    Note that this treats bitblocks badly -- a bitblock may
    be indistinguishable from a UINT, so we scan for a "proper" 

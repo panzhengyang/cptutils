@@ -2,7 +2,6 @@
   cpttext.c - colour text with a cpt file
 
   J.J. Green 2004
-  $Id: cpttext.c,v 1.3 2011/10/19 22:15:00 jjg Exp $
 */
 
 #include <stdlib.h>

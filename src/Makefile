@@ -1,6 +1,5 @@
 # Makefile for gimpcpt
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.24 2012/03/12 16:16:24 jjg Exp $
 
 SRC      = common avlcpt cptclip cptcont cptcss cptinfo \
 	   cpttext cptsvg cpthsv gimpsvg gimplut gplcpt \

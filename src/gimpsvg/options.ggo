@@ -1,6 +1,5 @@
 # gengetopt input for gimpsvg
 # (c) J. J. Green 2011
-# $Id: options.ggo,v 1.8 2012/04/16 21:03:10 jjg Exp $
 package "gimpsvg"
 purpose "convert GIMP gradient to SVG format"
 option  "geometry"         g "geometry of preview"         string  default="340x36" no

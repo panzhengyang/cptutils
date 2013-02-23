@@ -4,7 +4,6 @@
   colours for gimpcpt
 
   (c) J.J.Green 2001,2004
-  $Id: colour.c,v 1.9 2012/03/25 23:32:29 jjg Exp $
 */
 
 #define _GNU_SOURCE

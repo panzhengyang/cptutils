@@ -2,8 +2,6 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: cptcss.xml,v 1.3 2012/04/15 21:38:43 jjg Exp $ -->
-
 <refentry id='cptcss1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
 

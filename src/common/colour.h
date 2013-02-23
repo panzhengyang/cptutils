@@ -4,7 +4,6 @@
   simple RGB colours for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: colour.h,v 1.11 2012/03/25 23:26:56 jjg Exp $
 */
 
 #ifndef COLOUR_H

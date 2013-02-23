@@ -3,8 +3,6 @@
 
   paintshop pro gradient structures
   2005 (c) J.J. Green
-
-  $Id: psp.c,v 1.13 2006/09/28 23:06:30 jjg Exp $
 */
 
 #include "psp.h"

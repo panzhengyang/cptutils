@@ -5,7 +5,6 @@
   low-level manipulations
 
   J.J.Green 2005
-  $Id: pov.c,v 1.4 2006/08/27 23:21:37 jjg Exp $
 */
 
 #include <stdlib.h>

@@ -4,7 +4,6 @@
   convert column data to cpt format
 
   (c) J.J.Green 2001,2004
-  $Id: xycpt.c,v 1.10 2012/03/26 00:05:48 jjg Exp $
 */
 
 #include <stdio.h>

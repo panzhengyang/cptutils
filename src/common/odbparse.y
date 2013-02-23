@@ -4,7 +4,6 @@
   a parser for odb files
 
   (c) J.J.Green 2004
-  $Id: odbparse.y,v 1.7 2012/03/09 21:46:11 jjg Exp $
 */
 
 %{

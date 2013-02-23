@@ -2,8 +2,6 @@
 #
 # python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012
-#
-# $Id: gradient-convert.py,v 1.14 2012/11/26 20:56:00 jjg Exp $
 
 import os, sys, getopt, tempfile, subprocess, atexit
 

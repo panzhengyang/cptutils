@@ -2,7 +2,6 @@
   gimpsvg.h
 
   (c) J.J.Green 2011
-  $Id: gimpsvg.h,v 1.7 2012/04/15 17:59:31 jjg Exp $
 */
 
 #ifndef GIMPSVG_H

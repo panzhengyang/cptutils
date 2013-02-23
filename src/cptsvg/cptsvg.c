@@ -2,7 +2,6 @@
   cptsvg.c
 
   (c) J.J.Green 2001,2005
-  $Id: cptsvg.c,v 1.9 2012/04/16 20:56:00 jjg Exp $
 */
 
 #include <stdio.h>

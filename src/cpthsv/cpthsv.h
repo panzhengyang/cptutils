@@ -2,7 +2,6 @@
   cpthsv.h
 
   J.J.Green 2007
-  $Id: cpthsv.h,v 1.1 2007/11/16 17:05:49 jjg Exp $
 */
 
 #ifndef CPTHSV_H

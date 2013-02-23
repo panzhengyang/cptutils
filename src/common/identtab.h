@@ -4,7 +4,6 @@
   symbol table interface
 
   (c) J. J. Green 2002
-  $Id: identtab.h,v 1.2 2005/11/17 00:02:29 jjg Exp $
 */
 
 #ifndef IDENTTAB_H

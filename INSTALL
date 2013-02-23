@@ -24,8 +24,6 @@ modified sources (bison, flex, gperf, xsltproc) but prebuilt
 output from these programs is included in the package, these 
 are not needed for a standard compile.
 
-$Id: INSTALL,v 1.5 2012/02/28 11:30:04 jjg Exp $
-
       Generic Instructions for Building Auto-Configured Packages
       ==========================================================
 

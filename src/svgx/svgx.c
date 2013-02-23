@@ -1,7 +1,6 @@
 /*
   svgx.c : convert svg to other formats
  
-  $Id: svgx.c,v 1.37 2012/04/17 23:50:19 jjg Exp $
   J.J. Green 2005, 2011
 */
 

@@ -1,6 +1,5 @@
 # gengetopt input for pspsvg
 # (c) J. J. Green 2011
-# $Id: options.ggo,v 1.3 2012/04/16 21:10:34 jjg Exp $
 package "pspsvg"
 purpose "convert PaintShop Pro gradients to SVG gradient"
 option  "geometry"         g "geometry of preview"		string  default="340x36" no

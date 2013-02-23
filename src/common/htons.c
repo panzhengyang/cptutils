@@ -3,8 +3,6 @@
 
   here we define portable ntohs and htons for
   when they are not available in libraries.
-
-  $Id: htons.c,v 1.1 2006/09/01 20:39:51 jjg Exp $
 */
 
 #include "htons.h"

@@ -3,8 +3,6 @@
 
   writes paintshop pro gradients.
   2006 (c) J.J. Green
-
-  $Id: pspwrite.c,v 1.6 2011/11/03 10:25:48 jjg Exp $
 */
 
 #include <stdio.h>

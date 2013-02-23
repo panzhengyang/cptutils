@@ -5,7 +5,6 @@
   low-level manipulations
 
   J.J.Green 2010
-  $Id: gpt.c,v 1.1 2010/11/01 18:42:52 jjg Exp $
 */
 
 #include <stdlib.h>

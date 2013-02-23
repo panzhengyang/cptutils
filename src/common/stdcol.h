@@ -2,7 +2,6 @@
   stdcol.h
 
   J.J. Green 2005
-  $Id: stdcol.h,v 1.1 2005/06/26 15:39:08 jjg Exp $
 */
 
 #ifndef STDCOL_H

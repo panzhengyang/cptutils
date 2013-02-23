@@ -1,6 +1,5 @@
 # gengetopt input for gimplut
 # (c) J. J. Green 2008
-# $Id: options.ggo,v 1.3 2012/02/27 13:06:10 jjg Exp $
 package "gimplut"
 purpose "convert gimp gradients to binary lookup table"
 option	"output"	o "output filename"		string	no

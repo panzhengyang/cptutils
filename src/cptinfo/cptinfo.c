@@ -1,7 +1,6 @@
 /*
   cptinfo.h - summary information on a cpt file
   J.J. Green 2004
-  $Id: cptinfo.c,v 1.8 2012/03/25 23:57:47 jjg Exp $
 */
 
 #include <stdlib.h>

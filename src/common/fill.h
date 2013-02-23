@@ -4,7 +4,6 @@
   fill types for cptutils
 
   (c) J.J.Green 2001,2004
-  $Id: fill.h,v 1.4 2012/03/25 23:50:46 jjg Exp $
 */
 
 #ifndef FILL_H

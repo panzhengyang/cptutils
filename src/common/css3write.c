@@ -5,7 +5,6 @@
   a file or stream.
 
   J.J.Green 2010
-  $Id: css3write.c,v 1.4 2011/11/10 18:54:23 jjg Exp $
 */
 
 #ifdef HAVE_CONFIG_H

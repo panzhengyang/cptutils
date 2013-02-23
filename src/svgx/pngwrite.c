@@ -1,7 +1,6 @@
 /*
   png structure for svgx
   J.J.Green
-  $Id: pngwrite.c,v 1.1 2011/11/13 21:17:00 jjg Exp $
 */
 
 #include <png.h>

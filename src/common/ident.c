@@ -4,7 +4,6 @@
   identitifiers
 
   (c) J. J. Green 2002
-  $Id: ident.c,v 1.1 2005/11/16 00:28:33 jjg Exp $
 */
 
 #include <stdlib.h>

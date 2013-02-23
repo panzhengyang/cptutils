@@ -2,7 +2,6 @@
   cptcont.c
 
   (c) J.J.Green 2010
-  $Id: cptcont.c,v 1.4 2012/03/25 23:47:01 jjg Exp $
 */
 
 #include <stdio.h>

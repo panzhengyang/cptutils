@@ -1,6 +1,5 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
-# $Id: Makefile,v 1.33 2012/10/15 22:01:11 jjg Exp $
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = cptbridge.o cpt.o cptparse.o cptscan.o cptio.o

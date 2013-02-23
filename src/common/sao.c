@@ -2,7 +2,6 @@
   sao.c
 
   J.J. Green 2011
-  $Id: sao.c,v 1.2 2011/10/28 09:20:17 jjg Exp $
 */
 
 #include <stdlib.h>

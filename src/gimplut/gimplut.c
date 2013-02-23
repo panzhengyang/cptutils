@@ -2,7 +2,6 @@
   gimpcpt.c
 
   (c) J.J.Green 2001,2004
-  $Id: gimplut.c,v 1.3 2012/03/09 22:15:13 jjg Exp $
 */
 
 #include <stdio.h>

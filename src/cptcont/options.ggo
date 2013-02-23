@@ -1,7 +1,6 @@
 # -*- sh -*-
 # gengetopt input for cptcont
 # (c) J.J. Green 2010
-# $Id: options.ggo,v 1.4 2010/04/18 16:30:59 jjg Exp $
 package "cptcont"
 purpose "Create a continuous colour table from non-continuous"
 option  "midpoint"  m "split segments at the midpoint" flag off

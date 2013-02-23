@@ -2,7 +2,6 @@
   cpthsv.c
 
   (c) J.J.Green 2007
-  $Id: cpthsv.c,v 1.3 2012/03/25 23:59:33 jjg Exp $
 */
 
 #include <stdio.h>

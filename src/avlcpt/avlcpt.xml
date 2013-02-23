@@ -2,8 +2,6 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- $Id: avlcpt.xml,v 1.5 2012/04/15 21:29:16 jjg Exp $ -->
-
 <refentry id='avlcpt1'
 	  xmlns:xi="http://www.w3.org/2001/XInclude">
 

@@ -1,6 +1,5 @@
 # Makefile for cptclip
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.7 2012/10/15 21:46:55 jjg Exp $
 
 NAME = cptclip
 

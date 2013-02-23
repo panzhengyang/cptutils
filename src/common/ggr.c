@@ -45,8 +45,6 @@
   License along with this program; if not, write to the
   Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
   Boston, MA 02110-1301 USA
-
-  $Id: ggr.c,v 1.13 2012/03/09 22:07:00 jjg Exp $
 */
 
 #include <stdio.h>

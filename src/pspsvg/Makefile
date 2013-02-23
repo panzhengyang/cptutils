@@ -1,7 +1,6 @@
 # Makefile for pspsvg
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.6 2012/10/15 22:06:52 jjg Exp $
 
 OBJ      =  pspsvg.o main.o options.o gstack.o
 RUBBISH += $(OBJ) pspsvg

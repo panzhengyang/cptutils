@@ -5,7 +5,6 @@
   on theml
 
   (c) J.J.Green 2001
-  $Id: cpt.c,v 1.17 2010/04/13 22:09:30 jjg Exp $
 */
 
 #include <stdio.h>

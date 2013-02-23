@@ -4,7 +4,6 @@
   read/write GMT cpt files 
 
   (c) J.J.Green 2001,2004
-  $Id: cptio.h,v 1.3 2005/07/19 22:21:44 jjg Exp $
 */
 
 #ifndef CPTIO_H

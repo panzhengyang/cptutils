@@ -1,6 +1,5 @@
 # gengetopt input for cpttext
 # (c) J. J. Green 2004
-# $Id: options.ggo,v 1.3 2012/02/26 22:27:41 jjg Exp $
 package "cpttext"
 purpose "print text coloured by GMT colour palette"
 option  "html"    H "output in HTML"     flag    off

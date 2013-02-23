@@ -1,8 +1,5 @@
 # Makefile.in for cptutils
 
-# $Id: Makefile.in,v 1.14 2012/03/09 22:00:32 jjg Exp $
-# help older versions make
-
 @SET_MAKE@
 
 # Macros

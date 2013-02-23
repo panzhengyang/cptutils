@@ -4,8 +4,7 @@
   write a gnuplot colour map struct to
   a file or stream.
 
-  J.J.Green 2010\
-  $Id: gptwrite.h,v 1.1 2010/11/01 18:42:56 jjg Exp $
+  J.J.Green 2010
 */
 
 #ifndef GPTWRITE_H

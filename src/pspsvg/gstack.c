@@ -3,7 +3,6 @@
   A generic gstack module
 
   J.J.Green
-  $Id: gstack.c,v 1.2 2011/11/01 23:10:40 jjg Exp $
 */
 
 #include <stdlib.h>

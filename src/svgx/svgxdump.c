@@ -6,7 +6,6 @@
   work is done in svgx
 
   Copyright (c) J.J. Green 2012
-  $Id: svgxdump.c,v 1.3 2012/08/15 21:24:15 jjg Exp $
 */
 
 #include <stdlib.h>

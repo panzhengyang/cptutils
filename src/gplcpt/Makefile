@@ -1,7 +1,6 @@
 # Makefile for gplcpt
 #
 # (c) J.J.Green 2010
-# $Id: Makefile,v 1.6 2012/10/15 22:05:00 jjg Exp $
 
 OBJ      =  gplcpt.o main.o options.o
 RUBBISH += $(OBJ) gplcpt

@@ -3,7 +3,6 @@
 
   read/write a cpt file
   (c) J.J Green 2004
-  $Id: cptio.c,v 1.18 2012/12/14 23:22:46 jjg Exp $
 */
 
 #include <stdio.h>

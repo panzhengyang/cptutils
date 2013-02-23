@@ -2,7 +2,6 @@
   gplcpt.h
   convert GIMP palette (gpl) to GMT colour table (cpt)
   Copyright (c) J.J. Green 2010
-  $Id: gplcpt.c,v 1.7 2012/03/26 00:01:25 jjg Exp $
 */
 
 #include <stdio.h>

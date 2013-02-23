@@ -2,7 +2,6 @@
   cptcont.h
 
   J.J.Green 2010
-  $Id: cptcont.h,v 1.2 2010/04/18 16:20:05 jjg Exp $
 */
 
 #ifndef CPTCONT_H

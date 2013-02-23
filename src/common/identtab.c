@@ -4,7 +4,6 @@
   a simple identifier table
 
   (c) J. J. Green 2001
-  $Id: identtab.c,v 1.2 2005/11/17 00:01:55 jjg Exp $
 */
 
 /*

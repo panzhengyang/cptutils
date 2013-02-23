@@ -4,7 +4,6 @@
   writes sao gradient files
   
   J.J. Green 2011
-  $Id: saowrite.c,v 1.6 2011/11/10 18:55:24 jjg Exp $
 */
 
 #ifdef HAVE_CONFIG_H

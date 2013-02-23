@@ -4,7 +4,6 @@
   identifiers
 
   (c) J. J. Green 2002
-  $Id: ident.h,v 1.1 2005/11/16 00:28:39 jjg Exp $
 */
 
 #ifndef IDENT_H

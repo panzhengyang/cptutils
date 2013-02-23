@@ -2,7 +2,6 @@
   cptclip.c
 
   (c) J.J.Green 2010
-  $Id: cptclip.c,v 1.5 2010/04/16 23:56:51 jjg Exp $
 */
 
 #include <stdio.h>

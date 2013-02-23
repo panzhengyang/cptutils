@@ -4,7 +4,6 @@
   convert paintshop pro gradients to the svg format
 
   (c) J.J. Green 2005,2006
-  $Id: pspsvg.c,v 1.11 2012/04/16 21:14:40 jjg Exp $
 */
 
 #include <stdio.h>

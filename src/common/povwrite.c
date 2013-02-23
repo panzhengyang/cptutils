@@ -5,7 +5,6 @@
   a file or stream.
 
   J.J.Green 2005
-  $Id: povwrite.c,v 1.4 2011/11/10 18:52:29 jjg Exp $
 */
 
 #ifdef HAVE_CONFIG_H

@@ -2,7 +2,6 @@
    scanner for cpt files 
 
    (c) J.J.Green 2004
-   $Id: cptscan.l,v 1.7 2011/10/28 11:55:03 jjg Exp $
    %option bison-bridge
 */
 

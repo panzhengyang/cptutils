@@ -9,7 +9,6 @@
   quiet compilation. It should be included in each .l file
   
   (c) J.J.Green 2000
-  $Id: quietlex.h,v 1.1 2002/08/28 21:44:41 jjg Exp $
 */
 
 #ifndef QUIETLEX_H

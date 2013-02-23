@@ -2,7 +2,6 @@
   xycpt.h
 
   (c) J.J.Green 2004
-  $Id: xycpt.h,v 1.3 2005/12/03 00:17:35 jjg Exp $
 */
 
 #ifndef XYCPT_H

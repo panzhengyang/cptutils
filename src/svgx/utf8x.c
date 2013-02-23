@@ -1,8 +1,6 @@
 /*
   convert a utf8 multibyte string to ascii with
   character transliteration
-
-  $Id: utf8x.c,v 1.2 2011/11/04 15:17:03 jjg Exp $
 */
 
 #include <stdio.h>

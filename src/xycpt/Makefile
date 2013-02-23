@@ -1,7 +1,6 @@
 # Makefile for xycpt
 #
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.8 2012/10/15 22:08:10 jjg Exp $
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt

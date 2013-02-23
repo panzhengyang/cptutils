@@ -1,7 +1,6 @@
 # Makefile for svgx
 # 
 # J.J. Green 2005, 2008
-# $Id: Makefile,v 1.40 2012/10/15 23:17:43 jjg Exp $
 
 OBJ      = svgx.o svgxdump.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 

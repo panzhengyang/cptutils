@@ -1,6 +1,5 @@
 # Makefile for gimplut
 # (c) J.J.Green 2001,2004
-# $Id: Makefile,v 1.6 2012/10/15 22:01:51 jjg Exp $
 
 NAME     = gimplut
 OBJ      = $(NAME).o main.o options.o

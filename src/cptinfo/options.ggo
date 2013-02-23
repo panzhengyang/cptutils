@@ -1,6 +1,5 @@
 # gengetopt input for cptinfo
 # (c) J. J. Green 2004, 2012
-# $Id: options.ggo,v 1.3 2012/02/26 19:29:08 jjg Exp $
 package "cptinfo"
 purpose "print summary information on GMT colour palette"
 option  "csv"           c "output in comma separated value format" flag    off

@@ -5,7 +5,6 @@
   a file or stream.
 
   J.J.Green 2010
-  $Id: gptwrite.c,v 1.5 2011/11/10 18:53:23 jjg Exp $
 */
 
 #ifdef HAVE_CONFIG_H

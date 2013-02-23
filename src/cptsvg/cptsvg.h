@@ -2,7 +2,6 @@
   cptsvg.h
 
   J.J.Green 2004
-  $Id: cptsvg.h,v 1.2 2012/04/15 17:53:20 jjg Exp $
 */
 
 #ifndef CPTSVG_H

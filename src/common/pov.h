@@ -3,7 +3,6 @@
   structures for povray colour maps
 
   J.J.Green 2005
-  $Id: pov.h,v 1.7 2006/08/27 23:34:24 jjg Exp $
 */
 
 #ifndef POV_H

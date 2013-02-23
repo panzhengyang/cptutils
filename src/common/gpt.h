@@ -3,7 +3,6 @@
   structures for gnuplot colour maps
 
   J.J.Green 2010
-  $Id: gpt.h,v 1.2 2010/11/01 19:21:28 jjg Exp $
 */
 
 #ifndef GPT_H

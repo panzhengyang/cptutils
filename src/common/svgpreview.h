@@ -4,7 +4,6 @@
   specify a preview image in SVG output
 
   Copyright (c) J.J. Green 2012
-  $Id: svgpreview.h,v 1.2 2012/04/16 19:26:39 jjg Exp $
 */
 
 #ifndef SVGPREVIEW_H

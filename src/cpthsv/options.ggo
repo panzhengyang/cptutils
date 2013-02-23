@@ -1,6 +1,5 @@
 # gengetopt input for cpthsv
 # (c) J. J. Green 2007
-# $Id: options.ggo,v 1.2 2012/02/26 19:07:01 jjg Exp $
 package "cpthsv"
 purpose "transform GMT colour palettes in HSV colour-space"
 option	"output"	o "output filename"		string	no
