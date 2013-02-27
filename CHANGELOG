@@ -1,5 +1,9 @@
 Changes
 
+[pending]
+  - added setup.sh and makefile fixes for full build from 
+    github checkout
+
 1.46 (14 Dec 2012)
   - fixed intermediate filenames for output not in current 
     directory 
