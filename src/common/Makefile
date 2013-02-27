@@ -2,7 +2,7 @@
 # (c) J.J.Green 2001
 
 OBJFILL = colour.o fill.o 
-OBJCPT  = cptbridge.o cpt.o cptparse.o cptscan.o cptio.o
+OBJCPT  = cptbridge.o cpt.o cptscan.o cptparse.o cptio.o
 OBJGGR  = ggr.o findggr.o  files.o
 OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o svgpreview.o
@@ -10,7 +10,7 @@ OBJPOV  = pov.o povwrite.o
 OBJGPT  = gpt.o gptwrite.o
 OBJCSS3 = css3.o css3write.o
 OBJID   = ident.o identtab.o
-OBJODB  = odbbridge.o odb.o odbparse.o odbscan.o
+OBJODB  = odbbridge.o odb.o odbscan.o odbparse.o 
 OBJSAO  = sao.o saowrite.o
 
 CFLAGS += 
@@ -43,11 +43,17 @@ cptscan.c cptscan.h : cptscan.l
 odbscan.c odbscan.h : odbscan.l 
 	flex odbscan.l 
 
-cptparse.c : cptparse.y 
+cptparse.c cptparse,h : cptparse.y 
 	bison cptparse.y
 
-odbparse.c : odbparse.y 
+odbparse.c odbparse.h : odbparse.y 
 	bison odbparse.y
+
+odbparse.o : odbparse.c odbscan.h
+odbscan.o  : odbscan.c odbparse.h
+
+cptparse.o : cptparse.c cptscan.h
+cptscan.o  : cptscan.c cptparse.h
 
 .SECONDARY : cptscan.c cptscan.h cptparse.c stdcol.c
 
@@ -86,10 +92,6 @@ libsao.a : $(OBJSAO)
 
 stdcol.c : stdcol.gperf
 	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
-
-RUBBISH += svgio arse.svg
-
-svgio : svgio.o svg.o colour.o
 
 include ../Common.mk
 

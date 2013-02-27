@@ -40,6 +40,8 @@ ifneq (no,$(GGO))
 %.h %.c : %.ggo
 	$(GGO) -u -i $< -f $* -F $*
 
+main.o : main.c options.h
+
 endif
 
 .SECONDARY : options.c options.h
