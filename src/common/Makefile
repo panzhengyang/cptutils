@@ -43,7 +43,7 @@ cptscan.c cptscan.h : cptscan.l
 odbscan.c odbscan.h : odbscan.l 
 	flex odbscan.l 
 
-cptparse.c cptparse,h : cptparse.y 
+cptparse.c cptparse.h : cptparse.y 
 	bison cptparse.y
 
 odbparse.c odbparse.h : odbparse.y 
