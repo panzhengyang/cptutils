@@ -3,7 +3,6 @@ configure
 VERSION
 *.1
 src/*/options.[ch]
-RCS/
 src/common/config.h
 src/common/cptparse.[ch]
 src/common/cptscan.[ch]
