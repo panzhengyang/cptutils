@@ -1,6 +1,7 @@
 Changes
 
 [pending]
+  - new program cptcat
   - added setup.sh and makefile fixes for full build from 
     github checkout
 
