@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<refentry id='cptcat1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="../docbook/refentryinfo-date.xml"/>
+
+<refmeta>
+<refentrytitle>CPTCAT</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>08 July 2013</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>cptcat</refname>
+<refpurpose>
+  concatenate GMT colour palette tables.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>cptcat</command>    
+    <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-h </arg>
+    <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
+    <arg choice='opt'>-o 
+    <replaceable>file</replaceable>
+    </arg>
+    <arg choice='opt'>-v </arg>
+    <arg choice='opt'>-V </arg>
+    <arg choice='req' rep='repeat'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>cptcat</command> utility concatenates two 
+  or more GMT colour palette table (cpt) files.  The mandatory 
+  <replaceable>file</replaceable> arguments specify the input 
+  files which may be specified in any order.  However, when 
+  sorted, the maximum (z-value) of the lower file should equal 
+  the minimum of the upper file; files can be modified with the 
+  <citerefentry>
+    <refentrytitle>makecpt</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry> 
+  utility to be in this form.
+</para>
+
+<para>
+  The background colour will be taken from that of the lower 
+  (or lowest) file, and the forground from that of the upper.
+  This default behaviour can be overriden with the 
+  <option>-b</option> and <option>-f</option> options.
+</para>
+
+<para>
+  The program will write to stdout if the <option>-o</option> 
+  option is not specified.
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+
+<xi:include href="../docbook/para-rgb.xml"/>
+
+<variablelist remap='TP'>
+
+  <xi:include href="../docbook/varlistentry-background.xml"/>
+  
+  <xi:include href="../docbook/varlistentry-foreground.xml"/>
+
+  <xi:include href="../docbook/varlistentry-help.xml"/>
+
+  <xi:include href="../docbook/varlistentry-nan.xml"/>
+
+  <xi:include href="../docbook/varlistentry-output.xml"/>
+
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
+
+  <xi:include href="../docbook/varlistentry-version.xml"/>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Create a cpt-file topobath.cpt from topo.cpt and bath.cpt
+</para>
+
+<programlisting>
+  cptcat -v -o topobath.cpt topo.cpt bath.cpt
+</programlisting>
+
+</refsect1>
+
+<xi:include href="../docbook/refsect1-author.xml"/>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>makecpt</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+
