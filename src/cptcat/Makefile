@@ -11,7 +11,7 @@ LDLIBS  += -lcpt -lfill
 
 default : all
 
-all : $(NAME).1
+all : $(NAME) $(NAME).1
 
 install :
 	$(INSTALL_PROGRAM) $(NAME) $(DESTDIR)$(bindir)/$(NAME)
@@ -28,23 +28,16 @@ $(NAME) : $(OBJ)
 
 include ../Common.mk
 
-# for testing 
+CPTBATH = $(TESTD)/cpt/tpsfhm.cpt
+CPTTOPO = $(TESTD)/cpt/pakistan.cpt
+CPT     = tpsfhm-pakistan.cpt
 
-BASE    = RdBu_10
-CPT     = $(TESTD)/cpt/$(BASE).cpt
-CPTCC   = $(BASE)-cc.cpt
-CPTCD   = $(BASE)-cd.cpt
-CPTTEST = $(CPTCC) $(CPTCD)
+test : $(CPT)
 
-test : $(CPTTEST)
+$(CPT) : $(NAME)
+	./$(NAME) -o $(CPT) -v $(CPTBATH) $(CPTTOPO)
 
-$(CPTCC) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTCC) -v -R 2.5/5 $(CPT)
-
-$(CPTCD) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTCD) -v -s -R 2/5 $(CPT)
-
-RUBBISH +=  $(CPTTEST)
+RUBBISH +=  $(CPT)
 
 
 
