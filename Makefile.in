@@ -38,7 +38,7 @@ version :
 dist : veryclean
 	cd .. ; \
 	cp -pr cptutils $(DIST) ;\
-	tar --exclude=RCS -zpcvf $(DIST).tar.gz $(DIST) ;\
+	tar --exclude=.git -zpcvf $(DIST).tar.gz $(DIST) ;\
 	mv $(DIST) /tmp 
 
 
