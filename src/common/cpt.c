@@ -197,7 +197,11 @@ extern cpt_t* cpt_new(void)
     if ((cpt = malloc(sizeof(cpt_t))) == NULL)
       return NULL;
 
-    cpt->segment = NULL;
+    cpt->name[0] = '\0';
+    cpt->segment  = NULL;
+    cpt->fg.type  = fill_empty;
+    cpt->bg.type  = fill_empty;
+    cpt->nan.type = fill_empty;
 
     return cpt;
 }
