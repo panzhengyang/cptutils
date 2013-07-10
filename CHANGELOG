@@ -1,6 +1,6 @@
 Changes
 
-[pending]
+1.47 (8 July 2013)
   - new program cptcat
   - added setup.sh and makefile fixes for full build from 
     github checkout

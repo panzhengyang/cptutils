@@ -49,8 +49,15 @@ are interpreted as the (z) limits of the output unless the
 <option>-s</option> switch is specified, in which case they 
 are the segment numbers.</para>
 
-<xi:include 
-            href="../docbook/para-stdio.xml"/>
+<xi:include href="../docbook/para-stdio.xml"/>
+
+<para>Note that much of the functionality of this program
+is included in recent versions of the GMT program
+<citerefentry>
+<refentrytitle>makecpt</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
 
 </refsect1>
 
@@ -121,6 +128,10 @@ are the segment numbers.</para>
 <para>
 <citerefentry>
 <refentrytitle>GMT</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>,
+<citerefentry>
+<refentrytitle>makecpt</refentrytitle>
 <manvolnum>1</manvolnum>
 </citerefentry>.
 </para>

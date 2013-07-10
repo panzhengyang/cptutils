@@ -30,14 +30,18 @@ include ../Common.mk
 
 CPTBATH = $(TESTD)/cpt/tpsfhm.cpt
 CPTTOPO = $(TESTD)/cpt/pakistan.cpt
-CPT     = tpsfhm-pakistan.cpt
+CPTA    = tpsfhm-pakistan.cpt
+CPTB    = pakistan-tpsfhm.cpt
 
-test : $(CPT)
+test : $(CPTA) $(CPTB)
 
-$(CPT) : $(NAME)
-	./$(NAME) -o $(CPT) -v $(CPTBATH) $(CPTTOPO)
+$(CPTA) : $(NAME)
+	./$(NAME) -o $(CPTA) -v $(CPTBATH) $(CPTTOPO)
 
-RUBBISH +=  $(CPT)
+$(CPTB) : $(NAME)
+	./$(NAME) -o $(CPTB) -v $(CPTTOPO) $(CPTBATH)
+
+RUBBISH += $(CPTA) $(CPTB)
 
 
 

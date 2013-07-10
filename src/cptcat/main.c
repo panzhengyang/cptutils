@@ -70,36 +70,6 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is cptcat (version %s)\n",VERSION);
 
-  /* get fg/bg/nan */
-
-  struct 
-  {
-    int given;
-    char *str;
-    rgb_t *rgb;
-    const char *descr;
-  } rgb_data[3] = 
-      {
-	{info.background_given, info.background_arg, opt.bg,  "background"},
-	{info.foreground_given, info.foreground_arg, opt.fg,  "foreground"},
-	{info.nan_given,        info.nan_arg,        opt.nan, "NaN"}
-      }, *dat;
-
-  int i;
-
-  for (i=0 ; i<3 ; i++)
-    {
-      dat = rgb_data + i;
-      if (dat->given)
-	{
-	  if (parse_rgb(dat->str, dat->rgb) != 0)
-	    {
-	      fprintf(stderr, "bad %s %s\n", dat->descr, dat->str);
-	      return EXIT_FAILURE;
-	    }
-	}
-    }
-
   err = cptcat(opt);
 
   if (opt.verbose)

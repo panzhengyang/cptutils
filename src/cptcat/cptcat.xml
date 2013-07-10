@@ -25,16 +25,13 @@
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>cptcat</command>    
-    <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
-    <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
     <arg choice='opt'>-h </arg>
-    <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
     <arg choice='opt'>-o 
     <replaceable>file</replaceable>
     </arg>
     <arg choice='opt'>-v </arg>
     <arg choice='opt'>-V </arg>
-    <arg choice='req' rep='repeat'><replaceable>file</replaceable></arg>
+    <arg choice='plain' rep='repeat'><replaceable>file</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -56,8 +53,6 @@
 <para>
   The background colour will be taken from that of the lower 
   (or lowest) file, and the forground from that of the upper.
-  This default behaviour can be overriden with the 
-  <option>-b</option> and <option>-f</option> options.
 </para>
 
 <para>
@@ -69,17 +64,9 @@
 
 <refsect1 id='options'><title>OPTIONS</title>
 
-<xi:include href="../docbook/para-rgb.xml"/>
-
 <variablelist remap='TP'>
 
-  <xi:include href="../docbook/varlistentry-background.xml"/>
-  
-  <xi:include href="../docbook/varlistentry-foreground.xml"/>
-
   <xi:include href="../docbook/varlistentry-help.xml"/>
-
-  <xi:include href="../docbook/varlistentry-nan.xml"/>
 
   <xi:include href="../docbook/varlistentry-output.xml"/>
 

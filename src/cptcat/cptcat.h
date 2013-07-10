@@ -11,8 +11,7 @@
 
 typedef struct 
 {
-  int verbose, n;
-  rgb_t *fg, *bg, *nan;
+  int verbose;
   const char *output;
   struct
   {
