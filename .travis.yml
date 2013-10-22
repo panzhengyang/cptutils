@@ -7,7 +7,10 @@ before_install:
   - sudo apt-get install -qq libxml2-dev libpng12-dev gengetopt gperf
   - autoconf
   - autoheader
-install:
   - ./configure
   - make version
+  - make
+install:
   - make install
+script :
+  - make test
