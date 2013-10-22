@@ -14,23 +14,23 @@ DIST      = cptutils-$(VERSION)
 default : all
 
 all : 
-	cd src ; $(MAKE) all ; cd ..
+	cd src ; $(MAKE) all
 
 install :
-	cd src ; $(MAKE) install ; cd ..
+	cd src ; $(MAKE) install
 
 test check :
-	cd src ; $(MAKE) test ; cd ..
+	cd src ; $(MAKE) test
 
 clean :
 	$(RM) $(RUBBISH)
-	cd src ; $(MAKE) clean ; cd ..
+	cd src ; $(MAKE) clean
 
 veryclean spotless : clean version
 	$(RM) $(CONFFILES)
 	autoconf
 	rm -rf autom4te.cache
-	cd src ; $(MAKE) veryclean ; cd ..
+	cd src ; $(MAKE) veryclean
 
 version :
 	echo $(VERSION) > VERSION
