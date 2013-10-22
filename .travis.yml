@@ -5,11 +5,9 @@ compiler:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libxml2-dev libpng12-dev
-before_script:
   - autoconf
   - autoheader
+install:
   - ./configure
   - make version
-  - make
-install:
   - make install
