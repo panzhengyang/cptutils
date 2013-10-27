@@ -1,5 +1,8 @@
 Changes
 
+1.48 (pending)
+  - added support for cpt segment labels
+
 1.47 (8 July 2013)
   - new program cptcat
   - added setup.sh and makefile fixes for full build from 
