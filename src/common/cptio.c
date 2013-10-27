@@ -186,14 +186,15 @@ extern int cpt_write(const char *outfile, cpt_t *cpt)
       fprintf(stream," ");
       
       fprintf_cpt_sample(stream, seg->rsmp, cpt->model, zfmt);
+      if (seg->label) fprintf(stream, " ; %s", seg->label);
       fprintf(stream,"\n");
       
       seg = seg->rseg;
     }
   
-  fprintf_cpt_aux(stream,'B',cpt->bg, cpt->model);
-  fprintf_cpt_aux(stream,'F',cpt->fg, cpt->model);
-  fprintf_cpt_aux(stream,'N',cpt->nan,cpt->model);
+  fprintf_cpt_aux(stream, 'B', cpt->bg,  cpt->model);
+  fprintf_cpt_aux(stream, 'F', cpt->fg,  cpt->model);
+  fprintf_cpt_aux(stream, 'N', cpt->nan, cpt->model);
   
   fclose(stream);
   
