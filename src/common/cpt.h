@@ -4,7 +4,7 @@
   A struct to hold a GMT cpt file, and some operations 
   on them
 
-  (c) J.J.Green 2001,2004
+  (c) J.J.Green 2001, 2004
 */
 
 #ifndef CPT_H
@@ -25,6 +25,7 @@ typedef struct cpt_seg_t
   struct cpt_seg_t *lseg,*rseg;
   cpt_sample_t      lsmp, rsmp;
   annote_t          annote;
+  char             *label;
 } cpt_seg_t;
 
 #define CPT_NAME_LEN 128

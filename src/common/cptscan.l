@@ -24,7 +24,7 @@
 %option noyywrap
 %option debug
 
-%x comment model final
+%x comment model label final 
 
 D     [0-9]
 E     [DdEe][+-]?{D}+
@@ -39,6 +39,8 @@ NUM   [+-]?(({D}+({E})?)|({D}*"."{D}+({E})?)|({D}+"."{D}*({E})?))
 <model>RGB                             return RGB;
 <model>HSV                             return HSV;
 <model>\n                              BEGIN(INITIAL); return '\n';
+<label>.*                              yylval->text = yytext; return LABEL;
+<label>\n                              BEGIN(INITIAL); return '\n';
 
 [ \t]*
 \n                 return '\n';
@@ -52,6 +54,8 @@ B                  return 'B';
 N                  return 'N';
 L                  return 'L';
 U                  return 'U';
+;                  BEGIN(label) ; return ';';
+
 <final><<EOF>>     yyterminate();  
 <<EOF>>            BEGIN(final) ; return '\n'; 
 .                  

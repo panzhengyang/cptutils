@@ -9,7 +9,7 @@
 %{
 #include "cpt.h"
 
-#define YYLEX_PARAM scanner 
+#define YYLEX_PARAM   scanner 
 #define YYPARSE_PARAM scanner 
 
 #include "cptparse.h"
@@ -32,6 +32,7 @@
 
 %union {
   double       d;
+  char        *text;
   annote_t     annote;
   colour_t     colour;
   hatch_t      hatch;
@@ -41,12 +42,14 @@
 } 
 
 %token NUM
+%token LABEL
 
 %type <d>      NUM 
 %type <fill>   fill 
 %type <hatch>  hatch
-%type <seg>    spline segment
+%type <seg>    spline annoted_spline segment
 %type <annote> annote
+%type <text>   LABEL
 %nonassoc HATCH RGB HSV 
 
 %%
@@ -62,23 +65,20 @@ line : content '\n'
 | '\n'
 ;
 
-content : segment { cpt_append($1,bridge); }
+content : segment { cpt_append($1, bridge); }
 | model
 | extra 
 ;
 
-model :  RGB { bridge->model = model_rgb; }
+model : RGB { bridge->model = model_rgb; }
 | HSV { bridge->model = model_hsv; }
 ;
 
-segment : spline {
-  $$ = $1;
-  $$->annote = none;
-}
-| spline annote {
-  $$ = $1;
-  $$->annote = $2;
-}
+segment : annoted_spline   { $$ = $1; }
+| annoted_spline ';' LABEL { $$ = $1; $$->label = strdup($3); }
+
+annoted_spline : spline { $$ = $1; $$->annote = none; }
+| spline annote { $$ = $1; $$->annote = $2; }
 ;
 
 annote : 'L' { $$ = lower; }
@@ -88,23 +88,23 @@ annote : 'L' { $$ = lower; }
 
 spline : NUM NUM NUM NUM NUM NUM NUM NUM {
   $$ = cpt_seg_new();
-  $$->lsmp = sample3($1,$2,$3,$4);
-  $$->rsmp = sample3($5,$6,$7,$8);
+  $$->lsmp = sample3($1, $2, $3, $4);
+  $$->rsmp = sample3($5, $6, $7, $8);
 }
 | NUM NUM NUM NUM {
   $$ = cpt_seg_new();
-  $$->lsmp = sample1($1,$2);
-  $$->rsmp = sample1($3,$4);
+  $$->lsmp = sample1($1, $2);
+  $$->rsmp = sample1($3, $4);
 }
 | NUM hatch NUM hatch {
   $$ = cpt_seg_new();
-  $$->lsmp = sampleh($1,$2);
-  $$->rsmp = sampleh($3,$4);
+  $$->lsmp = sampleh($1, $2);
+  $$->rsmp = sampleh($3, $4);
 } 
 | NUM hatch NUM '-' {
   $$ = cpt_seg_new();
-  $$->lsmp = sampleh($1,$2);
-  $$->rsmp = sampleh($3,$2);
+  $$->lsmp = sampleh($1, $2);
+  $$->rsmp = sampleh($3, $2);
 } 
 | NUM '-' NUM '-' {
   $$ = cpt_seg_new();
@@ -154,10 +154,10 @@ hatch : 'p' NUM '/' NUM {
 
 static void cpterror(char const *s)
 {
-  fprintf (stderr, "%s\n",s);
+  fprintf (stderr, "%s\n", s);
 }
 
-static cpt_sample_t sample3(double z,double c1,double c2,double c3)
+static cpt_sample_t sample3(double z, double c1, double c2, double c3)
 {
   cpt_sample_t s;
   fill_t fill;

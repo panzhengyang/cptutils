@@ -327,21 +327,23 @@ extern void cpt_destroy(cpt_t* cpt)
 
 extern cpt_seg_t* cpt_seg_new(void)
 {
-    cpt_seg_t *seg;
+  cpt_seg_t *seg;
+  
+  if ((seg = malloc(sizeof(cpt_seg_t))) == NULL) 
+    return NULL;
 
-    if ((seg = malloc(sizeof(cpt_seg_t))) == NULL) 
-	return NULL;
-
-    seg->lseg   = NULL;
-    seg->rseg   = NULL;
-    seg->annote = none;
-
-    return seg;
+  seg->lseg   = NULL;
+  seg->rseg   = NULL;
+  seg->annote = none;
+  seg->label  = NULL;
+  
+  return seg;
 }
 
 extern void cpt_seg_destroy(cpt_seg_t* seg)
 {
-    free(seg);
+  if (seg->label) free(seg->label);
+  free(seg);
 }
 
 
