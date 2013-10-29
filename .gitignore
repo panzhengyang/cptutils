@@ -4,11 +4,10 @@ VERSION
 *.1
 src/*/options.[ch]
 src/common/config.h
-src/common/cptparse.[ch]
-src/common/cptscan.[ch]
 src/common/odbparse.[ch]
 src/common/odbscan.[ch]
 src/common/*.output
 src/common/stdcol.c
+src/common/gmtcol.c
 # use these at some point ...
 src/svgx/dp-simplify.[ch]

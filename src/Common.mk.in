@@ -33,6 +33,20 @@ localedir   = @localedir@
 
 RUBBISH += *~
 
+# generate .c files from .gperf
+
+ifneq (no,$(GPERF))
+
+%.c : %.gperf
+	$(GPERF) --delimiters "," \
+	  --struct-type \
+	  --language ANSI-C \
+	  --lookup-function-name $*_lookup \
+	  --ignore-case \
+	  --output-file $@ $< 
+
+endif
+
 # generate options code from .ggo
 
 ifneq (no,$(GGO))

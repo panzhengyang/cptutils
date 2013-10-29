@@ -2,7 +2,7 @@
 # (c) J.J.Green 2001
 
 OBJFILL = colour.o fill.o 
-OBJCPT  = cpt.o cptio.o
+OBJCPT  = cpt.o cptio.o gmtcol.o
 OBJGGR  = ggr.o findggr.o files.o
 OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o svgpreview.o
@@ -78,9 +78,6 @@ libodb.a : $(OBJODB)
 
 libsao.a : $(OBJSAO)
 	ar r libsao.a $(OBJSAO)
-
-stdcol.c : stdcol.gperf
-	$(GPERF) -e "," -t -L ANSI-C --ignore-case stdcol.gperf > stdcol.c
 
 include ../Common.mk
 
