@@ -2,7 +2,7 @@
   cptio.c
 
   read/write a cpt file
-  (c) J.J Green 2004
+  (c) J.J Green 2013
 */
 
 #include <stdio.h>
@@ -11,123 +11,250 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <ctype.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "cptio.h"
-#include "cptbridge.h"
-#include "cptparse.h"
-#include "cptscan.h"
 
-/* 
-   defined in cptparse.c but declared here -
-   cptparse() is the main parser, cptdebug the
-   parser debug flag
-*/
+static int cpt_parse(FILE *stream, cpt_t *cpt);
 
-extern int cptparse(void*);
-extern int cptdebug;
-
-/* utility defines */
-
-#define LBUF 1024
-#define SNM(x) ((x) ? (x) : "<stdin>")
-
-extern int cpt_read(const char* file,cpt_t* cpt,int debug)
+extern int cpt_read(const char *file, cpt_t *cpt)
 {
-  FILE    *stream;
-  yyscan_t cptscan;
+  FILE *stream;
+  int err = 1;
 
   if (file)
     {
-      const char *s;
-      char *e,*name;
-
-      if ((stream = fopen(file,"r")) == NULL)
+      if ((stream = fopen(file, "r")) == NULL)
 	{
-	  fprintf(stderr,"error reading %s : %s\n",SNM(file),strerror(errno));
+	  fprintf(stderr,"error reading %s : %s\n", file, strerror(errno));
 	  return 1;
 	}
-
-      /* get the name from the filename */
-
-      name = cpt->name;
-
-      if ((s = strrchr(file, '/')) == NULL) 
-	s = file;
-      else
-	s++;
-
-      strncpy(name, s, CPT_NAME_LEN);
-
-      /* chop off a trailing .cpt */
-
-      if ((e = strrchr(name, '.')) != NULL)
-	{   
-	  if (strcmp(e,".cpt") == 0) *e = '\0';
-	} 
+      
+      if ( !(err = cpt_parse(stream, cpt)) )
+	{
+	  if (! feof(stream) )
+	    {
+	      if (ferror(stream))
+		{
+		  fprintf(stderr,"error reading %s\n", file);
+		  err = 1;
+		}
+	      else
+		fprintf(stderr,"weird error reading %s\n", file);
+	    }
+	}
     }
   else
+    err = cpt_parse(stdin, cpt);
+
+  return err;
+}
+
+static void chomp(char *str) 
+{
+  char *p = strrchr(str, '\n');
+  if (p) *p = '\0';
+}
+
+static int cpt_parse_comment(const char *line, model_t *model);
+static int cpt_parse_global(const char *line, fill_t *fill);
+static int cpt_parse_segment(const char *line, cpt_t *cpt);
+
+#define LINELEN 2048
+
+static int cpt_parse(FILE *stream, cpt_t *cpt)
+{
+  int lineno;
+  char line[LINELEN];
+
+  for (lineno=1 ; fgets(line, LINELEN, stream) != NULL ; lineno++)
     {
-      stream = stdin;
-      strncpy(cpt->name, "<stdin>", CPT_NAME_LEN);
-    }
+      int err = 0;
+      
+      chomp(line);
 
-  /* 
-     assign global cpt* acted upon by the bison parser, I'd like
-     this to be an argument for cptparse, but bison only allows 
-     one argument & that is used for the scanner
-  */
-
-  bridge = cpt;
-
-  /*
-    setup scanner
-  */
-
-  if (cptlex_init(&cptscan) != 0)
-    {
-      fprintf(stderr,"problem initailising scanner : %s\n",strerror(errno));
-      return 1;
-    }
-  
-  cptset_in(stream,cptscan);
-  cptset_debug(debug,cptscan);
-
-  /*
-    do the parse
-  */
-
-  cptdebug = debug;
-
-  if (cptparse(cptscan) != 0)
-    {
-      fprintf(stderr,"failed parse\n");
-      return 1;
-    }
-
-  cptlex_destroy(cptscan);
-
-  if (!feof(stream))
-    {
-      if (ferror(stream))
+      switch (line[0]) 
 	{
-	  fprintf(stderr,"error reading %s\n",SNM(file));
+	case '\0' :
+	  break;
+	case '#' :
+	  err = cpt_parse_comment(line+1, &(cpt->model));
+	  break;
+	case 'B':
+	  err = cpt_parse_global(line+1, &(cpt->bg));
+	  break;
+	case 'F':
+	  err = cpt_parse_global(line+1, &(cpt->fg));
+	  break;
+	case 'N':
+	  err = cpt_parse_global(line+1, &(cpt->nan));
+	  break;
+	default :
+	  err = cpt_parse_segment(line, cpt);
+	}
+
+      if (err)
+	{
+	  fprintf(stderr, "parse error at line %i\n", lineno);
+	  fprintf(stderr, "%s\n", line);
 	  return 1;
 	}
-      else
-	{
-	  fprintf(stderr,"wierd error reading %s\n",SNM(file));
-	}
     }
-
-  if (stream != stdin) 
-    fclose(stream);
 
   return 0;
 }
+
+static int cpt_parse_comment(const char *line, model_t *model)
+{
+  char mstr[5];
+
+  if (sscanf(line, " COLOR_MODEL = %4s ", mstr) == 1)
+    {
+      if (strcmp(mstr, "RGB") == 0)
+	*model = model_rgb;
+      else if (strcmp(mstr, "HSV") == 0)
+	*model = model_hsv;
+      else
+	{
+	  fprintf(stderr, "unknown colour model: %s\n", mstr);
+	  return 1;
+	}
+    }
+
+  return 0;
+}
+
+static int cpt_parse_global(const char *line, fill_t *fill)
+{
+  // FIXME
+  return 1;
+}
+
+static int cpt_parse_value(const char *str, double *val);
+static int cpt_parse_annote(const char *str, annote_t *annote);
+static int cpt_parse_1fill(const char *s1, fill_t *fill);
+static int cpt_parse_3fill(const char *s1, const char *s2, const char *s3,
+			   fill_t *fill);
+
+static int cpt_parse_segment(const char *line, cpt_t *cpt)
+{
+  /* the fresh segment */
+
+  cpt_seg_t* seg;
+
+  if (! (seg = cpt_seg_new()))
+    {
+      fprintf(stderr, "failed to create new segment\n");
+      return 1;
+    }
+
+  /* make a copy of the line */
+
+  size_t n = strlen(line);
+  char buf[n+1];
+
+  memcpy(buf, line, n+1);
+
+  /* see if there is a label */
+
+  char *label;
+
+  if ((label = strrchr(buf, ';')) != NULL)
+    {
+      /* trim off the label */
+
+      *label = '\0';
+
+      /* skip leading whitespace */
+
+      while (label++)
+	{
+	  int c = *label;
+
+	  if (!c)
+	    break;
+
+	  if (!isspace(c))
+	    { 
+	      /* copy the label into the segment */
+	      seg->label = strdup(label);
+	      break;
+	    }
+	} 
+    }
+
+  /* chop up the buffer */
+
+  int ntok = 0;
+  char *tok[9];
+
+  for (tok[ntok] = strtok(buf, " \t") ;
+       ntok < 9 && tok[ntok] ;
+       tok[++ntok] = strtok(NULL, " \t"));
+
+  /* interpet the pieces */
+
+  int err = 0;
+
+  switch (ntok)
+    {
+    case 9 :      
+      err += cpt_parse_annote(tok[8], &(seg->annote));
+    case 8 :
+      err += cpt_parse_value(tok[0], &(seg->lsmp.val)); 
+      err += cpt_parse_3fill(tok[1], tok[2], tok[3], &(seg->lsmp.fill));
+      err += cpt_parse_value(tok[4], &(seg->rsmp.val));
+      err += cpt_parse_3fill(tok[5], tok[6], tok[7], &(seg->rsmp.fill));
+      break;
+    case 5 :
+      err += cpt_parse_annote(tok[3], &(seg->annote));
+    case 4 :
+      err += cpt_parse_value(tok[0], &(seg->lsmp.val)); 
+      err += cpt_parse_1fill(tok[1], &(seg->lsmp.fill));
+      err += cpt_parse_value(tok[2], &(seg->rsmp.val)); 
+      err += cpt_parse_1fill(tok[3], &(seg->rsmp.fill));
+      break;
+    default :
+      fprintf(stderr, "segment with strange number of tokens (%i)\n", ntok);
+      return 1;
+    }
+
+  if (err) return 1;
+
+  return 0;
+}
+
+static int cpt_parse_value(const char *str, double *val)
+{
+  *val = atof(str);
+  return 0;
+}
+
+static int cpt_parse_annote(const char *str, annote_t *annote)
+{
+  // FIXME
+  return 1;
+}
+
+static int cpt_parse_1fill(const char *s1, fill_t *fill)
+{
+  // FIXME
+  return 1;
+}
+
+static int cpt_parse_3fill(const char *s1, 
+			   const char *s2, 
+			   const char *s3,
+			   fill_t *fill)
+{
+  // FIXME
+  return 1;
+}
+
 
 static int fprintf_cpt_aux(FILE*,char,fill_t,model_t);
 static int fprintf_cpt_sample(FILE*, cpt_sample_t, model_t, const char*);

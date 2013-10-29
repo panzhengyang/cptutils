@@ -2,8 +2,8 @@
 # (c) J.J.Green 2001
 
 OBJFILL = colour.o fill.o 
-OBJCPT  = cptbridge.o cpt.o cptscan.o cptparse.o cptio.o
-OBJGGR  = ggr.o findggr.o  files.o
+OBJCPT  = cpt.o cptio.o
+OBJGGR  = ggr.o findggr.o files.o
 OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o svgpreview.o
 OBJPOV  = pov.o povwrite.o
@@ -37,25 +37,14 @@ veryclean :
 
 .PHONEY : all test doc
 
-cptscan.c cptscan.h : cptscan.l 
-	flex cptscan.l 
-
 odbscan.c odbscan.h : odbscan.l 
 	flex odbscan.l 
-
-cptparse.c cptparse.h : cptparse.y 
-	bison cptparse.y
 
 odbparse.c odbparse.h : odbparse.y 
 	bison odbparse.y
 
 odbparse.o : odbparse.c odbscan.h
 odbscan.o  : odbscan.c odbparse.h
-
-cptparse.o : cptparse.c cptscan.h
-cptscan.o  : cptscan.c cptparse.h
-
-.SECONDARY : cptscan.c cptscan.h cptparse.c stdcol.c
 
 libfill.a : $(OBJFILL)
 	ar r libfill.a $(OBJFILL)

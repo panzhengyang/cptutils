@@ -11,7 +11,7 @@
 
 #include "cpt.h"
 
-extern int cpt_write(const char*,cpt_t*);
-extern int cpt_read(const char*,cpt_t*,int);
+extern int cpt_write(const char*, cpt_t*);
+extern int cpt_read(const char*, cpt_t*);
 
 #endif
