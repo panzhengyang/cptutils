@@ -13,6 +13,6 @@ struct gmtcol_t
   char r,g,b; 
 };
 
-extern struct gmtcol_t* stdcol(const char*);
+extern struct gmtcol_t* gmtcol(const char*);
 
 #endif

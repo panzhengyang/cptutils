@@ -19,6 +19,8 @@
 
 #include "cptio.h"
 
+#include "gmtcol.h"
+
 static int cpt_parse(FILE *stream, cpt_t *cpt);
 
 extern int cpt_read(const char *file, cpt_t *cpt)
@@ -61,7 +63,7 @@ static void chomp(char *str)
 }
 
 static int cpt_parse_comment(const char *line, model_t *model);
-static int cpt_parse_global(const char *line, fill_t *fill);
+static int cpt_parse_global(const char *line, model_t model, fill_t *fill);
 static int cpt_parse_segment(const char *line, cpt_t *cpt);
 
 #define LINELEN 2048
@@ -85,13 +87,13 @@ static int cpt_parse(FILE *stream, cpt_t *cpt)
 	  err = cpt_parse_comment(line+1, &(cpt->model));
 	  break;
 	case 'B':
-	  err = cpt_parse_global(line+1, &(cpt->bg));
+	  err = cpt_parse_global(line+1, cpt->model, &(cpt->bg));
 	  break;
 	case 'F':
-	  err = cpt_parse_global(line+1, &(cpt->fg));
+	  err = cpt_parse_global(line+1, cpt->model, &(cpt->fg));
 	  break;
 	case 'N':
-	  err = cpt_parse_global(line+1, &(cpt->nan));
+	  err = cpt_parse_global(line+1, cpt->model, &(cpt->nan));
 	  break;
 	default :
 	  err = cpt_parse_segment(line, cpt);
@@ -120,7 +122,7 @@ static int cpt_parse_comment(const char *line, model_t *model)
 	*model = model_hsv;
       else
 	{
-	  fprintf(stderr, "unknown colour model: %s\n", mstr);
+	  fprintf(stderr, "colour model not handled: %s\n", mstr);
 	  return 1;
 	}
     }
@@ -128,17 +130,48 @@ static int cpt_parse_comment(const char *line, model_t *model)
   return 0;
 }
 
-static int cpt_parse_global(const char *line, fill_t *fill)
+static int cpt_parse_1fill(const char *s1, model_t model, fill_t *fill);
+static int cpt_parse_3fill(const char *s1, const char *s2, const char *s3,
+			   model_t model, fill_t *fill);
+
+static int cpt_parse_global(const char *line, model_t model, fill_t *fill)
 {
-  // FIXME
-  return 1;
+  /* make a copy of the line */
+
+  size_t n = strlen(line);
+  char buf[n+1];
+
+  memcpy(buf, line, n+1);
+
+  /* chop up the buffer */
+
+  int ntok = 0;
+  char *tok[3];
+
+  for (tok[ntok] = strtok(buf, " \t") ;
+       ntok < 3 && tok[ntok] ;
+       tok[++ntok] = strtok(NULL, " \t"));
+
+  int err = 0;
+
+  switch (ntok)
+    {
+    case 1:
+      err += cpt_parse_1fill(tok[0], model, fill);
+      break;
+    case 3:
+      err += cpt_parse_3fill(tok[0], tok[1], tok[2], model, fill);
+      break;
+    default:
+      fprintf(stderr, "fill with %i tokens\n", ntok);
+      err++;
+    }
+
+  return (err ? 1 : 0);
 }
 
 static int cpt_parse_value(const char *str, double *val);
 static int cpt_parse_annote(const char *str, annote_t *annote);
-static int cpt_parse_1fill(const char *s1, fill_t *fill);
-static int cpt_parse_3fill(const char *s1, const char *s2, const char *s3,
-			   fill_t *fill);
 
 static int cpt_parse_segment(const char *line, cpt_t *cpt)
 {
@@ -206,18 +239,22 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
       err += cpt_parse_annote(tok[8], &(seg->annote));
     case 8 :
       err += cpt_parse_value(tok[0], &(seg->lsmp.val)); 
-      err += cpt_parse_3fill(tok[1], tok[2], tok[3], &(seg->lsmp.fill));
+      err += cpt_parse_3fill(tok[1], tok[2], tok[3], 
+			     cpt->model, &(seg->lsmp.fill));
       err += cpt_parse_value(tok[4], &(seg->rsmp.val));
-      err += cpt_parse_3fill(tok[5], tok[6], tok[7], &(seg->rsmp.fill));
+      err += cpt_parse_3fill(tok[5], tok[6], tok[7], 
+			     cpt->model, &(seg->rsmp.fill));
       break;
+
     case 5 :
-      err += cpt_parse_annote(tok[3], &(seg->annote));
+      err += cpt_parse_annote(tok[4], &(seg->annote));
     case 4 :
       err += cpt_parse_value(tok[0], &(seg->lsmp.val)); 
-      err += cpt_parse_1fill(tok[1], &(seg->lsmp.fill));
+      err += cpt_parse_1fill(tok[1], cpt->model, &(seg->lsmp.fill));
       err += cpt_parse_value(tok[2], &(seg->rsmp.val)); 
-      err += cpt_parse_1fill(tok[3], &(seg->rsmp.fill));
+      err += cpt_parse_1fill(tok[3], cpt->model, &(seg->rsmp.fill));
       break;
+
     default :
       fprintf(stderr, "segment with strange number of tokens (%i)\n", ntok);
       return 1;
@@ -225,7 +262,7 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
 
   if (err) return 1;
 
-  return 0;
+  return cpt_append(seg, cpt);
 }
 
 static int cpt_parse_value(const char *str, double *val)
@@ -236,25 +273,123 @@ static int cpt_parse_value(const char *str, double *val)
 
 static int cpt_parse_annote(const char *str, annote_t *annote)
 {
-  // FIXME
-  return 1;
+  switch (str[0])
+    {
+    case 'L' : *annote = lower; break;
+    case 'U' : *annote = upper; break;
+    case 'B' : *annote = both;  break;
+    default:
+      fprintf(stderr, "strange annotation: %s\n", str);
+      return 1;
+    }
+
+  return 0;
 }
 
-static int cpt_parse_1fill(const char *s1, fill_t *fill)
+static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
 {
-  // FIXME
+  /* empty */
+
+  if (strcmp(str, "-") == 0)
+    {
+      fill->type = fill_empty;
+      return 0;
+    }
+
+  /* standard GMT colour */
+
+  struct gmtcol_t *gc;
+
+  if ((gc = gmtcol(str)) != NULL)
+    {
+      if (model != model_rgb)
+	{
+	  fprintf(stderr, "RGB colour %s with non-RGB colour model\n", str); 
+	  return 1;
+	}
+
+      fill->type = fill_colour;
+      fill->u.colour.rgb.red   = gc->r;
+      fill->u.colour.rgb.green = gc->g;
+      fill->u.colour.rgb.blue  = gc->b;
+
+      return 0;
+    }
+
+  /* hatch */
+
+  hatch_t hatch;
+
+  if (sscanf(str, "p%i/%i", &(hatch.dpi), &(hatch.n)) == 2)
+    {
+      hatch.sign = 1;
+      fill->type = fill_hatch;
+      fill->u.hatch = hatch;
+      return 0;
+    }
+
+  if (sscanf(str, "P%i/%i", &(hatch.dpi), &(hatch.n)) == 2)
+    {
+      hatch.sign = -1;
+      fill->type = fill_hatch;
+      fill->u.hatch = hatch;
+      return 0;
+    }
+
+  // FIXME, handle r/g/b triples
+
+  /* integer (greyscale) */
+
+  char *endptr;
+  long val;
+  
+  val = strtol(str, &endptr, 10);
+
+  if (endptr != str)
+    {
+      if ((val < 0) || (val > 255))
+	{
+	  fprintf(stderr, "integer %li outside range 0,...,255\n", val);
+	  return 1;
+	}
+
+      fill->type   = fill_grey;
+      fill->u.grey = val;
+
+      return 0;
+    }
+
+  fprintf(stderr, "fill not recognised: %s\n", str);
   return 1;
 }
 
 static int cpt_parse_3fill(const char *s1, 
 			   const char *s2, 
 			   const char *s3,
+			   model_t model,
 			   fill_t *fill)
 {
-  // FIXME
-  return 1;
-}
+  fill->type = fill_colour;
 
+  switch (model)
+    {
+    case model_rgb:
+      fill->u.colour.rgb.red   = atoi(s1);
+      fill->u.colour.rgb.green = atoi(s2);
+      fill->u.colour.rgb.blue  = atoi(s3);
+      break;
+    case model_hsv:
+      fill->u.colour.hsv.hue = atof(s1);
+      fill->u.colour.hsv.sat = atof(s2);
+      fill->u.colour.hsv.val = atof(s3);
+      break;
+    default:
+      fprintf(stderr, "bad colour model\n");
+      return 1;
+    }
+
+  return 0;
+}
 
 static int fprintf_cpt_aux(FILE*,char,fill_t,model_t);
 static int fprintf_cpt_sample(FILE*, cpt_sample_t, model_t, const char*);
