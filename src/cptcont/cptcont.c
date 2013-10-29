@@ -22,11 +22,11 @@ extern int cptcont(char* infile,char* outfile,cptcont_opt_t opt)
 
   if ((cpt = cpt_new()) != NULL)
     {
-      if (cpt_read(infile,cpt,0) == 0)
+      if (cpt_read(infile, cpt) == 0)
 	{
-	  if (cptcont_convert(cpt,opt) == 0)
+	  if (cptcont_convert(cpt, opt) == 0)
 	    {
-	      if (cpt_write(outfile,cpt) == 0)
+	      if (cpt_write(outfile, cpt) == 0)
 		{
 		  /* success */
 		}

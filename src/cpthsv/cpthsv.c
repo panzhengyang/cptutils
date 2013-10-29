@@ -21,23 +21,23 @@ extern int cpthsv(char* infile,char* outfile,cpthsv_opt_t opt)
 
   if ((cpt = cpt_new()) != NULL)
     {
-      if (cpt_read(infile,cpt,0) == 0)
+      if (cpt_read(infile, cpt) == 0)
 	{
-	  if (cpthsv_convert(cpt,opt) == 0)
+	  if (cpthsv_convert(cpt, opt) == 0)
 	    {
-	      if (cpt_write(outfile,cpt) == 0)
+	      if (cpt_write(outfile, cpt) == 0)
 		{
 		  /* success */
 		}
 	      else
 		{
-		  fprintf(stderr,"error writing cpt struct\n");
+		  fprintf(stderr, "error writing cpt struct\n");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      fprintf(stderr,"failed to convert\n");
+	      fprintf(stderr, "failed to convert\n");
 	      err = 1;
 	    }
 	}

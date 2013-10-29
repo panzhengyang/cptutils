@@ -42,7 +42,7 @@ extern int cptcat(cptcat_opt_t opt)
       if ((dat[i].cpt = cpt_new()) == NULL)
 	return 1;
 
-      if (cpt_read(dat[i].file, dat[i].cpt, 0) != 0)
+      if (cpt_read(dat[i].file, dat[i].cpt) != 0)
 	{
 	  fprintf(stderr, "failed to read %s\n", dat[i].file);
 	  return 1;

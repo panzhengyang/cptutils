@@ -22,13 +22,13 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
 
   if ((cpt = cpt_new()) != NULL)
     {
-      if (cpt_read(infile,cpt,0) == 0)
+      if (cpt_read(infile, cpt) == 0)
 	{
-	  if (cptclip_convert(cpt,opt) == 0)
+	  if (cptclip_convert(cpt, opt) == 0)
 	    {
 	      if (cpt_nseg(cpt) > 0)
 		{
-		  if (cpt_write(outfile,cpt) == 0)
+		  if (cpt_write(outfile, cpt) == 0)
 		    {
 		      /* success */
 		    }

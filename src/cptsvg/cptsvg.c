@@ -24,7 +24,7 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 
     if ((cpt = cpt_new()) != NULL)
       {
- 	if (cpt_read(infile,cpt,0) == 0)
+ 	if (cpt_read(infile, cpt) == 0)
 	  {
 	    if ((svg = svg_new()) != NULL)
 	      {

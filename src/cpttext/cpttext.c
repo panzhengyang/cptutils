@@ -32,7 +32,7 @@ extern int cpttext(cpttext_opt_t opt)
     fprintf(stderr, "failed to initialise cpt structure\n");
   else
     {
-      if (cpt_read(opt.cpt, cpt, 0) != 0)
+      if (cpt_read(opt.cpt, cpt) != 0)
 	{
 	  fprintf(stderr, "failed to read %s\n", NNSTR(opt.cpt));
 	  err = 1;

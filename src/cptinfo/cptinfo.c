@@ -59,7 +59,7 @@ extern int cptinfo(cptinfo_opt_t opt)
       return 1;
     }
 
-  if (cpt_read(opt.file.input, cpt, 0) != 0)
+  if (cpt_read(opt.file.input, cpt) != 0)
     {
       fprintf(stderr,"failed to read %s\n",NNSTR(opt.file.input));
       return 1;

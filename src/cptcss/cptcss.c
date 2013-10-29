@@ -25,14 +25,14 @@ extern int cptcss(cptcss_opt_t opt)
     fprintf(stderr,"failed to initialise cpt structure\n");
   else
     {
-      if (cpt_read(opt.cpt,cpt,0) != 0)
+      if (cpt_read(opt.cpt, cpt) != 0)
 	{
 	  fprintf(stderr,"failed to read %s\n",NNSTR(opt.cpt));
 	  err = 1;
 	  goto cleanup;
 	}
 
-      if (output_css(cpt,opt.format) != 0)
+      if (output_css(cpt, opt.format) != 0)
 	{
 	  fprintf(stderr,"error in css output\n");
 	  err = 1;
@@ -47,7 +47,7 @@ extern int cptcss(cptcss_opt_t opt)
   return err;
 }
 
-static int output_css(cpt_t *cpt,const char *format)
+static int output_css(cpt_t *cpt, const char *format)
 {
   int n = 0;
   model_t model;
