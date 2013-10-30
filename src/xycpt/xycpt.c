@@ -11,9 +11,9 @@
 #include <string.h>
 #include <math.h>
 
+#include "cptwrite.h"
+
 #include "xycpt.h"
-#include "cpt.h"
-#include "cptio.h"
 
 typedef struct fill_stack_t
 {

@@ -2,6 +2,7 @@ Changes
 
 1.48 (pending)
   - added support for cpt segment labels
+  - replaced ageing lex/yacc cpt parser by hand-written version
 
 1.47 (8 July 2013)
   - new program cptcat

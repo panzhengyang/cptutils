@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <cpt.h>
-#include <cptio.h>
+#include "cptwrite.h"
+#include "cptread.h"
 
 #include "cptcat.h"
 

@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cptio.h"
+#include "cptread.h"
 
 #include "cptcss.h"
 

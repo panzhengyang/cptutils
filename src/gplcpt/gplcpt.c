@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "cpt.h"
-#include "cptio.h"
+#include "cptwrite.h"
 #include "gplcpt.h"
 
 static int gplcpt_st(gplcpt_opt_t,FILE*);

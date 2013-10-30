@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "cptio.h"
+#include "cptread.h"
 
 #include "cptinfo.h"
 

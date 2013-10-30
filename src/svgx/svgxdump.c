@@ -15,7 +15,7 @@
 #include "svgxdump.h"
 
 #include "cpt.h"
-#include "cptio.h"
+#include "cptwrite.h"
 #include "ggr.h"
 #include "povwrite.h"
 #include "gptwrite.h"

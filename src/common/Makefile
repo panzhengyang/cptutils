@@ -2,7 +2,7 @@
 # (c) J.J.Green 2001
 
 OBJFILL = colour.o fill.o 
-OBJCPT  = cpt.o cptio.o gmtcol.o
+OBJCPT  = cpt.o cptread.o cptwrite.o gmtcol.o
 OBJGGR  = ggr.o findggr.o files.o
 OBJPSP  = pspread.o pspwrite.o psp.o htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o svgpreview.o

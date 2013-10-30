@@ -9,7 +9,8 @@
 #include <string.h>
 #include <math.h>
 
-#include "cptio.h"
+#include "cptread.h"
+#include "cptwrite.h"
 
 #include "cptcont.h"
 

@@ -14,7 +14,7 @@
 #include <math.h>
 
 #include "cpt.h"
-#include "cptio.h"
+#include "cptwrite.h"
 #include "avlgrad.h"
 
 #include "avlcpt.h"

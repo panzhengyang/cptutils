@@ -9,7 +9,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "cptio.h"
+#include "cptread.h"
 #include "svgwrite.h"
 
 #include "cptsvg.h"
