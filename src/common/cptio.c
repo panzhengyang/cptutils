@@ -292,6 +292,9 @@ static int cpt_parse_annote(const char *str, annote_t *annote)
   return 0;
 }
 
+static int set_hsv(double h, double s, double v, hsv_t *hsv);
+static int set_rgb(int r, int g, int b, rgb_t *rgb);
+
 static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
 {
   /* empty */
@@ -342,7 +345,24 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
       return 0;
     }
 
-  // FIXME, handle r/g/b triples
+  /* handle r/g/b or h/s/v strings */
+
+  switch (model)
+    {
+      int r, g, b;
+      double h, s, v;
+
+    case model_rgb:
+      if (sscanf(str, "%d/%d/%d", &r, &g, &b) == 3)
+	return set_rgb(r, g, b, &(fill->u.colour.rgb));
+      break;
+    case model_hsv:
+      if (sscanf(str, "%lf/%lf/%lf", &h, &s, &v) == 3)
+	return set_hsv(h, s, v, &(fill->u.colour.hsv));
+      break;
+    default:
+      return 1;
+    }
 
   /* integer (greyscale) */
 
@@ -375,27 +395,78 @@ static int cpt_parse_3fill(const char *s1,
 			   model_t model,
 			   fill_t *fill)
 {
+  int err = 0;
+
   fill->type = fill_colour;
 
   switch (model)
     {
     case model_rgb:
-      fill->u.colour.rgb.red   = atoi(s1);
-      fill->u.colour.rgb.green = atoi(s2);
-      fill->u.colour.rgb.blue  = atoi(s3);
+      err += set_rgb(atoi(s1), atoi(s2), atoi(s3), &(fill->u.colour.rgb));
       break;
     case model_hsv:
-      fill->u.colour.hsv.hue = atof(s1);
-      fill->u.colour.hsv.sat = atof(s2);
-      fill->u.colour.hsv.val = atof(s3);
+      err += set_hsv(atof(s1), atof(s2), atof(s3), &(fill->u.colour.hsv));
       break;
     default:
-      fprintf(stderr, "bad colour model\n");
+      err++;
+    }
+
+  return err;
+}
+
+static int set_rgb(int r, int g, int b, rgb_t *rgb)
+{
+  if ((r < 0) || (r > 255))
+    {
+      fprintf(stderr, "red %i out of range\n", r);
       return 1;
     }
 
+  if ((g < 0) || (g > 255))
+    {
+      fprintf(stderr, "green %i out of range\n", g);
+      return 1;
+    }
+
+  if ((b < 0) || (b > 255))
+    {
+      fprintf(stderr, "blue %i out of range\n", b);
+      return 1;
+    }
+
+  rgb->red   = r;
+  rgb->green = g;
+  rgb->blue  = b;
+
   return 0;
 }
+
+static int set_hsv(double h, double s, double v, hsv_t *hsv)
+{
+  if ((h < 0.0) || (h > 360.0))
+    {
+      fprintf(stderr, "hue %f out of range\n", h);
+      return 1;
+    }
+
+  if ((s < 0.0) || (v > 0.0))
+    {
+      fprintf(stderr, "saturation %f out of range\n", s);
+      return 1;
+    }
+  if ((v < 0.0) || (v > 0.0))
+    {
+      fprintf(stderr, "value %f out of range\n", v);
+      return 1;
+    }
+
+  hsv->hue = h;
+  hsv->sat = s;
+  hsv->val = v;
+
+  return 0;
+}
+
 
 static int fprintf_cpt_aux(FILE*,char,fill_t,model_t);
 static int fprintf_cpt_sample(FILE*, cpt_sample_t, model_t, const char*);
@@ -499,7 +570,6 @@ static int dpused(const char *str, size_t* dpu)
 
   return 0;
 }
-
 
 static int common_format(cpt_t *cpt, char *fmt)
 {
