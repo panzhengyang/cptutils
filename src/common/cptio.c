@@ -148,9 +148,12 @@ static int cpt_parse_global(const char *line, model_t model, fill_t *fill)
   int ntok = 0;
   char *tok[3];
 
-  for (tok[ntok] = strtok(buf, " \t") ;
-       ntok < 3 && tok[ntok] ;
-       tok[++ntok] = strtok(NULL, " \t"));
+  if ((tok[ntok] = strtok(buf, " \t")) != NULL)
+    { 
+      for (ntok=1 ; 
+	   (ntok < 3) && ((tok[ntok] = strtok(NULL, " \t")) != NULL) ;
+	   ntok++);
+    }
 
   int err = 0;
 
@@ -225,9 +228,12 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
   int ntok = 0;
   char *tok[9];
 
-  for (tok[ntok] = strtok(buf, " \t") ;
-       ntok < 9 && tok[ntok] ;
-       tok[++ntok] = strtok(NULL, " \t"));
+  if ((tok[ntok] = strtok(buf, " \t")) != NULL)
+    { 
+      for (ntok = 1 ; 
+	   (ntok < 9) && ((tok[ntok] = strtok(NULL, " \t")) != NULL) ;
+	   ntok++);
+    }
 
   /* interpet the pieces */
 
