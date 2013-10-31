@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "cptwrite.h"
+#include "cptname.h"
 
 #include "xycpt.h"
 
@@ -58,7 +59,7 @@ extern int xycpt(xycpt_opt_t opt)
   cpt->nan.u.colour.rgb = opt.nan;
 
   if (opt.file.input)
-    cpt->name = strdup(opt.file.input);
+    cpt->name = cptname(opt.file.input, "*");
 
   /* transfer the gradient data to the cpt_t struct */
 

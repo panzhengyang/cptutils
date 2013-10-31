@@ -13,6 +13,7 @@
 
 #include "cpt.h"
 #include "cptwrite.h"
+#include "cptname.h"
 #include "avlgrad.h"
 
 #include "avlcpt.h"
@@ -52,8 +53,8 @@ extern int avlcpt(avlcpt_opt_t opt)
       return 1;
     }
 
-  if (opt.file.output)
-    cpt->name = strdup(opt.file.output);
+  if (opt.file.input)
+    cpt->name = cptname(opt.file.input, "avl");
 
   if (avlcpt_convert(&avl, cpt, opt) != 0)
     {

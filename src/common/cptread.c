@@ -20,9 +20,9 @@
 #include "cptread.h"
 
 #include "gmtcol.h"
+#include "cptname.h"
 
 static int cpt_parse(FILE *stream, cpt_t *cpt);
-static char* basename(const char *path, const char *ext);
 
 extern int cpt_read(const char *path, cpt_t *cpt)
 {
@@ -31,7 +31,7 @@ extern int cpt_read(const char *path, cpt_t *cpt)
 
   if (path)
     {
-      cpt->name = basename(path, "cpt");
+      cpt->name = cptname(path, "cpt");
 
       if ((stream = fopen(path, "r")) == NULL)
 	{
@@ -63,46 +63,6 @@ static void chomp(char *str)
 {
   char *p = strrchr(str, '\n');
   if (p) *p = '\0';
-}
-
-/*
-  return the basename of a path (the part after the last
-  DIRSEP in the path, or the whole path) with the specified
-  extension lopped off too.
-*/
-
-#ifndef DIRSEP
-#define DIRSEP '/'
-#endif
-
-static char* basename(const char *path, const char *ext)
-{
-  const char *pb;
-
-  if ((pb = strrchr(path, '/')) != NULL)
-    pb++;
-  else
-    pb = path;
-
-  char *pc;
-
-  if ((pc = strdup(pb)) == NULL)
-    return NULL;
-
-  if (ext)
-    {
-      char *px;
-
-      if ((px = strrchr(pc, '.')) != NULL)
-	{
-	  if (strcmp(px + 1, ext) == 0)
-	    {
-	      *px = '\0';
-	    }
-	}
-    }
-
-  return pc;
 }
 
 static int cpt_parse_comment(const char *line, model_t *model);

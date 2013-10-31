@@ -14,7 +14,7 @@
 #include "colour.h"
 #include "cpt.h"
 
-extern cpt_seg_t* cpt_segment(cpt_t* cpt,int n)
+extern cpt_seg_t* cpt_segment(cpt_t* cpt, int n)
 {
   cpt_seg_t *seg;
 
@@ -192,36 +192,36 @@ extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 
 extern cpt_t* cpt_new(void)
 {
-    cpt_t* cpt;
-
-    if ((cpt = malloc(sizeof(cpt_t))) == NULL)
-      return NULL;
-
-    cpt->name     = NULL;
-    cpt->segment  = NULL;
-    cpt->fg.type  = fill_empty;
-    cpt->bg.type  = fill_empty;
-    cpt->nan.type = fill_empty;
-
-    return cpt;
+  cpt_t* cpt;
+  
+  if ((cpt = malloc(sizeof(cpt_t))) == NULL)
+    return NULL;
+  
+  cpt->name     = NULL;
+  cpt->segment  = NULL;
+  cpt->fg.type  = fill_empty;
+  cpt->bg.type  = fill_empty;
+  cpt->nan.type = fill_empty;
+  
+  return cpt;
 }
 
 /* add a segment to the start (leftmost) */
 
 extern int cpt_prepend(cpt_seg_t* seg,cpt_t* cpt)
 {
-    cpt_seg_t* s;
-
-    s = cpt->segment;
-
-    seg->lseg = NULL;
-    seg->rseg = s;
-
-    if (s) s->lseg = seg;
-
-    cpt->segment = seg;
-
-    return 0;
+  cpt_seg_t* s;
+  
+  s = cpt->segment;
+  
+  seg->lseg = NULL;
+  seg->rseg = s;
+  
+  if (s) s->lseg = seg;
+  
+  cpt->segment = seg;
+  
+  return 0;
 }
 
 /* add a segment to the end (rightmost) */
