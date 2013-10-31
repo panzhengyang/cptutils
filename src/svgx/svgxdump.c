@@ -146,10 +146,7 @@ extern int svgcpt_dump(const svg_t *svg, svgx_opt_t *opt)
   cpt->fg.u.colour.rgb  = opt->format.cpt.fg;
   cpt->nan.u.colour.rgb = opt->format.cpt.nan;
   
-  if (snprintf(cpt->name,CPT_NAME_LEN,"%s",name) >= CPT_NAME_LEN)
-    {
-      fprintf(stderr,"gradient name (%s) truncated\n",name);
-    }
+  cpt->name = strdup(name);
   
   if (svgcpt(svg,cpt) != 0)
     {

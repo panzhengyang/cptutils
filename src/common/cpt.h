@@ -28,11 +28,9 @@ typedef struct cpt_seg_t
   char             *label;
 } cpt_seg_t;
 
-#define CPT_NAME_LEN 128
-
 typedef struct cpt_t
 {
-  char       name[CPT_NAME_LEN];
+  char      *name;
   model_t    model;
   fill_t     fg,bg,nan;
   cpt_seg_t *segment;

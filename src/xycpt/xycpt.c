@@ -57,7 +57,8 @@ extern int xycpt(xycpt_opt_t opt)
   cpt->fg.u.colour.rgb  = opt.fg;
   cpt->nan.u.colour.rgb = opt.nan;
 
-  strncpy(cpt->name,(opt.file.input ?  opt.file.input : "<stdin>"),CPT_NAME_LEN);
+  if (opt.file.input)
+    cpt->name = strdup(opt.file.input);
 
   /* transfer the gradient data to the cpt_t struct */
 

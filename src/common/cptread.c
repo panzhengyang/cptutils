@@ -22,17 +22,20 @@
 #include "gmtcol.h"
 
 static int cpt_parse(FILE *stream, cpt_t *cpt);
+static char* basename(const char *path, const char *ext);
 
-extern int cpt_read(const char *file, cpt_t *cpt)
+extern int cpt_read(const char *path, cpt_t *cpt)
 {
   FILE *stream;
   int err = 1;
 
-  if (file)
+  if (path)
     {
-      if ((stream = fopen(file, "r")) == NULL)
+      cpt->name = basename(path, "cpt");
+
+      if ((stream = fopen(path, "r")) == NULL)
 	{
-	  fprintf(stderr,"error reading %s : %s\n", file, strerror(errno));
+	  fprintf(stderr,"error reading %s : %s\n", path, strerror(errno));
 	  return 1;
 	}
       
@@ -42,11 +45,11 @@ extern int cpt_read(const char *file, cpt_t *cpt)
 	    {
 	      if (ferror(stream))
 		{
-		  fprintf(stderr,"error reading %s\n", file);
+		  fprintf(stderr,"error reading %s\n", path);
 		  err = 1;
 		}
 	      else
-		fprintf(stderr,"weird error reading %s\n", file);
+		fprintf(stderr,"weird error reading %s\n", path);
 	    }
 	}
     }
@@ -60,6 +63,46 @@ static void chomp(char *str)
 {
   char *p = strrchr(str, '\n');
   if (p) *p = '\0';
+}
+
+/*
+  return the basename of a path (the part after the last
+  DIRSEP in the path, or the whole path) with the specified
+  extension lopped off too.
+*/
+
+#ifndef DIRSEP
+#define DIRSEP '/'
+#endif
+
+static char* basename(const char *path, const char *ext)
+{
+  const char *pb;
+
+  if ((pb = strrchr(path, '/')) != NULL)
+    pb++;
+  else
+    pb = path;
+
+  char *pc;
+
+  if ((pc = strdup(pb)) == NULL)
+    return NULL;
+
+  if (ext)
+    {
+      char *px;
+
+      if ((px = strrchr(pc, '.')) != NULL)
+	{
+	  if (strcmp(px + 1, ext) == 0)
+	    {
+	      *px = '\0';
+	    }
+	}
+    }
+
+  return pc;
 }
 
 static int cpt_parse_comment(const char *line, model_t *model);

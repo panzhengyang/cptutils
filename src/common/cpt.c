@@ -197,7 +197,7 @@ extern cpt_t* cpt_new(void)
     if ((cpt = malloc(sizeof(cpt_t))) == NULL)
       return NULL;
 
-    cpt->name[0] = '\0';
+    cpt->name     = NULL;
     cpt->segment  = NULL;
     cpt->fg.type  = fill_empty;
     cpt->bg.type  = fill_empty;
@@ -306,23 +306,29 @@ extern cpt_seg_t* cpt_shift(cpt_t* cpt)
 
 extern void cpt_destroy(cpt_t* cpt)
 {
-    cpt_seg_t *seg, *next;
+  if (cpt)
+    {
+      if (cpt->name)
+	free(cpt->name);
 
-    if (!cpt) return;
-    
-    if ((seg = cpt->segment) != NULL)
-      {
-	while (seg) 
-	  {
-	    next = seg->rseg;
-	    cpt_seg_destroy(seg);
-	    seg = next;
-	  }
-      }
+      cpt_seg_t *seg;
+
+      if ((seg = cpt->segment) != NULL)
+	{
+	  cpt_seg_t *next;
+
+	  while (seg) 
+	    {
+	      next = seg->rseg;
+	      cpt_seg_destroy(seg);
+	      seg = next;
+	    }
+	}
  
-    free(cpt);
+      free(cpt);
+    }
 
-    return;
+  return;
 }
 
 extern cpt_seg_t* cpt_seg_new(void)

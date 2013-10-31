@@ -97,7 +97,7 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 	  printf("GIMP palette %s\n",name);
 	}
 
-      strncpy(cpt->name,name,CPT_NAME_LEN);
+      cpt->name = strdup(name);
 
       /* skip to next non-comment */
 
@@ -105,8 +105,6 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 	if (fgets(buf,BUFSIZE,st) == NULL) return 1;
       while (skipline(buf));
     }
-  else
-    strncpy(cpt->name,"unnamed",CPT_NAME_LEN);
 
   /* see if it is columns line */
 

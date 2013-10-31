@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cptwrite.h"
 #include "cptread.h"
@@ -135,18 +136,24 @@ extern int cptcat(cptcat_opt_t opt)
 	}
     }
 
-  /* create hyphenated name for new file */
+  /*
+    create hyphenated name for new file, this has length
+    which is the sum of lengths of the substrings, plus
+    n-1 hyphens, plus a termating null.
+  */
 
-  char *name = cpt->name;
-  int nc = 0;
-  for (i=0 ; i<n-1 ; i++)
-    nc += snprintf(name+nc, CPT_NAME_LEN-nc, "%s-", dat[i].cpt->name);
-  nc += snprintf(name+nc, CPT_NAME_LEN-nc, "%s", dat[n-1].cpt->name);
+  size_t nctot = 0;
 
-  if (nc >= CPT_NAME_LEN)
+  for (i=0 ; i<n ; i++)
+    nctot += (dat[i].cpt->name ? strlen(dat[i].cpt->name) : 1);
+
+  cpt->name = malloc(nctot + n);
+
+  strcpy(cpt->name, (dat[0].cpt->name ? dat[0].cpt->name : "x"));
+  for (i=1 ; i<n ; i++)
     {
-      fprintf(stderr, "output name truncated\n");
-      name[CPT_NAME_LEN-1] = '\0';
+      strcat(cpt->name, "-");
+      strcat(cpt->name, (dat[i].cpt->name ? dat[i].cpt->name : "x"));
     }
 
   /* destroy components */
