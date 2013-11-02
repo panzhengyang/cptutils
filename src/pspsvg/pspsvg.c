@@ -581,7 +581,7 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
     }
 
   if (opt.verbose)
-    printf("processing \"%s\"\n",svg->name);
+    printf("processing \"%s\"\n", svg->name);
 
   if ((rgbrec = rectify_rgb(psp)) == NULL)
     return 1;

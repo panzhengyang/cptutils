@@ -36,7 +36,7 @@
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  char    *infile=NULL,*outfile=NULL;
+  char    *infile = NULL, *outfile = NULL;
   int      err;
   cptsvg_opt_t opt;
 
@@ -96,8 +96,10 @@ int main(int argc,char** argv)
     }
   else  
     opt.preview.use = false;
-  
-  err = cptsvg(infile,outfile,opt);
+
+  sgv_srand();
+
+  err = cptsvg(infile, outfile, opt);
   
   if (opt.verbose)
     {

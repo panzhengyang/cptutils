@@ -34,6 +34,7 @@ typedef struct svg_t
   svg_node_t *nodes;
 } svg_t;
 
+extern void   sgv_srand(void);
 extern svg_t* svg_new();
 extern void   svg_init(svg_t*);
 extern void   svg_destroy(svg_t*);

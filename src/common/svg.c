@@ -1,5 +1,5 @@
 /*
-  svd.c
+  svg.c
 
   An open linked list to hold an svg gradient, and some 
   operations on them. This does not handle the linear/radial 
@@ -178,22 +178,27 @@ extern int svg_interpolate(const svg_t *svg, double z, rgb_t *rgb, double *op)
   return 1;
 }
 
+extern void sgv_srand(void)
+{
+  srand(time(NULL));
+}
+
 extern svg_t* svg_new(void)
 {
-    svg_t* svg;
+  svg_t* svg;
 
-    if ((svg = malloc(sizeof(svg_t))) == NULL)
-      return NULL;
+  if ((svg = malloc(sizeof(svg_t))) == NULL)
+    return NULL;
 
-    svg_init(svg);
+  svg_init(svg);
 
-    return svg;
+  return svg;
 }
 
 extern void svg_init(svg_t* svg)
 {
-  svg->nodes   = NULL;
-  svg->name[0] = '\0';
+  svg->nodes = NULL;
+  snprintf((char*)svg->name, SVG_NAME_LEN, "%08x", rand());
 }
 
 static svg_node_t* svg_node_new(svg_stop_t stop)

@@ -103,6 +103,8 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is gimpsvg (version %s)\n",VERSION);
 
+  sgv_srand();
+
   int err;
 
   if ((err = gimpsvg(infile, outfile, opt)) != 0)

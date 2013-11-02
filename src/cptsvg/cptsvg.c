@@ -91,11 +91,12 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
   /* copy the name */
 
-  if (snprintf((char*)svg->name,
-	       SVG_NAME_LEN,
-	       "%s",cpt->name) >= SVG_NAME_LEN)
+  if (cpt->name)
     {
-      fprintf(stderr,"truncated svg name!\n");
+      if (snprintf((char*)svg->name,
+		   SVG_NAME_LEN,
+		   "%s", cpt->name) >= SVG_NAME_LEN)
+	fprintf(stderr,"truncated svg name!\n");
     }
 
   /* find the min/max of the cpt range */

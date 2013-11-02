@@ -95,6 +95,8 @@ int main(int argc,char** argv)
   opt.file.input  = infile;  
   opt.file.output = outfile;
 
+  sgv_srand();
+
   err = pspsvg(opt);
 
   if (opt.verbose)
