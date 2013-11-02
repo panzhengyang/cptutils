@@ -31,6 +31,7 @@
 
 #include "options.h"
 #include "pspsvg.h"
+#include "svg.h"
 
 int main(int argc,char** argv)
 {
@@ -95,7 +96,7 @@ int main(int argc,char** argv)
   opt.file.input  = infile;  
   opt.file.output = outfile;
 
-  sgv_srand();
+  svg_srand();
 
   err = pspsvg(opt);
 

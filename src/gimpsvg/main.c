@@ -32,6 +32,7 @@
 #include "options.h"
 #include "gimpsvg.h"
 #include "colour.h"
+#include "svg.h"
 
 #define SAMPLES_MIN 5
 
@@ -103,7 +104,7 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is gimpsvg (version %s)\n",VERSION);
 
-  sgv_srand();
+  svg_srand();
 
   int err;
 

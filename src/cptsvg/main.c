@@ -31,7 +31,9 @@
 
 #include "options.h"
 #include "cptsvg.h"
+
 #include "colour.h"
+#include "svg.h"
 
 int main(int argc,char** argv)
 {
@@ -97,7 +99,7 @@ int main(int argc,char** argv)
   else  
     opt.preview.use = false;
 
-  sgv_srand();
+  svg_srand();
 
   err = cptsvg(infile, outfile, opt);
   

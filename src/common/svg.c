@@ -178,7 +178,7 @@ extern int svg_interpolate(const svg_t *svg, double z, rgb_t *rgb, double *op)
   return 1;
 }
 
-extern void sgv_srand(void)
+extern void svg_srand(void)
 {
   srand(time(NULL));
 }
