@@ -1,8 +1,10 @@
 Changes
 
-1.48 (pending)
+1.48 (3 Nov 2013)
   - added support for cpt segment labels
   - replaced ageing lex/yacc cpt parser by hand-written version
+  - fixed missing ids in svg files for programs writing svg when
+    reading from stdin 
 
 1.47 (8 July 2013)
   - new program cptcat
