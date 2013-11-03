@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "cptread.h"
+#include "cptwrite.h"
 
 #include "cpthsv.h"
 

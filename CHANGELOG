@@ -1,5 +1,8 @@
 Changes
 
+1.49 (pending)
+  - fixed missing include in cpthsv
+
 1.48 (3 Nov 2013)
   - added support for cpt segment labels
   - replaced ageing lex/yacc cpt parser by hand-written version
