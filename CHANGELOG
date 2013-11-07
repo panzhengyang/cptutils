@@ -2,6 +2,7 @@ Changes
 
 1.49 (pending)
   - fixed missing include in cpthsv
+  - added autoconf check for locale.h
 
 1.48 (3 Nov 2013)
   - added support for cpt segment labels

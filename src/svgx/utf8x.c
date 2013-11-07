@@ -22,23 +22,23 @@ extern int utf8_to_x(const char *type,
   size_t icnamelen = strlen(type) + 2 + strlen(icopt) + 1;
   char icname[icnamelen];
 
-  if (snprintf(icname,icnamelen,"%s//%s",type,icopt) > icnamelen)
+  if (snprintf(icname, icnamelen, "%s//%s", type, icopt) > icnamelen)
     {
-      fprintf(stderr,"failed to create iconv string\n");
+      fprintf(stderr, "failed to create iconv string\n");
       return 1;
     }
 
-  if (setlocale(LC_CTYPE,lname) == NULL)
+  if (setlocale(LC_CTYPE, lname) == NULL)
     {
-      fprintf(stderr,"failed to set locale to %s\n",lname);
+      fprintf(stderr, "failed to set locale to %s\n", lname);
       return 1;
     }
 
-  iconv_t cv = iconv_open(icname,"UTF-8");
+  iconv_t cv = iconv_open(icname, "UTF-8");
   
   if (cv == (iconv_t)(-1))
     {
-      fprintf(stderr,"error opening iconv descriptor: %s\n",
+      fprintf(stderr, "error opening iconv descriptor: %s\n", 
 	      strerror(errno));
       return 1;
     }
@@ -49,14 +49,14 @@ extern int utf8_to_x(const char *type,
 	    (char**)&(in), &(lenin), 
 	    (char**)&(out), &(lenout)) == (size_t)-1)
     {
-      fprintf(stderr,"error in iconv: %s\n",
+      fprintf(stderr, "error in iconv: %s\n", 
 	      strerror(errno));
       return 1;
     }
 
   if (iconv_close(cv) == -1)
     {
-      fprintf(stderr,"error closing iconv descriptor: %s\n",
+      fprintf(stderr, "error closing iconv descriptor: %s\n",
 	      strerror(errno));
       return 1;
     }

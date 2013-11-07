@@ -56,6 +56,7 @@ AC_CHECK_HEADERS(unistd.h)
 AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(search.h)
 AC_CHECK_HEADERS(iconv.h)
+AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(png.h)
 
 dnl One of these may have htons
