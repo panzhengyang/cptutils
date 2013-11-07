@@ -90,6 +90,12 @@
   be produced (with names taken from those of the gradients).
 </para>
 
+<para>
+  Note that some of the SVG conversions require that the 
+  <literal>en_US.utf8</literal> locale is enabled.  How this
+  is done will depend on your operating system.
+</para>
+
 </refsect1>
 
 <refsect1 id='options'><title>OPTIONS</title>
