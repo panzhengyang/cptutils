@@ -1,0 +1,348 @@
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>Photoshop Gradients (GRD) Specification</title>
+</head>
+<body>
+
+<h1>Photoshop Gradients (GRD) Specification</h1>
+
+<h2>Disclaimer</h2>
+
+<p>This specification covers Adobe Photoshop gradient files (<strong>.grd</strong>) as of Adobe Photoshop 9.0 (CS2). This is the result of clean-room reverse engineering, that is: we created a sample gradient file, analyzed it, created a parser to dump the contents into a readable form and figured all the stuff out by creating new sample files with slightly changed settings. No <strong>.dll</strong> files were disassemled or even looked at.</p>
+
+<p>Adobe Photoshop is a trademark by Adobe Systems Incorporated.</p>
+
+<h2>What needs figuring out</h2>
+
+<p>1. What codepage is used for storing text. Please tinker with <tt>my-noise-gradient-lab-cyrillic-name.grd</tt> (the name is "Шумный градиент в ЛАБе"). The <tt>my-custom-gradient-3-pantone.grd</tt> also contains an (R) symbol after "Pantone"&nbsp;&mdash; might be helpful.</p>
+
+<p>2. Search for "unknown" in the text :)</p>
+
+<h2>Basic information on Photoshop gradients</h2>
+
+<p>Just like brush files, gradient files in Photoshop can contain multiple items. The structure seems to be linear, e.g. name of a gradient preset triggers its beginning.</p>
+
+<p>There are two types of gradients: solid and noise ones.</p>
+
+<p>Because contents of a gradient file depends of things like type of gradient or type of color stop, we do it like this: we list sequence of data on higher level, then sequence of data on lower level, branching out on types.</p>
+
+<h2>Sequence of data on file level</h2>
+
+<h3>Amount of gradient presets</h3>
+
+<p><tt>GrdL VlLs 19</tt></p>
+
+<h3>Unknown</h3>
+
+<p><tt>Objc  GradientGrdn 1</tt></p>
+
+<h3>Amount of groups of entries</h3>
+
+<p>The dump belows lists amount of groups of entries.</p>
+
+<p><tt>Grad Objc GradientGrdn 5</tt></p>
+
+<p>The obe above is for solid gradients, the groups would be:</p>
+
+<ul>
+<li>Nm</li>
+<li>GrdF</li>
+<li>Intr</li>
+<li>Clrs</li>
+<li>Trns</li>
+</ul>
+
+<p>See below for details</p>
+
+<p>This one is for noise gradients:</p>
+
+<p><tt>Grad (Objc) Gradient Grdn 9</tt></p>
+
+<p>The groups would be:</p>
+
+<ul>
+<li>Nm</li>
+<li>GrdF</li>
+<li>ShTr</li>
+<li>VctC</li>
+<li>ClrS</li>
+<li>RndS</li>
+<li>Smth</li>
+<li>Mnm</li>
+<li>Mxm</li>
+</ul>
+
+<p>See below for details</p>
+
+<h3>Preset</h3>
+
+<p>Name of preset starts a new preset, see below.</p>
+
+<h2>Sequence of data inside a preset</h2>
+
+<h3>Name</h3>
+
+<p><tt>Nm   TEXT My Solid Color Gradient 1</tt></p>
+
+<h3>Gradient type</h3>
+
+<p>Can be Solid or Noise, see below.</p>
+
+<h3>Contents of gradient</h3>
+
+<p>See below</p>
+
+<h2>Solid gradients</h2>
+
+<h3>Type</h3>
+
+<p><tt>GrdF enum GrdF CstS</tt></p>
+
+<h3>Smoothness</h3>
+
+<p>In the UI is expressed in %, but internally it is saved as a variable 
+with max value of 4096. Example:</p>
+
+<p><tt>Intr doub 3645.0</tt>, corresponds to 89%.</p>
+
+<h3>Blocks of stops</h3>
+
+<p>Photoshop gradients can have both opacity stops and color stops, so a gradient can vary in color and opacity. For example, there can be 5 color stops and 8 opacity stops.</p>
+
+<p>Inside a preset color stops are listed first, opacity stops are listed next. See below.</p>
+
+<h3>Color stops</h3>
+
+<h4>Amount of color stops</h4>
+
+<p>Amount of color stops  is defined in the beginning as:</p>
+
+<p><tt>Clrs VlLs %VALUE%</tt>, where %VALUE% is amount of color stops.</p>
+
+<p>The block of a color stop starts with</p>
+
+<p>Objc  Clrt %VALUE%, where %VALUE% is 3 for foreground/background color stop and 4 for a user 
+defined color stop.</p>
+
+<h4>Type of color stop</h4>
+
+<p>There are three types of color stops in Photoshop:</p>
+
+<table border="0">
+<thead>
+<td><strong>Value</strong></td>
+<td><strong>Description</strong></td>
+</thead>
+<tbody>
+<tr>
+<td>FrgC</td>
+<td>foreground color, any current foreground color is used</td>
+</tr>
+<tr>
+<td>BckC</td>
+<td>background color, any current background color is used</td>
+</tr>
+<tr>
+<td>UsrS</td>
+<td>user defined color</td>
+</tr>
+</tbody>
+</table>
+
+<p>In the dump the switcher looks like this:</p>
+
+<p><tt>Type enum Clry %VALUE%</tt></p>
+
+<h4>Background/Foreground color stops</h4>
+
+<p>Those two kinds of stops containg only two values:</p>
+
+<h5>Location</h5>
+
+<p>In the UI it is expressed in %, but internally it is saved as a variable 
+with max value of 4096. Example:</p>
+
+<p><tt>Lctn long 694</tt>, which means 17%.</p>
+
+<h5>Unknown value</h5>
+
+<p><tt>Mdpn long 50</tt></p>
+
+<h4>User color stops</h4>
+
+<p>These ones have a little more data:</p>
+
+<p>They start with</p>
+
+<p><tt>Objc  Clrt 4</tt></p>
+
+<p>Then goes an entry that defines color model:</p>
+
+<p><tt>Clr  Objc %VALUE% %NUMBER%</tt>, where %VALUE% is either HSBC, RGBC, LbCl or BkCl. The %NUMBER% values defines of subsequent entries that define the color, like color channels.</p>
+
+<p>Then goes a block with data for every channel of a chosen color model. By default HSB is used, and if you choose a different color model in the color chooser dialog and do not change anything, the value will still be written in HSB notation system. You can also define CMYK value in %, but the value will be written in either HSB, LAB or RGB, depending on where the radiobutton is.</p>
+
+<p>For HSB:</p>
+
+<tt>H    UntF #Ang 59.9963378906</tt><br/>
+<tt>Strt doub 100.0</tt><br/>
+<tt>Brgh doub 100.0</tt><br/>
+
+<p>For RGB:</p>
+
+<tt>Rd   doub 235.996108949</tt><br/>
+<tt>Grn  doub 255.0</tt><br/>
+<tt>Bl   doub 0.0</tt>
+
+<p>For LAB:</p>
+
+<tt>Lmnc doub 96.08</tt><br/>
+<tt>A    doub -19.0</tt><br/>
+<tt>B    doub 99.0</tt>
+
+<p>If you choose a color from a library like Pantone's, you get:</p>
+
+<p><tt>Clr  (Objc)  BkCl 4</tt></p>
+
+<p>Which, as noted above, defines amount of subsequent entries regarding color's definition. And then you get:</p>
+
+<p>1. Name of the color book:</p>
+
+<p><tt>Bk   (TEXT 18 ) TOYO Color Finder</tt></p>
+
+<p>2. Name of the color in the book</p>
+
+<p><tt>Nm   (TEXT 10 ) TOYO 0213</tt></p>
+
+<p>3. ID od the color in the book:</p>
+
+<p><tt>bookID (long) 3006</tt></p>
+
+<p>4. Key of the color in the book, which is, basically, shorter name of the color:</p>
+
+<p><tt>bookKey (tdta 6 ) 0213 </tt></p>
+
+<h5>Color stop type</h5>
+
+<p>Funnily enough only then type of the color stop is written:</p>
+
+<p><tt>Type enum Clry UsrS</tt></p>
+
+<h5>Location</h5>
+
+<p>In the UI it is expressed in %, but internally it is saved as a variable 
+with max value of 4096. Example:</p>
+
+<p><tt>Lctn long 2048</tt></p>
+
+<h5>Color midpoint</h5>
+
+<p>Color midpoint balances distribution of colors between two adjacent color stops and is expressed in %. The fun part is that location of a midpoint on the widget is controlled via the very same "Location" input field as for color and opacity stops, but the actual data is really written in percents:</p>
+
+<p><tt>Mdpn long 50</tt></p>
+
+<h3>Opacity stops</h3>
+
+<h4>Amount of opacity stops</h4>
+
+<p>Amount of opacity stops is defined in the beginning as:</p>
+
+<p><tt>Trns VlLs %VALUE%</tt>, where %VALUE% is amount of opacity stops.</p>
+
+<h4>Block of an opacity stop</h4>
+
+<p>The block of a opacity stop starts with</p>
+
+<p><tt>Objc  TrnS %VALUE%</tt>, where %VALUE% always seems to be 3.</p>
+
+<h5>Opacity</h5>
+
+<p>In the UI opacity is expressed in %, it really is:</p>
+
+<p><tt>Opct UntF #Prc 100.0</tt></p>
+
+<h5>Location</h5>
+
+<p>In the UI location is expressed in %, but internally it is saved as a variable 
+with max value of 4096.</p>
+
+<p>For example max position, which is 100% in the UI, is displayed in the dump 
+as: <tt>Lctn long 4096</tt></p>
+
+<p>Whereas 99% is: <tt>Lctn long 4055</tt></p>
+
+<h5>Opacity midpoint</h5>
+
+<p>Opacity midpoint balances distribution of opacity between two adjacent opacity stops and is expressed in % in both UI and actual data:</p>
+
+<p><tt>Mdpn long 50</tt></p>
+
+<h2>Noise gradients</h2>
+
+<h3>Type</h3>
+
+<p><tt>GrdF enum GrdF ClNs</tt></p>
+
+<h3>"Add Transparency" checkbox</h3>
+
+<p>Tooltip says: "Add transparency noise to this gradient". This is a boolean value:</p>
+
+<p><tt>ShTr bool %VALUE%</tt>, where %VALUE% is 0 (checkbox off) or 1 (checkbox on)</p>
+
+<h3>"Restrict color" checkbox</h3>
+
+<p>Tooltip says: "Prevent colors from oversaturating"</p>
+
+<p>This is a boolean value:</p>
+
+<p><tt>VctC bool %VALUE%</tt>, where %VALUE% is 0 (checkbox off) or 1 (checkbox on)</p>
+
+<h3>Color Model</h3>
+
+<p>The tooltip says: "Set the available color range"</p>
+
+<p><tt>ClrS enum ClrS %VALUE%</tt>, where %VALUE% is RGBC (RGB), HSBl (HSB) or LbCl (LAB).</p>
+
+<h3>Randomization seed</h3>
+
+<p>There is no inoput for the seed, just a "Randomize" button to randomize the gradient.</p>
+
+RndS long 52332
+
+<h3>Roughness</h3>
+
+<p>The tooltip says: "Adjust gradient roughness". In the UI it is expressed in %, but internally it is saved as a variable with max value of 4096. Example:</p>
+
+<p><tt>Smth long 2458</tt>, which is 62%.</p>
+
+<h3>Range of colors</h3>
+
+<p>In the dump there are four pairs of min and max values: three pairs define min and max value for each color channel and the last pair presumably defines alpha channel. Min value for the presumably alpha-channel pair is always 0 and the max value is always 100.</p>
+
+<p>It goes like this. First it defines amount of min values:</p>
+
+<p><tt>Mnm  VlLs 4</tt></p>
+
+<p>Then it lists them obe by one as long.</p>
+
+<p>The it defines amount of max values:</p>
+
+<p><tt>Mxm VlLs 4</tt></p>
+
+<p>And lists all four max values as long.</p>
+
+<h2>Authors</h2>
+
+<ul>
+<li>Valek Filippov: the Python script to dump contents of grd files</li>
+<li>Alexandre Prokoudine: figuring stuff out</li>
+</ul>
+
+<h2>License</h2>
+
+<p>Text of this specification is licensed under terms of CC Share-Alike 3.0</p>
+
+</body>
+
+</html>

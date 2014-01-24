@@ -1,0 +1,5 @@
+This directory contains a script to parse Adobe Photoshop gradients (GRD) and 
+dump their contents to stdpout, as well as a specification that explains which 
+chunk does what.
+
+Adobe Photoshop is a trademark by Adobe Systems.

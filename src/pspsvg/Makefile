@@ -33,7 +33,7 @@ RUBBISH += $(TESTSVG)
 $(TESTSVG) : pspsvg
 	for n in `seq 1 4` ; do \
 	  ./pspsvg -p -v -o t$$n.svg \
-	              $(TESTD)/grd/test.$$n.jgd ; \
+	              $(TESTD)/grd3/test.$$n.jgd ; \
 	done
 
 test check : $(TESTSVG)
