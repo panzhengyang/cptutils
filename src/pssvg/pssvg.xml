@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<refentry id='pssvg1'
+	  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<xi:include href="../docbook/refentryinfo-date.xml"/>
+
+<refmeta>
+<refentrytitle>PSSVG</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class='manual'>User commands</refmiscinfo>
+<refmiscinfo class='source'>CPTUTILS</refmiscinfo>
+<refmiscinfo class='date'>25 January 2014</refmiscinfo>
+</refmeta>
+
+<refnamediv id='purpose'>
+<refname>pssvg</refname>
+<refpurpose>
+  convert Photoshop gradients to SVG.
+</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>pssvg</command>
+  <arg choice='opt'>-a </arg>
+  <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
+  <arg choice='opt'>-l </arg>
+  <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+  <arg choice='opt'>-p </arg>
+  <arg choice='opt'>-v </arg>
+  <arg choice='plain'><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>
+  The <command>pssvg</command> program converts Photoshop
+  grd5 gradients to the SVG format.  Unlike most of the other 
+  file formats handled by the <package>cptutils</package>
+  package, grd5 files may contain multiple gradients, so
+  this program operates a little differently to the other
+  programs in the package.
+</para>
+
+<para>
+  There are 4 modes of operation: The default is to extract 
+  the first gradient found in the file, or one can specify 
+  <option>-l</option> to list the names of all gradients in 
+  the file; <option>-s</option> to extract the gradient with 
+  the specified name or <option>-a</option> to extract all 
+  of the gradients.
+</para>
+
+<para>
+  Atypically, the input Photoshop grd5 file is a mandatory argument.
+  The program will write to 
+  <filename moreinfo="refentry" path="/dev">stdout</filename> 
+  if the <option>-o</option> option is not specified except 
+  when <option>-a</option> has been specified: then files will 
+  be produced (with names taken from those of the gradients).
+</para>
+
+</refsect1>
+
+<refsect1 id='options'><title>OPTIONS</title>
+
+<variablelist remap='TP'>
+
+  <varlistentry>
+  <term>
+  <option>-a</option>, <option>--all</option>
+  </term>
+  <listitem>
+    <para>
+      Extract all gradients, which will have filenames derived 
+      from the gradient names. This option is incompatible with 
+      <option>-o</option>, of course.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <xi:include href="../docbook/varlistentry-geometry-svg-png.xml"/>
+
+  <xi:include href="../docbook/varlistentry-help.xml"/>
+
+  <varlistentry>
+  <term>
+  <option>-l</option>, <option>--list</option>
+  </term>
+  <listitem>
+    <para>
+      List the names of all gradients in the file.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <xi:include href="../docbook/varlistentry-preview.xml"/>
+
+  <varlistentry>
+  <term>
+  <option>-s</option>, <option>--select</option>
+  <replaceable>name</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Extract the gradient with the specified 
+      <replaceable>name</replaceable>, see the 
+      <option>-l</option> output for a list of 
+      possible values.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <xi:include href="../docbook/varlistentry-verbose.xml"/>
+
+  <xi:include href="../docbook/varlistentry-version.xml"/>
+
+</variablelist>
+</refsect1>
+
+<refsect1 id='examples'><title>EXAMPLES</title>
+
+<para>
+  Inspect a Photoshop file for gradients:
+</para>
+
+<programlisting>
+  pssvg -v -l old.grd 
+</programlisting>
+
+<para>
+  Extract the gradient "Sunny Road" from the same Photoshop grd5 file
+  (note that the gradient name needs to be quoted)
+</para>
+
+<programlisting>
+  pssvg -v -s "Sunny Road" -o sunny_road.svg old.grd 
+</programlisting>
+
+<para>
+  Extract all of the gradients from the file 
+  <filename>kittens.grd</filename> and give each of
+  them a preview:
+</para>
+
+<programlisting>
+  pssvg -v -a -p kittens.grd  
+</programlisting>
+
+</refsect1>
+
+<refsect1 id='notes'><title>NOTES</title>
+
+<para>
+  Adobe Photoshop is a trademark by Adobe Systems Incorporated.
+</para>
+
+<para>
+  This program was written using the reverse-engineered specification
+  of the grd5 format by Valek Filippov and Alexandre Prokoudine. 
+</para>
+
+</refsect1>
+
+<xi:include href="../docbook/refsect1-author.xml"/>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para>
+<citerefentry>
+<refentrytitle>pspsvg</refentrytitle>
+<manvolnum>1</manvolnum>
+</citerefentry>.
+</para>
+</refsect1>
+
+</refentry>
+

@@ -1,0 +1,16 @@
+# gengetopt input for svgcpt
+# (c) J. J. Green 2014
+package "pssvg"
+purpose "convert Photoshop gradient to other formats"
+option	"all"	    a "convert all gradients"		    flag    off
+option  "geometry"  g "preview"                             string  default="340x36" no
+option	"list"	    l "list gradients in file"	  	    flag    off
+option  "preview"   p "include preview"                     flag    off
+option	"select"    s "convert gradient with specifed name" string  no
+option	"output"    o "output filename (not with -a)" 	    string  no
+option	"verbose"   v "verbose operation"	            flag    off
+
+
+
+
+
