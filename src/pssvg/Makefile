@@ -2,7 +2,7 @@
 # 
 # J.J. Green 2014
 
-OBJ      = options.o 
+OBJ      = options.o grd5_type.o
 CFLAGS  += 
 LDLIBS  += -lsvg
 RUBBISH += pssvg $(OBJ) test/*
@@ -15,6 +15,12 @@ clean :
 	$(RM) $(RUBBISH)
 
 pssvg : $(OBJ)
+
+grd5_type.c : grd5_type.gperf
+	$(GPERF) --delimiters "," \
+	  --language ANSI-C \
+	  --lookup-function-name $*_lookup \
+	  --output-file grd5_type.c grd5_type.gperf
 
 include ../Common.mk
 
