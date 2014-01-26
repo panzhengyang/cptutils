@@ -16,12 +16,6 @@ clean :
 
 pssvg : $(OBJ)
 
-grd5_type.c : grd5_type.gperf
-	$(GPERF) --delimiters "," \
-	  --language ANSI-C \
-	  --lookup-function-name $*_lookup \
-	  --output-file grd5_type.c grd5_type.gperf
-
 include ../Common.mk
 
 # depends on having libxml2

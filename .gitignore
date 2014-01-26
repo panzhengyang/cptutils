@@ -9,7 +9,5 @@ src/common/odbscan.[ch]
 src/common/*.output
 src/common/stdcol.c
 src/common/gmtcol.c
-src/pssvg/grd5_type.c
-src/pssvg/grd5_type.h
 # use these at some point ...
 src/svgx/dp-simplify.[ch]
