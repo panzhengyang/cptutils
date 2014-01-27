@@ -25,12 +25,10 @@
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>pssvg</command>
-  <arg choice='opt'>-a </arg>
-  <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
-  <arg choice='opt'>-l </arg>
+  <arg choice='opt'>-h </arg>
   <arg choice='opt'>-o <replaceable>file</replaceable></arg>
-  <arg choice='opt'>-p </arg>
   <arg choice='opt'>-v </arg>
+  <arg choice='opt'>-V </arg>
   <arg choice='plain'><replaceable>file</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -40,27 +38,21 @@
   The <command>pssvg</command> program converts Photoshop
   grd5 gradients to the SVG format.  Unlike most of the other 
   file formats handled by the <package>cptutils</package>
-  package, grd5 files may contain multiple gradients, so
-  this program operates a little differently to the other
-  programs in the package.
-</para>
-
-<para>
-  There are 4 modes of operation: The default is to extract 
-  the first gradient found in the file, or one can specify 
-  <option>-l</option> to list the names of all gradients in 
-  the file; <option>-s</option> to extract the gradient with 
-  the specified name or <option>-a</option> to extract all 
-  of the gradients.
+  package, grd5 files may contain multiple gradients and all 
+  of the input gradients will be converted to gradients in the
+  output file. One can then use 
+  <citerefentry>
+    <refentrytitle>svgx</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>
+  to extract single gradients and convert them to other formats.
 </para>
 
 <para>
   Atypically, the input Photoshop grd5 file is a mandatory argument.
   The program will write to 
   <filename moreinfo="refentry" path="/dev">stdout</filename> 
-  if the <option>-o</option> option is not specified except 
-  when <option>-a</option> has been specified: then files will 
-  be produced (with names taken from those of the gradients).
+  if the <option>-o</option> option is not specified.
 </para>
 
 </refsect1>
@@ -69,87 +61,15 @@
 
 <variablelist remap='TP'>
 
-  <varlistentry>
-  <term>
-  <option>-a</option>, <option>--all</option>
-  </term>
-  <listitem>
-    <para>
-      Extract all gradients, which will have filenames derived 
-      from the gradient names. This option is incompatible with 
-      <option>-o</option>, of course.
-    </para>
-  </listitem>
-  </varlistentry>
-
-  <xi:include href="../docbook/varlistentry-geometry-svg-png.xml"/>
-
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
-  <varlistentry>
-  <term>
-  <option>-l</option>, <option>--list</option>
-  </term>
-  <listitem>
-    <para>
-      List the names of all gradients in the file.
-    </para>
-  </listitem>
-  </varlistentry>
-
-  <xi:include href="../docbook/varlistentry-preview.xml"/>
-
-  <varlistentry>
-  <term>
-  <option>-s</option>, <option>--select</option>
-  <replaceable>name</replaceable>
-  </term>
-  <listitem>
-    <para>
-      Extract the gradient with the specified 
-      <replaceable>name</replaceable>, see the 
-      <option>-l</option> output for a list of 
-      possible values.
-    </para>
-  </listitem>
-  </varlistentry>
+  <xi:include href="../docbook/varlistentry-output.xml"/>
 
   <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
   <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
-</refsect1>
-
-<refsect1 id='examples'><title>EXAMPLES</title>
-
-<para>
-  Inspect a Photoshop file for gradients:
-</para>
-
-<programlisting>
-  pssvg -v -l old.grd 
-</programlisting>
-
-<para>
-  Extract the gradient "Sunny Road" from the same Photoshop grd5 file
-  (note that the gradient name needs to be quoted)
-</para>
-
-<programlisting>
-  pssvg -v -s "Sunny Road" -o sunny_road.svg old.grd 
-</programlisting>
-
-<para>
-  Extract all of the gradients from the file 
-  <filename>kittens.grd</filename> and give each of
-  them a preview:
-</para>
-
-<programlisting>
-  pssvg -v -a -p kittens.grd  
-</programlisting>
-
 </refsect1>
 
 <refsect1 id='notes'><title>NOTES</title>
@@ -170,7 +90,7 @@
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>
 <citerefentry>
-<refentrytitle>pspsvg</refentrytitle>
+<refentrytitle>svgx</refentrytitle>
 <manvolnum>1</manvolnum>
 </citerefentry>.
 </para>

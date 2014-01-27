@@ -50,26 +50,6 @@ int main(int argc, char** argv)
   opt.verbose    = info.verbose_flag;
   opt.name       = NULL;
 
-  if (info.all_given + info.list_given + info.select_given > 1)
-    {
-      fprintf(stderr, "only one of --all, --list and --select allowed\n");
-      return EXIT_FAILURE;
-    }
-
-  /* job type */
-
-  if (info.all_flag)
-    opt.job = job_all;
-  else if (info.list_flag)  
-    opt.job = job_list;
-  else if (info.select_given)
-    {
-      opt.job = job_named;
-      opt.name = info.select_arg;
-    }
-  else
-    opt.job = job_first;
-
   /* null outfile for stdout */
 
   outfile = (info.output_given ? info.output_arg : NULL);
@@ -90,20 +70,6 @@ int main(int argc, char** argv)
   
   opt.input.file  = infile;
   opt.output.file = outfile;
-
-  /* parse image (preview) size */
-
-  if (info.preview_flag)
-    {
-      opt.preview.use = true;
-      if (svg_preview_geometry(info.geometry_arg, 
-			       &(opt.preview)) != 0)
-	{
-	  fprintf(stderr, "bad argument \"%s\" to geometry option", 
-		  info.geometry_arg);
-	  return EXIT_FAILURE;
-	}
-    }
 
   /* 
      we write the translation of the svg gradient <name> to stdout 
