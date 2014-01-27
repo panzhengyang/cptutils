@@ -4,7 +4,8 @@
 OBJFILL = colour.o fill.o 
 OBJCPT  = cpt.o cptread.o cptwrite.o gmtcol.o cptname.o
 OBJGGR  = ggr.o findggr.o files.o
-OBJPSP  = pspread.o pspwrite.o psp.o htons.o
+OBJGRD3 = pspread.o pspwrite.o psp.o htons.o
+OBJGRD5 = htons.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o svgpreview.o
 OBJPOV  = pov.o povwrite.o
 OBJGPT  = gpt.o gptwrite.o
@@ -16,11 +17,12 @@ OBJSAO  = sao.o saowrite.o
 CFLAGS += 
 LDLIBS +=
 
-CPTULIBS = libfill.a libcpt.a libggr.a libpsp.a libsvg.a libpov.a \
-	libident.a libodb.a libgpt.a libcss3.a libsao.a
+CPTULIBS = libfill.a libcpt.a libggr.a libgrd3.a libgrd5.a libsvg.a \
+	libpov.a libident.a libodb.a libgpt.a libcss3.a libsao.a
 
-RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJPSP) $(OBJSVG) \
-	   $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3) $(OBJSAO) 
+RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJGRD3) $(OBJGRD5) \
+	   $(OBJSVG) $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3) \
+	   $(OBJSAO) 
 
 default : all
 
@@ -55,8 +57,11 @@ libcpt.a : $(OBJCPT)
 libggr.a : $(OBJGGR)
 	ar r libggr.a $(OBJGGR)
 
-libpsp.a : $(OBJPSP)
-	ar r libpsp.a $(OBJPSP)
+libgrd3.a : $(OBJGRD3)
+	ar r libgrd3.a $(OBJGRD3)
+
+libgrd5.a : $(OBJGRD5)
+	ar r libgrd5.a $(OBJGRD5)
 
 libsvg.a : $(OBJSVG)
 	ar r libsvg.a $(OBJSVG)

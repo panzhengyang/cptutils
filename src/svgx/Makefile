@@ -4,7 +4,7 @@
 
 OBJ      = svgx.o svgxdump.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
-LDLIBS  += -lpsp -lcss3 -lgpt -lpov -lsvg -lsao -lggr -lcpt -lfill
+LDLIBS  += -lgrd3 -lcss3 -lgpt -lpov -lsvg -lsao -lggr -lcpt -lfill
 RUBBISH += svgx $(OBJ) test/* test.png
 
 default : all
