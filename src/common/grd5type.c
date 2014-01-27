@@ -3,7 +3,7 @@
   Copyright (c) J.J. Green 2014
 */
 
-#include "grd5_type.h"
+#include "grd5type.h"
 
 #include <string.h>
 
