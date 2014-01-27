@@ -2,19 +2,20 @@
 # 
 # J.J. Green 2014
 
-OBJ      = options.o grd5_type.o
+OBJ      = options.o grd5_type.o main.o pssvg.o
 CFLAGS  += 
 LDLIBS  += -lsvg
 RUBBISH += pssvg $(OBJ) test/*
 
 default : all
 
-check test : pspsvg
+check test : pssvg
 
 clean :
 	$(RM) $(RUBBISH)
 
 pssvg : $(OBJ)
+	$(CC) $(LDFLAGS) -o pssvg $(OBJ) $(LDLIBS) 
 
 include ../Common.mk
 
