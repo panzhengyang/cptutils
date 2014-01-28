@@ -2,14 +2,18 @@
 # 
 # J.J. Green 2014
 
-OBJ      = options.o main.o pssvg.o
-CFLAGS  += 
-LDLIBS  += -lsvg -lgrd5
-RUBBISH += pssvg $(OBJ) test/*
+OBJ       = options.o main.o pssvg.o
+CFLAGS   += 
+LDLIBS   += -lsvg -lgrd5
+RUBBISH  += pssvg $(OBJ) test/*
+FIXTURES  = $(TESTD)/grd5
 
 default : all
 
 check test : pssvg
+
+test-really : test
+	./pssvg -v -o test/rgb.svg $(FIXTURES)/my-custom-gradient-3-rgb.grd
 
 clean :
 	$(RM) $(RUBBISH)

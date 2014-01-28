@@ -58,6 +58,9 @@ int main(int argc, char** argv)
 
   switch (info.inputs_num)
     {
+    case 0:
+      infile = NULL;
+      break;
     case 1:
       infile = info.inputs[0];
       break;
@@ -68,8 +71,8 @@ int main(int argc, char** argv)
       return EXIT_FAILURE; 
     }
   
-  opt.input.file  = infile;
-  opt.output.file = outfile;
+  opt.file.input  = infile;
+  opt.file.output = outfile;
 
   /* 
      we write the translation of the svg gradient <name> to stdout 

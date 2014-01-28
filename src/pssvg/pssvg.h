@@ -15,9 +15,8 @@ typedef struct
   char *name;
   struct
   {
-    char *file;
-    FILE *stream;;
-  } input, output;
+    char *input, *output;
+  } file;
 } pssvg_opt_t;
 
 extern int pssvg(pssvg_opt_t);
