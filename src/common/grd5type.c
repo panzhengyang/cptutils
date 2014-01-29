@@ -48,7 +48,7 @@ extern int grd5_type(const char* str)
       break;
     case 'V':
       if (strncmp("VlLs", str, 4) == 0)
-	return TYPE_VlLs;
+	return TYPE_VAR_LEN_LIST;
       break;
     default:
       return TYPE_UNKNOWN;
