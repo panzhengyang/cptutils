@@ -22,8 +22,14 @@ extern int pssvg(pssvg_opt_t opt)
       fprintf(stderr, "failed to read %s\n", 
 	      (opt.file.input ? opt.file.input : "stdin"));
       return 1;
+    case GRD5_READ_FREAD:
+      fprintf(stderr, "failed read from stream\n");
+      return 1;
     case GRD5_READ_PARSE:
       fprintf(stderr, "failed to parse input\n");
+      return 1;
+    case GRD5_READ_BUFFER:
+      fprintf(stderr, "buffer overflow\n");
       return 1;
     case GRD5_READ_BUG:
       /* fall-through */
@@ -32,5 +38,5 @@ extern int pssvg(pssvg_opt_t opt)
       return 1;
     }
 
-  return 1;
+  return 0;
 }
