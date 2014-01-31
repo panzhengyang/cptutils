@@ -18,7 +18,7 @@
 #define GRD5_READ_PARSE    3
 #define GRD5_READ_NOT_GRD  4
 #define GRD5_READ_NOT_GRD5 5 
-#define GRD5_READ_BUFFER   6 
+#define GRD5_READ_MALLOC   6 
 #define GRD5_READ_BUG      9 
 
 extern int grd5_read(const char* file, grd5_t* grd5);

@@ -28,8 +28,8 @@ extern int pssvg(pssvg_opt_t opt)
     case GRD5_READ_PARSE:
       fprintf(stderr, "failed to parse input\n");
       return 1;
-    case GRD5_READ_BUFFER:
-      fprintf(stderr, "buffer overflow\n");
+    case GRD5_READ_MALLOC:
+      fprintf(stderr, "out of memory\n");
       return 1;
     case GRD5_READ_BUG:
       /* fall-through */

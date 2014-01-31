@@ -8,7 +8,9 @@
 #include "htons.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 static int grd5_stream(FILE* stream, grd5_t* grd5);
 
@@ -67,6 +69,93 @@ static int parse_type(FILE *stream, int *type)
   *type = grd5_type(buf);
 
   return GRD5_READ_OK;
+}
+
+typedef struct
+{
+  int type;
+  uint32_t namelen;
+  char *name;
+} token_t;
+
+static void token_destroy(token_t *token)
+{
+  free(token->name);
+  free(token);
+}
+
+static bool token_matches(token_t *token, 
+			  const char* expected_name,
+			  int expected_type)
+{
+  if (token->type != expected_type)
+    {
+      fprintf(stderr, "token not of correct type\n");
+      return false;
+    }
+
+  if (strncmp(token->name, expected_name, token->namelen) != 0)
+    {
+      fprintf(stderr, "read token %*s, expecting %s\n",
+	      token->namelen, token->name, expected_name);
+      return false;
+    }
+
+  return true;
+}
+
+
+static token_t* parse_token(FILE *stream, int *perr)
+{
+  uint32_t namelen;
+
+  if ((*perr = parse_uint32(stream, &namelen)) != GRD5_READ_OK)
+    return NULL;
+
+  if (namelen == 0) namelen = 4;
+
+  char *name;
+
+  if ((name = malloc(namelen)) == NULL)
+    {
+      *perr = GRD5_READ_MALLOC;
+      return NULL;
+    }
+
+  if (fread(name, 1, namelen, stream) != namelen)
+    {
+      *perr = GRD5_READ_FREAD;
+      goto cleanup_name;
+    }
+
+  token_t* token;
+
+  if ((token = malloc(sizeof(token_t))) == NULL)
+    {
+      *perr = GRD5_READ_MALLOC;
+      goto cleanup_token;
+    }
+
+  int type;
+
+  if ((*perr = parse_type(stream, &type)) != GRD5_READ_OK)
+    goto cleanup_token;
+
+  token->namelen = namelen;
+  token->name    = name;
+  token->type    = type;
+
+  return token;
+
+ cleanup_token:
+
+  free(token);
+
+ cleanup_name:
+
+  free(name);
+
+  return NULL;
 }
 
 static int parse_varlist(FILE *stream, const char *expected, uint32_t *count)
@@ -149,7 +238,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 {
   int err;
   char cbuf[4];
-
+ 
   /* magic number */
 
   if (fread(cbuf, 1, 4, stream) != 4)
@@ -175,9 +264,20 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   /* gradient list header */
 
+  token_t* token;
+
+  if ((token = parse_token(stream, &err)) == NULL)
+    return err;
+
+  if (! token_matches(token, "GrdL", TYPE_VAR_LEN_LIST))
+    return GRD5_READ_PARSE;
+
+  token_destroy(token);
+
   uint32_t ngrad;
 
-  err = parse_varlist(stream, "GrdL", &ngrad);
+  if ((err = parse_uint32(stream, &ngrad)) != GRD5_READ_OK)
+    return err;
 
   printf("%i gradients\n", ngrad);
 
