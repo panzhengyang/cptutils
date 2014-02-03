@@ -4,7 +4,7 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libxml2-dev libpng12-dev gengetopt gperf docbook-xsl xsltproc libicu-dev
+  - sudo apt-get install -qq libc6-dev libxml2-dev libpng12-dev gengetopt gperf docbook-xsl xsltproc
   - autoconf
   - autoheader
 install:
