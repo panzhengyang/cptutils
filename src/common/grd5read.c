@@ -3,6 +3,10 @@
   Copyright (c) J.J. Green 2014
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "grd5read.h"
 #include "grd5type.h"
 #include "htons.h"
