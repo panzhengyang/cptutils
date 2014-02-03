@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <uchar.h>
 
 static int grd5_stream(FILE* stream, grd5_t* grd5);
 
@@ -74,6 +73,55 @@ static int parse_type(FILE *stream, int *type)
   *type = grd5_type(buf);
 
   return GRD5_READ_OK;
+}
+
+typedef struct
+{
+  uint32_t len;
+  char *content;
+} grd5_string_t;
+
+static grd5_string_t* parse_name(FILE *stream, int *perr)
+{
+  uint32_t len;
+
+  if ((*perr = parse_uint32(stream, &len)) != GRD5_READ_OK)
+    return NULL;
+
+  if (len == 0) len = 4;
+
+  char *name;
+
+  if ((name = malloc(len)) == NULL)
+    {
+      *perr = GRD5_READ_MALLOC;
+      return NULL;
+    }
+
+  if (fread(name, 1, len, stream) != len)
+    {
+      *perr = GRD5_READ_FREAD;
+      goto cleanup_name;
+    }
+
+  grd5_string_t* gstr;
+
+  if ((gstr = malloc(sizeof(grd5_string_t))) == NULL)
+    {
+      *perr = GRD5_READ_MALLOC;
+      goto cleanup_name;
+    }
+
+  gstr->len     = len;
+  gstr->content = name;
+
+  return gstr;
+
+ cleanup_name:
+  
+  free(name);
+  
+  return NULL;
 }
 
 typedef struct
@@ -166,7 +214,7 @@ static token_t* parse_token(FILE *stream, int *perr)
 typedef struct
 {
   uint32_t namelen;
-  char16_t *name;
+  char *name;
 } display_t;
 
 typedef struct
@@ -191,13 +239,15 @@ static objc_t* parse_objc(FILE *stream, int *perr)
   if ((*perr = parse_uint32(stream, &(display.namelen))) != GRD5_READ_OK)
     return NULL;
 
-  if ((display.name = malloc(2*display.namelen)) == NULL)
+  display.namelen *= 2;
+
+  if ((display.name = malloc(display.namelen)) == NULL)
     {
       *perr = GRD5_READ_MALLOC;
       return NULL;
     }
 
-  if (fread(display.name, 2, display.namelen, stream) != display.namelen)
+  if (fread(display.name, 1, display.namelen, stream) != display.namelen)
     {
       *perr = GRD5_READ_FREAD;
       goto cleanup_display;
@@ -364,9 +414,10 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	    return err;
 	  else
 	    {
-	      char16_t title[titlelen];
+	      titlelen *= 2;
+	      char title[titlelen];
 
-	      if (fread(title, 2, titlelen, stream) != titlelen)
+	      if (fread(title, 1, titlelen, stream) != titlelen)
 		return GRD5_READ_FREAD;
 
 	      // add iconv magic here 
