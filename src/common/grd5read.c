@@ -75,33 +75,50 @@ static int parse_type(FILE *stream, int *type)
   return GRD5_READ_OK;
 }
 
+typedef enum { 
+  grd5_string_typename, 
+  grd5_string_ucs2 
+} grd5_string_type_t;
+
 typedef struct
 {
   uint32_t len;
   char *content;
 } grd5_string_t;
 
-static grd5_string_t* parse_name(FILE *stream, int *perr)
+static grd5_string_t* parse_grd5_string(FILE *stream, 
+					grd5_string_type_t type,
+					int *perr)
 {
   uint32_t len;
 
   if ((*perr = parse_uint32(stream, &len)) != GRD5_READ_OK)
     return NULL;
 
-  if (len == 0) len = 4;
+  switch (type)
+    {
+    case grd5_string_typename :
+      if (len == 0) len = 4;
+      break;
+    case grd5_string_ucs2 :
+      len *= 2;
+      break;
+    default:
+      *perr = GRD5_READ_BUG;
+    }
 
-  char *name;
+  char *content;
 
-  if ((name = malloc(len)) == NULL)
+  if ((content = malloc(len)) == NULL)
     {
       *perr = GRD5_READ_MALLOC;
       return NULL;
     }
 
-  if (fread(name, 1, len, stream) != len)
+  if (fread(content, 1, len, stream) != len)
     {
       *perr = GRD5_READ_FREAD;
-      goto cleanup_name;
+      goto cleanup_content;
     }
 
   grd5_string_t* gstr;
@@ -109,195 +126,149 @@ static grd5_string_t* parse_name(FILE *stream, int *perr)
   if ((gstr = malloc(sizeof(grd5_string_t))) == NULL)
     {
       *perr = GRD5_READ_MALLOC;
-      goto cleanup_name;
+      goto cleanup_content;
     }
 
   gstr->len     = len;
-  gstr->content = name;
+  gstr->content = content;
 
   return gstr;
 
- cleanup_name:
+ cleanup_content:
   
-  free(name);
+  free(content);
   
   return NULL;
 }
 
-typedef struct
+static grd5_string_t* parse_typename(FILE *stream, int *perr)
 {
-  int type;
-  uint32_t namelen;
-  char *name;
-} token_t;
-
-static void token_destroy(token_t *token)
-{
-  free(token->name);
-  free(token);
+  return parse_grd5_string(stream, grd5_string_typename, perr);
 }
 
-static bool token_matches(token_t *token, 
-			  const char* expected_name,
-			  int expected_type)
+static grd5_string_t* parse_ucs2(FILE *stream, int *perr)
 {
-  if (token->type != expected_type)
+  return parse_grd5_string(stream, grd5_string_ucs2, perr);
+}
+
+static void grd5_string_destroy(grd5_string_t* gstr)
+{
+  free(gstr->content);
+  free(gstr);
+}
+
+static bool typename_matches(grd5_string_t* typename, const char* expected)
+{
+  if (strncmp(typename->content, expected, typename->len) != 0)
     {
-      fprintf(stderr, "token not of correct type\n");
+      fprintf(stderr, "read typename %*s, expecting %s\n",
+	      typename->len, typename->content, expected);
       return false;
     }
-
-  if (strncmp(token->name, expected_name, token->namelen) != 0)
-    {
-      fprintf(stderr, "read token %*s, expecting %s\n",
-	      token->namelen, token->name, expected_name);
-      return false;
-    }
-
   return true;
 }
 
+static int parse_named_type(FILE *stream, 
+			    const char* expected_name, 
+			    int expected_type)
+{ 
+  grd5_string_t *typename;
+  int err;
 
-static token_t* parse_token(FILE *stream, int *perr)
-{
-  uint32_t namelen;
-
-  if ((*perr = parse_uint32(stream, &namelen)) != GRD5_READ_OK)
-    return NULL;
-
-  if (namelen == 0) namelen = 4;
-
-  char *name;
-
-  if ((name = malloc(namelen)) == NULL)
+  if ((typename = parse_typename(stream, &err)) == NULL)
+    return err;
+  else
     {
-      *perr = GRD5_READ_MALLOC;
-      return NULL;
-    }
-
-  if (fread(name, 1, namelen, stream) != namelen)
-    {
-      *perr = GRD5_READ_FREAD;
-      goto cleanup_name;
-    }
-
-  token_t* token;
-
-  if ((token = malloc(sizeof(token_t))) == NULL)
-    {
-      *perr = GRD5_READ_MALLOC;
-      goto cleanup_name;
+      bool matches = typename_matches(typename, expected_name);
+      grd5_string_destroy(typename);
+      if (!matches) return GRD5_READ_PARSE;
     }
 
   int type;
 
-  if ((*perr = parse_type(stream, &type)) != GRD5_READ_OK)
-    goto cleanup_token;
+  if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+    return err;
 
-  token->namelen = namelen;
-  token->name    = name;
-  token->type    = type;
+  if (type != expected_type)
+    return GRD5_READ_PARSE;
 
-  return token;
+  return GRD5_READ_OK;
+}
 
- cleanup_token:
+static int parse_GrdL(FILE *stream, uint32_t *ngrad)
+{
+  int err;
 
-  free(token);
+  if ((err = parse_named_type(stream, "GrdL", TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
+    return err;
 
- cleanup_name:
+  if ((err = parse_uint32(stream, ngrad)) != GRD5_READ_OK)
+    return err;
+  
+  return GRD5_READ_OK;
+}
 
-  free(name);
+static int parse_Grad(FILE *stream)
+{
+  return parse_named_type(stream, "Grad", TYPE_OBJECT);
+}
 
-  return NULL;
+static int parse_Nm(FILE *stream)
+{
+  return parse_named_type(stream, "Nm  ", TYPE_TEXT);
 }
 
 typedef struct
 {
-  uint32_t namelen;
-  char *name;
-} display_t;
-
-typedef struct
-{
-  display_t display;
-  uint32_t namelen;
-  char *name;
+  struct {
+    grd5_string_t *display, *type;
+  } name;
   uint32_t value;
 } objc_t;
 
 static void objc_destroy(objc_t *objc)
 {
-  free(objc->display.name);
-  free(objc->name);
+  grd5_string_destroy(objc->name.display);
+  grd5_string_destroy(objc->name.type);
   free(objc);
 }
 
 static objc_t* parse_objc(FILE *stream, int *perr)
 {
-  display_t display;
+  grd5_string_t* dispname;
 
-  if ((*perr = parse_uint32(stream, &(display.namelen))) != GRD5_READ_OK)
+  if ((dispname = parse_ucs2(stream, perr)) == NULL)
     return NULL;
 
-  display.namelen *= 2;
+  grd5_string_t* typename;
 
-  if ((display.name = malloc(display.namelen)) == NULL)
-    {
-      *perr = GRD5_READ_MALLOC;
-      return NULL;
-    }
-
-  if (fread(display.name, 1, display.namelen, stream) != display.namelen)
-    {
-      *perr = GRD5_READ_FREAD;
-      goto cleanup_display;
-    }
-
-  uint32_t namelen;
-
-  if ((*perr = parse_uint32(stream, &namelen)) != GRD5_READ_OK)
-    goto cleanup_display;
-
-  if (namelen == 0) namelen = 4;
-
-  char *name;
-
-  if ((name = malloc(namelen)) == NULL)
-    {
-      *perr = GRD5_READ_MALLOC;
-      goto cleanup_display;
-    }
-
-  if (fread(name, 1, namelen, stream) != namelen)
-    {
-      *perr = GRD5_READ_FREAD;
-      goto cleanup_name;
-    }
+  if ((typename = parse_typename(stream, perr)) == NULL)
+    goto cleanup_dispname;
 
   uint32_t value;
 
   if ((*perr = parse_uint32(stream, &value)) != GRD5_READ_OK)
-    goto cleanup_name;
+    goto cleanup_typename;
 
   objc_t* objc;
 
   if ((objc = malloc(sizeof(objc_t))) == NULL)
     {
       *perr = GRD5_READ_MALLOC;
-      goto cleanup_name;
+      goto cleanup_typename;
     }
 
-  objc->display = display;
-  objc->name    = name;
-  objc->value   = value;
+  objc->name.display = dispname;
+  objc->name.type    = typename;
+  objc->value        = value;
 
   return objc;
 
- cleanup_name:
-  free(name);
+ cleanup_typename:
+  grd5_string_destroy(typename);
 
- cleanup_display:
-  free(display.name);
+ cleanup_dispname:
+  grd5_string_destroy(dispname);
 
   return NULL;
 }
@@ -332,19 +303,9 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   /* gradient list header */
 
-  token_t* token;
-
-  if ((token = parse_token(stream, &err)) == NULL)
-    return err;
-
-  if (! token_matches(token, "GrdL", TYPE_VAR_LEN_LIST))
-    return GRD5_READ_PARSE;
-
-  token_destroy(token);
-
   uint32_t ngrad;
 
-  if ((err = parse_uint32(stream, &ngrad)) != GRD5_READ_OK)
+  if ((err = parse_GrdL(stream, &ngrad))  != GRD5_READ_OK)
     return err;
 
   printf("%i gradients\n", ngrad);
@@ -367,19 +328,17 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
       if ((objc = parse_objc(stream, &err)) == NULL)
 	return err;
 
-      printf("  objc %*s %i\n", objc->namelen, objc->name, objc->value);
+      printf("  objc %*s %i\n", 
+	     objc->name.type->len, 
+	     objc->name.type->content, 
+	     objc->value);
 
       objc_destroy(objc);
 
       /* gradient container */
 
-      if ((token = parse_token(stream, &err)) == NULL)
+      if ((err = parse_Grad(stream)) != GRD5_READ_OK)
 	return err;
-
-      if (! token_matches(token, "Grad", TYPE_OBJECT))
-	return GRD5_READ_PARSE;
-
-      token_destroy(token);
 
       /* inner objc */
 
@@ -388,7 +347,10 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       uint32_t ncomp = objc->value;
 
-      printf("  objc %*s %i\n", objc->namelen, objc->name, objc->value);
+      printf("  objc %*s %i\n", 
+	     objc->name.type->len, 
+	     objc->name.type->content, 
+	     objc->value);
 
       objc_destroy(objc);
 
@@ -396,32 +358,16 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	{
 	case 5:
 
-	  // move to parse_gradient5()
-	  
 	  /* gradient title */
-	  
-	  if ((token = parse_token(stream, &err)) == NULL)
+
+	  if ((err = parse_Nm(stream)) != GRD5_READ_OK)
 	    return err;
 
-	  if (! token_matches(token, "Nm  ", TYPE_TEXT))
-	    return GRD5_READ_PARSE;
-
-	  token_destroy(token);
+	  grd5_string_t *title;
 	  
-	  uint32_t titlelen;
-
-	  if ((err = parse_uint32(stream, &titlelen)) != GRD5_READ_OK)
+	  if ((title = parse_ucs2(stream, &err)) == NULL)
 	    return err;
-	  else
-	    {
-	      titlelen *= 2;
-	      char title[titlelen];
 
-	      if (fread(title, 1, titlelen, stream) != titlelen)
-		return GRD5_READ_FREAD;
-
-	      // add iconv magic here 
-	    }
 	  break;
 	case 3:
 	default:
