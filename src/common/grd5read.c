@@ -9,12 +9,18 @@
 
 #include "grd5read.h"
 #include "grd5type.h"
-#include "htons.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+/* FIXME : this is linux-specific : handle *BSD too */
+
+#ifdef HAVE_ENDIAN_H
+#include <endian.h>
+#endif
 
 static int grd5_stream(FILE* stream, grd5_t* grd5);
 
@@ -46,7 +52,7 @@ static int parse_uint16(FILE *stream, uint16_t *i)
   if (fread(&buf, 2, 1, stream) != 1)
     return GRD5_READ_FREAD;
 
-  *i = ntohs(buf);
+  *i = be16toh(buf);
 
   return GRD5_READ_OK;
 }
@@ -58,7 +64,7 @@ static int parse_uint32(FILE *stream, uint32_t *i)
   if (fread(&buf, 4, 1, stream) != 1)
     return GRD5_READ_FREAD;
 
-  *i = ntohl(buf);
+  *i = be32toh(buf);
 
   return GRD5_READ_OK;
 }
@@ -213,9 +219,81 @@ static int parse_Grad(FILE *stream)
   return parse_named_type(stream, "Grad", TYPE_OBJECT);
 }
 
-static int parse_Nm(FILE *stream)
+static int parse_Nm(FILE *stream, grd5_string_t **ptitle)
 {
-  return parse_named_type(stream, "Nm  ", TYPE_TEXT);
+  int err;
+
+  if ((err = parse_named_type(stream, "Nm  ", TYPE_TEXT)) != GRD5_READ_OK)
+    return err;
+
+  grd5_string_t *title;
+
+  if ((title = parse_ucs2(stream, &err)) == NULL)
+    return err;
+
+  *ptitle = title;
+
+  return GRD5_READ_OK; 
+}
+
+static int parse_enum(FILE *stream, 
+		      const char* expected_name, 
+		      const char* expected_subname)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_ENUM)) != GRD5_READ_OK)
+    return err;
+
+  grd5_string_t *typename;
+
+  if ((typename = parse_typename(stream, &err)) == NULL)
+    return err;
+  else
+    {
+      bool matches = typename_matches(typename, expected_name);
+      grd5_string_destroy(typename);
+      if (!matches) return GRD5_READ_PARSE;
+    }
+
+  if ((typename = parse_typename(stream, &err)) == NULL)
+    return err;
+  else
+    {
+      bool matches = typename_matches(typename, expected_subname);
+      grd5_string_destroy(typename);
+      if (!matches) return GRD5_READ_PARSE;
+    }
+
+  return GRD5_READ_OK; 
+}
+
+static int parse_GrdF_CstS(FILE *stream)
+{
+  return parse_enum(stream, "GrdF", "CstS"); 
+}
+
+
+static int parse_double(FILE *stream, const char* expected_name, double *pval)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_DOUBLE)) != GRD5_READ_OK)
+    return err;
+
+  double val;
+
+  if (fread(&val, 8, 1, stream) != 1)
+    return GRD5_READ_FREAD;
+
+  *pval = (double)be64toh((uint64_t)val);
+
+  return GRD5_READ_OK;
+}
+
+static int parse_Intr(FILE *stream, double *interp)
+{
+  return parse_double(stream, "Intr", interp); 
 }
 
 typedef struct
@@ -356,17 +434,27 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       switch (ncomp)
 	{
+	  grd5_string_t *title;
+	  double interp;
+
 	case 5:
 
 	  /* gradient title */
 
-	  if ((err = parse_Nm(stream)) != GRD5_READ_OK)
+	  if ((err = parse_Nm(stream, &title)) != GRD5_READ_OK)
 	    return err;
 
-	  grd5_string_t *title;
-	  
-	  if ((title = parse_ucs2(stream, &err)) == NULL)
+	  /* gradient form */
+
+	  if ((err = parse_GrdF_CstS(stream)) != GRD5_READ_OK)
 	    return err;
+
+	  /* gradient inerpolation */
+
+	  if ((err = parse_Intr(stream, &interp)) != GRD5_READ_OK)
+	    return err;
+
+	  printf("  Inrp %f\n", interp);
 
 	  break;
 	case 3:

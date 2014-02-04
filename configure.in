@@ -58,6 +58,8 @@ AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(search.h)
 AC_CHECK_HEADERS(iconv.h)
 AC_CHECK_HEADERS(uchar.h)
+AC_CHECK_HEADERS(endian.h)
+AC_CHECK_HEADERS(sys/endian.h)
 AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(png.h)
 

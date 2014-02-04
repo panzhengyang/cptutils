@@ -26,6 +26,10 @@ extern int grd5_type(const char* str)
       if (strncmp("doub", str, 4) == 0)
 	return TYPE_DOUBLE;
       break;
+    case 'e':
+      if (strncmp("enum", str, 4) == 0)
+	return TYPE_ENUM;
+      break;
     case 'l':
       if (strncmp("long", str, 4) == 0)
 	return TYPE_LONG;
