@@ -9,6 +9,7 @@
 
 #include "grd5read.h"
 #include "grd5type.h"
+#include "grd5string.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,12 +87,6 @@ typedef enum {
   grd5_string_ucs2 
 } grd5_string_type_t;
 
-typedef struct
-{
-  uint32_t len;
-  char *content;
-} grd5_string_t;
-
 static grd5_string_t* parse_grd5_string(FILE *stream, 
 					grd5_string_type_t type,
 					int *perr)
@@ -157,21 +152,9 @@ static grd5_string_t* parse_ucs2(FILE *stream, int *perr)
   return parse_grd5_string(stream, grd5_string_ucs2, perr);
 }
 
-static void grd5_string_destroy(grd5_string_t* gstr)
-{
-  free(gstr->content);
-  free(gstr);
-}
-
 static bool typename_matches(grd5_string_t* typename, const char* expected)
 {
-  if (strncmp(typename->content, expected, typename->len) != 0)
-    {
-      fprintf(stderr, "read typename %*s, expecting %s\n",
-	      typename->len, typename->content, expected);
-      return false;
-    }
-  return true;
+  return grd5_string_matches(typename, expected);
 }
 
 static int parse_named_type(FILE *stream, 
@@ -186,6 +169,9 @@ static int parse_named_type(FILE *stream,
   else
     {
       bool matches = typename_matches(typename, expected_name);
+      if (!matches)
+	fprintf(stderr, "expected type %s, read %*s\n",
+		expected_name, typename->len, typename->content);
       grd5_string_destroy(typename);
       if (!matches) return GRD5_READ_PARSE;
     }
@@ -195,11 +181,92 @@ static int parse_named_type(FILE *stream,
   if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
     return err;
 
+  if (type == TYPE_UNKNOWN)
+    fprintf(stderr, "unknown type\n");
+
   if (type != expected_type)
     return GRD5_READ_PARSE;
 
   return GRD5_READ_OK;
 }
+
+static int parse_double_data(FILE *stream, double *pval)
+{
+  uint64_t val;
+
+  if (fread(&val, 8, 1, stream) != 1) return GRD5_READ_FREAD;
+
+  val = be64toh(val);
+  
+  /*
+    the following #pragmas supresses the warning "dereferencing 
+    type-punned pointer will break strict-aliasing rules" since
+    that is exactly what we want to do
+  */
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+
+  *pval = *(double*)(&val);
+
+#pragma GCC diagnostic pop
+
+  return GRD5_READ_OK;
+}
+
+static int parse_untf(FILE *stream, 
+		      const char* expected_name, 
+		      const char* expected_unit, 
+		      double *pval)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_UNTF)) != GRD5_READ_OK)
+    return err;
+  
+  char unit[4];
+
+  if (fread(unit, 1, 4, stream) != 4)
+    return GRD5_READ_FREAD;
+
+  if (strncmp(unit, expected_unit, 4) != 0)
+    {
+      fprintf(stderr, "expected unit %s, read %4s\n", expected_unit, unit);
+      return GRD5_READ_PARSE;
+    }
+
+  return parse_double_data(stream, pval);
+}
+
+static int parse_double(FILE *stream, const char* expected_name, double *pval)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_DOUBLE)) != GRD5_READ_OK)
+    return err;
+
+  return parse_double_data(stream, pval);
+}
+
+static int parse_enum(FILE *stream, 
+		      const char* expected_typename,
+		      grd5_string_t** name,
+		      grd5_string_t** subname)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_typename, TYPE_ENUM)) != GRD5_READ_OK)
+    return err;
+  
+  if ((*name = parse_typename(stream, &err)) == NULL)
+    return err;
+  
+  if ((*subname = parse_typename(stream, &err)) == NULL)
+    return err;
+
+  return GRD5_READ_OK; 
+}
+
 
 static int parse_GrdL(FILE *stream, uint32_t *ngrad)
 {
@@ -222,6 +289,29 @@ static int parse_Clrs(FILE *stream, uint32_t *nstop)
     return err;
 
   if ((err = parse_uint32(stream, nstop)) != GRD5_READ_OK)
+    return err;
+  
+  return GRD5_READ_OK;
+}
+
+static int parse_Trns(FILE *stream, uint32_t *ntrns)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, "Trns", TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
+    return err;
+
+  if ((err = parse_uint32(stream, ntrns)) != GRD5_READ_OK)
+    return err;
+  
+  return GRD5_READ_OK;
+}
+
+static int parse_Opct(FILE *stream, double *opacity)
+{
+  int err;
+
+  if ((err = parse_untf(stream, "Opct", "#Prc", opacity)) != GRD5_READ_OK)
     return err;
   
   return GRD5_READ_OK;
@@ -280,26 +370,6 @@ static int parse_Nm(FILE *stream, grd5_string_t **ptitle)
   return GRD5_READ_OK; 
 }
 
-static int parse_enum(FILE *stream, 
-		      const char* expected_typename,
-		      grd5_string_t** name,
-		      grd5_string_t** subname)
-{
-  int err;
-
-  if ((err = parse_named_type(stream, expected_typename, TYPE_ENUM)) != GRD5_READ_OK)
-    return err;
-  
-  if ((*name = parse_typename(stream, &err)) == NULL)
-    return err;
-  
-  if ((*subname = parse_typename(stream, &err)) == NULL)
-    return err;
-
-  return GRD5_READ_OK; 
-}
-
-
 static int parse_GrdF_GrdF_CstS(FILE *stream)
 {
   int err;
@@ -331,36 +401,6 @@ static int parse_Type_Clry(FILE *stream, grd5_string_t **subname)
   grd5_string_destroy(name);
 
   return (matches ? GRD5_READ_OK : GRD5_READ_PARSE);
-}
-
-static int parse_double(FILE *stream, const char* expected_name, double *pval)
-{
-  int err;
-
-  if ((err = parse_named_type(stream, expected_name, TYPE_DOUBLE)) != GRD5_READ_OK)
-    return err;
-
-  uint64_t val;
-
-  if (fread(&val, 8, 1, stream) != 1)
-    return GRD5_READ_FREAD;
-
-  val = be64toh(val);
-  
-  /*
-    the following #pragmas supresses the warning "dereferencing 
-    type-punned pointer will break strict-aliasing rules" since
-    that is exactly what we want to do
-  */
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-
-  *pval = *(double*)(&val);
-
-#pragma GCC diagnostic pop
-
-  return GRD5_READ_OK;
 }
 
 static int parse_Intr(FILE *stream, double *interp)
@@ -431,7 +471,20 @@ static int parse_user_rgb(FILE *stream)
     (parse_double(stream, "Grn ", &grn) != GRD5_READ_OK) ||
     (parse_double(stream, "Bl  ", &bl ) != GRD5_READ_OK);
   
-  printf("    %7.3f / %7.3f / %7.3f\n", rd, grn, bl);
+  printf("    %7.3f / %7.3f / %7.3f (%i)\n", rd, grn, bl, err);
+  
+  return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
+}
+
+static int parse_user_hsb(FILE *stream)
+{
+  double h, strt, brgh;
+  int err = 
+    (parse_untf(stream, "H   ", "#Ang", &h) != GRD5_READ_OK) ||
+    (parse_double(stream, "Strt", &strt) != GRD5_READ_OK) ||
+    (parse_double(stream, "Brgh", &brgh) != GRD5_READ_OK);
+  
+  printf("    %7.3f / %7.3f / %7.3f (%i)\n", h, strt, brgh, err);
   
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
@@ -458,8 +511,10 @@ static int parse_user_colour(FILE *stream)
     {
     case 3:
 
-      if (typename_matches(model, "RGBC"))
+      if (grd5_string_matches(model, "RGBC"))
 	err = parse_user_rgb(stream);
+      else if (grd5_string_matches(model, "HSBC"))
+	err = parse_user_hsb(stream);
       else 
 	{
 	  fprintf(stderr, "unknown user-colour type: %*s\n",
@@ -478,7 +533,7 @@ static int parse_user_colour(FILE *stream)
   return err;
 }
 
-static int parse_stop(FILE *stream)
+static int parse_colour_stop(FILE *stream)
 {
   int err, type;
   objc_t *objc;
@@ -531,6 +586,61 @@ static int parse_stop(FILE *stream)
     }
 
   printf("    Clry %*s\n", subtype->len, subtype->content);
+
+  uint32_t location;
+
+  if ((err = parse_Lctn(stream, &location)) != GRD5_READ_OK)
+    return err;
+
+  printf("    Lctn %i\n", location);
+
+  uint32_t midpoint;
+
+  if ((err = parse_Mdpn(stream, &midpoint)) != GRD5_READ_OK)
+    return err;
+
+  printf("    Mdpn %i\n", midpoint);
+
+  return GRD5_READ_OK;
+}
+
+static int parse_transp_stop(FILE *stream)
+{
+  int err, type;
+  objc_t *objc;
+
+  if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+    return err;
+  
+  if (type != TYPE_OBJECT) return GRD5_READ_PARSE;
+  
+  if ((objc = parse_objc(stream, &err)) == NULL)
+    return err;
+  
+  uint32_t ncomp = objc->value;
+
+  printf("    objc %*s %i\n", 
+	 objc->name.type->len, 
+	 objc->name.type->content, 
+	 objc->value);
+
+  if (ncomp != 3)
+    {
+      fprintf(stderr, "can't handle %i component transparency stop\n", ncomp);
+      return GRD5_READ_PARSE;
+    }
+
+  if (! typename_matches(objc->name.type, "TrnS"))
+    return GRD5_READ_PARSE;
+
+  objc_destroy(objc);
+
+  double opacity;
+
+  if ((err = parse_Opct(stream, &opacity)) != GRD5_READ_OK)
+    return err;
+
+  printf("    Opct %.3f\n", opacity);
 
   uint32_t location;
 
@@ -665,7 +775,22 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  for (j=0 ; j<nstop ; j++)
 	    {
-	      if ((err = parse_stop(stream)) != GRD5_READ_OK)
+	      if ((err = parse_colour_stop(stream)) != GRD5_READ_OK)
+		return err;	
+	    }
+
+	  /* number of transparency samples */
+
+	  uint32_t ntrns;
+
+	  if ((err = parse_Trns(stream, &ntrns)) != GRD5_READ_OK)
+	    return err;
+
+	  printf("  Trns %d\n", ntrns);
+
+	  for (j=0 ; j<ntrns ; j++)
+	    {
+	      if ((err = parse_transp_stop(stream)) != GRD5_READ_OK)
 		return err;	
 	    }
 

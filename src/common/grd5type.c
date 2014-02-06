@@ -47,8 +47,8 @@ extern int grd5_type(const char* str)
 	return TYPE_PATTERN;
       break;
     case 'U':
-      if (strncmp("Untf", str, 4) == 0)
-	return TYPE_UntF;
+      if (strncmp("UntF", str, 4) == 0)
+	return TYPE_UNTF;
       break;
     case 'V':
       if (strncmp("VlLs", str, 4) == 0)

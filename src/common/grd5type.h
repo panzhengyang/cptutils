@@ -12,7 +12,7 @@
 #define TYPE_VAR_LEN_LIST  3
 #define TYPE_TEXT          4
 #define TYPE_OBJECT        5
-#define TYPE_UntF          6
+#define TYPE_UNTF          6
 #define TYPE_BOOL          7
 #define TYPE_LONG          8
 #define TYPE_DOUBLE        9
