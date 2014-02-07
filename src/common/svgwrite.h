@@ -12,6 +12,6 @@
 #include "svg.h"
 #include "svgpreview.h"
 
-extern int svg_write(const char*,const svg_t*, const svg_preview_t*);
+extern int svg_write(const char*, size_t, const svg_t**, const svg_preview_t*);
 
 #endif

@@ -57,7 +57,7 @@ extern int pspsvg(pspsvg_opt_t opt)
   
   /* write the svg file */
   
-  if (svg_write(opt.file.output, svg, &(opt.preview)) != 0)
+  if (svg_write(opt.file.output, 1, &svg, &(opt.preview)) != 0)
     {
       fprintf(stderr,"failed to write palette to %s\n",
 	      (opt.file.output ? opt.file.output : "<stdout>"));

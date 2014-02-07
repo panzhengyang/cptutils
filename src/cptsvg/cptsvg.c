@@ -30,7 +30,7 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 	      {
 		if (cptsvg_convert(cpt,svg,opt) == 0)
 		  {
-		    if (svg_write(outfile, svg, &(opt.preview)) == 0)
+		    if (svg_write(outfile, 1, &svg, &(opt.preview)) == 0)
 		      {
 			/* success */
 		      }

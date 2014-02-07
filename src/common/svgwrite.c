@@ -21,10 +21,14 @@
 #define ENCODING "utf-8"
 #define BUFSZ 128
 
-static int svg_write_mem(xmlTextWriter*, const svg_t*, const svg_preview_t*);
+static int svg_write_mem(xmlTextWriter*,
+			 size_t,
+			 const svg_t**, 
+			 const svg_preview_t*);
 
-extern int svg_write(const char *file, 
-		     const svg_t *svg, 
+extern int svg_write(const char *file,
+		     size_t n,
+		     const svg_t **svg, 
 		     const svg_preview_t *preview)
 {
   xmlBuffer* buffer;
@@ -42,7 +46,7 @@ extern int svg_write(const char *file,
 	    using the buffer
 	  */
 	  
-	  if (svg_write_mem(writer, svg, preview) == 0)
+	  if (svg_write_mem(writer, n, svg, preview) == 0)
 	    {
 	      /*
 		don't take a 
@@ -122,22 +126,43 @@ static int svg_attribute(xmlTextWriter *writer,
   return 0;
 }
 
-
 static int svg_write_lineargradient(xmlTextWriter*, const svg_t*);
-static int svg_write_metadata(xmlTextWriter*, const svg_t*);
+static int svg_write_metadata(xmlTextWriter*);
 
 static const char* timestring(void);
 
-static int svg_write_mem(xmlTextWriter *writer, 
-			 const svg_t *svg, 
+static int svg_write_mem(xmlTextWriter *writer,
+			 size_t n,
+			 const svg_t **svg, 
 			 const svg_preview_t *preview)
 {
-  /* check we have at least one segment */
+  size_t i;
 
-  if ( svg->nodes == NULL )
+  /* check at least one gradient */
+
+  if (n < 1)
     {
-      fprintf(stderr, "svg has no segments\n");
+      fprintf(stderr, "no gradients to write\n");
       return 1;
+    }
+
+  /* no preview with multi-gradients (yet) */
+
+  if ((n > 1) && preview->use)
+    {
+      fprintf(stderr, "no previews with multi-gradient output (yet)\n");
+      return 1;
+    }
+
+  /* check that all svgs have at least one segment */
+
+  for (i=0 ; i<n ; i++)
+    {
+      if ( svg[i]->nodes == NULL )
+	{
+	  fprintf(stderr, "svg %zu has no segments\n", i);
+	  return 1;
+	}
     }
 
   /* start xml */
@@ -203,8 +228,11 @@ static int svg_write_mem(xmlTextWriter *writer,
 	  return 1;
 	}
 
-      if ( svg_write_lineargradient(writer, svg) != 0 )
-	return 1;
+      for (i=0 ; i<n ; i++)
+	{
+	  if ( svg_write_lineargradient(writer, svg[i]) != 0 )
+	    return 1;
+	}
 
       if ( xmlTextWriterEndElement(writer) < 0 )
 	{
@@ -220,7 +248,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 	  return 1;
 	}
 
-      if (snprintf(str, BUFSZ, "url(#%s)", svg->name) >= BUFSZ)
+      if (snprintf(str, BUFSZ, "url(#%s)", svg[0]->name) >= BUFSZ)
 	return 1;
 
       if (svg_attribute(writer, "fill", str, "rect") != 0)
@@ -270,15 +298,18 @@ static int svg_write_mem(xmlTextWriter *writer,
 	  return 1;
 	}
 
-      if ( svg_write_metadata(writer, svg) != 0 )
+      if ( svg_write_metadata(writer) != 0 )
 	return 1;
     }
   else
     {
-      if ( svg_write_lineargradient(writer, svg) != 0 )
-	return 1;
+      for (i=0 ; i<n ; i++)
+	{
+	  if ( svg_write_lineargradient(writer, svg[i]) != 0 )
+	    return 1;
+	}
 
-      if ( svg_write_metadata(writer, svg) != 0 )
+      if ( svg_write_metadata(writer) != 0 )
 	return 1;
     }
 
@@ -311,7 +342,7 @@ static const char* timestring(void)
   return ts;
 }
 
-static int svg_write_metadata(xmlTextWriter *writer, const svg_t *svg)
+static int svg_write_metadata(xmlTextWriter *writer)
 {
   if (xmlTextWriterStartElement(writer, BAD_CAST "metadata") < 0)
     {
