@@ -21,6 +21,6 @@
 #define GRD5_READ_MALLOC   6 
 #define GRD5_READ_BUG      9 
 
-extern int grd5_read(const char* file, grd5_t* grd5);
+extern int grd5_read(const char* file, grd5_t** grd5);
 
 #endif

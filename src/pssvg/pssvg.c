@@ -4,15 +4,17 @@
   (c) J.J.Green 2014
 */
 
-#include "pssvg.h"
+#include <stdlib.h>
 
-#include <grd5.h>
 #include <grd5read.h>
+#include <grd5.h>
+
+#include "pssvg.h"
 
 extern int pssvg(pssvg_opt_t opt)
 {
-  grd5_t grd5;
   int err;
+  grd5_t *grd5;
 
   switch (err = grd5_read(opt.file.input, &grd5))
     {
@@ -37,6 +39,8 @@ extern int pssvg(pssvg_opt_t opt)
       fprintf(stderr, "internal error - please report this\n");
       return 1;
     }
+
+  grd5_destroy(grd5);
 
   return 0;
 }

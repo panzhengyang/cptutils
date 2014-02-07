@@ -25,9 +25,12 @@
 
 static int grd5_stream(FILE* stream, grd5_t* grd5);
 
-extern int grd5_read(const char* file, grd5_t* grd5)
+extern int grd5_read(const char* file, grd5_t** pgrd5)
 {
   int err = GRD5_READ_BUG;
+
+  grd5_t *grd5 = malloc(sizeof(grd5_t));
+  if (grd5 == NULL) return GRD5_READ_MALLOC;
 
   if (file)
     {
@@ -42,6 +45,11 @@ extern int grd5_read(const char* file, grd5_t* grd5)
     }
   else
     err = grd5_stream(stdin, grd5);
+
+  if (err == GRD5_READ_OK)
+    *pgrd5 = grd5;
+  else
+    grd5_destroy(grd5);
 
   return err;
 }
@@ -463,33 +471,33 @@ static objc_t* parse_objc(FILE *stream, int *perr)
   return NULL;
 }
 
-static int parse_user_rgb(FILE *stream)
+static int parse_user_rgb(FILE *stream, grd5_rgb_t *rgb)
 {
-  double rd, grn, bl;
   int err = 
-    (parse_double(stream, "Rd  ", &rd ) != GRD5_READ_OK) ||
-    (parse_double(stream, "Grn ", &grn) != GRD5_READ_OK) ||
-    (parse_double(stream, "Bl  ", &bl ) != GRD5_READ_OK);
+    (parse_double(stream, "Rd  ", &(rgb->Rd))  != GRD5_READ_OK) ||
+    (parse_double(stream, "Grn ", &(rgb->Grn)) != GRD5_READ_OK) ||
+    (parse_double(stream, "Bl  ", &(rgb->Bl))  != GRD5_READ_OK);
   
-  printf("    %7.3f / %7.3f / %7.3f (%i)\n", rd, grn, bl, err);
+  printf("    %7.3f / %7.3f / %7.3f (%i)\n", 
+	 rgb->Rd, rgb->Grn, rgb->Bl, err);
   
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
 
-static int parse_user_hsb(FILE *stream)
+static int parse_user_hsb(FILE *stream, grd5_hsb_t *hsb)
 {
-  double h, strt, brgh;
   int err = 
-    (parse_untf(stream, "H   ", "#Ang", &h) != GRD5_READ_OK) ||
-    (parse_double(stream, "Strt", &strt) != GRD5_READ_OK) ||
-    (parse_double(stream, "Brgh", &brgh) != GRD5_READ_OK);
+    (parse_untf(stream, "H   ", "#Ang", &(hsb->H)) != GRD5_READ_OK) ||
+    (parse_double(stream, "Strt", &(hsb->Strt)) != GRD5_READ_OK) ||
+    (parse_double(stream, "Brgh", &(hsb->Brgh)) != GRD5_READ_OK);
   
-  printf("    %7.3f / %7.3f / %7.3f (%i)\n", h, strt, brgh, err);
+  printf("    %7.3f / %7.3f / %7.3f (%i)\n", 
+	 hsb->H, hsb->Strt, hsb->Brgh, err);
   
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
 
-static int parse_user_colour(FILE *stream)
+static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 {
   int err;
   objc_t *objc;
@@ -512,9 +520,15 @@ static int parse_user_colour(FILE *stream)
     case 3:
 
       if (grd5_string_matches(model, "RGBC"))
-	err = parse_user_rgb(stream);
+	{
+	  stop->type = GRD5_STOP_RGB;
+	  err = parse_user_rgb(stream, &(stop->u.rgb));
+	}
       else if (grd5_string_matches(model, "HSBC"))
-	err = parse_user_hsb(stream);
+	{
+	  stop->type = GRD5_STOP_HSB;
+	  err = parse_user_hsb(stream, &(stop->u.hsb));
+	}
       else 
 	{
 	  fprintf(stderr, "unknown user-colour type: %*s\n",
@@ -533,7 +547,7 @@ static int parse_user_colour(FILE *stream)
   return err;
 }
 
-static int parse_colour_stop(FILE *stream)
+static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
 {
   int err, type;
   objc_t *objc;
@@ -570,7 +584,7 @@ static int parse_colour_stop(FILE *stream)
     }
 
   if (have_user_colour &&
-      (err = parse_user_colour(stream)) != GRD5_READ_OK)
+      (err = parse_user_colour(stream, stop)) != GRD5_READ_OK)
     return err;
 
   grd5_string_t* subtype;
@@ -587,24 +601,20 @@ static int parse_colour_stop(FILE *stream)
 
   printf("    Clry %*s\n", subtype->len, subtype->content);
 
-  uint32_t location;
-
-  if ((err = parse_Lctn(stream, &location)) != GRD5_READ_OK)
+  if ((err = parse_Lctn(stream, &(stop->location))) != GRD5_READ_OK)
     return err;
 
-  printf("    Lctn %i\n", location);
+  printf("    Lctn %i\n", stop->location);
 
-  uint32_t midpoint;
-
-  if ((err = parse_Mdpn(stream, &midpoint)) != GRD5_READ_OK)
+  if ((err = parse_Mdpn(stream, &(stop->midpoint))) != GRD5_READ_OK)
     return err;
 
-  printf("    Mdpn %i\n", midpoint);
+  printf("    Mdpn %i\n", stop->midpoint);
 
   return GRD5_READ_OK;
 }
 
-static int parse_transp_stop(FILE *stream)
+static int parse_transp_stop(FILE *stream, grd5_transp_stop_t *stop)
 {
   int err, type;
   objc_t *objc;
@@ -635,26 +645,20 @@ static int parse_transp_stop(FILE *stream)
 
   objc_destroy(objc);
 
-  double opacity;
-
-  if ((err = parse_Opct(stream, &opacity)) != GRD5_READ_OK)
+  if ((err = parse_Opct(stream, &(stop->Opct))) != GRD5_READ_OK)
     return err;
 
-  printf("    Opct %.3f\n", opacity);
+  printf("    Opct %.3f\n", stop->Opct);
 
-  uint32_t location;
-
-  if ((err = parse_Lctn(stream, &location)) != GRD5_READ_OK)
+  if ((err = parse_Lctn(stream, &(stop->Lctn))) != GRD5_READ_OK)
     return err;
 
-  printf("    Lctn %i\n", location);
+  printf("    Lctn %i\n", stop->Lctn);
 
-  uint32_t midpoint;
-
-  if ((err = parse_Mdpn(stream, &midpoint)) != GRD5_READ_OK)
+  if ((err = parse_Mdpn(stream, &(stop->Mdpt))) != GRD5_READ_OK)
     return err;
 
-  printf("    Mdpn %i\n", midpoint);
+  printf("    Mdpn %i\n", stop->Mdpt);
 
   return GRD5_READ_OK;
 }
@@ -689,18 +693,21 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   /* gradient list header */
 
-  uint32_t ngrad;
-
-  if ((err = parse_GrdL(stream, &ngrad))  != GRD5_READ_OK)
+  if ((err = parse_GrdL(stream, &(grd5->n)))  != GRD5_READ_OK)
     return err;
+  
+  if ((grd5->gradients = malloc((grd5->n) * sizeof(grd5_grad_t))) == NULL)
+    return GRD5_READ_MALLOC;
 
-  printf("%i gradients\n", ngrad);
+  printf("%i gradients\n", grd5->n);
 
   int i;
   
-  for (i=0 ; i<ngrad ; i++)
+  for (i = 0 ; i < grd5->n ; i++)
     {
       int type;
+
+      grd5_grad_t *grad = grd5->gradients + i;
 
       /* outer objc */
 
@@ -742,16 +749,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       switch (ncomp)
 	{
-	  grd5_string_t *title;
-	  double interp;
-	  uint32_t nstop;
 	  int j;
 
 	case 5:
 
 	  /* gradient title */
 
-	  if ((err = parse_Nm(stream, &title)) != GRD5_READ_OK)
+	  if ((err = parse_Nm(stream, &(grad->title))) != GRD5_READ_OK)
 	    return err;
 
 	  /* gradient form */
@@ -759,38 +763,46 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	  if ((err = parse_GrdF_GrdF_CstS(stream)) != GRD5_READ_OK)
 	    return err;
 
-	  /* gradient inerpolation */
+	  /* gradient interpolation */
 
-	  if ((err = parse_Intr(stream, &interp)) != GRD5_READ_OK)
+	  if ((err = parse_Intr(stream, &(grad->interp))) != GRD5_READ_OK)
 	    return err;
 
-	  printf("  Inrp %.3f\n", interp);
+	  printf("  Inrp %.3f\n", grad->interp);
 
 	  /* number of stops */
 
-	  if ((err = parse_Clrs(stream, &nstop)) != GRD5_READ_OK)
+	  if ((err = parse_Clrs(stream, &(grad->colour.n))) != GRD5_READ_OK)
 	    return err;
 
-	  printf("  Clrs %d\n", nstop);
+	  grad->colour.stops = malloc(grad->colour.n * sizeof(grd5_colour_stop_t));
 
-	  for (j=0 ; j<nstop ; j++)
+	  if (grad->colour.stops == NULL)
+	    return GRD5_READ_MALLOC;
+
+	  printf("  Clrs %d\n", grad->colour.n);
+
+	  for (j=0 ; j < grad->colour.n ; j++)
 	    {
-	      if ((err = parse_colour_stop(stream)) != GRD5_READ_OK)
-		return err;	
+	      if ((err = parse_colour_stop(stream, grad->colour.stops+j)) != GRD5_READ_OK)
+		return err;
 	    }
 
 	  /* number of transparency samples */
 
-	  uint32_t ntrns;
-
-	  if ((err = parse_Trns(stream, &ntrns)) != GRD5_READ_OK)
+	  if ((err = parse_Trns(stream, &(grad->transp.n))) != GRD5_READ_OK)
 	    return err;
 
-	  printf("  Trns %d\n", ntrns);
+	  grad->transp.stops = malloc(grad->transp.n * sizeof(grd5_transp_stop_t));
 
-	  for (j=0 ; j<ntrns ; j++)
+	  if (grad->transp.stops == NULL)
+	    return GRD5_READ_MALLOC;
+
+	  printf("  Trns %d\n", grad->transp.n);
+
+	  for (j=0 ; j < grad->transp.n ; j++)
 	    {
-	      if ((err = parse_transp_stop(stream)) != GRD5_READ_OK)
+	      if ((err = parse_transp_stop(stream, grad->transp.stops+j)) != GRD5_READ_OK)
 		return err;	
 	    }
 
