@@ -2,11 +2,11 @@
 #
 # (c) J.J.Green 2001,2004
 
-OBJ      =  pspsvg.o main.o options.o gstack.o
+OBJ      =  pspsvg.o main.o options.o
 RUBBISH += $(OBJ) pspsvg
 
 CFLAGS += 
-LDLIBS += -lsvg -lgrd3 -lfill
+LDLIBS += -lsvg -lgrd3 -lgrdx -lfill
 
 default : all
 
