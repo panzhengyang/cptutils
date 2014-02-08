@@ -2,9 +2,9 @@
 # 
 # J.J. Green 2014
 
-OBJ       = options.o main.o pssvg.o
+OBJ       = options.o main.o pssvg.o ucs2utf8.o
 CFLAGS   += 
-LDLIBS   += -lsvg -lgrd5
+LDLIBS   += -lsvg -lgrd5 -lgrdx
 RUBBISH  += pssvg $(OBJ) test/*
 FIXTURES  = $(TESTD)/grd5
 
