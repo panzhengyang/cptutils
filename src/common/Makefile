@@ -6,7 +6,8 @@ OBJCPT  = cpt.o cptread.o cptwrite.o gmtcol.o cptname.o
 OBJGGR  = ggr.o findggr.o files.o
 OBJGRD3 = pspread.o pspwrite.o psp.o htons.o
 OBJGRD5 = grd5type.o grd5read.o grd5string.o grd5.o
-OBJGRDX = gstack.o
+OBJGRDX = grdxsvg.o
+OBJGSTK = gstack.o
 OBJSVG  = svg.o svglist.o svgread.o svgwrite.o stdcol.o svgpreview.o
 OBJPOV  = pov.o povwrite.o
 OBJGPT  = gpt.o gptwrite.o
@@ -19,11 +20,13 @@ CFLAGS +=
 LDLIBS +=
 
 CPTULIBS = libfill.a libcpt.a libggr.a libgrd3.a libgrd5.a libgrdx.a \
-	libsvg.a libpov.a libident.a libodb.a libgpt.a libcss3.a libsao.a
+	libgstk.a libsvg.a libpov.a libident.a libodb.a libgpt.a \
+	libcss3.a libsao.a
 
-RUBBISH += $(OBJFILL) $(OBJCPT) $(OBJGGR) $(CPTULIBS) $(OBJGRD3) $(OBJGRD5) \
+RUBBISH +=  $(CPTULIBS) $(OBJFILL) $(OBJCPT) $(OBJGGR) \
+	   $(OBJGRD3) $(OBJGRD5) $(OBJGRDX) \
 	   $(OBJSVG) $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3) \
-	   $(OBJSAO) $(OBJGRDX) 
+	   $(OBJSAO) $(OBJGSTK) 
 
 default : all
 
@@ -66,6 +69,9 @@ libgrd3.a : $(OBJGRD3)
 
 libgrd5.a : $(OBJGRD5)
 	ar r libgrd5.a $(OBJGRD5)
+
+libgstk.a : $(OBJGSTK)
+	ar r libgstk.a $(OBJGSTK)
 
 libsvg.a : $(OBJSVG)
 	ar r libsvg.a $(OBJSVG)

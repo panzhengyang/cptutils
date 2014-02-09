@@ -6,7 +6,7 @@ OBJ      =  pspsvg.o main.o options.o
 RUBBISH += $(OBJ) pspsvg
 
 CFLAGS += 
-LDLIBS += -lsvg -lgrd3 -lgrdx -lfill
+LDLIBS += -lsvg -lgrdx -lgrd3 -lgstk -lfill
 
 default : all
 
