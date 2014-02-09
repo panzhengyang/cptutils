@@ -12,7 +12,7 @@
 typedef struct
 {
   bool verbose, debug;
-  char *name;
+  char *title;
   struct
   {
     char *input, *output;

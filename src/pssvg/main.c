@@ -47,8 +47,11 @@ int main(int argc, char** argv)
 
   /* check arguments & transfer to opt structure */ 
 
-  opt.verbose    = info.verbose_flag;
-  opt.name       = NULL;
+  opt.verbose = info.verbose_flag;
+
+  /* title format string */
+
+  opt.title = (info.title_given ? info.title_arg : NULL);
 
   /* null outfile for stdout */
 
@@ -79,7 +82,7 @@ int main(int argc, char** argv)
      if <name> is specified, so then we suppress verbosity
   */
 
-  if (opt.name && !outfile && opt.verbose)
+  if (!outfile && opt.verbose)
    {
       fprintf(stderr, "verbosity suppressed (<stdout> for results)\n");
       opt.verbose = 0;
@@ -88,8 +91,12 @@ int main(int argc, char** argv)
   /* say hello */
 
   if (opt.verbose)
-    printf("This is pssvg (version %s)\n", VERSION);
-
+    {
+      printf("This is pssvg (version %s)\n", VERSION);
+      if (opt.title)
+	printf("with title format '%s'\n", opt.title);
+    }
+  
   /* for conversion, give details of what we will do */
 
   err = pssvg(opt);

@@ -27,6 +27,7 @@
   <command>pssvg</command>
   <arg choice='opt'>-h </arg>
   <arg choice='opt'>-o <replaceable>file</replaceable></arg>
+  <arg choice='opt'>-t <replaceable>format</replaceable></arg>
   <arg choice='opt'>-v </arg>
   <arg choice='opt'>-V </arg>
   <arg choice='plain'><replaceable>file</replaceable></arg>
@@ -65,6 +66,32 @@
 
   <xi:include href="../docbook/varlistentry-output.xml"/>
 
+  <varlistentry>
+    <term>
+      <option>-t</option>, <option>--title</option>  
+      <replaceable>format</replaceable>
+    </term>
+    <listitem>
+      <para>
+	Photoshop gradient files will often contain a number of gradients
+	with the same name; this option replaces the gradient name in the
+	output by the specified <replaceable>format</replaceable>.
+      </para>
+
+      <para>
+	The <replaceable>format</replaceable> argument should be a 
+	<citerefentry>
+	  <refentrytitle>printf</refentrytitle>
+	  <manvolnum>3</manvolnum>
+	</citerefentry>
+	format string containing a single integer directive (and
+	that directive will be replaced by the gradient number). 
+	Thus "gradient-%03i" will produce names "gradient-000",
+	"gradient-001" ...
+      </para>
+    </listitem>
+  </varlistentry>
+
   <xi:include href="../docbook/varlistentry-verbose.xml"/>
 
   <xi:include href="../docbook/varlistentry-version.xml"/>
@@ -80,7 +107,8 @@
 
 <para>
   This program was written using the reverse-engineered specification
-  of the grd5 format by Valek Filippov and Alexandre Prokoudine. 
+  of the grd5 format by Valek Filippov, Alexandre Prokoudine and
+  Michel Mariani. 
 </para>
 
 </refsect1>

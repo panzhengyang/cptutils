@@ -3,6 +3,7 @@
 package "pssvg"
 purpose "convert Photoshop gradient to other formats"
 option	"output"    o "output filename"     string  no
+option  "title"     t "title format string" string  no
 option	"verbose"   v "verbose operation"   flag    off
 
 

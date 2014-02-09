@@ -305,28 +305,37 @@ static gstack_t* rectify_op(grd5_grad_t* grad)
 
 static int pssvg_convert1(grd5_grad_t *grd5_grad, 
 			  svg_t **psvg, 
-			  pssvg_opt_t opt)
+			  pssvg_opt_t opt,
+			  int gradnum)
 {
-  grd5_string_t *ucs2_title_string = grd5_grad->title;
-
-  size_t ucs2_title_len = ucs2_title_string->len;
-  char  *ucs2_title     = ucs2_title_string->content;
-  size_t utf8_title_len = ucs2_title_len; 
-  char   utf8_title[ucs2_title_len];
-
-  if (ucs2_to_utf8(ucs2_title,
-		   ucs2_title_len,
-		   utf8_title,
-		   utf8_title_len) != 0)
-    {
-      fprintf(stderr,"failed ucs2 to utf8 conversion\n");
-      return 1;		   
-    }
-
   svg_t *svg;
 
   if ((svg = svg_new()) == NULL) return 1;
-  strncpy((char*)svg->name, (char*)utf8_title, SVG_NAME_LEN);
+
+  if (opt.title)
+    {
+      snprintf((char*)(svg->name), SVG_NAME_LEN, opt.title, gradnum);
+    }
+  else
+    {
+      grd5_string_t *ucs2_title_string = grd5_grad->title;
+
+      size_t ucs2_title_len = ucs2_title_string->len;
+      char  *ucs2_title     = ucs2_title_string->content;
+      size_t utf8_title_len = ucs2_title_len; 
+      char   utf8_title[ucs2_title_len];
+
+      if (ucs2_to_utf8(ucs2_title,
+		       ucs2_title_len,
+		       utf8_title,
+		       utf8_title_len) != 0)
+	{
+	  fprintf(stderr,"failed ucs2 to utf8 conversion\n");
+	  return 1;		   
+	}
+
+      strncpy((char*)svg->name, (char*)utf8_title, SVG_NAME_LEN);
+    }
 
   gstack_t *rgbrec, *oprec;
 
@@ -345,7 +354,7 @@ static int pssvg_convert1(grd5_grad_t *grd5_grad,
   if (opt.verbose)
     {
       printf("'%s' : %i RGB, %i Opacity converted to %i RGBA\n", 
-	     utf8_title,
+	     svg->name,
 	     grd5_grad->colour.n,
 	     grd5_grad->transp.n,
 	     svg_num_stops(svg));
@@ -370,7 +379,7 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
       grd5_grad_t *grd5_grad = grd5->gradients + i;
       svg_t *svg;
 
-      if (pssvg_convert1(grd5_grad, &svg, opt) == 0)
+      if (pssvg_convert1(grd5_grad, &svg, opt, i) == 0)
 	{
 	  if (gstack_push(gstack, &svg) != 0)
 	    {
