@@ -8,6 +8,28 @@
 
 #include "grdxsvg.h"
 
+/* convert intermediate types to svg values */
+
+static unsigned char svg_it_rgb(double x)
+{
+  x *= 256;
+  if (x > 255) x = 255;
+  if (x < 0) x = 0;
+
+  return x;
+}
+
+static double svg_it_op(double x)
+{
+  return x;
+}
+
+static double svg_it_z(double x)
+{
+  return x  / 4096.0;
+}
+
+
 static rgbop_stop_t stop_merge(rgb_stop_t rs, op_stop_t os)
 {
   rgbop_stop_t ros;
@@ -88,7 +110,9 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   if ((rs0.z != 0) || (os0.z != 0))
     {
-      fprintf(stderr,"nonzero initial opacity %i %i\n",os0.z,os1.z);
+      fprintf(stderr,"nonzero initial stop\n");
+      fprintf(stderr,"RGB     %.3f\n", svg_it_z(rs0.z));
+      fprintf(stderr,"Opacity %.3f\n", svg_it_z(os0.z));
       return NULL;
     }
 
@@ -167,27 +191,6 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
   return NULL;
 }
 
-/* convert intermediate types to svg values */
-
-static unsigned char svg_it_rgb(double x)
-{
-  x *= 256;
-  if (x > 255) x = 255;
-  if (x < 0) x = 0;
-
-  return x;
-}
-
-static double svg_it_op(double x)
-{
-  return x;
-}
-
-static double svg_it_z(double x)
-{
-  return x  / 4096.0;
-}
-#define DEBUG
 
 static int merged_svg(gstack_t *ross, svg_t *svg)
 {

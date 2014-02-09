@@ -19,7 +19,8 @@
 typedef struct
 {
   double Opct;
-  uint32_t Lctn, Mdpt;
+  uint32_t Lctn;
+  uint32_t Mdpn;
 } grd5_transp_stop_t;
 
 typedef struct
@@ -39,8 +40,8 @@ typedef struct
     grd5_rgb_t rgb;
     grd5_hsb_t hsb;
   } u;
-  uint32_t location;
-  uint32_t midpoint;
+  uint32_t Lctn;
+  uint32_t Mdpn;
 } grd5_colour_stop_t;
 
 typedef struct

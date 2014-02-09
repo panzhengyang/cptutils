@@ -4,7 +4,7 @@
 
 OBJ       = options.o main.o pssvg.o ucs2utf8.o
 CFLAGS   += 
-LDLIBS   += -lsvg -lgrdx -lgrd5 -lgstk 
+LDLIBS   += -lsvg -lfill -lgrdx -lgrd5 -lgstk 
 RUBBISH  += pssvg $(OBJ) test/*
 FIXTURES  = $(TESTD)/grd5
 
