@@ -395,6 +395,9 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
   if (m < n)
     fprintf(stderr, "only %d/%d gradient converted\n", m, n); 
 
+  if (gstack_reverse(gstack) != 0)
+    return 1;
+
   svgset->n   = m;
   svgset->svg = malloc(m*sizeof(svg_t*));
 
