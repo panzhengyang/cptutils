@@ -14,6 +14,24 @@
 #include "gstack.h"
 #include "svg.h"
 
+typedef struct 
+{
+  unsigned int z;
+  double r,g,b;
+} rgb_stop_t;
+
+typedef struct 
+{
+  unsigned int z;
+  double op;
+} op_stop_t;
+
+typedef struct 
+{
+  unsigned int z;
+  double r,g,b,op;
+} rgbop_stop_t;
+
 extern int grdxsvg(gstack_t *rgb_stops,
 		   gstack_t *op_stops,
 		   svg_t *svg);
