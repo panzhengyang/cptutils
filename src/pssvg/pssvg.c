@@ -353,8 +353,9 @@ static int pssvg_convert1(grd5_grad_t *grd5_grad,
 
   if (opt.verbose)
     {
-      printf("'%s' : %i RGB, %i Opacity converted to %i RGBA\n", 
+      printf("'%s', %i%% smooth; %i RGB, %i opacity converted to %i RGBA\n", 
 	     svg->name,
+	     (int)round(grd5_grad->interp/40.96),
 	     grd5_grad->colour.n,
 	     grd5_grad->transp.n,
 	     svg_num_stops(svg));
