@@ -1,6 +1,7 @@
 Changes
 
-1.49 (pending)
+1.49 (12 Feb 2014)
+  - new program, pssvg, converts photoshop gradients to svg
   - fixed missing include in cpthsv
   - added autoconf check for locale.h
 
