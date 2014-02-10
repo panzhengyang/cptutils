@@ -158,6 +158,10 @@
   not cause an error, it will simply be ignored.
 </para>
 
+<para>
+  Photoshop files are not yet handled by this program,
+  this will be fixed in the next version.
+</para>
 
 </refsect1>
 

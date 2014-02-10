@@ -99,6 +99,26 @@
 </variablelist>
 </refsect1>
 
+<refsect1 id='caveats'><title>CAVEATS</title>
+
+<para>
+  At present only RGB and greyscale colour stops are handled;
+  HSB, LAB and CYMK stops will cause a parse error.  This 
+  restriction will be lifted in the next version.
+</para>
+
+<para>
+  The smoothness parameter used by Photoshop (which seems to 
+  parameterise some kind of spline) is not yet handled; the 
+  output contains only linear splines (corresponding to a 
+  smoothness of 0%). The result is that the SVG output will
+  sometimes look more "angular" than the Photoshop input.  
+  Fixing this will require research into the precise nature 
+  of the spline parameterisation used in the input.
+</para>
+
+</refsect1>
+
 <refsect1 id='notes'><title>NOTES</title>
 
 <para>
