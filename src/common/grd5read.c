@@ -178,7 +178,7 @@ static int parse_named_type(FILE *stream,
     {
       bool matches = typename_matches(typename, expected_name);
       if (!matches)
-	fprintf(stderr, "expected type %s, read %*s\n",
+	fprintf(stderr, "expected type '%s', read '%*s'\n",
 		expected_name, typename->len, typename->content);
       grd5_string_destroy(typename);
       if (!matches) return GRD5_READ_PARSE;
@@ -491,6 +491,13 @@ static int parse_user_hsb(FILE *stream, grd5_hsb_t *hsb)
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
 
+static int parse_user_grsc(FILE *stream, grd5_grsc_t *grsc)
+{
+  int err = (parse_double(stream, "Gry ", &(grsc->Gry)) != GRD5_READ_OK);
+  
+  return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
+}
+
 static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 {
   int err;
@@ -521,13 +528,29 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 	}
       else 
 	{
-	  fprintf(stderr, "unknown user-colour type: %*s\n",
+	  fprintf(stderr, "unhandled user-colour type: %*s (3)\n",
 		  model->len, model->content);
 	  err = GRD5_READ_PARSE;
 	}
 
       break;
 
+    case 1:
+
+      if (grd5_string_matches(model, "Grsc"))
+	{
+	  stop->type = GRD5_STOP_GRSC;
+	  err = parse_user_grsc(stream, &(stop->u.grsc));
+	}
+      else
+	{
+	  fprintf(stderr, "unhandled user-colour type: %*s (1)\n",
+		  model->len, model->content);
+	  err = GRD5_READ_PARSE;
+	}
+
+      break;
+      
     default:
       err = GRD5_READ_PARSE;
     }

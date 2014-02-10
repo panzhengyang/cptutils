@@ -13,8 +13,9 @@
 #include <stdint.h>
 #include "grd5string.h"
 
-#define GRD5_STOP_RGB 1
-#define GRD5_STOP_HSB 2
+#define GRD5_STOP_RGB  1
+#define GRD5_STOP_HSB  2
+#define GRD5_STOP_GRSC 3
 
 typedef struct
 {
@@ -35,10 +36,16 @@ typedef struct
 
 typedef struct
 {
+  double Gry;
+} grd5_grsc_t;
+
+typedef struct
+{
   int type;
   union {
-    grd5_rgb_t rgb;
-    grd5_hsb_t hsb;
+    grd5_rgb_t  rgb;
+    grd5_hsb_t  hsb;
+    grd5_grsc_t grsc;
   } u;
   uint32_t Lctn;
   uint32_t Mdpn;
