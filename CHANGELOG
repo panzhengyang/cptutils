@@ -1,5 +1,8 @@
 Changes
 
+1.50 (13 Feb 2014)
+  - bugfixes for pssvg
+
 1.49 (12 Feb 2014)
   - new program, pssvg, converts photoshop gradients to svg
   - fixed missing include in cpthsv
