@@ -752,15 +752,25 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	  if ((err = parse_Clrs(stream, &(grad->colour.n))) != GRD5_READ_OK)
 	    return err;
 
-	  grad->colour.stops = malloc(grad->colour.n * sizeof(grd5_colour_stop_t));
+	  grad->colour.stops = NULL;
 
-	  if (grad->colour.stops == NULL)
-	    return GRD5_READ_MALLOC;
-
-	  for (j=0 ; j < grad->colour.n ; j++)
+	  if (grad->colour.n > 0)
 	    {
-	      if ((err = parse_colour_stop(stream, grad->colour.stops+j)) != GRD5_READ_OK)
-		return err;
+	      grd5_colour_stop_t stops[grad->colour.n];
+
+	      for (j=0 ; j < grad->colour.n ; j++)
+		{
+		  if ((err = parse_colour_stop(stream, stops+j)) != GRD5_READ_OK)
+		    return err;
+		}
+
+	      size_t stops_size = grad->colour.n * sizeof(grd5_colour_stop_t);
+
+	      if ((grad->colour.stops = malloc(stops_size)) == NULL) 
+		return GRD5_READ_MALLOC;
+
+	      if (memcpy(grad->colour.stops, stops, stops_size) == NULL)
+		return GRD5_READ_MALLOC;
 	    }
 
 	  /* number of transparency samples */
@@ -768,15 +778,25 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	  if ((err = parse_Trns(stream, &(grad->transp.n))) != GRD5_READ_OK)
 	    return err;
 
-	  grad->transp.stops = malloc(grad->transp.n * sizeof(grd5_transp_stop_t));
+	  grad->transp.stops = NULL;
 
-	  if (grad->transp.stops == NULL)
-	    return GRD5_READ_MALLOC;
-
-	  for (j=0 ; j < grad->transp.n ; j++)
+	  if (grad->transp.n > 0)
 	    {
-	      if ((err = parse_transp_stop(stream, grad->transp.stops+j)) != GRD5_READ_OK)
-		return err;	
+	      grd5_transp_stop_t stops[grad->transp.n];
+
+	      for (j=0 ; j < grad->transp.n ; j++)
+		{
+		  if ((err = parse_transp_stop(stream, stops+j)) != GRD5_READ_OK)
+		    return err;	
+		}
+
+	      size_t stops_size = grad->transp.n * sizeof(grd5_transp_stop_t);
+
+	      if ((grad->transp.stops = malloc(stops_size)) == NULL)
+		return GRD5_READ_MALLOC;
+
+	      if (memcpy(grad->transp.stops, stops, stops_size) == NULL)
+		return GRD5_READ_MALLOC;
 	    }
 
 	  break;

@@ -174,12 +174,14 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad)
 
 	  hsvD_to_rgbD(hsv, rgb);
 
-	  for (i=0 ; i<3 ; i++)
+	  int j;
+
+	  for (j=0 ; j<3 ; j++)
 	    {
-	      rgb[i] *= 256;
-	      rgb[i] = floor(rgb[i]);
-	      if (rgb[i] < 0.0) rgb[i] = 0.0;
-	      if (rgb[i] > 255.0) rgb[i] = 255.0;
+	      rgb[j] *= 256;
+	      rgb[j] = floor(rgb[j]);
+	      if (rgb[j] < 0.0) rgb[j] = 0.0;
+	      if (rgb[j] > 255.0) rgb[j] = 255.0;
 	    }
 
 	  grd5_stop[i].u.rgb.Rd  = rgb[0];
