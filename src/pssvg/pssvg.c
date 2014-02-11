@@ -162,8 +162,34 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad)
 
 	  grd5_stop[i].type = GRD5_STOP_RGB;
 	}
+      else if (grd5_stop[i].type == GRD5_STOP_HSB)
+	{
+	  double hsv[3];
 
-      /* FIXME - convert HSV, LAB stops */
+	  hsv[0] = grd5_stop[i].u.hsb.H / 360.0;
+	  hsv[1] = grd5_stop[i].u.hsb.Strt / 100.0;
+	  hsv[2] = grd5_stop[i].u.hsb.Brgh / 100.0;
+
+	  double rgb[3];
+
+	  hsvD_to_rgbD(hsv, rgb);
+
+	  for (i=0 ; i<3 ; i++)
+	    {
+	      rgb[i] *= 256;
+	      rgb[i] = floor(rgb[i]);
+	      if (rgb[i] < 0.0) rgb[i] = 0.0;
+	      if (rgb[i] > 255.0) rgb[i] = 255.0;
+	    }
+
+	  grd5_stop[i].u.rgb.Rd  = rgb[0];
+	  grd5_stop[i].u.rgb.Grn = rgb[1];
+	  grd5_stop[i].u.rgb.Bl  = rgb[2];
+
+	  grd5_stop[i].type = GRD5_STOP_RGB;	  
+	}
+
+      /* FIXME - convert LAB stops */
 
       if (grd5_stop[i].type != GRD5_STOP_RGB)
 	{

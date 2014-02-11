@@ -99,12 +99,27 @@
 </variablelist>
 </refsect1>
 
+
+<refsect1 id='example'><title>EXAMPLE</title>
+
+<para>
+  Convert a Photoshop gradient, foo.grd, to a set of GIMP gradients,
+  foo-000.ggr, foo-001.ggr, ...
+</para>
+
+<programlisting>
+  pssvg -v -t "foo-%03i" -o tmp.svg foo.grd
+  svggimp -v -a tmp.svg  
+</programlisting>
+
+</refsect1>
+
 <refsect1 id='caveats'><title>CAVEATS</title>
 
 <para>
-  At present only RGB and greyscale colour stops are handled;
-  HSB, LAB and CYMK stops will cause a parse error.  This 
-  restriction will be lifted in the next version.
+  At present only RGB, HSB and greyscale colour stops are handled;
+  LAB and CYMK stops will cause a parse error.  This restriction will 
+  be lifted in the next version.
 </para>
 
 <para>
@@ -115,6 +130,12 @@
   sometimes look more "angular" than the Photoshop input.  
   Fixing this will require research into the precise nature 
   of the spline parameterisation used in the input.
+</para>
+
+<para>
+  Noise gradients would seem to be difficult to convert to SVG
+  without using a huge number of stops in the output, so these
+  will probably not be supported by this program.
 </para>
 
 </refsect1>
