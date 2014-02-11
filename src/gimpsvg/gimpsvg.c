@@ -96,7 +96,7 @@ extern int gimpsvg(const char *infile,
 
     /* write the cpt file */
     
-    if (svg_write(outfile, 1, &svg, &(opt.preview)) != 0)
+    if (svg_write(outfile, 1, (const svg_t**)(&svg), &(opt.preview)) != 0)
       {
 	fprintf(stderr,"failed to write gradient to %s\n",
 		(outfile ? outfile : "<stdout>"));

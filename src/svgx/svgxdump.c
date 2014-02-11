@@ -896,7 +896,9 @@ extern int svgsvg_dump(const svg_t *svg, svgx_opt_t *opt)
 
   const char *file = opt->output.file;
   
-  if (svg_write(file, 1, &svg, &(opt->format.svg.preview)) != 0)
+  if (svg_write(file, 1, 
+		(const svg_t**)(&svg), 
+		&(opt->format.svg.preview)) != 0)
     {
       fprintf(stderr,"failed to write to %s\n",file);
       return 1;
