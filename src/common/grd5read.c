@@ -491,6 +491,16 @@ static int parse_user_hsb(FILE *stream, grd5_hsb_t *hsb)
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
 
+static int parse_user_lab(FILE *stream, grd5_lab_t *lab)
+{
+  int err = 
+    (parse_double(stream, "Lmnc", &(lab->Lmnc)) != GRD5_READ_OK) ||
+    (parse_double(stream, "A   ", &(lab->A)) != GRD5_READ_OK) ||
+    (parse_double(stream, "B   ", &(lab->A)) != GRD5_READ_OK);
+  
+  return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
+}
+
 static int parse_user_grsc(FILE *stream, grd5_grsc_t *grsc)
 {
   int err = (parse_double(stream, "Gry ", &(grsc->Gry)) != GRD5_READ_OK);
@@ -525,6 +535,11 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 	{
 	  stop->type = GRD5_STOP_HSB;
 	  err = parse_user_hsb(stream, &(stop->u.hsb));
+	}
+      else if (grd5_string_matches(model, "LbCl"))
+	{
+	  stop->type = GRD5_STOP_LAB;
+	  err = parse_user_lab(stream, &(stop->u.lab));
 	}
       else 
 	{
@@ -600,11 +615,32 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
   if ((err = parse_Type_Clry(stream, &subtype)) != GRD5_READ_OK)
     return err;
 
-  if (have_user_colour && ! typename_matches(subtype, "UsrS"))
+  if (have_user_colour)
     {
-      fprintf(stderr, "read a user colour, but type is %*s not UsrS\n",
-	      subtype->len, subtype->content);
-      return GRD5_READ_PARSE;
+      if (! typename_matches(subtype, "UsrS"))
+	{
+	  fprintf(stderr, "read a user colour, but type is %*s not UsrS\n",
+		  subtype->len, subtype->content);
+	  return GRD5_READ_PARSE;
+	}
+    }
+  else
+    {
+      if (typename_matches(subtype, "BckC"))
+	{
+	  stop->type = GRD5_STOP_BCKC;
+	}
+      else if (typename_matches(subtype, "FrgC"))
+	{
+	  stop->type = GRD5_STOP_FRGC;
+	}
+      else
+	{
+	  fprintf(stderr, 
+		  "read a non-user colour, but type is %*s not BckC/FrgC\n",
+		  subtype->len, subtype->content);
+	  return GRD5_READ_PARSE;
+	}
     }
 
   if ((err = parse_Lctn(stream, &(stop->Lctn))) != GRD5_READ_OK)

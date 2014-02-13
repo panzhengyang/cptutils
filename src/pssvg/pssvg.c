@@ -190,6 +190,22 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad)
 
 	  grd5_stop[i].type = GRD5_STOP_RGB;	  
 	}
+      else if (grd5_stop[i].type == GRD5_STOP_BCKC)
+	{
+	  grd5_stop[i].u.rgb.Rd  = 0;
+	  grd5_stop[i].u.rgb.Grn = 0;
+	  grd5_stop[i].u.rgb.Bl  = 0;
+
+	  grd5_stop[i].type = GRD5_STOP_RGB;
+	}
+      else if (grd5_stop[i].type == GRD5_STOP_FRGC)
+	{
+	  grd5_stop[i].u.rgb.Rd  = 0;
+	  grd5_stop[i].u.rgb.Grn = 0;
+	  grd5_stop[i].u.rgb.Bl  = 0;
+
+	  grd5_stop[i].type = GRD5_STOP_RGB;
+	}
 
       /* FIXME - convert LAB stops */
 
@@ -493,7 +509,9 @@ extern int pssvg(pssvg_opt_t opt)
     }
 
   if (opt.verbose)
-    printf("parsed %i grd5 gradients\n", grd5->n);
+    printf("parsed %i grd5 gradient%s\n", 
+	   grd5->n,
+	   (grd5->n == 1) ? "" : "s");
 
   svgset_t *svgset;
 

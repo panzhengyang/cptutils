@@ -1,5 +1,4 @@
 # Makefile for pssvg
-# 
 # J.J. Green 2014
 
 OBJ       = options.o main.o pssvg.o ucs2utf8.o
@@ -10,10 +9,10 @@ FIXTURES  = $(TESTD)/grd5
 
 default : all
 
+.PHONY : check test
 check test : pssvg
-
-test-really : test
 	./pssvg -v -o test/rgb.svg $(FIXTURES)/my-custom-gradient-3-rgb.grd
+	./pssvg -v -o test/hsb.svg $(FIXTURES)/my-custom-gradient-3-hsb.grd
 
 clean :
 	$(RM) $(RUBBISH)
@@ -25,7 +24,7 @@ include ../Common.mk
 
 # depends on having libxml2
 
-ifneq (no,$(XML2C))
+ifneq (no, $(XML2C))
 
 all : pssvg pssvg.1 
 install : all
