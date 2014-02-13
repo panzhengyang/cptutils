@@ -18,7 +18,9 @@
 <refnamediv id='purpose'>
 <refname>pssvg</refname>
 <refpurpose>
-  convert Photoshop gradients to SVG.
+  convert 
+  <trademark class='registered'>Photoshop</trademark> 
+  gradients to SVG.
 </refpurpose>
 </refnamediv>
 
@@ -60,7 +62,13 @@
 
 <refsect1 id='options'><title>OPTIONS</title>
 
+<xi:include href="../docbook/para-rgb.xml"/>
+
 <variablelist remap='TP'>
+
+  <xi:include href="../docbook/varlistentry-background.xml"/>
+
+  <xi:include href="../docbook/varlistentry-foreground.xml"/>
 
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
@@ -117,9 +125,22 @@
 <refsect1 id='caveats'><title>CAVEATS</title>
 
 <para>
-  At present only RGB, HSB and greyscale colour stops are handled;
-  LAB and CYMK stops will cause a parse error.  This restriction will 
-  be lifted in the next version.
+  The program handles RGB, HSB, LAB and greyscale colour stops;
+  CYMK stops are not handled (since I have been unable to locate
+  an example of one to test the code).
+</para>
+
+<para>
+  The program does not handle "Book Colours" (PANTONE, COLOR FINDER, etc)
+  for legal reasons.
+</para>
+
+<para>
+  The SVG output format does not support back/forground colours; 
+  consequently, if the input specifies any stops with back/forground 
+  colours then these will be converted to the colour specified
+  by the <option>-b</option> and <option>-f</option> options,
+  respectively.
 </para>
 
 <para>
@@ -143,7 +164,12 @@
 <refsect1 id='notes'><title>NOTES</title>
 
 <para>
-  Adobe Photoshop is a trademark by Adobe Systems Incorporated.
+  Adobe <trademark class='registered'>Photoshop</trademark> 
+  is a trademark Adobe Systems Inc.
+  <trademark class='registered'>PANTONE</trademark> 
+  is a trademark of Pantone LLC.
+  <trademark class='registered'>COLOR FINDER</trademark>
+  is a trademark of Toyo Ink Mfg. Co., Ltd.
 </para>
 
 <para>
