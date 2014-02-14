@@ -134,9 +134,8 @@ static int trim_op(gstack_t* stack)
 }
 
 /*
-  convert the sp stops to the intermediate types, 
-  and rectify -- replace the midpoints by explicit 
-  mid-point stops
+  convert the svg stops to the intermediate types, and rectify:
+  replace the midpoints by explicit mid-point stops
 */
 
 static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
@@ -207,11 +206,10 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
 	  grd5_stop[i].type = GRD5_STOP_RGB;
 	}
 
-      /* FIXME - convert LAB stops */
-
       if (grd5_stop[i].type != GRD5_STOP_RGB)
 	{
-	  fprintf(stderr, "stop %i is non-RGB\n", i+1);
+	  fprintf(stderr, "stop %i is non-RGB (type %i)\n", 
+		  i, grd5_stop[i].type);
 	  return NULL;
 	}
     }

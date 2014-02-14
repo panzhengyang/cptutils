@@ -16,9 +16,10 @@
 #define GRD5_STOP_RGB  1
 #define GRD5_STOP_HSB  2
 #define GRD5_STOP_LAB  3
-#define GRD5_STOP_GRSC 4
-#define GRD5_STOP_FRGC 5
-#define GRD5_STOP_BCKC 6
+#define GRD5_STOP_CMYC 4
+#define GRD5_STOP_GRSC 5
+#define GRD5_STOP_FRGC 6
+#define GRD5_STOP_BCKC 7
 
 typedef struct
 {
@@ -44,6 +45,11 @@ typedef struct
 
 typedef struct
 {
+  double Cyn, Mgnt, Ylw, Blck;
+} grd5_cymb_t;
+
+typedef struct
+{
   double Gry;
 } grd5_grsc_t;
 
@@ -54,6 +60,7 @@ typedef struct
     grd5_rgb_t  rgb;
     grd5_hsb_t  hsb;
     grd5_lab_t  lab;
+    grd5_cymb_t cymb;
     grd5_grsc_t grsc;
   } u;
   uint32_t Lctn;

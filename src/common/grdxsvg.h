@@ -17,7 +17,7 @@
 typedef struct 
 {
   unsigned int z;
-  double r,g,b;
+  double r, g, b;
 } rgb_stop_t;
 
 typedef struct 
@@ -29,7 +29,7 @@ typedef struct
 typedef struct 
 {
   unsigned int z;
-  double r,g,b,op;
+  double r, g, b, op;
 } rgbop_stop_t;
 
 extern int grdxsvg(gstack_t *rgb_stops,

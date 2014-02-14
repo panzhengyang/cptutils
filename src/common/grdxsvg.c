@@ -199,7 +199,6 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
 
   while (gstack_pop(ross, &ros) == 0)
     {
-      ss.type         = stop_user;
       ss.colour.red   = svg_it_rgb(ros.r);
       ss.colour.green = svg_it_rgb(ros.g);
       ss.colour.blue  = svg_it_rgb(ros.b);

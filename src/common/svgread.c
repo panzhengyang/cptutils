@@ -296,7 +296,6 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
 	      /* need to check we have everything, assume it for now */
 
-	      svgstop.type    = stop_user;
 	      svgstop.value   = z;
 	      svgstop.opacity = op;
 	      svgstop.colour  = rgb;
