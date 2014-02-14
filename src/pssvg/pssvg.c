@@ -139,7 +139,7 @@ static int trim_op(gstack_t* stack)
   mid-point stops
 */
 
-static gstack_t* rectify_rgb(grd5_grad_t* grad)
+static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
 {
   grd5_colour_stop_t *grd5_stop = grad->colour.stops;
   int i, n = grad->colour.n;
@@ -192,17 +192,17 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad)
 	}
       else if (grd5_stop[i].type == GRD5_STOP_BCKC)
 	{
-	  grd5_stop[i].u.rgb.Rd  = 0;
-	  grd5_stop[i].u.rgb.Grn = 0;
-	  grd5_stop[i].u.rgb.Bl  = 0;
+	  grd5_stop[i].u.rgb.Rd  = opt.bg.red;
+	  grd5_stop[i].u.rgb.Grn = opt.bg.green;
+	  grd5_stop[i].u.rgb.Bl  = opt.bg.blue;
 
 	  grd5_stop[i].type = GRD5_STOP_RGB;
 	}
       else if (grd5_stop[i].type == GRD5_STOP_FRGC)
 	{
-	  grd5_stop[i].u.rgb.Rd  = 0;
-	  grd5_stop[i].u.rgb.Grn = 0;
-	  grd5_stop[i].u.rgb.Bl  = 0;
+	  grd5_stop[i].u.rgb.Rd  = opt.fg.red;
+	  grd5_stop[i].u.rgb.Grn = opt.fg.green;
+	  grd5_stop[i].u.rgb.Bl  = opt.fg.blue;
 
 	  grd5_stop[i].type = GRD5_STOP_RGB;
 	}
@@ -394,7 +394,7 @@ static int pssvg_convert1(grd5_grad_t *grd5_grad,
 
   gstack_t *rgbrec, *oprec;
 
-  if ((rgbrec = rectify_rgb(grd5_grad)) == NULL)
+  if ((rgbrec = rectify_rgb(grd5_grad, opt)) == NULL)
     return 1;
   
   if ((oprec = rectify_op(grd5_grad)) == NULL)

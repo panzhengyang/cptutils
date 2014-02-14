@@ -2,9 +2,11 @@
 # (c) J. J. Green 2014
 package "pssvg"
 purpose "convert Photoshop gradient to other formats"
-option	"output"    o "output filename"     string  no
-option  "title"     t "title format string" string  no
-option	"verbose"   v "verbose operation"   flag    off
+option  "background" b "background colour"   string  default="0/0/0" no
+option  "foreground" f "foreground colour"   string  default="255/255/255" no
+option	"output"     o "output filename"     string  no
+option  "title"      t "title format string" string  no
+option	"verbose"    v "verbose operation"   flag    off
 
 
 

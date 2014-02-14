@@ -9,10 +9,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "colour.h"
+
 typedef struct
 {
   bool verbose, debug;
   char *title;
+  rgb_t fg, bg;
   struct
   {
     char *input, *output;

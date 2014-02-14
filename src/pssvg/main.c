@@ -53,6 +53,20 @@ int main(int argc, char** argv)
 
   opt.title = (info.title_given ? info.title_arg : NULL);
 
+  /* fore/background */
+
+  if (parse_rgb(info.background_arg, &(opt.bg)) != 0)
+    {
+      fprintf(stderr,"bad background %s\n",info.background_arg);
+      return EXIT_FAILURE;
+    }
+
+  if (parse_rgb(info.foreground_arg, &(opt.fg)) != 0)
+    {
+      fprintf(stderr,"bad foreground %s\n",info.foreground_arg);
+      return EXIT_FAILURE;
+    }
+
   /* null outfile for stdout */
 
   outfile = (info.output_given ? info.output_arg : NULL);
@@ -95,6 +109,10 @@ int main(int argc, char** argv)
       printf("This is pssvg (version %s)\n", VERSION);
       if (opt.title)
 	printf("with title format '%s'\n", opt.title);
+      printf("background %3i/%3i/%3i\n", 
+	     opt.bg.red,  opt.bg.green,  opt.bg.blue);
+      printf("foreground %3i/%3i/%3i\n", 
+	     opt.fg.red,  opt.fg.green,  opt.fg.blue);
     }
   
   /* for conversion, give details of what we will do */
