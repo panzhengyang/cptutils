@@ -467,6 +467,21 @@ static int svg_write_stop(xmlTextWriter* writer, svg_stop_t stop)
   err += (svg_attribute(writer, "stop-color", scbuf, "stop") != 0);
   err += (svg_attribute(writer, "stop-opacity", sobuf, "stop") != 0);
 
+  switch (stop.type)
+    {
+    case stop_user:
+      break;
+    case stop_background:
+      err += (svg_attribute(writer, "stop-special", "background", "stop") != 0);
+      break;
+    case stop_foreground:
+      err += (svg_attribute(writer, "stop-special", "foreground", "stop") != 0);
+      break;
+    default:
+      fprintf(stderr, "stop has bad type %i\n", (int)stop.type);
+      err++;
+    }
+
   if (err) return 1;
   
   if (xmlTextWriterEndElement(writer) < 0)

@@ -249,7 +249,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 	}
       else
 	{
-	  double z,op = 1.0;
+	  double z, op = 1.0;
 	  rgb_t rgb;
 
 	  if (parse_offset((char*)offset,&z) != 0)
@@ -263,7 +263,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
 	      if ((colour = xmlGetProp(stop,(const unsigned char*)"stop-color")) != NULL)
 		{
-		  if (parse_colour((char*)colour,&rgb,&op) != 0)
+		  if (parse_colour((char*)colour, &rgb, &op) != 0)
 		    {
 		      fprintf(stderr,"failed on bad colour : %s\n",colour);
 		      return 1;
@@ -274,7 +274,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
 	      if ((style = xmlGetProp(stop,(const unsigned char*)"style")) != NULL)
 		{
-		  if (parse_style((char*)style,&rgb,&op) != 0)
+		  if (parse_style((char*)style, &rgb, &op) != 0)
 		    {
 		      fprintf(stderr,"error parsing stop style \"%s\"\n",style);
 		      return 1;
@@ -296,11 +296,12 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
 	      /* need to check we have everything, assume it for now */
 
+	      svgstop.type    = stop_user;
 	      svgstop.value   = z;
 	      svgstop.opacity = op;
 	      svgstop.colour  = rgb;
 	      
-	      if (svg_append(svgstop,svg) != 0)
+	      if (svg_append(svgstop, svg) != 0)
 		{
 		  fprintf(stderr,"failed to insert stop\n");
 		  return 1;

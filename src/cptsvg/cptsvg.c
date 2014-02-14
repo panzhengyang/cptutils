@@ -175,6 +175,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
       /* always insert the left colour */
 
+      lstop.type    = stop_user;
       lstop.value   = 100*(lsmp.val-min)/(max-min);
       lstop.colour  = lcol;
       lstop.opacity = 1.0; 
@@ -194,6 +195,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
       if ( ! ((seg->rseg) && fill_eq(rsmp.fill, seg->rseg->lsmp.fill)))
 	{
+	  rstop.type    = stop_user;
 	  rstop.value   = 100*(rsmp.val-min)/(max-min);
 	  rstop.colour  = rcol;
 	  rstop.opacity = 1.0; 

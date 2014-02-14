@@ -13,8 +13,16 @@
 
 #include "colour.h"
 
+typedef enum 
+{
+  stop_user = 0,
+  stop_background,
+  stop_foreground
+} svg_stop_type_t;
+
 typedef struct svg_stop_t
 {
+  svg_stop_type_t type;
   double value;
   double opacity;
   rgb_t  colour;

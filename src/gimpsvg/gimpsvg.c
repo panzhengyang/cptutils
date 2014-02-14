@@ -186,6 +186,7 @@ static int gimpsvg_convert(gradient_t *grad,
   
       rgbD_to_rgb(rgbD, &stop.colour);
 
+      stop.type    = stop_user;
       stop.value   = 100.0 * gseg->left;
       stop.opacity = alpha;
 
