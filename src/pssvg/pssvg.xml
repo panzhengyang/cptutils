@@ -125,9 +125,7 @@
 <refsect1 id='caveats'><title>CAVEATS</title>
 
 <para>
-  The program handles RGB, HSB, LAB and greyscale colour stops;
-  CYMK stops are not handled (since I have been unable to locate
-  an example of one to test the code).
+  The program handles RGB, HSB, LAB, CMYK and greyscale colour stops.
 </para>
 
 <para>

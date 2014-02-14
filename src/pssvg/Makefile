@@ -13,6 +13,7 @@ default : all
 check test : pssvg
 	./pssvg -v -o test/rgb.svg $(FIXTURES)/my-custom-gradient-3-rgb.grd
 	./pssvg -v -o test/hsb.svg $(FIXTURES)/my-custom-gradient-3-hsb.grd
+	./pssvg -v -o test/multi.svg $(FIXTURES)/neverhappens-titi-montoya.grd
 
 clean :
 	$(RM) $(RUBBISH)

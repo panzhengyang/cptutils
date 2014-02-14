@@ -495,8 +495,19 @@ static int parse_user_lab(FILE *stream, grd5_lab_t *lab)
 {
   int err = 
     (parse_double(stream, "Lmnc", &(lab->Lmnc)) != GRD5_READ_OK) ||
-    (parse_double(stream, "A   ", &(lab->A)) != GRD5_READ_OK) ||
-    (parse_double(stream, "B   ", &(lab->A)) != GRD5_READ_OK);
+    (parse_double(stream, "A   ", &(lab->A   )) != GRD5_READ_OK) ||
+    (parse_double(stream, "B   ", &(lab->B   )) != GRD5_READ_OK);
+  
+  return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
+}
+
+static int parse_user_cmyc(FILE *stream, grd5_cmyc_t *cmyc)
+{
+  int err = 
+    (parse_double(stream, "Cyn ", &(cmyc->Cyn))  != GRD5_READ_OK) ||
+    (parse_double(stream, "Mgnt", &(cmyc->Mgnt)) != GRD5_READ_OK) ||
+    (parse_double(stream, "Ylw ", &(cmyc->Ylw))  != GRD5_READ_OK) ||
+    (parse_double(stream, "Blck", &(cmyc->Blck)) != GRD5_READ_OK);
   
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
@@ -524,6 +535,22 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 
   switch (ncomp)
     {
+    case 4:
+
+      if (grd5_string_matches(model, "CMYC"))
+	{
+	  stop->type = GRD5_STOP_CMYC;
+	  err = parse_user_cmyc(stream, &(stop->u.cmyc));
+	}
+      else
+	{
+	  fprintf(stderr, "unhandled user-colour type: %*s (4)\n",
+		  model->len, model->content);
+	  err = GRD5_READ_PARSE;
+	}
+
+      break;
+
     case 3:
 
       if (grd5_string_matches(model, "RGBC"))
@@ -603,6 +630,7 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
       have_user_colour = false;
       break;
     default:
+      fprintf(stderr, "unexpected number of stop componets (%i)", ncomp);
       return GRD5_READ_PARSE;
     }
 
@@ -731,7 +759,6 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
   for (i = 0 ; i < grd5->n ; i++)
     {
       int type;
-
       grd5_grad_t *grad = grd5->gradients + i;
 
       /* outer objc */
@@ -797,7 +824,10 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	      for (j=0 ; j < grad->colour.n ; j++)
 		{
 		  if ((err = parse_colour_stop(stream, stops+j)) != GRD5_READ_OK)
-		    return err;
+		    {
+		      fprintf(stderr, "failed parse of stop %i\n", j);
+		      return err;
+		    }
 		}
 
 	      size_t stops_size = grad->colour.n * sizeof(grd5_colour_stop_t);
@@ -836,8 +866,11 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	    }
 
 	  break;
-	case 3:
+
 	default:
+	  fprintf(stderr, 
+		  "gradient %i unexpected number (%i) of components\n", 
+		  i, ncomp);
 	  return GRD5_READ_PARSE; 
 	}
     }

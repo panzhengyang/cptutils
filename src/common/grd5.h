@@ -46,7 +46,7 @@ typedef struct
 typedef struct
 {
   double Cyn, Mgnt, Ylw, Blck;
-} grd5_cymb_t;
+} grd5_cmyc_t;
 
 typedef struct
 {
@@ -60,7 +60,7 @@ typedef struct
     grd5_rgb_t  rgb;
     grd5_hsb_t  hsb;
     grd5_lab_t  lab;
-    grd5_cymb_t cymb;
+    grd5_cmyc_t cmyc;
     grd5_grsc_t grsc;
   } u;
   uint32_t Lctn;
