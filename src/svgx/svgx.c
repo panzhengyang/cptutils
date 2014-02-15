@@ -154,7 +154,7 @@ static int flatten_type(svgx_type_t type)
     case type_ggr:
     case type_pov:
     case type_css3:
-    case type_psp:
+    case type_grd3:
     case type_png:
     case type_svg:
       return 0;
@@ -176,7 +176,7 @@ static dump_f dump_type(svgx_type_t type)
     {
     case type_cpt:  dump = svgcpt_dump;  break;
     case type_ggr:  dump = svgggr_dump;  break;
-    case type_psp:  dump = svgpsp_dump;  break;
+    case type_grd3: dump = svggrd3_dump;  break;
     case type_pov:  dump = svgpov_dump;  break;
     case type_gpt:  dump = svggpt_dump;  break;
     case type_css3: dump = svgcss3_dump; break;

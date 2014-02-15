@@ -18,7 +18,7 @@ typedef enum {
   type_pov, 
   type_gpt, 
   type_css3, 
-  type_psp,
+  type_grd3,
   type_sao, 
   type_png, 
   type_svg

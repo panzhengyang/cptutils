@@ -20,7 +20,7 @@
 #include "povwrite.h"
 #include "gptwrite.h"
 #include "css3write.h"
-#include "pspwrite.h"
+#include "grd3write.h"
 #include "saowrite.h"
 #include "pngwrite.h"
 #include "svgwrite.h"
@@ -513,7 +513,7 @@ extern int svgsao_dump(const svg_t *svg, svgx_opt_t *opt)
   
   if (svgsao(svg,sao) != 0)
     {
-      fprintf(stderr,"failed to convert %s to psp\n",opt->name);
+      fprintf(stderr,"failed to convert %s to sao\n",opt->name);
       return 1;
     }
   
@@ -702,7 +702,7 @@ extern int svgcss3_dump(const svg_t *svg, svgx_opt_t *opt)
   return 0;
 }
 
-/* psp */
+/* grd3 */
 
 static double clampd(double z, double min, double max)
 {
@@ -720,12 +720,12 @@ static int clampi(int z, int min, int max)
   return z;
 }
 
-static int svgpsp(const svg_t *svg, psp_t *psp)
+static int svggrd3(const svg_t *svg, grd3_t *grd3)
 {
   int m,n;
   svg_node_t *node;
-  psp_rgbseg_t *pcseg;
-  psp_opseg_t *poseg;
+  grd3_rgbseg_t *pcseg;
+  grd3_opseg_t *poseg;
 
   /* count & allocate */
 
@@ -737,8 +737,8 @@ static int svgpsp(const svg_t *svg, psp_t *psp)
       return 1;
     }
 
-  pcseg = malloc(m*sizeof(psp_rgbseg_t));
-  poseg = malloc(m*sizeof(psp_opseg_t));
+  pcseg = malloc(m*sizeof(grd3_rgbseg_t));
+  poseg = malloc(m*sizeof(grd3_opseg_t));
   
   if (! (pcseg && poseg))
     {
@@ -778,45 +778,45 @@ static int svgpsp(const svg_t *svg, psp_t *psp)
       return 1;
     }
 
-  psp->name = (unsigned char*)strdup(buffer);
+  grd3->name = (unsigned char*)strdup(buffer);
 
-  psp->rgb.n   = m;
-  psp->rgb.seg = pcseg; 
+  grd3->rgb.n   = m;
+  grd3->rgb.seg = pcseg; 
 
-  psp->op.n    = m;
-  psp->op.seg  = poseg; 
+  grd3->op.n    = m;
+  grd3->op.seg  = poseg; 
 
   return 0;
 }
 
-extern int svgpsp_dump(const svg_t *svg, svgx_opt_t *opt)
+extern int svggrd3_dump(const svg_t *svg, svgx_opt_t *opt)
 {
   if (opt->job == job_all)
-    return call_autonamed(svg, opt, "grd", svgpsp_dump);
+    return call_autonamed(svg, opt, "grd", svggrd3_dump);
 
   const char *name = (char*)svg->name;
   const char *file = opt->output.file;
-  psp_t *psp;
+  grd3_t *grd3;
 
-  if ((psp = psp_new()) == NULL)
+  if ((grd3 = grd3_new()) == NULL)
     {
-      fprintf(stderr,"failed to create psp structure\n");
+      fprintf(stderr,"failed to create grd3 structure\n");
       return 1;
     }
       
-  if (svgpsp(svg, psp) != 0)
+  if (svggrd3(svg, grd3) != 0)
     {
-      fprintf(stderr,"failed to convert %s to psp\n", name);
+      fprintf(stderr,"failed to convert %s to grd3\n", name);
       return 1;
     }
             
-  if (psp_write(file, psp) != 0)
+  if (grd3_write(file, grd3) != 0)
     {
       fprintf(stderr,"failed to write to %s\n",file);
       return 1;
     }
 
-  psp_destroy(psp);
+  grd3_destroy(grd3);
 
   return 0;
 }

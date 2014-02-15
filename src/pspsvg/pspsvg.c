@@ -11,19 +11,19 @@
 #include <string.h>
 #include <math.h>
 
-#include "pspread.h"
+#include "grd3read.h"
 #include "svgwrite.h"
 
 #include "pspsvg.h"
 #include "grdxsvg.h"
 #include "gstack.h"
 
-static int pspsvg_convert(psp_t*, svg_t*, pspsvg_opt_t);
+static int pspsvg_convert(grd3_t*, svg_t*, pspsvg_opt_t);
 
 extern int pspsvg(pspsvg_opt_t opt)
 {
   svg_t* svg;
-  psp_t* psp;
+  grd3_t* grd3;
    
   /* create & intialise a svg struct */
 
@@ -33,15 +33,15 @@ extern int pspsvg(pspsvg_opt_t opt)
       return 1;
     }
 
-  /* create & read psp */
+  /* create & read grd3 */
 
-  if ((psp = psp_new()) == NULL)
+  if ((grd3 = grd3_new()) == NULL)
     {
-      fprintf(stderr,"failed to get new psp struture\n");
+      fprintf(stderr,"failed to get new grd3 struture\n");
       return 1;
     }
 
-  if (psp_read(opt.file.input, psp) != 0)
+  if (grd3_read(opt.file.input, grd3) != 0)
     {
       fprintf(stderr,"failed to read data from %s\n",
 	      (opt.file.input ?  opt.file.input : "<stdin>"));
@@ -50,7 +50,7 @@ extern int pspsvg(pspsvg_opt_t opt)
   
   /* convert */
 
-  if (pspsvg_convert(psp, svg, opt) != 0)
+  if (pspsvg_convert(grd3, svg, opt) != 0)
     {
       fprintf(stderr,"failed to convert data\n");
       return 1;
@@ -67,30 +67,30 @@ extern int pspsvg(pspsvg_opt_t opt)
   
   /* tidy */
 
-  psp_destroy(psp);  
+  grd3_destroy(grd3);  
   svg_destroy(svg);
   
   return 0;
 }
 
-/* convert psp to intermediate types */
+/* convert grd3 to intermediate types */
 
-static double psp_rgb_it(unsigned short x)
+static double grd3_rgb_it(unsigned short x)
 {
   return (double)x/65535.0;
 }
 
-static double psp_op_it(unsigned short x)
+static double grd3_op_it(unsigned short x)
 {
   return (double)x/255.0;
 }
 
-static unsigned int psp_z_it(unsigned short z)
+static unsigned int grd3_z_it(unsigned short z)
 {
   return (unsigned int)z*100;
 }
 
-static unsigned int psp_zmid_it(unsigned short z0, 
+static unsigned int grd3_zmid_it(unsigned short z0, 
 				unsigned short z1, 
 				unsigned short M)
 {
@@ -161,15 +161,15 @@ static int trim_op(gstack_t* stack)
 }
 
 /* 
-   convert the psp stops to the intermediate types, 
+   convert the grd3 stops to the intermediate types, 
    and rectify -- replace the midpoints by explicit 
    mid-point stops
 */
 
-static gstack_t* rectify_rgb(psp_t* psp)
+static gstack_t* rectify_rgb(grd3_t* grd3)
 {
-  psp_rgbseg_t *pseg = psp->rgb.seg;
-  int i,n = psp->rgb.n;
+  grd3_rgbseg_t *pseg = grd3->rgb.seg;
+  int i,n = grd3->rgb.n;
 
   if (n<2)
     {
@@ -186,30 +186,30 @@ static gstack_t* rectify_rgb(psp_t* psp)
 
   for (i=0 ; i<n-1 ; i++)
     {
-      stop.z = psp_z_it(pseg[i].z);
-      stop.r = psp_rgb_it(pseg[i].r);
-      stop.g = psp_rgb_it(pseg[i].g);
-      stop.b = psp_rgb_it(pseg[i].b);
+      stop.z = grd3_z_it(pseg[i].z);
+      stop.r = grd3_rgb_it(pseg[i].r);
+      stop.g = grd3_rgb_it(pseg[i].g);
+      stop.b = grd3_rgb_it(pseg[i].b);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
       
       if (pseg[i].midpoint != 50)
 	{
-	  stop.z = psp_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
-	  stop.r = 0.5*(psp_rgb_it(pseg[i].r) + psp_rgb_it(pseg[i+1].r));
-	  stop.g = 0.5*(psp_rgb_it(pseg[i].g) + psp_rgb_it(pseg[i+1].g));
-	  stop.b = 0.5*(psp_rgb_it(pseg[i].b) + psp_rgb_it(pseg[i+1].b));
+	  stop.z = grd3_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
+	  stop.r = 0.5*(grd3_rgb_it(pseg[i].r) + grd3_rgb_it(pseg[i+1].r));
+	  stop.g = 0.5*(grd3_rgb_it(pseg[i].g) + grd3_rgb_it(pseg[i+1].g));
+	  stop.b = 0.5*(grd3_rgb_it(pseg[i].b) + grd3_rgb_it(pseg[i+1].b));
 
 	  if (gstack_push(stack, &stop) != 0)
 	    return NULL;
 	}
     }
 
-  stop.z = psp_z_it(pseg[n-1].z);
-  stop.r = psp_rgb_it(pseg[n-1].r);
-  stop.g = psp_rgb_it(pseg[n-1].g);
-  stop.b = psp_rgb_it(pseg[n-1].b);
+  stop.z = grd3_z_it(pseg[n-1].z);
+  stop.r = grd3_rgb_it(pseg[n-1].r);
+  stop.g = grd3_rgb_it(pseg[n-1].g);
+  stop.b = grd3_rgb_it(pseg[n-1].b);
 
   if (gstack_push(stack, &stop) != 0)
     return NULL;
@@ -233,10 +233,10 @@ static gstack_t* rectify_rgb(psp_t* psp)
   return stack;
 }
 
-static gstack_t* rectify_op(psp_t* psp)
+static gstack_t* rectify_op(grd3_t* grd3)
 {
-  psp_opseg_t *pseg = psp->op.seg;
-  int i,n = psp->op.n;
+  grd3_opseg_t *pseg = grd3->op.seg;
+  int i,n = grd3->op.n;
 
   if (n<2)
     {
@@ -254,7 +254,7 @@ static gstack_t* rectify_op(psp_t* psp)
   if (pseg[0].z > 0)
     {
       stop.z  = 0;
-      stop.op = psp_op_it(pseg[0].opacity);
+      stop.op = grd3_op_it(pseg[0].opacity);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
@@ -262,25 +262,25 @@ static gstack_t* rectify_op(psp_t* psp)
 
   for (i=0 ; i<n-1 ; i++)
     {
-      stop.z  = psp_z_it(pseg[i].z);
-      stop.op = psp_op_it(pseg[i].opacity);
+      stop.z  = grd3_z_it(pseg[i].z);
+      stop.op = grd3_op_it(pseg[i].opacity);
 
       if (gstack_push(stack, &stop) != 0)
 	return NULL;
       
       if (pseg[i].midpoint != 50)
 	{
-	  stop.z  = psp_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
-	  stop.op = 0.5*(psp_op_it(pseg[i].opacity) + 
-			 psp_op_it(pseg[i+1].opacity));
+	  stop.z  = grd3_zmid_it(pseg[i].z, pseg[i+1].z, pseg[i].midpoint);
+	  stop.op = 0.5*(grd3_op_it(pseg[i].opacity) + 
+			 grd3_op_it(pseg[i+1].opacity));
 
 	  if (gstack_push(stack, &stop) != 0)
 	    return NULL;
 	}
     }
 
-  stop.z  = psp_z_it(pseg[n-1].z);
-  stop.op = psp_op_it(pseg[n-1].opacity);
+  stop.z  = grd3_z_it(pseg[n-1].z);
+  stop.op = grd3_op_it(pseg[n-1].opacity);
 
   if (gstack_push(stack, &stop) != 0)
     return NULL;
@@ -341,11 +341,11 @@ static int latin1_to_utf8(const unsigned char *in,
   return 0;
 }
 
-static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
+static int pspsvg_convert(grd3_t *grd3, svg_t *svg, pspsvg_opt_t opt)
 {
   gstack_t *rgbrec,*oprec;
 
-  if (latin1_to_utf8(psp->name, svg->name, SVG_NAME_LEN) != 0)
+  if (latin1_to_utf8(grd3->name, svg->name, SVG_NAME_LEN) != 0)
     {
       fprintf(stderr, "failed latin1 to unicode name conversion\n");
       return 1;
@@ -354,17 +354,17 @@ static int pspsvg_convert(psp_t *psp, svg_t *svg, pspsvg_opt_t opt)
   if (opt.verbose)
     printf("processing \"%s\"\n", svg->name);
 
-  if ((rgbrec = rectify_rgb(psp)) == NULL)
+  if ((rgbrec = rectify_rgb(grd3)) == NULL)
     return 1;
 
-  if ((oprec = rectify_op(psp)) == NULL)
+  if ((oprec = rectify_op(grd3)) == NULL)
     return 1;
 
   if (opt.verbose)
     printf("stops: rgb %i/%i, opacity %i/%i\n",
-	   psp->rgb.n,
+	   grd3->rgb.n,
 	   gstack_size(rgbrec),
-	   psp->op.n,
+	   grd3->op.n,
 	   gstack_size(oprec));
 
   if (grdxsvg(rgbrec, oprec, svg) != 0)

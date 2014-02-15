@@ -1,5 +1,5 @@
 /*
-  pspwrite.h
+  grd3write.h
 
   writes paintshop pro gradients.
   2006 (c) J.J. Green
@@ -8,12 +8,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "pspwrite.h"
+#include "grd3write.h"
 #include "htons.h"
 
-static int psp_write_stream(FILE*,psp_t*);
+static int grd3_write_stream(FILE*,grd3_t*);
 
-extern int psp_write(const char* file,psp_t* psp)
+extern int grd3_write(const char* file,grd3_t* grd3)
 {
   int err;
 
@@ -24,19 +24,19 @@ extern int psp_write(const char* file,psp_t* psp)
       if ((s = fopen(file,"w")) == NULL)
 	return 1;
 
-      err = psp_write_stream(s,psp);
+      err = grd3_write_stream(s,grd3);
 
       fclose(s);
     }
   else
-    err = psp_write_stream(stderr,psp);
+    err = grd3_write_stream(stderr,grd3);
 
   return err;
 }
 
-static int write_initial_rgb(FILE*,psp_rgbseg_t*);
-static int write_rgb(FILE*,psp_rgbseg_t*);
-static int write_op(FILE*,psp_opseg_t*);
+static int write_initial_rgb(FILE*,grd3_rgbseg_t*);
+static int write_rgb(FILE*,grd3_rgbseg_t*);
+static int write_op(FILE*,grd3_opseg_t*);
 static int write_zeros(FILE*,int);
 
 static size_t ustrlen(const unsigned char* s)
@@ -48,28 +48,28 @@ static size_t ustrlen(const unsigned char* s)
   return n;
 }
 
-static int psp_write_stream(FILE *s,psp_t *psp)
+static int grd3_write_stream(FILE *s,grd3_t *grd3)
 {
   int i,n;
   unsigned short u[4];
 
   /* magic */
 
-  fwrite(pspmagic,1,4,s);
+  fwrite(grd3magic,1,4,s);
   
   /* version */
 
-  for (i=0 ; i<2 ; i++) u[i] = htons(psp->ver[i]);
+  for (i=0 ; i<2 ; i++) u[i] = htons(grd3->ver[i]);
   fwrite(u,2,2,s);
 
   /* title : check non-null or get segfaults */
 
-  if (psp->name)
+  if (grd3->name)
     {
-      unsigned char len = ustrlen(psp->name);
+      unsigned char len = ustrlen(grd3->name);
 
       fwrite(&len,1,1,s);
-      fwrite(psp->name,1,len,s);
+      fwrite(grd3->name,1,len,s);
     }
   else
     {
@@ -82,24 +82,24 @@ static int psp_write_stream(FILE *s,psp_t *psp)
 
   /* rgb gradient */
 
-  n = psp->rgb.n;
+  n = grd3->rgb.n;
 
   u[0] = htons(n);
   fwrite(u,2,1,s);
 
-  write_initial_rgb(s,psp->rgb.seg);
-  for (i=1 ; i<n ; i++) write_rgb(s,psp->rgb.seg+i);
+  write_initial_rgb(s,grd3->rgb.seg);
+  for (i=1 ; i<n ; i++) write_rgb(s,grd3->rgb.seg+i);
 
   write_zeros(s,2);
 
   /* opacity gradient */
 
-  n = psp->op.n;
+  n = grd3->op.n;
 
-  u[0] = htons(psp->op.n);
+  u[0] = htons(grd3->op.n);
   fwrite(u,2,1,s);
 
-  for (i=0 ; i<n ; i++) write_op(s,psp->op.seg+i);
+  for (i=0 ; i<n ; i++) write_op(s,grd3->op.seg+i);
 
   write_zeros(s,2);
 
@@ -110,7 +110,7 @@ static int psp_write_stream(FILE *s,psp_t *psp)
   return 0;
 }
 
-static int write_initial_rgb(FILE *s,psp_rgbseg_t *seg)
+static int write_initial_rgb(FILE *s,grd3_rgbseg_t *seg)
 {
   unsigned short u[8];
 
@@ -128,7 +128,7 @@ static int write_initial_rgb(FILE *s,psp_rgbseg_t *seg)
   return 0;
 }
 
-static int write_rgb(FILE *s,psp_rgbseg_t *seg)
+static int write_rgb(FILE *s,grd3_rgbseg_t *seg)
 {
   unsigned short u[10];
 
@@ -148,7 +148,7 @@ static int write_rgb(FILE *s,psp_rgbseg_t *seg)
   return 0;
 }
 
-static int write_op(FILE *s,psp_opseg_t *seg)
+static int write_op(FILE *s,grd3_opseg_t *seg)
 {
   unsigned short u[5];
 

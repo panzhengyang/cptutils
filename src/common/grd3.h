@@ -1,13 +1,13 @@
 /*
-  psp.h
+  grd3.h
 
   paintshop pro gradient structures
 
   2006 (c) J.J. Green
 */
 
-#ifndef PSP_H
-#define PSP_H
+#ifndef GRD3_H
+#define GRD3_H
 
 #include <stdlib.h>
 
@@ -16,14 +16,14 @@ typedef struct
   unsigned short z;
   unsigned short r,g,b;
   unsigned short midpoint;
-} psp_rgbseg_t;
+} grd3_rgbseg_t;
 
 typedef struct
 {
   unsigned short z;
   unsigned short opacity;
   unsigned short midpoint;
-} psp_opseg_t;
+} grd3_opseg_t;
 
 typedef struct
 {
@@ -32,19 +32,19 @@ typedef struct
   struct 
   {
     int n;
-    psp_rgbseg_t* seg;
+    grd3_rgbseg_t* seg;
   } rgb;
   struct
   {
     int n;
-    psp_opseg_t* seg;
+    grd3_opseg_t* seg;
   } op;
-} psp_t;
+} grd3_t;
 
-extern unsigned char pspmagic[];
+extern unsigned char grd3magic[];
 
-extern psp_t* psp_new(void);
-extern void psp_destroy(psp_t*);
+extern grd3_t* grd3_new(void);
+extern void grd3_destroy(grd3_t*);
 
 #endif
  

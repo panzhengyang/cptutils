@@ -1,5 +1,5 @@
 /*
-  pspread.c
+  grd3read.c
 
   read paintshop pro gradients.
   2005 (c) J.J. Green
@@ -17,12 +17,12 @@
 
 #include <stdio.h>
 
-#include "pspread.h"
+#include "grd3read.h"
 #include "htons.h"
 
-static int psp_read_stream(FILE*,psp_t*);
+static int grd3_read_stream(FILE*, grd3_t*);
 
-extern int psp_read(const char* file,psp_t* psp)
+extern int grd3_read(const char* file, grd3_t* grd3)
 {
   int err;
 
@@ -36,28 +36,28 @@ extern int psp_read(const char* file,psp_t* psp)
 	  return 1;
 	}
 
-      err = psp_read_stream(s,psp);
+      err = grd3_read_stream(s,grd3);
 
       fclose(s);
     }
   else
-    err = psp_read_stream(stdin,psp);
+    err = grd3_read_stream(stdin,grd3);
 
   return err;
 }
 
-static int read_first_rgbseg(FILE*,psp_rgbseg_t*);
-static int read_rgbseg(FILE*,psp_rgbseg_t*);
-static int read_opseg(FILE*,psp_opseg_t*);
+static int read_first_rgbseg(FILE*,grd3_rgbseg_t*);
+static int read_rgbseg(FILE*,grd3_rgbseg_t*);
+static int read_opseg(FILE*,grd3_opseg_t*);
 static int read_block_end(FILE*);
 
-static int psp_read_stream(FILE* s,psp_t* grad)
+static int grd3_read_stream(FILE* s,grd3_t* grad)
 {
   unsigned char b[6];
   unsigned short u[2];
   int i,n;
 
-  /* first 4 are the psp magic number */
+  /* first 4 are the grd3 magic number */
 
   if (fread(b,1,4,s) != 4)
     {
@@ -67,7 +67,7 @@ static int psp_read_stream(FILE* s,psp_t* grad)
 
   for (i=0 ; i<4 ; i++)
     {
-      if (b[i] != pspmagic[i])
+      if (b[i] != grd3magic[i])
 	{
 	  int j;
 
@@ -137,9 +137,9 @@ static int psp_read_stream(FILE* s,psp_t* grad)
   else 
     {
       int j, err = 0;
-      psp_rgbseg_t* seg;
+      grd3_rgbseg_t* seg;
 
-      if ((seg = malloc(n*sizeof(psp_rgbseg_t))) == NULL)
+      if ((seg = malloc(n*sizeof(grd3_rgbseg_t))) == NULL)
 	{
 	  fprintf(stderr,"failed malloc()");
 	  return 1;
@@ -190,9 +190,9 @@ static int psp_read_stream(FILE* s,psp_t* grad)
   else 
     {
       int j, err = 0;
-      psp_opseg_t* seg;
+      grd3_opseg_t* seg;
 
-      if ((seg = malloc(n*sizeof(psp_opseg_t))) == NULL)
+      if ((seg = malloc(n*sizeof(grd3_opseg_t))) == NULL)
 	{
 	  fprintf(stderr,"failed malloc()");
 	  return 1;
@@ -236,12 +236,12 @@ static int psp_read_stream(FILE* s,psp_t* grad)
   midpoint 50.
 */
 
-static int read_rgbseg_head(FILE*,psp_rgbseg_t*);
-static int read_rgbseg_midpoint(FILE*,psp_rgbseg_t*);
-static int read_rgbseg_z(FILE*,psp_rgbseg_t*);
-static int read_rgbseg_rgb(FILE*,psp_rgbseg_t*);
+static int read_rgbseg_head(FILE*,grd3_rgbseg_t*);
+static int read_rgbseg_midpoint(FILE*,grd3_rgbseg_t*);
+static int read_rgbseg_z(FILE*,grd3_rgbseg_t*);
+static int read_rgbseg_rgb(FILE*,grd3_rgbseg_t*);
 
-static int read_first_rgbseg(FILE *s,psp_rgbseg_t* seg)
+static int read_first_rgbseg(FILE *s,grd3_rgbseg_t* seg)
 {
   int err = 0;
 
@@ -256,7 +256,7 @@ static int read_first_rgbseg(FILE *s,psp_rgbseg_t* seg)
   return 0;
 }
 
-static int read_rgbseg(FILE *s,psp_rgbseg_t* seg)
+static int read_rgbseg(FILE *s,grd3_rgbseg_t* seg)
 {
   int err = 0;
 
@@ -279,7 +279,7 @@ static int print_array(unsigned short* u,int n,FILE* s,const char* fmt)
 
 /* expect short[2] = 0 0, unused */ 
 
-static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
+static int read_rgbseg_head(FILE *s,grd3_rgbseg_t* seg)
 {
   unsigned short u[2];
 
@@ -305,10 +305,10 @@ static int read_rgbseg_head(FILE *s,psp_rgbseg_t* seg)
    expect ushort[2] = 0 m 
 
    m is the midpoint in percentage, though the 
-   psp gui seems to limit it to 5 < m < 95
+   grd3 gui seems to limit it to 5 < m < 95
 */
 
-static int read_rgbseg_midpoint(FILE *s,psp_rgbseg_t* seg)
+static int read_rgbseg_midpoint(FILE *s,grd3_rgbseg_t* seg)
 {
   unsigned short u[2];
 
@@ -334,7 +334,7 @@ static int read_rgbseg_midpoint(FILE *s,psp_rgbseg_t* seg)
 
 /* expect ushort[2] = 0 z  */  
 
-static int read_rgbseg_z(FILE *s,psp_rgbseg_t* seg)
+static int read_rgbseg_z(FILE *s,grd3_rgbseg_t* seg)
 {
   unsigned short u[2];
 
@@ -366,7 +366,7 @@ static int read_rgbseg_z(FILE *s,psp_rgbseg_t* seg)
    by 256
  */
 
-static int read_rgbseg_rgb(FILE *s,psp_rgbseg_t* seg)
+static int read_rgbseg_rgb(FILE *s,grd3_rgbseg_t* seg)
 {
   unsigned short u[4];
 
@@ -407,7 +407,7 @@ static int read_rgbseg_rgb(FILE *s,psp_rgbseg_t* seg)
    The m in the final segment is unused (and usually 50).
 */
 
-static int read_opseg(FILE *s,psp_opseg_t* seg)
+static int read_opseg(FILE *s,grd3_opseg_t* seg)
 {
   unsigned short u[5];
 
@@ -463,7 +463,7 @@ int main (int argc,char** argv)
 {
   FILE *s;
   char *file = argv[1];
-  psp_t grad;
+  grd3_t grad;
   int i;
 
   if (argc != 2)
@@ -478,7 +478,7 @@ int main (int argc,char** argv)
       return EXIT_FAILURE;
     }
 
-  if (read_psp(s,&grad) != 0)
+  if (read_grd3(s,&grad) != 0)
     {
       fprintf(stderr,"failed to read %s\n",file);
       return EXIT_FAILURE;
@@ -489,7 +489,7 @@ int main (int argc,char** argv)
   printf("# %s\n",grad.name);
   for (i=0 ; i<grad.n ; i++)
     {
-      psp_rgbseg_t seg = grad.seg[i];
+      grd3_rgbseg_t seg = grad.seg[i];
 
       printf("%.4i %.3i %.3i %.3i\n",
 	     seg.z,
