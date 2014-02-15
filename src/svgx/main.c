@@ -80,23 +80,22 @@ int main(int argc,char** argv)
       struct {const char* name; int type; } 
       *p, types[] =
 	{
-	  {"cpt", type_cpt},
-	  {"ggr", type_ggr},
-	  {"gimp",type_ggr},
-	  {"inc", type_pov},
-	  {"pov", type_pov},
-	  {"css3", type_css3},
-	  {"c3g", type_css3},
-	  {"gpt", type_gpt},
-	  {"gnuplot", type_gpt},
-	  {"psp", type_psp},
-	  {"PspGradient", type_psp},
-	  {"jgd", type_psp},
-	  {"grd", type_psp},
-	  {"sao", type_sao},
-	  {"ds9", type_sao},
-	  {"png", type_png},
-	  {"svg", type_svg},
+	  {"cpt",         type_cpt },
+	  {"ggr",         type_ggr },
+	  {"gimp",        type_ggr },
+	  {"inc",         type_pov },
+	  {"pov",         type_pov },
+	  {"css3",        type_css3},
+	  {"c3g",         type_css3},
+	  {"gpt",         type_gpt },
+	  {"gnuplot",     type_gpt },
+	  {"psp",         type_grd3},
+	  {"PspGradient", type_grd3},
+	  {"jgd",         type_grd3},
+	  {"sao",         type_sao },
+	  {"ds9",         type_sao },
+	  {"png",         type_png },
+	  {"svg",         type_svg },
 	  {NULL, 0}};
 
       for (p = types ; ; p++)
@@ -254,7 +253,7 @@ int main(int argc,char** argv)
 	case type_pov  : tstr = "POV-Ray colour map"; break;
 	case type_gpt  : tstr = "Gnuplot colour map"; break;
 	case type_css3 : tstr = "CSS3 gradient"; break;
-	case type_psp  : tstr = "grd v3"; break;
+	case type_grd3 : tstr = "Paint Shop Pro (grd3)"; break;
 	case type_sao  : tstr = "SAO (DS9) colour map"; break;
 	case type_png  : tstr = "png image"; break;
 	case type_svg  : tstr = "SVG gradient"; break;
