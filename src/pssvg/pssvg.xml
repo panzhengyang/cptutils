@@ -27,6 +27,8 @@
 <refsynopsisdiv id='synopsis'>
 <cmdsynopsis>
   <command>pssvg</command>
+  <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
+  <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-h </arg>
   <arg choice='opt'>-o <replaceable>file</replaceable></arg>
   <arg choice='opt'>-t <replaceable>format</replaceable></arg>
