@@ -378,7 +378,7 @@ static int parse_Nm(FILE *stream, grd5_string_t **ptitle)
   return GRD5_READ_OK; 
 }
 
-static int parse_GrdF_GrdF_CstS(FILE *stream)
+static int parse_GrdF_GrdF(FILE *stream, grd5_string_t **pgtype)
 {
   int err;
   grd5_string_t *name, *subname = NULL;
@@ -386,29 +386,44 @@ static int parse_GrdF_GrdF_CstS(FILE *stream)
   if ((err = parse_enum(stream, "GrdF", &name, &subname)) != GRD5_READ_OK)
     return err;
 
-  bool matches = 
-    typename_matches(name, "GrdF") &&
-    typename_matches(subname, "CstS");
+  bool matches = typename_matches(name, "GrdF");
 
   grd5_string_destroy(name);
-  grd5_string_destroy(subname);
 
-  return (matches ? GRD5_READ_OK : GRD5_READ_PARSE);
+  if (matches)
+    {
+      *pgtype = subname;
+      return GRD5_READ_OK;
+    }
+  else
+    {
+      grd5_string_destroy(subname);
+      return GRD5_READ_PARSE;
+    }
 }
 
-static int parse_Type_Clry(FILE *stream, grd5_string_t **subname)
+static int parse_Type_Clry(FILE *stream, grd5_string_t **pctype)
 {
   int err;
-  grd5_string_t *name;
+  grd5_string_t *name, *subname = NULL;
 
-  if ((err = parse_enum(stream, "Type", &name, subname)) != GRD5_READ_OK)
+  if ((err = parse_enum(stream, "Type", &name, &subname)) != GRD5_READ_OK)
     return err;
 
   bool matches = typename_matches(name, "Clry");
 
   grd5_string_destroy(name);
 
-  return (matches ? GRD5_READ_OK : GRD5_READ_PARSE);
+  if (matches)
+    {
+      *pctype = subname;
+      return GRD5_READ_OK;
+    }
+  else
+    {
+      grd5_string_destroy(subname);
+      return GRD5_READ_OK;
+    }
 }
 
 static int parse_Intr(FILE *stream, double *interp)
@@ -638,7 +653,7 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
       (err = parse_user_colour(stream, stop)) != GRD5_READ_OK)
     return err;
 
-  grd5_string_t* subtype;
+  grd5_string_t* subtype = NULL;
 
   if ((err = parse_Type_Clry(stream, &subtype)) != GRD5_READ_OK)
     return err;
@@ -789,21 +804,27 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       objc_destroy(objc);
 
-      switch (ncomp)
+      /* gradient title */
+      
+      if ((err = parse_Nm(stream, &(grad->title))) != GRD5_READ_OK)
+	return err;
+
+      /* gradient form */
+      
+      grd5_string_t *gradient_type = NULL;
+
+      if ((err = parse_GrdF_GrdF(stream, &gradient_type)) != GRD5_READ_OK)
+	return err;
+
+      if (typename_matches(gradient_type, "CstS"))
 	{
-	  int j;
-
-	case 5:
-
-	  /* gradient title */
-
-	  if ((err = parse_Nm(stream, &(grad->title))) != GRD5_READ_OK)
-	    return err;
-
-	  /* gradient form */
-
-	  if ((err = parse_GrdF_GrdF_CstS(stream)) != GRD5_READ_OK)
-	    return err;
+	  if (ncomp != 5)
+	    {
+	      fprintf(stderr, 
+		      "CstS gradient with %i component\n",
+		      ncomp);
+	      return GRD5_READ_PARSE;
+	    }
 
 	  /* gradient interpolation */
 
@@ -819,6 +840,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if (grad->colour.n > 0)
 	    {
+	      int j;
 	      grd5_colour_stop_t stops[grad->colour.n];
 
 	      for (j=0 ; j < grad->colour.n ; j++)
@@ -848,6 +870,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if (grad->transp.n > 0)
 	    {
+	      int j;
 	      grd5_transp_stop_t stops[grad->transp.n];
 
 	      for (j=0 ; j < grad->transp.n ; j++)
@@ -864,13 +887,24 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	      if (memcpy(grad->transp.stops, stops, stops_size) == NULL)
 		return GRD5_READ_MALLOC;
 	    }
-
-	  break;
-
-	default:
+	}
+      else if (typename_matches(gradient_type, "ClNs"))
+	{
+	  if (ncomp != 9)
+	    {
+	      fprintf(stderr, 
+		      "ClNs gradient with %i component\n",
+		      ncomp);
+	      return GRD5_READ_PARSE;
+	    }
+	  // FIXME
+	}
+      else
+	{
 	  fprintf(stderr, 
-		  "gradient %i unexpected number (%i) of components\n", 
-		  i, ncomp);
+		  "unknown gradient format %*s\n", 
+		  gradient_type->len,
+		  gradient_type->content);
 	  return GRD5_READ_PARSE; 
 	}
     }
