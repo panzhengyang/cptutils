@@ -13,13 +13,14 @@
 #include <stdint.h>
 #include "grd5string.h"
 
-#define GRD5_STOP_RGB  1
-#define GRD5_STOP_HSB  2
-#define GRD5_STOP_LAB  3
-#define GRD5_STOP_CMYC 4
-#define GRD5_STOP_GRSC 5
-#define GRD5_STOP_FRGC 6
-#define GRD5_STOP_BCKC 7
+#define GRD5_MODEL_UNKNOWN 0
+#define GRD5_MODEL_RGB     1
+#define GRD5_MODEL_HSB     2
+#define GRD5_MODEL_LAB     3
+#define GRD5_MODEL_CMYC    4
+#define GRD5_MODEL_GRSC    5
+#define GRD5_MODEL_FRGC    6
+#define GRD5_MODEL_BCKC    7
 
 typedef struct
 {
@@ -67,10 +68,21 @@ typedef struct
   uint32_t Mdpn;
 } grd5_colour_stop_t;
 
+#define GRD5_GRAD_CUSTOM 1
+#define GRD5_GRAD_NOISE  2
+
+typedef struct
+{
+  bool show_transparency;
+  bool vector_colour;
+  uint32_t seed;
+  uint32_t smoothness;
+  int model;
+} grd5_grad_noise_t;
+
 typedef struct
 {
   double interp;
-  grd5_string_t *title;
   struct {
     uint32_t n;
     grd5_colour_stop_t *stops;
@@ -79,6 +91,17 @@ typedef struct
     uint32_t n;
     grd5_transp_stop_t *stops;
   } transp;
+} grd5_grad_custom_t;
+
+typedef struct
+{
+  int type;
+  grd5_string_t *title;
+  union
+  {
+    grd5_grad_custom_t custom;
+    grd5_grad_noise_t noise;
+  } u;
 } grd5_grad_t;
 
 typedef struct
@@ -87,6 +110,7 @@ typedef struct
   grd5_grad_t* gradients;
 } grd5_t;
 
+extern int grd5_model(grd5_string_t *str);
 extern void grd5_destroy(grd5_t *grd5);
 
 #endif

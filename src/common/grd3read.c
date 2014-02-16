@@ -11,10 +11,6 @@
    check fread return values
 */
 
-#if 0
-#define DEBUG_OPGRAD
-#endif
-
 #include <stdio.h>
 
 #include "grd3read.h"
@@ -175,10 +171,6 @@ static int grd3_read_stream(FILE* s,grd3_t* grad)
     }
 
   n = ntohs(u[0]);
-
-#ifdef DEBUG_OPGRAD
-  printf("opacity gradient: %i stops\n",n);
-#endif
 
   if (n<2) 
     {
@@ -427,10 +419,6 @@ static int read_opseg(FILE *s,grd3_opseg_t* seg)
   seg->z        = ntohs(u[1]);
   seg->midpoint = ntohs(u[3]);
   seg->opacity  = ntohs(u[4]);
-
-#ifdef DEBUG_OPGRAD
-  printf("  %.2i %.3i %.3i\n",seg->z,seg->midpoint,seg->opacity);
-#endif
 
   return 0;
 }

@@ -138,10 +138,10 @@ static int trim_op(gstack_t* stack)
   replace the midpoints by explicit mid-point stops
 */
 
-static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
+static gstack_t* rectify_rgb(grd5_grad_custom_t* gradc, pssvg_opt_t opt)
 {
-  grd5_colour_stop_t *grd5_stop = grad->colour.stops;
-  int i, n = grad->colour.n;
+  grd5_colour_stop_t *grd5_stop = gradc->colour.stops;
+  int i, n = gradc->colour.n;
 
   if (n<2)
     {
@@ -151,7 +151,7 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
 
   for (i=0 ; i<n ; i++)
     {
-      if (grd5_stop[i].type == GRD5_STOP_GRSC)
+      if (grd5_stop[i].type == GRD5_MODEL_GRSC)
 	{
 	  double val = grd5_stop[i].u.grsc.Gry;
 
@@ -159,9 +159,9 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
 	  grd5_stop[i].u.rgb.Grn = val;
 	  grd5_stop[i].u.rgb.Bl  = val;
 
-	  grd5_stop[i].type = GRD5_STOP_RGB;
+	  grd5_stop[i].type = GRD5_MODEL_RGB;
 	}
-      else if (grd5_stop[i].type == GRD5_STOP_HSB)
+      else if (grd5_stop[i].type == GRD5_MODEL_HSB)
 	{
 	  double hsv[3];
 
@@ -187,26 +187,26 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
 	  grd5_stop[i].u.rgb.Grn = rgb[1];
 	  grd5_stop[i].u.rgb.Bl  = rgb[2];
 
-	  grd5_stop[i].type = GRD5_STOP_RGB;	  
+	  grd5_stop[i].type = GRD5_MODEL_RGB;	  
 	}
-      else if (grd5_stop[i].type == GRD5_STOP_BCKC)
+      else if (grd5_stop[i].type == GRD5_MODEL_BCKC)
 	{
 	  grd5_stop[i].u.rgb.Rd  = opt.bg.red;
 	  grd5_stop[i].u.rgb.Grn = opt.bg.green;
 	  grd5_stop[i].u.rgb.Bl  = opt.bg.blue;
 
-	  grd5_stop[i].type = GRD5_STOP_RGB;
+	  grd5_stop[i].type = GRD5_MODEL_RGB;
 	}
-      else if (grd5_stop[i].type == GRD5_STOP_FRGC)
+      else if (grd5_stop[i].type == GRD5_MODEL_FRGC)
 	{
 	  grd5_stop[i].u.rgb.Rd  = opt.fg.red;
 	  grd5_stop[i].u.rgb.Grn = opt.fg.green;
 	  grd5_stop[i].u.rgb.Bl  = opt.fg.blue;
 
-	  grd5_stop[i].type = GRD5_STOP_RGB;
+	  grd5_stop[i].type = GRD5_MODEL_RGB;
 	}
 
-      if (grd5_stop[i].type != GRD5_STOP_RGB)
+      if (grd5_stop[i].type != GRD5_MODEL_RGB)
 	{
 	  fprintf(stderr, "stop %i is non-RGB (type %i)\n", 
 		  i, grd5_stop[i].type);
@@ -286,10 +286,10 @@ static gstack_t* rectify_rgb(grd5_grad_t* grad, pssvg_opt_t opt)
   return stack;
 }
 
-static gstack_t* rectify_op(grd5_grad_t* grad)
+static gstack_t* rectify_op(grd5_grad_custom_t* gradc)
 {
-  grd5_transp_stop_t *grd5_stop = grad->transp.stops;
-  int i,n = grad->transp.n;
+  grd5_transp_stop_t *grd5_stop = gradc->transp.stops;
+  int i,n = gradc->transp.n;
 
   if (n<2)
     {
@@ -356,15 +356,11 @@ static gstack_t* rectify_op(grd5_grad_t* grad)
   return stack;
 }
 
-static int pssvg_convert1(grd5_grad_t *grd5_grad, 
-			  svg_t **psvg, 
-			  pssvg_opt_t opt,
-			  int gradnum)
+static int pssvg_title(grd5_grad_t *grd5_grad, 
+		       svg_t *svg, 
+		       pssvg_opt_t opt, 
+		       int gradnum)
 {
-  svg_t *svg;
-
-  if ((svg = svg_new()) == NULL) return 1;
-
   if (opt.title)
     {
       snprintf((char*)(svg->name), SVG_NAME_LEN, opt.title, gradnum);
@@ -372,7 +368,7 @@ static int pssvg_convert1(grd5_grad_t *grd5_grad,
   else
     {
       grd5_string_t *ucs2_title_string = grd5_grad->title;
-
+      
       size_t ucs2_title_len = ucs2_title_string->len;
       char  *ucs2_title     = ucs2_title_string->content;
       size_t utf8_title_len = ucs2_title_len; 
@@ -390,12 +386,20 @@ static int pssvg_convert1(grd5_grad_t *grd5_grad,
       strncpy((char*)svg->name, (char*)utf8_title, SVG_NAME_LEN);
     }
 
+  return 0;
+}
+
+static int pssvg_convert1(grd5_grad_custom_t *grd5_gradc, 
+			  svg_t *svg, 
+			  pssvg_opt_t opt,
+			  int gradnum)
+{
   gstack_t *rgbrec, *oprec;
 
-  if ((rgbrec = rectify_rgb(grd5_grad, opt)) == NULL)
+  if ((rgbrec = rectify_rgb(grd5_gradc, opt)) == NULL)
     return 1;
   
-  if ((oprec = rectify_op(grd5_grad)) == NULL)
+  if ((oprec = rectify_op(grd5_gradc)) == NULL)
     return 1;
 
   if (grdxsvg(rgbrec, oprec, svg) != 0)
@@ -408,13 +412,11 @@ static int pssvg_convert1(grd5_grad_t *grd5_grad,
     {
       printf("  '%s', %i%% smooth; %i colour, %i opacity converted to %i RGBA\n", 
 	     svg->name,
-	     (int)round(grd5_grad->interp/40.96),
-	     grd5_grad->colour.n,
-	     grd5_grad->transp.n,
+	     (int)round(grd5_gradc->interp/40.96),
+	     grd5_gradc->colour.n,
+	     grd5_gradc->transp.n,
 	     svg_num_stops(svg));
     }
-
-  *psvg = svg;
 
   return 0;
 }
@@ -433,16 +435,34 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
       grd5_grad_t *grd5_grad = grd5->gradients + i;
       svg_t *svg;
 
-      if (pssvg_convert1(grd5_grad, &svg, opt, i) == 0)
+      switch (grd5_grad->type)
 	{
-	  if (gstack_push(gstack, &svg) != 0)
+	case GRD5_GRAD_CUSTOM:
+
+	  if ((svg = svg_new()) == NULL) return 1;
+	  if (pssvg_title(grd5_grad, svg, opt, i) != 0) return 1;
+	  if (pssvg_convert1(&(grd5_grad->u.custom), svg, opt, i) == 0)
 	    {
-	      fprintf(stderr, "error pushing result to stack\n");
-	      return 1;
+	      if (gstack_push(gstack, &svg) != 0)
+		{
+		  fprintf(stderr, "error pushing result to stack\n");
+		  return 1;
+		}
 	    }
+	  else
+	    fprintf(stderr, "failed convert of gradient %i\n", i);
+	  
+	  break;
+
+	case GRD5_GRAD_NOISE:
+	  
+	  fprintf(stderr, "no conversion of (noise) gradient %i\n", i);
+	  break;
+
+	default:
+
+	  fprintf(stderr, "bad type (%i) for gradient %i\n", grd5_grad->type, i);
 	}
-      else
-	fprintf(stderr, "failed convert of gradient %i\n", i);
     }
 
   int m = gstack_size(gstack);
