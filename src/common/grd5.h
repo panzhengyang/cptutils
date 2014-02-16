@@ -73,11 +73,18 @@ typedef struct
 
 typedef struct
 {
+  uint32_t n;
+  uint32_t *vals;
+} grd5_extremum_t;
+
+typedef struct
+{
   bool show_transparency;
   bool vector_colour;
   uint32_t seed;
   uint32_t smoothness;
   int model;
+  grd5_extremum_t min, max;
 } grd5_grad_noise_t;
 
 typedef struct

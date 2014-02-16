@@ -431,6 +431,56 @@ static int parse_Smth(FILE *stream, uint32_t *smth)
   return GRD5_READ_OK;
 }
 
+static int parse_extremum(FILE *stream, const char* name, grd5_extremum_t *ext)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, name, TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
+    return err;
+
+  uint32_t n;
+
+  if ((err = parse_uint32(stream, &n)) != GRD5_READ_OK)
+    return err;
+  
+  uint32_t i, vals[n]; 
+
+  for (i=0 ; i<n ; i++)
+    {
+      int type;
+
+      if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+	return err;
+
+      if (type != TYPE_LONG)
+	return GRD5_READ_PARSE;
+
+      if ((err = parse_uint32(stream, vals+i)) !=  GRD5_READ_OK)
+	return err;
+    }
+
+  size_t sz = n * sizeof(uint32_t);
+
+  if ((ext->vals = malloc(sz)) == NULL)
+    return GRD5_READ_MALLOC;
+
+  memcpy(ext->vals, vals, sz);
+
+  ext->n = n;
+
+  return GRD5_READ_OK;
+}
+
+static int parse_Mnm(FILE *stream, grd5_extremum_t *min)
+{
+  return parse_extremum(stream, "Mnm ", min);
+}
+
+static int parse_Mxm(FILE *stream, grd5_extremum_t *max)
+{
+  return parse_extremum(stream, "Mxm ", max);
+}
+
 static int parse_Grad(FILE *stream)
 {
   return parse_named_type(stream, "Grad", TYPE_OBJECT);
@@ -983,15 +1033,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	  grad->type = GRD5_GRAD_NOISE;
 	  grd5_grad_noise_t *gradn = &(grad->u.noise);
 
+	  gradn->min.n = gradn->max.n = 0;
+
 	  err = parse_ShTr(stream, &(gradn->show_transparency));
 	  if (err != GRD5_READ_OK) return err;
 
-	  printf("ShTr: %s\n", gradn->show_transparency ? "true" : "false");
-
 	  if ((err = parse_VctC(stream, &(gradn->vector_colour))) != GRD5_READ_OK)
 	    return err;
-
-	  printf("VctC: %s\n", gradn->vector_colour ? "true" : "false");
 
 	  grd5_string_t *model_name = NULL;
 
@@ -999,8 +1047,6 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	    return err;
 
 	  gradn->model = grd5_model(model_name);
-
-	  printf("ClrS: %*s %i\n", model_name->len, model_name->content, gradn->model);
 
 	  grd5_string_destroy(model_name);
 
@@ -1010,12 +1056,14 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	  if ((err = parse_RndS(stream, &(gradn->seed))) != GRD5_READ_OK)
 	    return err;
 
-	  printf("RndS: %u\n", gradn->seed);
-
 	  if ((err = parse_Smth(stream, &(gradn->smoothness))) != GRD5_READ_OK)
 	    return err;
 
-	  printf("Smth: %u\n", gradn->smoothness);
+	  if ((err = parse_Mnm(stream, &(gradn->min)))  != GRD5_READ_OK)
+	    return err;
+
+	  if ((err = parse_Mxm(stream, &(gradn->max)))  != GRD5_READ_OK)
+	    return err;
 	}
       else
 	{

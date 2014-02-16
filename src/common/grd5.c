@@ -18,6 +18,8 @@ extern void grd5_grad_custom_destroy(grd5_grad_custom_t *gradc)
 
 extern void grd5_grad_noise_destroy(grd5_grad_noise_t *gradn)
 {
+  if (gradn->min.n > 0) free(gradn->min.vals);
+  if (gradn->max.n > 0) free(gradn->max.vals);
 }
 
 extern void grd5_grad_destroy(grd5_grad_t *grad)
