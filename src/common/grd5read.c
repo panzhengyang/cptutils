@@ -54,7 +54,12 @@ extern int grd5_read(const char* file, grd5_t** pgrd5)
   return err;
 }
 
-static int parse_uint16(FILE *stream, uint16_t *i)
+/*
+  read_<type> functions read a particular data type (double,
+  uint32, etc) from the stream
+*/
+
+static int read_uint16(FILE *stream, uint16_t *i)
 {
   uint16_t buf;
 
@@ -66,7 +71,7 @@ static int parse_uint16(FILE *stream, uint16_t *i)
   return GRD5_READ_OK;
 }
 
-static int parse_uint32(FILE *stream, uint32_t *i)
+static int read_uint32(FILE *stream, uint32_t *i)
 {
   uint32_t buf;
 
@@ -78,7 +83,7 @@ static int parse_uint32(FILE *stream, uint32_t *i)
   return GRD5_READ_OK;
 }
 
-static int parse_type(FILE *stream, int *type)
+static int read_type(FILE *stream, int *type)
 {
   char buf[4];
 
@@ -89,6 +94,46 @@ static int parse_type(FILE *stream, int *type)
 
   return GRD5_READ_OK;
 }
+
+
+static int read_double(FILE *stream, double *pval)
+{
+  uint64_t val;
+
+  if (fread(&val, 8, 1, stream) != 1) return GRD5_READ_FREAD;
+
+  val = be64toh(val);
+  
+  /*
+    the following #pragmas supresses the warning "dereferencing 
+    type-punned pointer will break strict-aliasing rules" since
+    that is exactly what we want to do
+  */
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+
+  *pval = *(double*)(&val);
+
+#pragma GCC diagnostic pop
+
+  return GRD5_READ_OK;
+}
+
+static int read_bool(FILE *stream, bool *pval)
+{
+  unsigned char cval;
+
+  if (fread(&cval, 1, 1, stream) != 1) return GRD5_READ_FREAD;
+
+  *pval = ! (cval == 0);
+
+  return GRD5_READ_OK;
+}
+
+/*
+  a number of functions reading grd5_string_t of various formats
+*/
 
 typedef enum { 
   grd5_string_typename, 
@@ -102,7 +147,7 @@ static grd5_string_t* parse_grd5_string(FILE *stream,
 {
   uint32_t len;
 
-  if ((*perr = parse_uint32(stream, &len)) != GRD5_READ_OK)
+  if ((*perr = read_uint32(stream, &len)) != GRD5_READ_OK)
     return NULL;
 
   switch (type)
@@ -168,6 +213,8 @@ static grd5_string_t* parse_tdta(FILE *stream, int *perr)
   return parse_grd5_string(stream, grd5_string_tdta, perr);
 }
 
+/* helper functions for parse_<type> functions */
+
 static bool typename_matches(grd5_string_t* typename, const char* expected)
 {
   return grd5_string_matches(typename, expected);
@@ -194,7 +241,7 @@ static int parse_named_type(FILE *stream,
 
   int type;
 
-  if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+  if ((err = read_type(stream, &type)) != GRD5_READ_OK)
     return err;
 
   if (type == TYPE_UNKNOWN)
@@ -206,29 +253,11 @@ static int parse_named_type(FILE *stream,
   return GRD5_READ_OK;
 }
 
-static int parse_double_data(FILE *stream, double *pval)
-{
-  uint64_t val;
-
-  if (fread(&val, 8, 1, stream) != 1) return GRD5_READ_FREAD;
-
-  val = be64toh(val);
-  
-  /*
-    the following #pragmas supresses the warning "dereferencing 
-    type-punned pointer will break strict-aliasing rules" since
-    that is exactly what we want to do
-  */
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-
-  *pval = *(double*)(&val);
-
-#pragma GCC diagnostic pop
-
-  return GRD5_READ_OK;
-}
+/*
+  parsing particular tokens, typically of the form [size] [name] [value]
+  or similar.  Depending on the application we may pass [name] in as
+  an expected value, somteimes we return it (by reference) instead
+*/
 
 static int parse_untf(FILE *stream, 
 		      const char* expected_name, 
@@ -251,7 +280,7 @@ static int parse_untf(FILE *stream,
       return GRD5_READ_PARSE;
     }
 
-  return parse_double_data(stream, pval);
+  return read_double(stream, pval);
 }
 
 static int parse_double(FILE *stream, const char* expected_name, double *pval)
@@ -261,18 +290,7 @@ static int parse_double(FILE *stream, const char* expected_name, double *pval)
   if ((err = parse_named_type(stream, expected_name, TYPE_DOUBLE)) != GRD5_READ_OK)
     return err;
 
-  return parse_double_data(stream, pval);
-}
-
-static int parse_bool_data(FILE *stream, bool *pval)
-{
-  unsigned char cval;
-
-  if (fread(&cval, 1, 1, stream) != 1) return GRD5_READ_FREAD;
-
-  *pval = ! (cval == 0);
-
-  return GRD5_READ_OK;
+  return read_double(stream, pval);
 }
 
 static int parse_bool(FILE *stream, const char* expected_name, bool* pval)
@@ -282,7 +300,31 @@ static int parse_bool(FILE *stream, const char* expected_name, bool* pval)
   if ((err = parse_named_type(stream, expected_name, TYPE_BOOL)) != GRD5_READ_OK)
     return err;
 
-  return parse_bool_data(stream, pval);
+  return read_bool(stream, pval);
+}
+
+static int parse_long(FILE *stream, 
+		      const char *expected_name, 
+		      uint32_t *pval)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_LONG)) != GRD5_READ_OK)
+    return err;
+
+  return read_uint32(stream, pval);
+}
+
+static int parse_vll_length(FILE *stream, 
+			    const char *expected_name, 
+			    uint32_t *pval)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
+    return err;
+
+  return read_uint32(stream, pval);
 }
 
 static int parse_enum(FILE *stream, 
@@ -304,6 +346,69 @@ static int parse_enum(FILE *stream,
   return GRD5_READ_OK; 
 }
 
+static int parse_text(FILE *stream,
+		      const char *expected_name,
+		      grd5_string_t **pval)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, expected_name, TYPE_TEXT)) != GRD5_READ_OK)
+    return err;
+
+  grd5_string_t *val;
+
+  if ((val = parse_ucs2(stream, &err)) == NULL)
+    return err;
+
+  *pval = val;
+
+  return GRD5_READ_OK; 
+}
+
+static int parse_extremum(FILE *stream, const char* name, grd5_extremum_t *ext)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, name, TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
+    return err;
+
+  uint32_t n;
+
+  if ((err = read_uint32(stream, &n)) != GRD5_READ_OK)
+    return err;
+  
+  uint32_t i, vals[n]; 
+
+  for (i=0 ; i<n ; i++)
+    {
+      int type;
+
+      if ((err = read_type(stream, &type)) != GRD5_READ_OK)
+	return err;
+
+      if (type != TYPE_LONG)
+	return GRD5_READ_PARSE;
+
+      if ((err = read_uint32(stream, vals+i)) !=  GRD5_READ_OK)
+	return err;
+    }
+
+  size_t sz = n * sizeof(uint32_t);
+
+  if ((ext->vals = malloc(sz)) == NULL)
+    return GRD5_READ_MALLOC;
+
+  memcpy(ext->vals, vals, sz);
+
+  ext->n = n;
+
+  return GRD5_READ_OK;
+}
+
+/*
+  particular token parsers, constructed from the above
+*/
+
 static int parse_ShTr(FILE *stream, bool *pval)
 {
   return parse_bool(stream, "ShTr", pval);
@@ -316,28 +421,12 @@ static int parse_VctC(FILE *stream, bool *pval)
 
 static int parse_GrdL(FILE *stream, uint32_t *ngrad)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "GrdL", TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, ngrad)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_vll_length(stream, "GrdL", ngrad);
 }
 
 static int parse_Clrs(FILE *stream, uint32_t *nstop)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "Clrs", TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, nstop)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_vll_length(stream, "Clrs", nstop);
 }
 
 static int parse_ClrS(FILE *stream, grd5_string_t **pmodel)
@@ -366,117 +455,32 @@ static int parse_ClrS(FILE *stream, grd5_string_t **pmodel)
 
 static int parse_Trns(FILE *stream, uint32_t *ntrns)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "Trns", TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, ntrns)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_vll_length(stream, "Trns", ntrns);
 }
 
 static int parse_Opct(FILE *stream, double *opacity)
 {
-  int err;
-
-  if ((err = parse_untf(stream, "Opct", "#Prc", opacity)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_untf(stream, "Opct", "#Prc", opacity);
 }
 
 static int parse_Lctn(FILE *stream, uint32_t *location)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "Lctn", TYPE_LONG)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, location)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_long(stream, "Lctn", location);
 }
 
 static int parse_Mdpn(FILE *stream, uint32_t *midpoint)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "Mdpn", TYPE_LONG)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, midpoint)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_long(stream, "Mdpn", midpoint);
 }
 
 static int parse_RndS(FILE *stream, uint32_t *rnds)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "RndS", TYPE_LONG)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, rnds)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
+  return parse_long(stream, "RndS", rnds);
 }
 
 static int parse_Smth(FILE *stream, uint32_t *smth)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "Smth", TYPE_LONG)) != GRD5_READ_OK)
-    return err;
-
-  if ((err = parse_uint32(stream, smth)) != GRD5_READ_OK)
-    return err;
-  
-  return GRD5_READ_OK;
-}
-
-static int parse_extremum(FILE *stream, const char* name, grd5_extremum_t *ext)
-{
-  int err;
-
-  if ((err = parse_named_type(stream, name, TYPE_VAR_LEN_LIST)) != GRD5_READ_OK)
-    return err;
-
-  uint32_t n;
-
-  if ((err = parse_uint32(stream, &n)) != GRD5_READ_OK)
-    return err;
-  
-  uint32_t i, vals[n]; 
-
-  for (i=0 ; i<n ; i++)
-    {
-      int type;
-
-      if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
-	return err;
-
-      if (type != TYPE_LONG)
-	return GRD5_READ_PARSE;
-
-      if ((err = parse_uint32(stream, vals+i)) !=  GRD5_READ_OK)
-	return err;
-    }
-
-  size_t sz = n * sizeof(uint32_t);
-
-  if ((ext->vals = malloc(sz)) == NULL)
-    return GRD5_READ_MALLOC;
-
-  memcpy(ext->vals, vals, sz);
-
-  ext->n = n;
-
-  return GRD5_READ_OK;
+  return parse_long(stream, "Smth", smth);
 }
 
 static int parse_Mnm(FILE *stream, grd5_extremum_t *min)
@@ -501,19 +505,7 @@ static int parse_Clr(FILE *stream)
 
 static int parse_Nm(FILE *stream, grd5_string_t **ptitle)
 {
-  int err;
-
-  if ((err = parse_named_type(stream, "Nm  ", TYPE_TEXT)) != GRD5_READ_OK)
-    return err;
-
-  grd5_string_t *title;
-
-  if ((title = parse_ucs2(stream, &err)) == NULL)
-    return err;
-
-  *ptitle = title;
-
-  return GRD5_READ_OK; 
+  return parse_text(stream, "Nm  ", ptitle);
 }
 
 static int parse_GrdF_GrdF(FILE *stream, grd5_string_t **pgtype)
@@ -569,6 +561,10 @@ static int parse_Intr(FILE *stream, double *interp)
   return parse_double(stream, "Intr", interp); 
 }
 
+/*
+  Objc is a bit of a special case since it is rather complicated
+*/
+
 typedef struct
 {
   struct {
@@ -598,7 +594,7 @@ static objc_t* parse_objc(FILE *stream, int *perr)
 
   uint32_t value;
 
-  if ((*perr = parse_uint32(stream, &value)) != GRD5_READ_OK)
+  if ((*perr = read_uint32(stream, &value)) != GRD5_READ_OK)
     goto cleanup_typename;
 
   objc_t* objc;
@@ -623,6 +619,10 @@ static objc_t* parse_objc(FILE *stream, int *perr)
 
   return NULL;
 }
+
+/*
+  user colours
+*/
 
 static int parse_user_rgb(FILE *stream, grd5_rgb_t *rgb)
 {
@@ -676,22 +676,13 @@ static int parse_user_book(FILE *stream, grd5_book_t *book)
 {
   int err;
 
-  if ((err = parse_named_type(stream, "Bk  ", TYPE_TEXT)) != GRD5_READ_OK)
+  if ((err = parse_text(stream, "Bk  ", &(book->Bk))) != GRD5_READ_OK)
     return err;
 
-  if ((book->Bk = parse_ucs2(stream, &err)) == NULL)
+  if ((err = parse_text(stream, "Nm  ", &(book->Nm))) != GRD5_READ_OK)
     return err;
 
-  if ((err = parse_named_type(stream, "Nm  ", TYPE_TEXT)) != GRD5_READ_OK)
-    return err;
-
-  if ((book->Nm = parse_ucs2(stream, &err)) == NULL)
-    return err;
-
-  if ((err = parse_named_type(stream, "bookID", TYPE_LONG)) != GRD5_READ_OK)
-    return err;
-
-  if (parse_uint32(stream, &(book->bookID)) != GRD5_READ_OK)
+  if ((err = parse_long(stream, "bookID", &(book->bookID))) != GRD5_READ_OK)
     return err;
 
   if ((err = parse_named_type(stream, "bookKey", TYPE_TDTA)) != GRD5_READ_OK)
@@ -789,12 +780,16 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
   return err;
 }
 
+/*
+  stops
+*/
+
 static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
 {
   int err, type;
   objc_t *objc;
 
-  if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+  if ((err = read_type(stream, &type)) != GRD5_READ_OK)
     return err;
   
   if (type != TYPE_OBJECT) return GRD5_READ_PARSE;
@@ -872,7 +867,7 @@ static int parse_transp_stop(FILE *stream, grd5_transp_stop_t *stop)
   int err, type;
   objc_t *objc;
 
-  if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+  if ((err = read_type(stream, &type)) != GRD5_READ_OK)
     return err;
   
   if (type != TYPE_OBJECT) return GRD5_READ_PARSE;
@@ -905,6 +900,10 @@ static int parse_transp_stop(FILE *stream, grd5_transp_stop_t *stop)
   return GRD5_READ_OK;
 }
 
+/*
+  parse a file
+*/
+
 static int grd5_stream(FILE* stream, grd5_t* grd5)
 {
   int err;
@@ -922,7 +921,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   uint16_t version;
 
-  if ((err = parse_uint16(stream, &version)) != GRD5_READ_OK)
+  if ((err = read_uint16(stream, &version)) != GRD5_READ_OK)
     return err;
 
   if (version != 5)
@@ -950,7 +949,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       /* outer objc */
 
-      if ((err = parse_type(stream, &type)) != GRD5_READ_OK)
+      if ((err = read_type(stream, &type)) != GRD5_READ_OK)
 	return err;
 
       if (type != TYPE_OBJECT) return GRD5_READ_PARSE;
@@ -1120,4 +1119,3 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   return GRD5_READ_OK;
 }
-
