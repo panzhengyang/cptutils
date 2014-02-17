@@ -151,6 +151,14 @@ static gstack_t* rectify_rgb(grd5_grad_custom_t* gradc, pssvg_opt_t opt)
 
   for (i=0 ; i<n ; i++)
     {
+      if (grd5_stop[i].type == GRD5_MODEL_BOOK)
+	{
+	  fprintf(stderr, 
+		  "stop %i (book colour) not converted for legal reasons\n",
+		  i);
+	  return NULL;
+	}
+
       if (grd5_stop[i].type == GRD5_MODEL_GRSC)
 	{
 	  double val = grd5_stop[i].u.grsc.Gry;

@@ -38,6 +38,10 @@ extern int grd5_type(const char* str)
       if (strncmp("Objc", str, 4) == 0)
 	return TYPE_OBJECT;
       break;
+    case 't':
+      if (strncmp("tdta", str, 4) == 0)
+	return TYPE_TDTA;
+      break;
     case 'T':
       if (strncmp("TEXT", str, 4) == 0)
 	return TYPE_TEXT;

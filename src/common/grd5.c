@@ -84,6 +84,8 @@ extern int grd5_model(grd5_string_t *str)
     case 'B':
       if (grd5_string_matches(str, "BckC"))
 	model = GRD5_MODEL_BCKC;
+      else if (grd5_string_matches(str, "BkCl"))
+	model = GRD5_MODEL_BOOK;
       break;
     }
 

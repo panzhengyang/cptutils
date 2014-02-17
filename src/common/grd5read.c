@@ -92,7 +92,8 @@ static int parse_type(FILE *stream, int *type)
 
 typedef enum { 
   grd5_string_typename, 
-  grd5_string_ucs2 
+  grd5_string_ucs2,
+  grd5_string_tdta
 } grd5_string_type_t;
 
 static grd5_string_t* parse_grd5_string(FILE *stream, 
@@ -106,6 +107,8 @@ static grd5_string_t* parse_grd5_string(FILE *stream,
 
   switch (type)
     {
+    case grd5_string_tdta :
+      break;
     case grd5_string_typename :
       if (len == 0) len = 4;
       break;
@@ -158,6 +161,11 @@ static grd5_string_t* parse_typename(FILE *stream, int *perr)
 static grd5_string_t* parse_ucs2(FILE *stream, int *perr)
 {
   return parse_grd5_string(stream, grd5_string_ucs2, perr);
+}
+
+static grd5_string_t* parse_tdta(FILE *stream, int *perr)
+{
+  return parse_grd5_string(stream, grd5_string_tdta, perr);
 }
 
 static bool typename_matches(grd5_string_t* typename, const char* expected)
@@ -664,6 +672,37 @@ static int parse_user_grsc(FILE *stream, grd5_grsc_t *grsc)
   return (err ?  GRD5_READ_PARSE :  GRD5_READ_OK);
 }
 
+static int parse_user_book(FILE *stream, grd5_book_t *book)
+{
+  int err;
+
+  if ((err = parse_named_type(stream, "Bk  ", TYPE_TEXT)) != GRD5_READ_OK)
+    return err;
+
+  if ((book->Bk = parse_ucs2(stream, &err)) == NULL)
+    return err;
+
+  if ((err = parse_named_type(stream, "Nm  ", TYPE_TEXT)) != GRD5_READ_OK)
+    return err;
+
+  if ((book->Nm = parse_ucs2(stream, &err)) == NULL)
+    return err;
+
+  if ((err = parse_named_type(stream, "bookID", TYPE_LONG)) != GRD5_READ_OK)
+    return err;
+
+  if (parse_uint32(stream, &(book->bookID)) != GRD5_READ_OK)
+    return err;
+
+  if ((err = parse_named_type(stream, "bookKey", TYPE_TDTA)) != GRD5_READ_OK)
+    return err;
+     
+  if ((book->bookKey = parse_tdta(stream, &err)) == NULL)
+    return err;
+  
+  return GRD5_READ_OK;
+}
+
 static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 {
   int err;
@@ -697,6 +736,10 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 	case GRD5_MODEL_CMYC:
 	  stop->type = GRD5_MODEL_CMYC;
 	  err = parse_user_cmyc(stream, &(stop->u.cmyc));
+	  break;
+	case GRD5_MODEL_BOOK:
+	  stop->type = GRD5_MODEL_BOOK;
+	  err = parse_user_book(stream, &(stop->u.book));
 	  break;
 	default:
 	  err = GRD5_READ_PARSE;

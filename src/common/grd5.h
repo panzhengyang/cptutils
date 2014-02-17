@@ -21,6 +21,7 @@
 #define GRD5_MODEL_GRSC    5
 #define GRD5_MODEL_FRGC    6
 #define GRD5_MODEL_BCKC    7
+#define GRD5_MODEL_BOOK    8
 
 typedef struct
 {
@@ -56,6 +57,13 @@ typedef struct
 
 typedef struct
 {
+  grd5_string_t *Bk, *Nm;
+  uint32_t bookID;
+  grd5_string_t *bookKey;
+} grd5_book_t;
+
+typedef struct
+{
   int type;
   union {
     grd5_rgb_t  rgb;
@@ -63,6 +71,7 @@ typedef struct
     grd5_lab_t  lab;
     grd5_cmyc_t cmyc;
     grd5_grsc_t grsc;
+    grd5_book_t book;
   } u;
   uint32_t Lctn;
   uint32_t Mdpn;

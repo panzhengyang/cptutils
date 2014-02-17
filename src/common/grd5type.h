@@ -17,6 +17,7 @@
 #define TYPE_LONG          8
 #define TYPE_DOUBLE        9
 #define TYPE_ENUM          10
+#define TYPE_TDTA          11
 
 extern int grd5_type(const char*);
 
