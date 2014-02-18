@@ -401,49 +401,50 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
   return 0;
 }
 
-static int pssvg_convert1(grd5_grad_custom_t *grd5_gradc, 
-			  svg_t *svg, 
-			  pssvg_opt_t opt,
-			  int gradnum)
+static int pssvg_convert_one(grd5_grad_custom_t *grd5_gradc, 
+			     svg_t *svg, 
+			     pssvg_opt_t opt,
+			     int gradnum)
 {
-  gstack_t *rgbrec, *oprec;
+  gstack_t *rgbrec;
+  int err = 0;
 
   if ((rgbrec = rectify_rgb(grd5_gradc, opt)) == NULL)
-    return 1;
-  
-  if ((oprec = rectify_op(grd5_gradc)) == NULL)
-    return 1;
-
-  if (grdxsvg(rgbrec, oprec, svg) != 0)
+    err++;
+  else
     {
-      fprintf(stderr, "failed conversion of rectified stops to svg\n");
-      return 1;
+      gstack_t *oprec;
+
+      if ((oprec = rectify_op(grd5_gradc)) == NULL)
+	err++;
+      else
+	{
+	  err += (grdxsvg(rgbrec, oprec, svg) != 0);
+	  gstack_destroy(oprec);
+	}
+      
+      gstack_destroy(rgbrec);
     }
 
-  gstack_destroy(rgbrec);
-  gstack_destroy(oprec);
+  if (err)
+    fprintf(stderr, "failed conversion of rectified stops to svg\n");
+  else if (opt.verbose)
+    printf("  '%s', %i%% smooth; %i colour, %i opacity converted to %i RGBA\n", 
+	   svg->name,
+	   (int)round(grd5_gradc->interp/40.96),
+	   grd5_gradc->colour.n,
+	   grd5_gradc->transp.n,
+	   svg_num_stops(svg));
 
-  if (opt.verbose)
-    {
-      printf("  '%s', %i%% smooth; %i colour, %i opacity converted to %i RGBA\n", 
-	     svg->name,
-	     (int)round(grd5_gradc->interp/40.96),
-	     grd5_gradc->colour.n,
-	     grd5_gradc->transp.n,
-	     svg_num_stops(svg));
-    }
-
-  return 0;
+  return err;
 }
 
-static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
+static int pssvg_convert_all(grd5_t *grd5, 
+			     svgset_t *svgset, 
+			     gstack_t *gstack, 
+			     pssvg_opt_t opt)
 {
   int i, n = grd5->n;
-
-  gstack_t *gstack;
-
-  if ((gstack = gstack_new(sizeof(svg_t*), n, 1)) == NULL) 
-    return 1;
 
   for (i=0 ; i<n ; i++)
     {
@@ -456,7 +457,7 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
 
 	  if ((svg = svg_new()) == NULL) return 1;
 	  if (pssvg_title(grd5_grad, svg, opt, i) != 0) return 1;
-	  if (pssvg_convert1(&(grd5_grad->u.custom), svg, opt, i) == 0)
+	  if (pssvg_convert_one(&(grd5_grad->u.custom), svg, opt, i) == 0)
 	    {
 	      if (gstack_push(gstack, &svg) != 0)
 		{
@@ -465,8 +466,11 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
 		}
 	    }
 	  else
-	    fprintf(stderr, "failed convert of gradient %i\n", i);
-	  
+	    {
+	      fprintf(stderr, "failed convert of gradient %i\n", i);
+	      svg_destroy(svg);
+	    }
+
 	  break;
 
 	case GRD5_GRAD_NOISE:
@@ -480,29 +484,49 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
 	}
     }
 
-  int m = gstack_size(gstack);
+  return 0;
+}
 
-  if (m == 0)
-    {
-      fprintf(stderr, "no gradients converted\n");
-      return 1;
-    }
+static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
+{
+  int i, n = grd5->n;
+  gstack_t *gstack;
 
-  if (m < n)
-    fprintf(stderr, "only %d/%d gradient converted\n", m, n); 
-
-  if (gstack_reverse(gstack) != 0)
+  if ((gstack = gstack_new(sizeof(svg_t*), n, 1)) == NULL) 
     return 1;
 
-  svgset->n   = m;
-  svgset->svg = malloc(m*sizeof(svg_t*));
+  int err = pssvg_convert_all(grd5, svgset, gstack, opt);
 
-  for (i=0 ; i<m ; i++)
-    gstack_pop(gstack, svgset->svg+i); 
+  if (! err)
+    {
+      int m = gstack_size(gstack);
+
+      if (m == 0)
+	{
+	  fprintf(stderr, "no gradients converted\n");
+	  err++;
+	}
+      else
+	{
+	  if (m < n)
+	    fprintf(stderr, "only %d/%d gradient converted\n", m, n); 
+
+	  if (gstack_reverse(gstack) != 0)
+	    return 1;
+
+	  svgset->n = m;
+	  
+	  if ((svgset->svg = malloc(m*sizeof(svg_t*))) == NULL)
+	    return 1;
+
+	  for (i=0 ; i<m ; i++)
+	    gstack_pop(gstack, svgset->svg+i); 
+	}
+    }
 
   gstack_destroy(gstack);
 
-  return 0;
+  return err;
 }
 
 extern int pssvg(pssvg_opt_t opt)

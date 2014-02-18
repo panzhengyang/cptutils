@@ -12,7 +12,28 @@
 
 extern void grd5_grad_custom_destroy(grd5_grad_custom_t *gradc)
 {
-  if (gradc->colour.n > 0) free(gradc->colour.stops);
+  int n = gradc->colour.n;
+
+  if (n > 0)
+    {
+      int i;
+
+      grd5_colour_stop_t *stops = gradc->colour.stops;
+
+      for (i=0 ; i<n ; i++)
+	{
+	  if (stops[i].type == GRD5_MODEL_BOOK)
+	    {
+	      grd5_book_t *book = &(stops[i].u.book);
+
+	      grd5_string_destroy(book->Bk);
+	      grd5_string_destroy(book->Nm);
+	      grd5_string_destroy(book->bookKey);
+	    }
+	}
+
+      free(gradc->colour.stops);
+    }
   if (gradc->transp.n > 0) free(gradc->transp.stops);
 }
 
