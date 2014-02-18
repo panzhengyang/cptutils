@@ -1,5 +1,11 @@
 Changes
 
+1.51 (pending)
+  pssvg feature enhancements
+  - grd5 parser handles all known grd5 constructs
+  - fore/background colours handled by command-line
+  - conversion of gradients with CYMK & Lab colour-stops
+
 1.50 (13 Feb 2014)
   - bugfixes for pssvg
 
