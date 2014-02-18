@@ -229,12 +229,14 @@ extern int grdxsvg(gstack_t *rgb_stops,
 		   svg_t *svg)
 {
   gstack_t *merged_stops;
+  int err;
     
   if ((merged_stops = merge(rgb_stops, op_stops)) == NULL)
     return 1;
 
-  if (merged_svg(merged_stops, svg) != 0)
-    return 1;
+  err = (merged_svg(merged_stops, svg) != 0);
 
-  return 0;
+  gstack_destroy(merged_stops);
+  
+  return err;
 }

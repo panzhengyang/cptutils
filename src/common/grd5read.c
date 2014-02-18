@@ -853,6 +853,8 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
 	}
     }
 
+  grd5_string_destroy(subtype);
+
   if ((err = parse_Lctn(stream, &(stop->Lctn))) != GRD5_READ_OK)
     return err;
 
@@ -1115,6 +1117,9 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 		  gradient_type->content);
 	  return GRD5_READ_PARSE; 
 	}
+
+      grd5_string_destroy(gradient_type);
+
     }
 
   return GRD5_READ_OK;

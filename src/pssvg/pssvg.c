@@ -90,15 +90,17 @@ static int trim_rgb(gstack_t* stack)
       if (stop.z >= 409600)
 	{
 	  while (! gstack_empty(stack))
-	    gstack_pop(stack,&stop);
+	    gstack_pop(stack, &stop);
 	}
     }
 
   while (! gstack_empty(stack0))
     {
-      gstack_pop(stack0,&stop);
-      gstack_push(stack,&stop);
+      gstack_pop(stack0, &stop);
+      gstack_push(stack, &stop);
     }
+
+  gstack_destroy(stack0);
 
   return 0;
 }
@@ -129,6 +131,8 @@ static int trim_op(gstack_t* stack)
       gstack_pop(stack0,&stop);
       gstack_push(stack,&stop);
     }
+
+  gstack_destroy(stack0);
 
   return 0;
 }
@@ -415,6 +419,9 @@ static int pssvg_convert1(grd5_grad_custom_t *grd5_gradc,
       fprintf(stderr, "failed conversion of rectified stops to svg\n");
       return 1;
     }
+
+  gstack_destroy(rgbrec);
+  gstack_destroy(oprec);
 
   if (opt.verbose)
     {

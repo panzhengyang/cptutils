@@ -121,6 +121,12 @@ int main(int argc, char** argv)
 
   if (err) fprintf(stderr, "failed (error %i)\n", err);
 
+  /* free optional info values */
+
+  options_free(&info);
+
+  /* done */
+
   if (opt.verbose) printf("done.\n");
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
