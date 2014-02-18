@@ -20,7 +20,7 @@ gnames = {
     'gpl' : "GIMP palette",
     'cpt' : "GMT colour table palette",
     'svg' : "SVG gradient",
-    'grd' : "Paint Shop Pro gradient",
+    'grd' : "PaintShop Pro gradient",
     'ggr' : "GIMP gradient",
     'c3g' : "CSS3 gradient",
     'gpf' : "Gnuplot palette",

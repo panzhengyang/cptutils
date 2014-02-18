@@ -253,7 +253,7 @@ int main(int argc,char** argv)
 	case type_pov  : tstr = "POV-Ray colour map"; break;
 	case type_gpt  : tstr = "Gnuplot colour map"; break;
 	case type_css3 : tstr = "CSS3 gradient"; break;
-	case type_grd3 : tstr = "Paint Shop Pro (grd3)"; break;
+	case type_grd3 : tstr = "PaintShop Pro (grd3)"; break;
 	case type_sao  : tstr = "SAO (DS9) colour map"; break;
 	case type_png  : tstr = "png image"; break;
 	case type_svg  : tstr = "SVG gradient"; break;

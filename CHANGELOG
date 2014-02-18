@@ -136,7 +136,7 @@ Changes
   - fixed command-line bug in svgx
 
 1.26 (1 Sep 2006)
-  Paint Shop Pro special, the psp format is now completely
+  PaintShop Pro special, the psp format is now completely
   reverse engineered: see src/common/README.psp
   - pspread.c now also parses the opacity gradient and 
     midpoints of the segments.

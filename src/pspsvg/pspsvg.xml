@@ -18,8 +18,9 @@
 <refnamediv id='purpose'>
 <refname>pspsvg</refname>
 <refpurpose>
-  convert Paint Shop Pro gradients (jgd, PspGradient) to the 
-  SVG format.
+  convert 
+  <trademark class='registered'>PaintShop Pro</trademark> 
+  gradients (jgd, PspGradient) to the SVG format.
 </refpurpose>
 </refnamediv>
 
@@ -39,7 +40,7 @@
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para>
   The <command>pspsvg</command> utility converts the gradient 
-  files used by Paint Shop Pro (which usually have the extension
+  files used by PaintShop Pro (which usually have the extension
   jgd or PspGradient) to the Scalar Vector Graphics (SVG) format.
 </para>
 
@@ -89,17 +90,24 @@
 <refsect1 id='notes'><title>NOTES</title>
 
 <para>
-  The author could find no public documentation for the Paint 
-  Shop Pro gradient file format and so has reverse-engineered 
+  The author could find no public documentation for the 
+  PaintShop Pro gradient file format and so has reverse-engineered 
   it.  A technical description of the format can be found in 
   the file <filename>src/common/README.psp</filename> included
   in the <package>cptutils</package> source distribution.
 </para>
 
 <para>
-  The Paint Shop Pro format can be read by Photoshop, but 
+  The PaintShop Pro format can be read by Photoshop, but 
   Photoshop's native (grd) gradient format cannot be read
   by this program.
+</para>
+
+<para>
+  <trademark class='registered'>PaintShop Pro</trademark> 
+  is a trademark of the Corel Corporation.
+  Adobe <trademark class='registered'>Photoshop</trademark> 
+  is a trademark of Adobe Systems Inc.
 </para>
 
 </refsect1>
