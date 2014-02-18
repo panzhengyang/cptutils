@@ -100,7 +100,11 @@
 <para>
   The PaintShop Pro format can be read by Photoshop, but 
   Photoshop's native (grd) gradient format cannot be read
-  by this program.
+  by this program.  To convert Photoshop gradients, see the
+  <citerefentry>
+    <refentrytitle>pssvg</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry> documentation.
 </para>
 
 <para>
@@ -116,6 +120,10 @@
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
 <para>
+  <citerefentry>
+    <refentrytitle>pssvg</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </citerefentry>,
   <citerefentry>
     <refentrytitle>svgpsp</refentrytitle>
     <manvolnum>1</manvolnum>
