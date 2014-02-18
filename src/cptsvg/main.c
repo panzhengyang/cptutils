@@ -39,7 +39,6 @@ int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
   char    *infile = NULL, *outfile = NULL;
-  int      err;
   cptsvg_opt_t opt;
 
   /* use gengetopt */
@@ -101,26 +100,26 @@ int main(int argc,char** argv)
 
   svg_srand();
 
-  err = cptsvg(infile, outfile, opt);
-  
-  if (opt.verbose)
-    {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
-      else
-	{
-	  printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
-	  if (opt.preview.use)
-	    {
-	      printf("with preview (%zu x %zu px)\n", 
-		     opt.preview.width,
-		     opt.preview.height);
-	    }
-	}
+  int err = cptsvg(infile, outfile, opt);
 
-      printf("done.\n");
+  if (err)
+    fprintf(stderr,"failed (error %i)\n",err);
+  else if (opt.verbose)
+    {
+      printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
+      if (opt.preview.use)
+	{
+	  printf("with preview (%zu x %zu px)\n", 
+		 opt.preview.width,
+		 opt.preview.height);
+	}
     }
+
+  if (opt.verbose)
+    printf("done.\n");
   
+  options_free(&info);
+
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
     	

@@ -161,13 +161,13 @@ int main(int argc,char** argv)
 
   err = xycpt(opt);
 
-  if (opt.verbose)
-    {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
+  if (err != 0)
+    fprintf(stderr,"failed (error %i)\n",err);
 
-      printf("done.\n");
-    }
+  if (opt.verbose)
+    printf("done.\n");
+
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

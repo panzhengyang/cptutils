@@ -36,12 +36,11 @@ int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
   cptinfo_opt_t opt;
-  char *infile,*outfile;
-  int err;
+  char *infile, *outfile;
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
       fprintf(stderr,"failed to parse command line\n");
       return EXIT_FAILURE;
@@ -49,7 +48,7 @@ int main(int argc,char** argv)
 
   /* check arguments & transfer to opt structure */ 
 
-  opt.verbose = (info.verbose_given ? true : false);
+  opt.verbose = info.verbose_given;
 
   /* null outfile for stdout */
 
@@ -85,15 +84,15 @@ int main(int argc,char** argv)
   opt.format = plain;
   if (info.csv_given)  opt.format = csv;
 
-  err = cptinfo(opt);
-  
-  if (opt.verbose)
-    {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
+  int err = cptinfo(opt);
 
-      printf("done.\n");
-    }
+  if (err)
+    fprintf(stderr,"failed (error %i)\n",err);
+
+  if (opt.verbose)
+    printf("done.\n");
+
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

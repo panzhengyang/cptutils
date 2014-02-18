@@ -32,11 +32,10 @@ int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
   cptcss_opt_t opt;
-  int err;
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
       fprintf(stderr,"failed to parse command line\n");
       return EXIT_FAILURE;
@@ -64,11 +63,15 @@ int main(int argc,char** argv)
 
   opt.format = (info.format_given ? info.format_arg : "cptcss-%.2i");
 
-  err = cptcss(opt);
+  int err = cptcss(opt);
   
-  if (err != 0) fprintf(stderr,"failed (error %i)\n",err);
+  if (err) 
+    fprintf(stderr,"failed (error %i)\n",err);
 
-  if (opt.verbose) printf("done.\n");
+  if (opt.verbose) 
+    printf("done.\n");
+
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

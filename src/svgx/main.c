@@ -284,6 +284,8 @@ int main(int argc,char** argv)
 
   if (opt.verbose) printf("done.\n");
 
+  options_free(&info);
+
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
     	

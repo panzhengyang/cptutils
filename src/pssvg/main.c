@@ -115,19 +115,15 @@ int main(int argc, char** argv)
 	     opt.fg.red,  opt.fg.green,  opt.fg.blue);
     }
   
-  /* for conversion, give details of what we will do */
-
   err = pssvg(opt);
 
-  if (err) fprintf(stderr, "failed (error %i)\n", err);
+  if (err) 
+    fprintf(stderr, "failed (error %i)\n", err);
 
-  /* free optional info values */
+  if (opt.verbose)
+    printf("done.\n");
 
   options_free(&info);
-
-  /* done */
-
-  if (opt.verbose) printf("done.\n");
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

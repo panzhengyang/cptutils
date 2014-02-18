@@ -100,22 +100,23 @@ int main(int argc,char** argv)
 
   err = pspsvg(opt);
 
-  if (opt.verbose)
+  if (err)
+    fprintf(stderr,"failed (error %i)\n",err);
+  else if (opt.verbose)
     {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
-      else
+      printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
+      if (opt.preview.use)
 	{
-	  printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
-          if (opt.preview.use)
-            {
-              printf("with preview (%zu x %zu px)\n", 
-                     opt.preview.width,
-                     opt.preview.height);
-            }
+	  printf("with preview (%zu x %zu px)\n", 
+		 opt.preview.width,
+		 opt.preview.height);
 	}
-      printf("done.\n");
     }
+
+  if (opt.verbose)
+    printf("done.\n");
+
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

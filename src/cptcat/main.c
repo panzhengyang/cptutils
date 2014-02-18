@@ -36,7 +36,6 @@ int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
   cptcat_opt_t opt = {0};
-  int err;
 
   /* use gengetopt */
 
@@ -70,14 +69,15 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is cptcat (version %s)\n",VERSION);
 
-  err = cptcat(opt);
+  int err = cptcat(opt);
+
+  if (err != 0)
+    fprintf(stderr,"failed (error %i)\n", err);
 
   if (opt.verbose)
-    {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n", err);
-      printf("done.\n");
-    }
+    printf("done.\n");
+
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

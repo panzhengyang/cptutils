@@ -106,15 +106,11 @@ int main(int argc,char** argv)
 
   svg_srand();
 
-  int err;
+  int err = gimpsvg(infile, outfile, opt);
 
-  if ((err = gimpsvg(infile, outfile, opt)) != 0)
-    {
-      fprintf(stderr,"failed (error %i)\n",err);
-      return EXIT_FAILURE;
-    }
-
-  if (opt.verbose)
+  if (err)
+    fprintf(stderr, "failed (error %i)\n", err);
+  else if (opt.verbose)
     {
       printf("palette written to %s\n",(outfile ? outfile : "<stdin>"));
       if (opt.preview.use)
@@ -123,10 +119,14 @@ int main(int argc,char** argv)
 		 opt.preview.width,
 		 opt.preview.height);
 	}
-      printf("done.\n");
     }
 
-  return EXIT_SUCCESS;
+  if (opt.verbose)
+    printf("done.\n");
+
+  options_free(&info);
+
+  return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
     	
     	

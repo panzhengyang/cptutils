@@ -37,12 +37,11 @@ int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
   char    *infile=NULL,*outfile=NULL;
-  int      err;
   cptclip_opt_t opt;
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
       fprintf(stderr,"failed to parse command line\n");
       return EXIT_FAILURE;
@@ -139,15 +138,17 @@ int main(int argc,char** argv)
 
     }
 
-  err = cptclip(infile,outfile,opt);
+  int err = cptclip(infile,outfile,opt);
 
-  if (err) fprintf(stderr,"failed (error %i)\n",err);
+  if (err) 
+    fprintf(stderr,"failed (error %i)\n",err);
+  else if (opt.verbose)
+    printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
 
   if (opt.verbose)
-    {
-      printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
-      printf("done.\n");
-    }
+    printf("done.\n");
+
+  options_free(&info);
   
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

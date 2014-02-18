@@ -35,8 +35,7 @@
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  char   *infile=NULL,*outfile=NULL;
-  int     err;
+  char   *infile=NULL, *outfile=NULL;
   glopt_t opt;
 
   /* use gengetopt */
@@ -87,18 +86,17 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is gimplut (version %s)\n",VERSION);
   
-  err = gimplut(infile,outfile,opt);
+  int err = gimplut(infile,outfile,opt);
 
   if (err != 0)
     fprintf(stderr,"failed (error %i)\n",err);
-  else
-    {
-      if (opt.verbose)
-	{
-	  printf("lookup table written to %s\n",(outfile ? outfile : "<stdin>"));
-	  printf("done.\n");
-	}
-    }
+  else if (opt.verbose)
+    printf("lookup table written to %s\n",(outfile ? outfile : "<stdin>"));
+
+  if (opt.verbose)
+    printf("done.\n");
+
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }

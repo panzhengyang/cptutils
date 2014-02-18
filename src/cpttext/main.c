@@ -36,7 +36,6 @@ int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
   cpttext_opt_t opt;
-  int err;
 
   /* use gengetopt */
 
@@ -69,15 +68,15 @@ int main(int argc,char** argv)
   opt.text   = info.text_arg;
   opt.format = html;
       
-  err = cpttext(opt);
+  int err = cpttext(opt);
+
+  if (err)
+    fprintf(stderr,"failed (error %i)\n",err);
   
   if (opt.verbose)
-    {
-      if (err != 0)
-        fprintf(stderr,"failed (error %i)\n",err);
+    printf("done.\n");
 
-      printf("done.\n");
-    }
+  options_free(&info);
 
   return (err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
