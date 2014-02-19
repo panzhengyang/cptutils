@@ -127,7 +127,13 @@
 <refsect1 id='caveats'><title>CAVEATS</title>
 
 <para>
-  The program handles RGB, HSB, LAB, CMYK and greyscale colour stops.
+  The program handles RGB, HSB, LAB, CMYK and greyscale colour stops,
+  converting them all to RGB and then merging the results with the 
+  opacity channel to create SVG RGBA stops.  Conversion of non-RGB
+  stops is naive and takes no account of colour profiles, so the 
+  results are generally sub-optimal.  Integration of a CMS (colour
+  management system) into the program to perform these conversions 
+  is under investigation.
 </para>
 
 <para>

@@ -138,6 +138,158 @@ static int trim_op(gstack_t* stack)
 }
 
 /*
+  map a value in [0,1] to a double which is an integer 
+  in 0 .. 255
+*/
+
+static double clamp_channel(double dval)
+{
+  int ival = floor(dval * 256);
+
+  if (ival > 255) 
+    ival = 255;
+  else if (ival < 0)
+    ival = 0;
+  
+  return ival;
+}
+
+/*
+  The following functions modify their argument, converting
+  them to RGB colour space
+
+  These do not, in general, give the same values as PS since
+  we are doing a naive and ham-fisted conversion not taking 
+  into account colour profiles as PS does.  We could probably 
+  do better if we used the open-source and widely available 
+  Little CMS library (http://www.littlecms.com/) ... 
+*/
+
+static int grsc_to_rgb(grd5_colour_stop_t *stop)
+{
+  double val = stop->u.grsc.Gry;
+
+  stop->u.rgb.Rd  = val;
+  stop->u.rgb.Grn = val;
+  stop->u.rgb.Bl  = val;
+
+  stop->type = GRD5_MODEL_RGB;
+
+  return 0;
+}
+
+static int hsb_to_rgb(grd5_colour_stop_t *stop)
+{
+  /* use the GIMP hsvD_to_rgbD (colour.h) function */
+
+  double hsv[3];
+
+  hsv[0] = stop->u.hsb.H / 360.0;
+  hsv[1] = stop->u.hsb.Strt / 100.0;
+  hsv[2] = stop->u.hsb.Brgh / 100.0;
+  
+  double rgb[3];
+
+  hsvD_to_rgbD(hsv, rgb);
+  
+  stop->u.rgb.Rd  = clamp_channel(rgb[0]);
+  stop->u.rgb.Grn = clamp_channel(rgb[1]);
+  stop->u.rgb.Bl  = clamp_channel(rgb[2]);
+	  
+  stop->type = GRD5_MODEL_RGB;	  
+
+  return 0;
+}
+
+static int cmyc_to_rgb(grd5_colour_stop_t *stop)
+{
+  /* Naive implementation */
+
+  double 
+    c = stop->u.cmyc.Cyn  / 100.0,
+    m = stop->u.cmyc.Mgnt / 100.0,
+    y = stop->u.cmyc.Ylw  / 100.0,
+    k = stop->u.cmyc.Blck / 100.0;
+
+  stop->u.rgb.Rd  = clamp_channel((1-c) * (1-k));
+  stop->u.rgb.Grn = clamp_channel((1-m) * (1-k));
+  stop->u.rgb.Bl  = clamp_channel((1-y) * (1-k));
+
+  stop->type = GRD5_MODEL_RGB;
+
+  return 0;
+}
+
+static double lab_xyz_curve(double W)
+{
+  double W3 = pow(W, 3);
+
+  if (W3 > 0.008856)
+    return W3;
+
+  return (W - 16.0/116.0) / 7.787;
+}
+
+static double xyz_rgb_curve(double W)
+{
+  if (W > 0.0031308) 
+    return 1.055 * pow(W, 1/2.4) - 0.055;
+
+  return 12.92 * W;
+}
+
+#define REF_X  95.047
+#define REF_Y 100.000
+#define REF_Z 108.883
+
+static int lab_to_rgb(grd5_colour_stop_t *stop)
+{
+  /* from easyrgb.com : CIE-L*ab -> XYZ */
+
+  double
+    L = stop->u.lab.Lmnc,
+    A = stop->u.lab.A,
+    B = stop->u.lab.B;
+    
+  double
+    vY = (L+16.0) / 116.0,
+    vX = A / 500.0 + vY,
+    vZ = vY - B / 200.0;
+
+  vX = lab_xyz_curve(vX);
+  vY = lab_xyz_curve(vY);
+  vZ = lab_xyz_curve(vZ);
+
+  double
+    X = REF_X * vX,
+    Y = REF_Y * vY,
+    Z = REF_Z * vZ;
+    
+  /* from easyrgb.com : XYZ -> RGB */
+
+  vX = X / 100.0;
+  vY = Y / 100.0;
+  vZ = Z / 100.0;
+
+  double
+    vR =  3.2406 * vX - 1.5372 * vY - 0.4986 * vZ,
+    vG = -0.9689 * vX + 1.8758 * vY + 0.0415 * vZ,
+    vB =  0.0557 * vX - 0.2040 * vY + 1.0570 * vZ;
+
+  vR = xyz_rgb_curve(vR);
+  vG = xyz_rgb_curve(vG);
+  vB = xyz_rgb_curve(vB);
+
+  stop->u.rgb.Rd  = clamp_channel(vR);
+  stop->u.rgb.Grn = clamp_channel(vG);
+  stop->u.rgb.Bl  = clamp_channel(vB);
+
+  stop->type = GRD5_MODEL_RGB;
+
+  return 0;
+}
+
+/*
   convert the svg stops to the intermediate types, and rectify:
   replace the midpoints by explicit mid-point stops
 */
@@ -155,73 +307,57 @@ static gstack_t* rectify_rgb(grd5_grad_custom_t* gradc, pssvg_opt_t opt)
 
   for (i=0 ; i<n ; i++)
     {
-      if (grd5_stop[i].type == GRD5_MODEL_BOOK)
+      grd5_colour_stop_t *stop = grd5_stop + i;
+
+      switch(stop->type)
 	{
-	  fprintf(stderr, 
-		  "stop %i (book colour) not converted for legal reasons\n",
-		  i);
+	case GRD5_MODEL_RGB:
+	  break;
+
+	case GRD5_MODEL_GRSC:
+	  grsc_to_rgb(stop);
+	  break;
+
+	case GRD5_MODEL_HSB:
+	  hsb_to_rgb(stop);
+	  break;
+
+	case GRD5_MODEL_CMYC:
+	  cmyc_to_rgb(stop);
+	  break;
+
+	case GRD5_MODEL_LAB:
+	  lab_to_rgb(stop);
+	  break;
+
+	case GRD5_MODEL_BCKC:
+	  stop->u.rgb.Rd  = opt.bg.red;
+	  stop->u.rgb.Grn = opt.bg.green;
+	  stop->u.rgb.Bl  = opt.bg.blue;
+	  stop->type = GRD5_MODEL_RGB;
+	  break;
+
+	case GRD5_MODEL_FRGC:
+	  stop->u.rgb.Rd  = opt.fg.red;
+	  stop->u.rgb.Grn = opt.fg.green;
+	  stop->u.rgb.Bl  = opt.fg.blue;
+	  stop->type = GRD5_MODEL_RGB;
+	  break;
+
+	case GRD5_MODEL_BOOK:
+	  fprintf(stderr, "stop %i (book colour) not converted\n", i);
+	  return NULL;
+
+	default:
+	  fprintf(stderr, "stop %i unknown colour type %i\n", 
+		  i, stop->type);
 	  return NULL;
 	}
 
-      if (grd5_stop[i].type == GRD5_MODEL_GRSC)
-	{
-	  double val = grd5_stop[i].u.grsc.Gry;
-
-	  grd5_stop[i].u.rgb.Rd  = val;
-	  grd5_stop[i].u.rgb.Grn = val;
-	  grd5_stop[i].u.rgb.Bl  = val;
-
-	  grd5_stop[i].type = GRD5_MODEL_RGB;
-	}
-      else if (grd5_stop[i].type == GRD5_MODEL_HSB)
-	{
-	  double hsv[3];
-
-	  hsv[0] = grd5_stop[i].u.hsb.H / 360.0;
-	  hsv[1] = grd5_stop[i].u.hsb.Strt / 100.0;
-	  hsv[2] = grd5_stop[i].u.hsb.Brgh / 100.0;
-
-	  double rgb[3];
-
-	  hsvD_to_rgbD(hsv, rgb);
-
-	  int j;
-
-	  for (j=0 ; j<3 ; j++)
-	    {
-	      rgb[j] *= 256;
-	      rgb[j] = floor(rgb[j]);
-	      if (rgb[j] < 0.0) rgb[j] = 0.0;
-	      if (rgb[j] > 255.0) rgb[j] = 255.0;
-	    }
-
-	  grd5_stop[i].u.rgb.Rd  = rgb[0];
-	  grd5_stop[i].u.rgb.Grn = rgb[1];
-	  grd5_stop[i].u.rgb.Bl  = rgb[2];
-
-	  grd5_stop[i].type = GRD5_MODEL_RGB;	  
-	}
-      else if (grd5_stop[i].type == GRD5_MODEL_BCKC)
-	{
-	  grd5_stop[i].u.rgb.Rd  = opt.bg.red;
-	  grd5_stop[i].u.rgb.Grn = opt.bg.green;
-	  grd5_stop[i].u.rgb.Bl  = opt.bg.blue;
-
-	  grd5_stop[i].type = GRD5_MODEL_RGB;
-	}
-      else if (grd5_stop[i].type == GRD5_MODEL_FRGC)
-	{
-	  grd5_stop[i].u.rgb.Rd  = opt.fg.red;
-	  grd5_stop[i].u.rgb.Grn = opt.fg.green;
-	  grd5_stop[i].u.rgb.Bl  = opt.fg.blue;
-
-	  grd5_stop[i].type = GRD5_MODEL_RGB;
-	}
-
-      if (grd5_stop[i].type != GRD5_MODEL_RGB)
+      if (stop->type != GRD5_MODEL_RGB)
 	{
 	  fprintf(stderr, "stop %i is non-RGB (type %i)\n", 
-		  i, grd5_stop[i].type);
+		  i, stop->type);
 	  return NULL;
 	}
     }
