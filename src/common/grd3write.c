@@ -8,8 +8,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#if defined HAVE_ENDIAN_H
+#include <endian.h>
+#elif defined HAVE_SYS_ENDIAN_H
+#include <sys/endian.h>
+#endif
+
 #include "grd3write.h"
-#include "htons.h"
 
 static int grd3_write_stream(FILE*,grd3_t*);
 
@@ -59,7 +64,7 @@ static int grd3_write_stream(FILE *s,grd3_t *grd3)
   
   /* version */
 
-  for (i=0 ; i<2 ; i++) u[i] = htons(grd3->ver[i]);
+  for (i=0 ; i<2 ; i++) u[i] = htobe16(grd3->ver[i]);
   fwrite(u,2,2,s);
 
   /* title : check non-null or get segfaults */
@@ -84,7 +89,7 @@ static int grd3_write_stream(FILE *s,grd3_t *grd3)
 
   n = grd3->rgb.n;
 
-  u[0] = htons(n);
+  u[0] = htobe16(n);
   fwrite(u,2,1,s);
 
   write_initial_rgb(s,grd3->rgb.seg);
@@ -96,7 +101,7 @@ static int grd3_write_stream(FILE *s,grd3_t *grd3)
 
   n = grd3->op.n;
 
-  u[0] = htons(grd3->op.n);
+  u[0] = htobe16(grd3->op.n);
   fwrite(u,2,1,s);
 
   for (i=0 ; i<n ; i++) write_op(s,grd3->op.seg+i);
@@ -117,11 +122,11 @@ static int write_initial_rgb(FILE *s,grd3_rgbseg_t *seg)
   u[0] = 0;
   u[1] = 0;
   u[2] = 0;
-  u[3] = htons(seg->midpoint);
+  u[3] = htobe16(seg->midpoint);
   u[4] = 0;
-  u[5] = htons(seg->r);
-  u[6] = htons(seg->g);
-  u[7] = htons(seg->b);
+  u[5] = htobe16(seg->r);
+  u[6] = htobe16(seg->g);
+  u[7] = htobe16(seg->b);
 
   fwrite(u,2,8,s);
 
@@ -135,13 +140,13 @@ static int write_rgb(FILE *s,grd3_rgbseg_t *seg)
   u[0] = 0;
   u[1] = 0;
   u[2] = 0;
-  u[3] = htons(seg->z); 
+  u[3] = htobe16(seg->z); 
   u[4] = 0;
-  u[5] = htons(seg->midpoint); 
+  u[5] = htobe16(seg->midpoint); 
   u[6] = 0;
-  u[7] = htons(seg->r);
-  u[8] = htons(seg->g);
-  u[9] = htons(seg->b);
+  u[7] = htobe16(seg->r);
+  u[8] = htobe16(seg->g);
+  u[9] = htobe16(seg->b);
 
   fwrite(u,2,10,s);
 
@@ -153,10 +158,10 @@ static int write_op(FILE *s,grd3_opseg_t *seg)
   unsigned short u[5];
 
   u[0] = 0;
-  u[1] = htons(seg->z);
+  u[1] = htobe16(seg->z);
   u[2] = 0;
-  u[3] = htons(seg->midpoint);
-  u[4] = htons(seg->opacity);
+  u[3] = htobe16(seg->midpoint);
+  u[4] = htobe16(seg->opacity);
 
   fwrite(u,2,5,s);
 

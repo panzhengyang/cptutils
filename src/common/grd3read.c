@@ -5,16 +5,15 @@
   2005 (c) J.J. Green
 */
 
-/* 
-   TODO : 
-   
-   check fread return values
-*/
-
 #include <stdio.h>
 
+#if defined HAVE_ENDIAN_H
+#include <endian.h>
+#elif defined HAVE_SYS_ENDIAN_H
+#include <sys/endian.h>
+#endif
+
 #include "grd3read.h"
-#include "htons.h"
 
 static int grd3_read_stream(FILE*, grd3_t*);
 
@@ -83,8 +82,8 @@ static int grd3_read_stream(FILE* s,grd3_t* grad)
       return 1;
     }
 
-  grad->ver[0] = ntohs(u[0]);
-  grad->ver[1] = ntohs(u[1]);
+  grad->ver[0] = be16toh(u[0]);
+  grad->ver[1] = be16toh(u[1]);
 
   /* then a single unsigned char, the title length */
 
@@ -123,7 +122,7 @@ static int grd3_read_stream(FILE* s,grd3_t* grad)
       return 1;
     }
 
-  n = ntohs(u[0]);
+  n = be16toh(u[0]);
 
   if (n<2)
     {
@@ -170,7 +169,7 @@ static int grd3_read_stream(FILE* s,grd3_t* grad)
       return 1;
     }
 
-  n = ntohs(u[0]);
+  n = be16toh(u[0]);
 
   if (n<2) 
     {
@@ -264,7 +263,7 @@ static int print_array(unsigned short* u,int n,FILE* s,const char* fmt)
 {
   int i;
 
-  for (i=0 ; i<n ; i++) fprintf(s,fmt,(int)ntohs(u[i]));
+  for (i=0 ; i<n ; i++) fprintf(s,fmt,(int)be16toh(u[i]));
 
   return 0;
 }
@@ -319,7 +318,7 @@ static int read_rgbseg_midpoint(FILE *s,grd3_rgbseg_t* seg)
       return 1;
     }
 
-  seg->midpoint = ntohs(u[1]);
+  seg->midpoint = be16toh(u[1]);
 
   return 0;
 }
@@ -345,7 +344,7 @@ static int read_rgbseg_z(FILE *s,grd3_rgbseg_t* seg)
       return 1;
     }
   
-  seg->z = ntohs(u[1]);
+  seg->z = be16toh(u[1]);
 
   return 0;
 }
@@ -376,9 +375,9 @@ static int read_rgbseg_rgb(FILE *s,grd3_rgbseg_t* seg)
       return 1;
     }
 
-  seg->r = ntohs(u[1]);
-  seg->g = ntohs(u[2]);
-  seg->b = ntohs(u[3]);
+  seg->r = be16toh(u[1]);
+  seg->g = be16toh(u[2]);
+  seg->b = be16toh(u[3]);
 
   return 0;
 }
@@ -416,9 +415,9 @@ static int read_opseg(FILE *s,grd3_opseg_t* seg)
       fprintf(stderr,"\n");
     }
 
-  seg->z        = ntohs(u[1]);
-  seg->midpoint = ntohs(u[3]);
-  seg->opacity  = ntohs(u[4]);
+  seg->z        = be16toh(u[1]);
+  seg->midpoint = be16toh(u[3]);
+  seg->opacity  = be16toh(u[4]);
 
   return 0;
 }
