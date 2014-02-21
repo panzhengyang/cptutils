@@ -31,6 +31,7 @@
   <arg choice='opt'>-g <replaceable>geometry</replaceable></arg>
   <arg choice='opt'>-h </arg>
   <arg choice='opt'>-i <replaceable>format</replaceable></arg>
+  <arg choice='opt'>-m <replaceable>mode</replaceable></arg>
   <arg choice='opt'>-n <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-o <replaceable>format</replaceable></arg>
   <arg choice='opt'>-p </arg>
@@ -96,10 +97,57 @@
   <varlistentry>
     <term>
       <option>-i</option>, <option>--input-format</option>
+      <replaceable>format</replaceable>
     </term>
     <listitem>
       <para>
-	Specify the format of the input file.
+	Specify the format of the input file. 
+	Run the program with the
+	<option>--help</option> option 
+	for a list of supported formats.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>
+      <option>-m</option>, <option>--mode</option>
+      <replaceable>mode</replaceable>
+    </term>
+    <listitem>
+      <para>
+	The conversion mode.  Some of the file formats handled by 
+	cptutils may contain multiple gradients: the Photoshop
+	(grd) and SVG formats for example. This argument controls
+	how the program behaves with respect to multiple 
+	gradients.
+      </para>
+      <para>
+	When <replaceable>mode</replaceable> is an integer 
+	<replaceable>n</replaceable> then only the 
+	<replaceable>n</replaceable>th gradient in the file will
+	be converted; an error will be raised if there are fewer
+	than <replaceable>n</replaceable> gradients in the source
+	file.
+      </para>
+      <para>
+	When <replaceable>mode</replaceable> is the string 
+	<option>multi</option> then all gradients in the input 
+	file will be converted and put in the file specified 
+	by the <replaceable>outfile</replaceable> argument.  
+	It is an error to use this mode when the output format 
+	does not support multiple gradients.
+      </para>
+      <para>
+	Finally, in <option>burst</option> mode, mutiple gradients
+	are converted to single gradients, and in this case the 
+	argument of the <replaceable>outfile</replaceable> 
+	argument must be a directory (and that directory should
+	already exist).
+      </para>
+      <para>
+	The default mode is <option>1</option>, only the first 
+	gradient is converted.
       </para>
     </listitem>
   </varlistentry>
@@ -109,10 +157,14 @@
   <varlistentry>
     <term>
       <option>-o</option>, <option>--output-format</option>
+      <replaceable>format</replaceable>
     </term>
     <listitem>
       <para>
 	Specify the format of the output file.
+	Run the program with the
+	<option>--help</option> option 
+	for a list of supported formats.
       </para>
     </listitem>
   </varlistentry>
@@ -156,11 +208,6 @@
   Converting a GMT cpt file to GIMP format while using
   using the irrelevant <option>-g</option> option will
   not cause an error, it will simply be ignored.
-</para>
-
-<para>
-  Photoshop files are not yet handled by this program,
-  this will be fixed in the next version.
 </para>
 
 </refsect1>

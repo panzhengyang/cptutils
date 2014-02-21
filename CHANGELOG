@@ -5,6 +5,7 @@ Changes
   - grd5 parser handles all known grd5 constructs
   - fore/background colours handled via command-line
   - conversion of gradients with CYMK & CIE-L*ab colour-stops
+  gradient-convert modified to handle Photoshop grd files
 
 1.50 (13 Feb 2014)
   - bugfixes for pssvg
