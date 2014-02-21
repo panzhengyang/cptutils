@@ -31,7 +31,7 @@
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  cptcss_opt_t opt;
+  cptcss_opt_t opt = {0};
 
   /* use gengetopt */
 

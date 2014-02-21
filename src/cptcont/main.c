@@ -36,8 +36,8 @@
 int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  char    *infile=NULL, *outfile=NULL;
-  cptcont_opt_t opt;
+  char    *infile = NULL, *outfile = NULL;
+  cptcont_opt_t opt = {0};
 
   /* use gengetopt */
 

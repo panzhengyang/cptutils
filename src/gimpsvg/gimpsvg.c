@@ -164,18 +164,13 @@ static int gimpsvg_convert(gradient_t *grad,
 			   svg_t *svg,
 			   gimpsvg_opt_t opt)
 {
-  grad_segment_t *gseg;
-  
   if (!grad) return 1;
   
   strncpy((char *)svg->name, grad->name, SVG_NAME_LEN);
   
-  gseg = grad->segments;
-  
-  /* final svg stop */
-
   svg_stop_t stop; 
   double rgbD[3], alpha;
+  grad_segment_t *gseg;
 
   for (gseg=grad->segments ; gseg ; gseg=gseg->next)
     {

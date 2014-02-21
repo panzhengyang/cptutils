@@ -329,21 +329,28 @@ static int parse_vll_length(FILE *stream,
 
 static int parse_enum(FILE *stream, 
 		      const char* expected_typename,
-		      grd5_string_t** name,
-		      grd5_string_t** subname)
+		      grd5_string_t** pname,
+		      grd5_string_t** psubname)
 {
   int err;
+  grd5_string_t *name, *subname;
 
   if ((err = parse_named_type(stream, expected_typename, TYPE_ENUM)) != GRD5_READ_OK)
     return err;
   
-  if ((*name = parse_typename(stream, &err)) == NULL)
-    return err;
-  
-  if ((*subname = parse_typename(stream, &err)) == NULL)
-    return err;
+  if ((name = parse_typename(stream, &err)) != NULL)
+    {
+      if ((subname = parse_typename(stream, &err)) != NULL)
+	{
+	  *pname    = name;
+	  *psubname = subname;
+	  return GRD5_READ_OK; 
+	}
+      else
+	grd5_string_destroy(name);
+    }
 
-  return GRD5_READ_OK; 
+  return err;
 }
 
 static int parse_text(FILE *stream,

@@ -44,21 +44,21 @@ typedef union colour_t
   int the range 0-1
 */
 
-extern int hsvD_to_rgbD(double*, double*);
-extern int rgbD_to_hsvD(double*, double*);
+extern int hsvD_to_rgbD(const double*, double*);
+extern int rgbD_to_hsvD(const double*, double*);
 
-extern int rgbD_to_rgb(double*, rgb_t*);
+extern int rgbD_to_rgb(const double*, rgb_t*);
 extern int rgb_to_rgbD(rgb_t, double*);
 
-extern int rgbD_to_hsv(double*, hsv_t*);
+extern int rgbD_to_hsv(const double*, hsv_t*);
 extern int hsv_to_rgbD(hsv_t, double*);
 
-extern int rgbD_to_hsvD(double*, double*);
-extern int hsvD_to_rgbD(double*, double*);
+extern int rgbD_to_hsvD(const double*, double*);
+extern int hsvD_to_rgbD(const double*, double*);
 
 extern int grey_to_rgbD(int, double*);
 
-extern int parse_rgb(char*, rgb_t*);
+extern int parse_rgb(const char*, rgb_t*);
 extern double colour_rgb_dist(colour_t, colour_t, model_t);
 
 extern int rgb_interpolate(double, rgb_t, rgb_t, rgb_t*);

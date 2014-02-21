@@ -27,22 +27,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
 #include "options.h"
 #include "gimplut.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  char   *infile=NULL, *outfile=NULL;
-  glopt_t opt;
+  char   *infile = NULL, *outfile = NULL;
+  glopt_t opt = {0};
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
-      fprintf(stderr,"failed to parse command line\n");
+      fprintf(stderr, "failed to parse command line\n");
       return EXIT_FAILURE;
     }
 

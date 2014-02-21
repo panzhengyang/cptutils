@@ -32,16 +32,16 @@
 #include "options.h"
 #include "cpttext.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  cpttext_opt_t opt;
+  cpttext_opt_t opt = {0};
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
-      fprintf(stderr,"failed to parse command line\n");
+      fprintf(stderr, "failed to parse command line\n");
       return EXIT_FAILURE;
     }
 

@@ -33,11 +33,11 @@
 #include "options.h"
 #include "cptclip.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  char    *infile=NULL,*outfile=NULL;
-  cptclip_opt_t opt;
+  char    *infile = NULL, *outfile = NULL;
+  cptclip_opt_t opt = {0};
 
   /* use gengetopt */
 

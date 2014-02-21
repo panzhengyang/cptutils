@@ -36,15 +36,15 @@
 
 #define SAMPLES_MIN 5
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
   char *infile = NULL, *outfile = NULL;
-  gimpsvg_opt_t opt;
+  gimpsvg_opt_t opt = {0};
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
       fprintf(stderr,"failed to parse command line\n");
       return EXIT_FAILURE;

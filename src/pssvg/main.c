@@ -33,7 +33,7 @@
 int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  pssvg_opt_t opt;
+  pssvg_opt_t opt = {0};
   char *infile, *outfile;
   int err;
 

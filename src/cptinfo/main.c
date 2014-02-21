@@ -12,7 +12,7 @@
   This program is distributed in the hope that it will be
   useful, but WITHOUT ANY WARRANTY; without even the
   implied warranty of MERCHANTABILITY or FITNESS FOR A
-  PARTICULAR PURIGHTE.  See the GNU General Public License
+  PARTICULAR PURPOSE.  See the GNU General Public License
   for more details.
 
   You should have received a copy of the GNU General Public
@@ -32,10 +32,10 @@
 #include "options.h"
 #include "cptinfo.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  cptinfo_opt_t opt;
+  cptinfo_opt_t opt = {0};
   char *infile, *outfile;
 
   /* use gengetopt */

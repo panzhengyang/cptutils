@@ -39,7 +39,7 @@ static int parse_transforms(const char*,cpthsv_opt_t*);
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  char    *infile=NULL, *outfile=NULL;
+  char    *infile = NULL, *outfile=NULL;
   cpthsv_opt_t opt = {0};
 
   /* use gengetopt */

@@ -21,14 +21,13 @@
 static double colourD(int);
 static int colour8(double);
 
-extern double colour_rgb_dist(colour_t a,colour_t b,model_t model)
+extern double colour_rgb_dist(colour_t a, colour_t b, model_t model)
 {
-  double da[3],db[3],sum;
+  double da[3] = {0}, db[3] = {0}, sum;
   int i;
 
   switch (model)
     {
-
     case model_rgb :
       rgb_to_rgbD(a.rgb, da); 
       rgb_to_rgbD(b.rgb, db); 
@@ -44,11 +43,9 @@ extern double colour_rgb_dist(colour_t a,colour_t b,model_t model)
       return -1.0;
     }
 
-  for (sum=0.0,i=0 ; i<3 ; i++)
+  for (sum=0.0, i=0 ; i<3 ; i++)
     {
-      double d;
-
-      d = da[i]-db[i];
+      double d = da[i] - db[i];
       sum += d*d;
     }
 
@@ -59,29 +56,25 @@ extern double colour_rgb_dist(colour_t a,colour_t b,model_t model)
   convert a gimp triple of [0..1] vals to/from an rgb_t struct
 */
 
-extern int rgbD_to_rgb(double* col, rgb_t* rgb)
+extern int rgbD_to_rgb(const double col[static 3], rgb_t* rgb)
 {
-    if (!col || !rgb) return 1;
-
-    rgb->red   = colour8(col[0]);
-    rgb->green = colour8(col[1]);
-    rgb->blue  = colour8(col[2]);
-
-    return 0;
+  rgb->red   = colour8(col[0]);
+  rgb->green = colour8(col[1]);
+  rgb->blue  = colour8(col[2]);
+  
+  return 0;
 }
 
-extern int rgb_to_rgbD(rgb_t rgb,double* col)
+extern int rgb_to_rgbD(rgb_t rgb, double col[static 3])
 {
-    if (!col) return 1;
-
-    col[0] = colourD(rgb.red);
-    col[1] = colourD(rgb.green);
-    col[2] = colourD(rgb.blue);
-
-    return 0;
+  col[0] = colourD(rgb.red);
+  col[1] = colourD(rgb.green);
+  col[2] = colourD(rgb.blue);
+  
+  return 0;
 }
 
-extern int grey_to_rgbD(int g, double* col)
+extern int grey_to_rgbD(int g, double col[static 3])
 {
   rgb_t rgb;
 
@@ -100,11 +93,9 @@ extern int grey_to_rgbD(int g, double* col)
   latter for automated processing of GUI generation.
 */
 
-extern int rgbD_to_hsv(double* rgbD, hsv_t* hsv)
+extern int rgbD_to_hsv(const double rgbD[static 3], hsv_t* hsv)
 {
-  double hsvD[3];
-
-  if (!rgbD || !hsv) return 1;
+  double hsvD[3] = {0};
   
   if (rgbD_to_hsvD(rgbD, hsvD) != 0)
     return 1;
@@ -116,15 +107,13 @@ extern int rgbD_to_hsv(double* rgbD, hsv_t* hsv)
   return 0;
 }
 
-extern int hsv_to_rgbD(hsv_t hsv, double* rgbD)
+extern int hsv_to_rgbD(hsv_t hsv, double rgbD[static 3])
 {
-  double hsvD[3];
+  double hsvD[3] = {0};
   
   hsvD[0] = hsv.hue/360.0;
   hsvD[1] = hsv.sat;
   hsvD[2] = hsv.val;
-
-  if (!rgbD) return 1;
 
   if (hsvD_to_rgbD(hsvD, rgbD) != 0)
     return 1;
@@ -138,130 +127,130 @@ extern int hsv_to_rgbD(hsv_t hsv, double* rgbD)
 
 static int colour8(double x)
 {
-    int i;
+  int i;
+  
+  i = nearbyint(255*x);
+  
+  i = MAX(i, 0);
+  i = MIN(i, 255);
 
-    i = nearbyint(255*x);
-
-    i = MAX(i,0);
-    i = MIN(i,255);
-
-    return i;
+  return i;
 }
 
 static double colourD(int i)
 {
-    double x;
-
-    x = i/255.0;
-
-    x = (x<0.0 ? 0.0 : x);
-    x = (x>1.0 ? 1.0 : x);
-
-    return x;
+  double x;
+  
+  x = i/255.0;
+  
+  x = (x<0.0 ? 0.0 : x);
+  x = (x>1.0 ? 1.0 : x);
+  
+  return x;
 }
     
 /*
   read an rgb_t in a string "r/g/b/"
 */ 
 
-extern int parse_rgb(char *string, rgb_t *col)
+extern int parse_rgb(const char *string, rgb_t *col)
 {
-    char *dup,*token;
-   
-    if (string == NULL) return 1;
-    if ((dup = strdup(string)) == NULL) return 1;
- 
-    token = strtok(dup, "/");
-
-    col->red = atoi(token);
-
-    if ((token = strtok(NULL, "/")) == NULL)
+  char *dup, *token;
+  
+  if (string == NULL) return 1;
+  if ((dup = strdup(string)) == NULL) return 1;
+  
+  token = strtok(dup, "/");
+  
+  col->red = atoi(token);
+  
+  if ((token = strtok(NULL, "/")) == NULL)
     {
-	col->blue = col->green = col->red;
-	free(dup);
-	return 0;
+      col->blue = col->green = col->red;
+      free(dup);
+      return 0;
     }
-
-    col->green = atoi(token);
-
-    if ((token = strtok(NULL, "/")) == NULL)
+  
+  col->green = atoi(token);
+  
+  if ((token = strtok(NULL, "/")) == NULL)
     {
-	fprintf(stderr,"ill-formed colour string \"%s\"\n",string);
-	free(dup);
-	return 1;
+      fprintf(stderr,"ill-formed colour string \"%s\"\n",string);
+      free(dup);
+      return 1;
     }
-    
-    col->blue = atoi(token);
-    free(dup);
-
-    return 0;
+  
+  col->blue = atoi(token);
+  free(dup);
+  
+  return 0;
 }
 
 /*
   taken from libgimp/gimpcolorspace.c with minor modifications
 */
 
-extern int rgbD_to_hsvD(double *rgbD, double *hsvD)
+extern int rgbD_to_hsvD(const double rgbD[static 3], double hsvD[static 3])
 {
-    double min, max;
-    double r,g,b,h,s,v;
-    
-    r = rgbD[0];
-    g = rgbD[1];
-    b = rgbD[2];
-
-    h = 0.0;
-
-    if (r > g)
-      {
-	max = MAX(r, b);
-	min = MIN(g, b);
-      }
-    else
-      {
-	max = MAX(g, b);
-	min = MIN(r, b);
-      }
-    v = max;
-    
-    if (max != 0.0)
-      s = (max - min) / max;
-    else
-      s = 0.0;
-    
-    if (s == 0.0)
-      {
-	h = 0.0;
-      }
-    else
-      {
-	double delta = max - min;
-	
-	if (r == max)
-	  h = (g - b) / delta;
-	else if (g == max)
-	  h = 2 + (b - r) / delta;
-	else if (b == max)
-	  h = 4 + (r - g) / delta;
-	
-	h /= 6.0;
-	
-	if (h < 0.0)
-	  h += 1.0;
-	else if (h > 1.0)
-	  h -= 1.0;
-      }
-    
-    hsvD[0] = h;
-    hsvD[1] = s;
-    hsvD[2] = v;
-
-    return 0;
+  double min, max;
+  double r, g, b, h, s, v;
+  
+  r = rgbD[0];
+  g = rgbD[1];
+  b = rgbD[2];
+  
+  h = 0.0;
+  
+  if (r > g)
+    {
+      max = MAX(r, b);
+      min = MIN(g, b);
+    }
+  else
+    {
+      max = MAX(g, b);
+      min = MIN(r, b);
+    }
+  v = max;
+  
+  if (max != 0.0)
+    s = (max - min) / max;
+  else
+    s = 0.0;
+  
+  if (s == 0.0)
+    {
+      h = 0.0;
+    }
+  else
+    {
+      double delta = max - min;
+      
+      if (r == max)
+	h = (g - b) / delta;
+      else if (g == max)
+	h = 2 + (b - r) / delta;
+      else if (b == max)
+	h = 4 + (r - g) / delta;
+      
+      h /= 6.0;
+      
+      if (h < 0.0)
+	h += 1.0;
+      else if (h > 1.0)
+	h -= 1.0;
+    }
+  
+  hsvD[0] = h;
+  hsvD[1] = s;
+  hsvD[2] = v;
+  
+  return 0;
 }
 
-extern int hsvD_to_rgbD(double *hsvD, double *rgbD)
+extern int hsvD_to_rgbD(const double hsvD[static 3], double rgbD[static 3])
 {
-  double f,p,q,t,h,s,v;
+  double f, p, q, t, h, s, v;
 
   h = hsvD[0];
   s = hsvD[1];
@@ -273,7 +262,7 @@ extern int hsvD_to_rgbD(double *hsvD, double *rgbD)
       rgbD[1] = v;
       rgbD[2] = v;
 
-      return 1;
+      return 0;
     }
 
   h = h * 6.0;
@@ -317,6 +306,8 @@ extern int hsvD_to_rgbD(double *hsvD, double *rgbD)
       rgbD[1] = p;
       rgbD[2] = q;
       break;
+    default:
+      return 1;
     }
   
   return 0;
@@ -333,7 +324,10 @@ static int double_interpolate(double z, double a, double b, double *c)
   return 0;
 }
 
-static int rgbD_interpolate(double z, double *aD, double *bD, double *cD)
+static int rgbD_interpolate(double z, 
+			    const double aD[static 3], 
+			    const double bD[static 3], 
+			    double cD[static 3])
 {
   int i,err = 0;
 
@@ -345,7 +339,7 @@ static int rgbD_interpolate(double z, double *aD, double *bD, double *cD)
 
 extern int rgb_interpolate(double z, rgb_t a, rgb_t b, rgb_t *c)
 {
-  double aD[3], bD[3], cD[3];
+  double aD[3] = {0}, bD[3] = {0}, cD[3] = {0};
   int err = 0;
 
   err |= rgb_to_rgbD(a, aD);
@@ -358,7 +352,8 @@ extern int rgb_interpolate(double z, rgb_t a, rgb_t b, rgb_t *c)
 
 extern int hsv_interpolate(double z, hsv_t a, hsv_t b, hsv_t *c)
 {
-  double aD[3], bD[3], cD[3];
+  double 
+    aD[3] = {0}, bD[3] = {0}, cD[3] = {0};
   int err = 0;
 
   err |=  hsv_to_rgbD(a, aD);

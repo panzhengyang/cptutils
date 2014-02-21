@@ -35,13 +35,13 @@
 int main(int argc,char** argv)
 {
   struct gengetopt_args_info info;
-  xycpt_opt_t opt;
+  xycpt_opt_t opt = {0};
   char *infile,*outfile;
   int err;
 
   /* use gengetopt */
 
-  if (options(argc,argv,&info) != 0)
+  if (options(argc, argv, &info) != 0)
     {
       fprintf(stderr,"failed to parse command line\n");
       return EXIT_FAILURE;
