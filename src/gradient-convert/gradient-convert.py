@@ -1,7 +1,7 @@
 #! /usr/bin/python
 #
 # python wrapper script for cptutils
-# Copyright (c) J.J. Green 2012
+# Copyright (c) J.J. Green 2012, 2014
 
 import os, sys, getopt, tempfile, subprocess, atexit
 
@@ -13,39 +13,34 @@ version = "VERSION"
 
 delfiles = []
 
-# names for types
+# data on gradient types, a hash with values of array of
+# [name, aliases, multi-gradient]
 
-gnames = {
-    'avl' : "ArcView legend",
-    'gpl' : "GIMP palette",
-    'cpt' : "GMT colour table palette",
-    'svg' : "SVG gradient",
-    'grd' : "PaintShop Pro gradient",
-    'ggr' : "GIMP gradient",
-    'c3g' : "CSS3 gradient",
-    'gpf' : "Gnuplot palette",
-    'inc' : "POV-Ray header",
-    'sao' : "DS9/SAO colour table",
-    'lut' : "Medcon lookup table",
-    'png' : "PNG image"
+gdata = {
+    'avl' : ["ArcView legend", [], False],
+    'c3g' : ["CSS3 gradient", ['css3'], False],
+    'cpt' : ["GMT colour table palette", [], False],
+    'ggr' : ["GIMP gradient", [], False],
+    'gpf' : ["Gnuplot palette", [], False],
+    'gpl' : ["GIMP palette", [], False],
+    'grd' : ["Photoshop gradient", ['grd5'], True],
+    'inc' : ["POV-Ray header", ['pov'], False],
+    'lut' : ["Medcon lookup table", [], False],
+    'png' : ["PNG image", [], False],
+    'psp' : ["PaintShop Pro gradient", ['grd3', 'jgd', 'PspGradient'], False],
+    'sao' : ["DS9/SAO colour table", [], False],
+    'svg' : ["SVG gradient", [], True],
     }
 
-# aliases for types
+# it is convenient to have separate dicts for each of
+# names, typealiases, multi for each type
 
-gtypealias = {
-    'avl' : [],
-    'gpl' : [],
-    'cpt' : [],
-    'svg' : [],
-    'ggr' : [],
-    'grd' : ['jgd', 'PspGradient'],
-    'c3g' : ['css3'],
-    'gpf' : [],
-    'inc' : ['pov'],
-    'sao' : [],
-    'lut' : [],
-    'png' : []
-    }
+gnames     = {}
+gtypealias = {}
+gmulti     = {}
+
+for t, gdatum in gdata.iteritems() :
+    gnames[t], gtypealias[t], gmulti[t] = gdatum
 
 # generate type dict from alias list
 
@@ -64,7 +59,7 @@ gajmat = {
     'cpt' : { 'svg' : 'cptsvg' },
     'svg' : { 'cpt' : 'svgcpt',
               'ggr' : 'svggimp',
-              'grd' : 'svgpsp',
+              'psp' : 'svgpsp',
               'c3g' : 'svgcss3',
               'gpf' : 'svggpt',
               'inc' : 'svgpov',
@@ -72,7 +67,8 @@ gajmat = {
               'png' : 'svgpng' },
     'ggr' : { 'svg' : 'gimpsvg',
               'lut' : 'gimplut' },
-    'grd' : { 'svg' : 'pspsvg' }
+    'psp' : { 'svg' : 'pspsvg' },
+    'grd' : { 'svg' : 'pssvg' }
     }
 
 # create the conversion (di)graph from the adjacency
@@ -185,7 +181,7 @@ def gradtype(path) :
 
 def convert(ipath, opath, opt) :
 
-    verbose, subopts, ifmt, ofmt = opt
+    verbose, subopts, ifmt, ofmt, mode = opt
 
     if ifmt is None :
         ifmt = gradtype(ipath)
@@ -241,7 +237,8 @@ def convert(ipath, opath, opt) :
     tempdir  = tempfile.mkdtemp()
 
     # register the cleanup function to empty the temporary
-    # directory of files and remove it
+    # directory of files and remove it, the argument is for
+    # debugging
 
     def cleanup(verbose) :
         if delfiles and verbose :
@@ -311,6 +308,7 @@ def usage() :
     print " -h          : brief help"
     print " -i format   : format of input file"
     print " -n rgb      : nan colour (cpt)"
+    print " -m mode     : multi-gradient conversion mode"
     print " -o format   : format of output file"
     print " -p          : preview (svg)"
     print " -T rgb      : transparency (cpt, gpt, sao)"
@@ -322,13 +320,14 @@ def usage() :
 def main() :
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "b:cf:g:hi:n:o:pT:vV",
+                                   "b:cf:g:hi:m:n:o:pT:vV",
                                    ["background=",
                                     "capabilities",
                                     "foreground=",
                                     "geometry=",
                                     "help",
                                     "input-format=",
+                                    "mode=",
                                     "nan=",
                                     "output-format=",
                                     "preview"
@@ -344,6 +343,7 @@ def main() :
     verbose = False
     ifmt    = None
     ofmt    = None
+    mode    = 1
     subopts = dict( (p, []) for p in programs)
 
     for o, a in opts :
@@ -370,6 +370,14 @@ def main() :
             subopts['svgcpt'].extend([o, a])
             subopts['gplcpt'].extend([o, a])
             subopts['avlcpt'].extend([o, a])
+        elif o in ("-m", "--mode") :
+            try :
+                mode = int(a)
+            except ValueError :
+                if a in ['multi', 'burst'] :
+                    mode = a
+                else :
+                    raise ValueError("no such mode %s" % (a))
         elif o in ("-p", "--preview") :
             subopts['cptsvg'].extend([o])
             subopts['gimpsvg'].extend([o])
@@ -399,7 +407,7 @@ def main() :
     if verbose :
         print "This is gradient-convert (version %s)" % (version)
 
-    opt = (verbose, subopts, ifmt, ofmt)
+    opt = (verbose, subopts, ifmt, ofmt, mode)
 
     retval = convert(ipath, opath, opt)
 
