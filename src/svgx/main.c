@@ -71,7 +71,7 @@ int main(int argc,char** argv)
   else
     opt.job = job_first;
 
-  /* output formar */
+  /* output format */
 
   if (info.type_given)
     {

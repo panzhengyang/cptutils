@@ -39,7 +39,7 @@ static int call_autonamed(const svg_t *svg,
 			  int (*f)(const svg_t*, svgx_opt_t*))
 {
   const char *name = (char*)svg->name;
-  int  n = strlen(name) + strlen(suffix) + 2;
+  size_t n = strlen(name) + strlen(suffix) + 2;
   char file[n];
 
   if (snprintf(file, n, "%s.%s", name, suffix) >= n)
@@ -51,11 +51,29 @@ static int call_autonamed(const svg_t *svg,
   svgx_opt_t opt2 = *opt;
 
   opt2.job = job_named;
-  opt2.output.file = file;
+  int err = 0;
 
-  int err = f(svg, &opt2);
+  if (opt->output.file)
+    {
+      size_t m = strlen(opt->output.file) + 1 + n;
+      char path[m];
 
-  if (opt->verbose) printf("  %s\n",file);
+      if (snprintf(path, m, "%s/%s", opt->output.file, file) >= m)
+	{
+	  fprintf(stderr,"filename truncated! %s\n", path);
+	  return 1;
+	}
+
+      opt2.output.file = path;
+      err = f(svg, &opt2);
+      if (opt->verbose) printf("  %s\n", path);
+    }
+  else
+    {
+      opt2.output.file = file;
+      err = f(svg, &opt2);
+      if (opt->verbose) printf("  %s\n", file);
+    }
 
   return err;
 }

@@ -111,8 +111,9 @@
   <listitem>
     <para>
       Extract all gradients, which will have filenames derived 
-      from the gradient names. This option is incompatible with 
-      <option>-o</option>, of course.
+      from the gradient names. If this option is used then the 
+      argument of the <option>-o</option> option will be 
+      interpreted as the output directory.
     </para>
   </listitem>
   </varlistentry>
@@ -138,7 +139,25 @@
 
   <xi:include href="../docbook/varlistentry-nan-svgx.xml"/>
 
-  <xi:include href="../docbook/varlistentry-output.xml"/>
+  <varlistentry>
+    <term>
+      <option>-o</option>, <option>--output</option>
+      <replaceable>path</replaceable>
+    </term>
+    <listitem>
+      <para>
+	Write the output to <replaceable>path</replaceable>, 
+	rather than 
+	<filename moreinfo="refentry" path="/dev">stdout</filename>.
+      </para>
+      <para>
+	If the <option>-a</option> option is specified then
+	the <replaceable>path</replaceable> argument must be a 
+	directory (which exists) and the output files will be
+	written into this directory.
+      </para>
+    </listitem>
+  </varlistentry>
 
   <xi:include href="../docbook/varlistentry-preview.xml"/>
 

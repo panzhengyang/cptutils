@@ -126,7 +126,7 @@ static int svgx_first(svgx_opt_t opt, svg_list_t *list)
   return svgx_single(opt, svg);
 }
 
-static int svgx_named(svgx_opt_t opt,svg_list_t *list)
+static int svgx_named(svgx_opt_t opt, svg_list_t *list)
 {
   svg_t *svg;
 
@@ -252,7 +252,7 @@ static int svg_explicit2(svg_t *svg, void *dummy)
 
 static int svg_flatten2(svg_t *svg, rgb_t *alpha)
 {
-  return svg_flatten(svg,*alpha);
+  return svg_flatten(svg, *alpha);
 }
 
 static int svgx_all(svgx_opt_t opt, svg_list_t *list)

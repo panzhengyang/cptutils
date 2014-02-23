@@ -23,24 +23,40 @@ SVGSVG  = ./svgx -t svg
 TSPARG = -T255/0/0
 CPTARG = -b10 -f1/2/3 -n0/12/0 $(TSPARG)
 
-check test : svgx
-	for file in `ls $(TESTD)/svg/*.svg` ; do \
-	  echo $$file ; \
-	  $(SVGX) -l $$file > /dev/null || exit 1 ; \
-	  for name in `$(SVGX) -l $$file` ; do \
+check test : svgx test-named test-list test-all
+
+test-all :
+	for file in Gradients_01 ; do \
+	  path="$(TESTD)/svg/$$file.svg" ; \
+	  echo $$path ; \
+	  $(SVGCPT) -a -o test $$path || exit 1 ; \
+	done
+
+test-list :
+	for file in eyes ; do \
+	  path="$(TESTD)/svg/$$file.svg" ; \
+	  echo $$path ; \
+	  $(SVGCPT) -l $$path > /dev/null || exit 1 ; \
+	done
+
+test-named :
+	for file in eyes ; do \
+	  path="$(TESTD)/svg/$$file.svg" ; \
+	  echo $$path ; \
+	  for name in `$(SVGX) -l $$path` ; do \
 	    echo "  $$name" ; \
-	    $(SVGCPT) -s $$name $(CPTARG) -o test/$$name.cpt $$file \
+	    $(SVGCPT) -s $$name $(CPTARG) -o test/$$name.cpt $$path \
 		|| exit 1 ; \
-	    $(SVGGGR) -s $$name -o test/$$name.ggr $$file  || exit 1 ; \
-	    $(SVGPOV) -s $$name -o test/$$name.inc $$file  || exit 1 ; \
-	    $(SVGGPT) -s $$name $(TSPARG) -o test/$$name.gpt $$file  \
+	    $(SVGGGR) -s $$name -o test/$$name.ggr $$path  || exit 1 ; \
+	    $(SVGPOV) -s $$name -o test/$$name.inc $$path  || exit 1 ; \
+	    $(SVGGPT) -s $$name $(TSPARG) -o test/$$name.gpt $$path  \
 		|| exit 1 ; \
-	    $(SVGCSS3) -s $$name -o test/$$name.css3 $$file  || exit 1 ; \
-	    $(SVGPSP) -s $$name -o test/$$name.grd $$file  || exit 1 ; \
-	    $(SVGSAO) -s $$name $(TSPARG) -o test/$$name.sao $$file  \
+	    $(SVGCSS3) -s $$name -o test/$$name.css3 $$path  || exit 1 ; \
+	    $(SVGPSP) -s $$name -o test/$$name.grd $$path  || exit 1 ; \
+	    $(SVGSAO) -s $$name $(TSPARG) -o test/$$name.sao $$path  \
 		|| exit 1 ; \
-	    $(SVGPNG) -s $$name -o test/$$name.png $$file  || exit 1 ; \
-	    $(SVGSVG) -s $$name -p -o test/$$name.svg $$file  || exit 1 ; \
+	    $(SVGPNG) -s $$name -o test/$$name.png $$path  || exit 1 ; \
+	    $(SVGSVG) -s $$name -p -o test/$$name.svg $$path  || exit 1 ; \
 	  done ;\
 	done
 
