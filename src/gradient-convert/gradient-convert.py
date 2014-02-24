@@ -17,19 +17,19 @@ delfiles = []
 # [name, aliases, multi-gradient]
 
 gdata = {
-    'avl' : ["ArcView legend", [], False],
-    'c3g' : ["CSS3 gradient", ['css3'], False],
-    'cpt' : ["GMT colour table palette", [], False],
-    'ggr' : ["GIMP gradient", [], False],
-    'gpf' : ["Gnuplot palette", [], False],
-    'gpl' : ["GIMP palette", [], False],
-    'grd' : ["Photoshop gradient", ['grd5'], True],
-    'inc' : ["POV-Ray header", ['pov'], False],
-    'lut' : ["Medcon lookup table", [], False],
-    'png' : ["PNG image", [], False],
-    'psp' : ["PaintShop Pro gradient", ['grd3', 'jgd', 'PspGradient'], False],
-    'sao' : ["DS9/SAO colour table", [], False],
-    'svg' : ["SVG gradient", [], True],
+    'avl' : ["ArcView legend", []],
+    'c3g' : ["CSS3 gradient", ['css3']],
+    'cpt' : ["GMT colour table palette", []],
+    'ggr' : ["GIMP gradient", []],
+    'gpf' : ["Gnuplot palette", []],
+    'gpl' : ["GIMP palette", []],
+    'grd' : ["Photoshop gradient", ['grd5']],
+    'inc' : ["POV-Ray header", ['pov']],
+    'lut' : ["Medcon lookup table", []],
+    'png' : ["PNG image", []],
+    'psp' : ["PaintShop Pro gradient", ['grd3', 'jgd', 'PspGradient']],
+    'sao' : ["DS9/SAO colour table", []],
+    'svg' : ["SVG gradient", []],
     }
 
 # it is convenient to have separate dicts for each of
@@ -37,10 +37,9 @@ gdata = {
 
 gnames     = {}
 gtypealias = {}
-gmulti     = {}
 
 for t, gdatum in gdata.iteritems() :
-    gnames[t], gtypealias[t], gmulti[t] = gdatum
+    gnames[t], gtypealias[t] = gdatum
 
 # generate type dict from alias list
 
@@ -195,6 +194,68 @@ def convert(ipath, opath, opt) :
         print "output: %s" % (gnames[ofmt])
         print "  %s" % (opath)
 
+    # register the cleanup function to empty the temporary
+    # directory of files and remove it, the argument is for
+    # debugging
+
+    def cleanup(verbose) :
+        if delfiles and verbose :
+            print "deleting"
+        subdirs = []
+        for delfile in delfiles :
+            if verbose :
+                print "  %s" % (delfile) 
+            if os.path.isdir(delfile) :
+                subdirs.append(delfile)
+            elif os.path.exists(delfile) :
+                os.unlink(delfile)
+        for subdir in subdirs :
+            os.rmdir(subdir)
+        os.rmdir(tempdir)
+        if verbose :
+            print "  %s" % (tempdir)
+
+    atexit.register(cleanup, True)
+
+    # for the intermediate filenames; use the basename
+    # of the final output file, but make the file location
+    # in a tmpname() directory (so that we won't stomp on
+    # users local data)
+
+    basename = os.path.splitext( os.path.split(opath)[1] )[0]
+    tempdir  = tempfile.mkdtemp()
+
+    # this is a bit of a hack to handle grd files
+
+    if ifmt == 'grd' :
+        if verbose :
+            print "grd burst call sequence:"
+        svgmulti = ("%s/%s-multiple.svg" % (tempdir, basename))  
+        svgdir   = ("%s/%s-single" % (tempdir, basename))
+        os.mkdir(svgdir)
+        delfiles.append(svgdir)
+        clists = [['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath],
+                  ['svgsvg', '-o', svgdir, '-a', svgmulti]]
+        for clist in clists :
+            if verbose :
+                print "  %s" % (" ".join(clist))
+            if subprocess.call(clist) != 0 :
+                print "failed call to %s : aborting" % (clist[0])
+                return None
+        delfiles.append(svgmulti)
+
+        retvals = []
+        for svg in os.listdir(svgdir) :
+            svgbase = os.path.splitext(svg)[0]
+            ipath2 = "%s/%s" % (svgdir, svg)
+            opath2 = "%s/%s.%s" % (opath, svgbase, ofmt)
+            opts2  = (verbose, subopts, 'svg', ofmt, mode)
+            retval = convert(ipath2, opath2, opts2)
+            delfiles.append(ipath2)
+            retvals.append(retval)
+
+        return retvals
+
     # create the system-call sequence, first we create
     # a list of dictionaries of call data
 
@@ -227,32 +288,6 @@ def convert(ipath, opath, opt) :
 
     cdlist[0]['frompath'] = ipath
     cdlist[-1]['topath']  = opath
-
-    # add the intermediate filenames; use the basename
-    # of the final output file, but make the file location
-    # in a tmpname() directory (so that we won't stomp on
-    # users local data)
-
-    basename = os.path.splitext( os.path.split(opath)[1] )[0]
-    tempdir  = tempfile.mkdtemp()
-
-    # register the cleanup function to empty the temporary
-    # directory of files and remove it, the argument is for
-    # debugging
-
-    def cleanup(verbose) :
-        if delfiles and verbose :
-            print "deleting"
-        for delfile in delfiles :
-            if os.path.exists(delfile) :
-                os.unlink(delfile)
-                if verbose :
-                    print "  %s" % (delfile)
-        os.rmdir(tempdir)
-        if verbose :
-            print "  %s" % (tempdir)
-
-    atexit.register(cleanup, False)
 
     # add temporary filenames (also added to the global
     # delfiles list used by the cleanup function)
