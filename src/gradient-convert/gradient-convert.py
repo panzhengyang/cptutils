@@ -15,22 +15,22 @@ delfiles = []
 deldirs  = []
 
 # data on gradient types, a hash with values of array of
-# [name, aliases, multi-gradient]
+# [name, aliases, burstable]
 
 gdata = {
-    'avl' : ["ArcView legend", []],
-    'c3g' : ["CSS3 gradient", ['css3']],
-    'cpt' : ["GMT colour table palette", []],
-    'ggr' : ["GIMP gradient", []],
-    'gpf' : ["Gnuplot palette", []],
-    'gpl' : ["GIMP palette", []],
-    'grd' : ["Photoshop gradient", ['grd5']],
-    'inc' : ["POV-Ray header", ['pov']],
-    'lut' : ["Medcon lookup table", []],
-    'png' : ["PNG image", []],
-    'psp' : ["PaintShop Pro gradient", ['grd3', 'jgd', 'PspGradient']],
-    'sao' : ["DS9/SAO colour table", []],
-    'svg' : ["SVG gradient", []],
+    'avl' : ["ArcView legend", [], False],
+    'c3g' : ["CSS3 gradient", ['css3'], False],
+    'cpt' : ["GMT colour table palette", [], False],
+    'ggr' : ["GIMP gradient", [], False],
+    'gpf' : ["Gnuplot palette", [], False],
+    'gpl' : ["GIMP palette", [], False],
+    'grd' : ["Photoshop gradient", ['grd5'], True],
+    'inc' : ["POV-Ray header", ['pov'], False],
+    'lut' : ["Medcon lookup table", [], False],
+    'png' : ["PNG image", [], False],
+    'psp' : ["PaintShop Pro gradient", ['grd3', 'jgd', 'PspGradient'], False],
+    'sao' : ["DS9/SAO colour table", [], False],
+    'svg' : ["SVG gradient", [], True],
     }
 
 # it is convenient to have separate dicts for each of
@@ -38,9 +38,10 @@ gdata = {
 
 gnames     = {}
 gtypealias = {}
+gburstable = {}
 
 for t, gdatum in gdata.iteritems() :
-    gnames[t], gtypealias[t] = gdatum
+    gnames[t], gtypealias[t], gburstable[t] = gdatum
 
 # generate type dict from alias list
 
@@ -130,13 +131,18 @@ def capabilities(M, N, A) :
     def quoted(s) :
         return '"'+ s + '"'
 
+    def boolstring(val) :
+        return "true" if val else "false"
+
     lines = []
     for name in sorted(N.keys()) :
         alias = ", ".join( map(quoted, A[name]) )
-        lines.append("%s: {read: %s, write: %s, desc: %s, alias: [%s]}" % \
+        fmt = "%s: {read: %5s, write: %5s, burst: %5s, desc: %s, alias: [%s]}"
+        lines.append(fmt % \
                          (name,
-                          "true" if rfmt[name] else "false",
-                          "true" if wfmt[name] else "false",
+                          boolstring(rfmt[name]),
+                          boolstring(wfmt[name]),
+                          boolstring(gburstable[name]),
                           quoted(N[name]),
                           alias))
     print "# gradient-convert %s capabilities" % (version)
@@ -208,15 +214,17 @@ def convert(ipath, opath, opt) :
 
     deldirs.append(tempdir)
 
-    # this is a bit of a hack to handle grd files
+    # this is a bit of a hack to handle grd files, needs some work
+    # to handle conversion of and to svg ...
 
     if burst and (ifmt == 'grd') :
         if verbose :
             print "grd burst call sequence:"
-        svgmulti = ("%s/%s-multiple.svg" % (tempdir, basename))  
-        svgdir   = ("%s/%s-single" % (tempdir, basename))
+        svgmulti = "%s/%s-multiple.svg" % (tempdir, basename)  
+        svgdir   = "%s/%s-single" % (tempdir, basename)
         os.mkdir(svgdir)
         deldirs.append(svgdir)
+
         clists = [['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath],
                   ['svgsvg', '-o', svgdir, '-a', svgmulti]]
         for clist in clists :
