@@ -12,6 +12,7 @@ version = "VERSION"
 # list of files to be deleted at exit
 
 delfiles = []
+deldirs  = []
 
 # data on gradient types, a hash with values of array of
 # [name, aliases, multi-gradient]
@@ -180,7 +181,10 @@ def gradtype(path) :
 
 def convert(ipath, opath, opt) :
 
-    verbose, subopts, ifmt, ofmt, mode = opt
+    global delfiles
+    global deldirs
+
+    verbose, subopts, ifmt, ofmt, burst = opt
 
     if ifmt is None :
         ifmt = gradtype(ipath)
@@ -194,29 +198,6 @@ def convert(ipath, opath, opt) :
         print "output: %s" % (gnames[ofmt])
         print "  %s" % (opath)
 
-    # register the cleanup function to empty the temporary
-    # directory of files and remove it, the argument is for
-    # debugging
-
-    def cleanup(verbose) :
-        if delfiles and verbose :
-            print "deleting"
-        subdirs = []
-        for delfile in delfiles :
-            if verbose :
-                print "  %s" % (delfile) 
-            if os.path.isdir(delfile) :
-                subdirs.append(delfile)
-            elif os.path.exists(delfile) :
-                os.unlink(delfile)
-        for subdir in subdirs :
-            os.rmdir(subdir)
-        os.rmdir(tempdir)
-        if verbose :
-            print "  %s" % (tempdir)
-
-    atexit.register(cleanup, True)
-
     # for the intermediate filenames; use the basename
     # of the final output file, but make the file location
     # in a tmpname() directory (so that we won't stomp on
@@ -225,15 +206,17 @@ def convert(ipath, opath, opt) :
     basename = os.path.splitext( os.path.split(opath)[1] )[0]
     tempdir  = tempfile.mkdtemp()
 
+    deldirs.append(tempdir)
+
     # this is a bit of a hack to handle grd files
 
-    if ifmt == 'grd' :
+    if burst and (ifmt == 'grd') :
         if verbose :
             print "grd burst call sequence:"
         svgmulti = ("%s/%s-multiple.svg" % (tempdir, basename))  
         svgdir   = ("%s/%s-single" % (tempdir, basename))
         os.mkdir(svgdir)
-        delfiles.append(svgdir)
+        deldirs.append(svgdir)
         clists = [['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath],
                   ['svgsvg', '-o', svgdir, '-a', svgmulti]]
         for clist in clists :
@@ -241,20 +224,19 @@ def convert(ipath, opath, opt) :
                 print "  %s" % (" ".join(clist))
             if subprocess.call(clist) != 0 :
                 print "failed call to %s : aborting" % (clist[0])
-                return None
+                return False
         delfiles.append(svgmulti)
 
-        retvals = []
         for svg in os.listdir(svgdir) :
             svgbase = os.path.splitext(svg)[0]
             ipath2 = "%s/%s" % (svgdir, svg)
             opath2 = "%s/%s.%s" % (opath, svgbase, ofmt)
-            opts2  = (verbose, subopts, 'svg', ofmt, mode)
-            retval = convert(ipath2, opath2, opts2)
+            opts2  = (verbose, subopts, 'svg', ofmt, False)             
             delfiles.append(ipath2)
-            retvals.append(retval)
+            if not convert(ipath2, opath2, opts2) :
+                return False
 
-        return retvals
+        return True
 
     # create the system-call sequence, first we create
     # a list of dictionaries of call data
@@ -323,13 +305,13 @@ def convert(ipath, opath, opt) :
 
         if subprocess.call(clist) != 0 :
             print "failed call to %s : aborting" % (program)
-            return None
+            return False
 
         if not os.path.exists(topath) :
             print "failed to create %s : aborting" % (topath)
-            return None
+            return False
 
-    return topath
+    return True
 
 # command-line interface
 
@@ -337,13 +319,13 @@ def usage() :
     print "usage : gradient-convert [options] <input> <output>"
     print "options"
     print " -b rgb      : background (cpt)"
+    print " -B          : burst multiple gradients"
     print " -c          : print program capabilites in YAML format"
     print " -f rgb      : foreground (cpt)"
     print " -g geometry : geometry (png, svg)"
     print " -h          : brief help"
     print " -i format   : format of input file"
     print " -n rgb      : nan colour (cpt)"
-    print " -m mode     : multi-gradient conversion mode"
     print " -o format   : format of output file"
     print " -p          : preview (svg)"
     print " -T rgb      : transparency (cpt, gpt, sao)"
@@ -352,11 +334,30 @@ def usage() :
     print "the type in brackets indicates the file type affected"
     print
 
+def cleanup_dirs(verbose) :
+    global deldirs
+    for path in reversed(deldirs) :
+        if verbose :
+            print path
+        os.rmdir(path)
+
+def cleanup_files(verbose) :
+    global delfiles
+    for path in delfiles :
+        if verbose :
+            print path
+        os.unlink(path)
+
 def main() :
+
+    global delfiles
+    global deldirs
+
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "b:cf:g:hi:m:n:o:pT:vV",
-                                   ["background=",
+                                   "Bb:cf:g:hi:m:n:o:pT:vV",
+                                   ["burst",
+                                    "background=",
                                     "capabilities",
                                     "foreground=",
                                     "geometry=",
@@ -378,8 +379,8 @@ def main() :
     verbose = False
     ifmt    = None
     ofmt    = None
-    mode    = 1
-    subopts = dict( (p, []) for p in programs)
+    burst   = False
+    subopts = dict((p, []) for p in programs)
 
     for o, a in opts :
         if o in ("-h", "--help") :
@@ -392,6 +393,8 @@ def main() :
         elif o in ("-c", "--capabilities") :
             capabilities(gajmat, gnames, gtypealias)
             sys.exit(0)
+        elif o in ("-B", "--burst") : 
+            burst = True
         elif o in ("-g", "--geometry") :
             # geometry only used by svgpng
             subopts['svgpng'].extend([o, a])
@@ -405,14 +408,6 @@ def main() :
             subopts['svgcpt'].extend([o, a])
             subopts['gplcpt'].extend([o, a])
             subopts['avlcpt'].extend([o, a])
-        elif o in ("-m", "--mode") :
-            try :
-                mode = int(a)
-            except ValueError :
-                if a in ['multi', 'burst'] :
-                    mode = a
-                else :
-                    raise ValueError("no such mode %s" % (a))
         elif o in ("-p", "--preview") :
             subopts['cptsvg'].extend([o])
             subopts['gimpsvg'].extend([o])
@@ -442,17 +437,20 @@ def main() :
     if verbose :
         print "This is gradient-convert (version %s)" % (version)
 
-    opt = (verbose, subopts, ifmt, ofmt, mode)
+    atexit.register(cleanup_dirs, False)
+    atexit.register(cleanup_files, False)
 
-    retval = convert(ipath, opath, opt)
+    opt = (verbose, subopts, ifmt, ofmt, burst)
+
+    success = convert(ipath, opath, opt)
 
     if verbose :
         print "done."
 
-    if retval is None :
-        sys.exit(1)
-    else :
+    if success is True :
         sys.exit(0)
+    else :
+        sys.exit(1)
 
 # run main
 if __name__ == "__main__":
