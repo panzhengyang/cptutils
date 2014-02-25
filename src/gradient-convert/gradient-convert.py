@@ -9,7 +9,7 @@ import os, sys, getopt, tempfile, subprocess, atexit
 
 version = "VERSION"
 
-# list of files to be deleted at exit
+# list of files & directories to be deleted at exit
 
 delfiles = []
 deldirs  = []
@@ -210,41 +210,86 @@ def convert(ipath, opath, opt) :
     # users local data)
 
     basename = os.path.splitext( os.path.split(opath)[1] )[0]
-    tempdir  = tempfile.mkdtemp()
+    tempdir = tempfile.mkdtemp()
 
     deldirs.append(tempdir)
 
-    # this is a bit of a hack to handle grd files, needs some work
-    # to handle conversion of and to svg ...
+    # Here we handle the multiple-gradient files, although this
+    # is a bit convoluted it is much less messy than my attempt
+    # to do this in a generic fashion; we'd not expect to support
+    # any other multi-gradient formats in any case
 
-    if burst and (ifmt == 'grd') :
-        if verbose :
-            print "grd burst call sequence:"
-        svgmulti = "%s/%s-multiple.svg" % (tempdir, basename)  
-        svgdir   = "%s/%s-single" % (tempdir, basename)
-        os.mkdir(svgdir)
-        deldirs.append(svgdir)
+    if burst : 
+        if ifmt == 'grd' :
 
-        clists = [['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath],
-                  ['svgsvg', '-o', svgdir, '-a', svgmulti]]
-        for clist in clists :
+            # input is a single grd file, convert it to a single 
+            # svg file with muliple gradients; then call convert()
+            # with that file as input and burst = True (so that
+            # we execute the ifmt == 'svg' case below).
+            #
+            # Note that we use the -t argument to pssvg as in many
+            # cases grd files have identical titles (which would
+            # cause name clashes in the svgsvg call below), and 
+            # we don't know in advance how many there are, so use 
+            # quite large format string giving titles base-000, 
+            # base-001, ..., so handling 1000 gradients.  We'd
+            # need to enhance pssvg to generate format string after
+            # counting the gradient to reduce the redundant zeros
+
+            if verbose :
+                print "grd burst call sequence:"
+
+            svgmulti = "%s/%s-multiple.svg" % (tempdir, basename)  
+            clist = ['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath]
             if verbose :
                 print "  %s" % (" ".join(clist))
             if subprocess.call(clist) != 0 :
                 print "failed call to %s : aborting" % (clist[0])
                 return False
-        delfiles.append(svgmulti)
+            delfiles.append(svgmulti)
 
-        for svg in os.listdir(svgdir) :
-            svgbase = os.path.splitext(svg)[0]
-            ipath2 = "%s/%s" % (svgdir, svg)
-            opath2 = "%s/%s.%s" % (opath, svgbase, ofmt)
-            opts2  = (verbose, subopts, 'svg', ofmt, False)             
-            delfiles.append(ipath2)
-            if not convert(ipath2, opath2, opts2) :
-                return False
+            opt2 = (verbose, subopts, 'svg', ofmt, True)
+            return convert(svgmulti, opath, opt2)
 
-        return True
+        elif ifmt == 'svg' :
+
+            # input is a single svg file (which may be from the 
+            # case above, or an original infile).
+
+            if verbose :
+                print "svg burst call sequence:"
+
+            if ofmt == 'svg' :
+                # final output is svg, so burst to the output
+                # directory
+                clist = ['svgsvg', '-o', opath, '-a', ipath]
+                if verbose :
+                    print "  %s" % (" ".join(clist))
+                if subprocess.call(clist) != 0 :
+                    print "failed call to %s : aborting" % (clist[0])
+                    return False
+            else :
+                # final output is not svg, so burst into a temp
+                # directory, then call convert() on each file in
+                # that directory, this time with burst = False
+                svgdir = "%s/%s-single" % (tempdir, basename)
+                os.mkdir(svgdir)
+                deldirs.append(svgdir)
+                clist = ['svgsvg', '-o', svgdir, '-a', ipath]
+                if verbose :
+                    print "  %s" % (" ".join(clist))
+                if subprocess.call(clist) != 0 :
+                    print "failed call to %s : aborting" % (clist[0])
+                    return False
+                for svg in os.listdir(svgdir) :
+                    svgbase = os.path.splitext(svg)[0]
+                    ipath2 = "%s/%s" % (svgdir, svg)
+                    opath2 = "%s/%s.%s" % (opath, svgbase, ofmt)
+                    opts2  = (verbose, subopts, 'svg', ofmt, False)             
+                    delfiles.append(ipath2)
+                    if not convert(ipath2, opath2, opts2) :
+                        return False
+            return True
 
     # create the system-call sequence, first we create
     # a list of dictionaries of call data
