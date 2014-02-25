@@ -1,6 +1,6 @@
 Changes
 
-1.51 (pending)
+1.51 (27 Feb 2014)
   pssvg feature enhancements
   - grd5 parser handles all known grd5 constructs
   - fore/background colours handled via command-line
