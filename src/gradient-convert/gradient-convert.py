@@ -88,6 +88,8 @@ for t in gajmat.values() :
     for s in t.values() :
         programs.append(s)
 
+programs.append('svgsvg')
+
 # utlity function for the subsequent print functions
 
 def rwformats(M, N) :
@@ -183,6 +185,18 @@ def gradtype(path) :
 
     return gtype
 
+
+def run_clist(clist, topath, verbose) :
+    if verbose :
+        print "  %s" % (" ".join(clist))
+    if subprocess.call(clist) != 0 :
+        print "failed call to %s : aborting" % (clist[0])
+        return False
+    if topath and not os.path.exists(topath) :
+        print "failed to create %s : aborting" % (topath)
+        return False
+    return True
+
 # main function
 
 def convert(ipath, opath, opt) :
@@ -191,18 +205,6 @@ def convert(ipath, opath, opt) :
     global deldirs
 
     verbose, subopts, ifmt, ofmt, burst = opt
-
-    if ifmt is None :
-        ifmt = gradtype(ipath)
-
-    if ofmt is None :
-        ofmt = gradtype(opath)
-    
-    if verbose :
-        print "input: %s" % (gnames[ifmt])
-        print "  %s" % (ipath)
-        print "output: %s" % (gnames[ofmt])
-        print "  %s" % (opath)
 
     # for the intermediate filenames; use the basename
     # of the final output file, but make the file location
@@ -236,9 +238,6 @@ def convert(ipath, opath, opt) :
             # need to enhance pssvg to generate format string after
             # counting the gradient to reduce the redundant zeros
 
-            if verbose :
-                print "grd burst call sequence:"
-
             svgmulti = "%s/%s-multiple.svg" % (tempdir, basename)  
             clist = ['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath]
             if verbose :
@@ -256,17 +255,11 @@ def convert(ipath, opath, opt) :
             # input is a single svg file (which may be from the 
             # case above, or an original infile).
 
-            if verbose :
-                print "svg burst call sequence:"
-
             if ofmt == 'svg' :
-                # final output is svg, so burst to the output
-                # directory
+                # final output is svg, burst to output directory
                 clist = ['svgsvg', '-o', opath, '-a', ipath]
-                if verbose :
-                    print "  %s" % (" ".join(clist))
-                if subprocess.call(clist) != 0 :
-                    print "failed call to %s : aborting" % (clist[0])
+                clist.extend(subopts['svgsvg'])
+                if not run_clist(clist, opath, verbose) :
                     return False
             else :
                 # final output is not svg, so burst into a temp
@@ -276,10 +269,7 @@ def convert(ipath, opath, opt) :
                 os.mkdir(svgdir)
                 deldirs.append(svgdir)
                 clist = ['svgsvg', '-o', svgdir, '-a', ipath]
-                if verbose :
-                    print "  %s" % (" ".join(clist))
-                if subprocess.call(clist) != 0 :
-                    print "failed call to %s : aborting" % (clist[0])
+                if not run_clist(clist, None, verbose) :
                     return False
                 for svg in os.listdir(svgdir) :
                     svgbase = os.path.splitext(svg)[0]
@@ -330,7 +320,6 @@ def convert(ipath, opath, opt) :
     for cd0, cd1 in pairs(cdlist) :
 
         totype = cd0['totype']
-
         path = ("%s/%s.%s" % (tempdir, basename, totype))
 
         cd0['topath']   = path
@@ -340,28 +329,17 @@ def convert(ipath, opath, opt) :
 
     # now run through the call data and make the calls
 
-    if verbose :
-        print "call sequence:"
-
     for cd in cdlist :
 
         program  = cd['program']
         topath   = cd['topath']
         frompath = cd['frompath']
 
-        clist = [ program, '-o', topath ]
+        clist = [program, '-o', topath]
         clist.extend(subopts[program])
         clist.append(frompath)
 
-        if verbose :
-            print "  %s" % (" ".join(clist))
-
-        if subprocess.call(clist) != 0 :
-            print "failed call to %s : aborting" % (program)
-            return False
-
-        if not os.path.exists(topath) :
-            print "failed to create %s : aborting" % (topath)
+        if not run_clist(clist, topath, verbose) :
             return False
 
     return True
@@ -435,6 +413,12 @@ def main() :
     burst   = False
     subopts = dict((p, []) for p in programs)
 
+    # progs_<x> accept the -<x> option
+    progs_p   = ['cptsvg', 'gimpsvg', 'pspsvg', 'svgsvg']
+    progs_g   = ['svgpng'] + progs_p
+    progs_bfn = ['svgcpt', 'gplcpt', 'avlcpt']
+    progs_T   = ['svgcpt', 'svggpt', 'svgsao']
+
     for o, a in opts :
         if o in ("-h", "--help") :
             usage()
@@ -449,27 +433,19 @@ def main() :
         elif o in ("-B", "--burst") : 
             burst = True
         elif o in ("-g", "--geometry") :
-            # geometry only used by svgpng
-            subopts['svgpng'].extend([o, a])
-            subopts['cptsvg'].extend([o, a])
-            subopts['gimpsvg'].extend([o, a])
-            subopts['pspsvg'].extend([o, a])
+            for prog in progs_g : 
+                subopts[prog].extend([o, a])
         elif o in ("-b", "--background",
                    "-f", "--foreground",
                    "-n", "--nan") :
-            # only affects output to cpt
-            subopts['svgcpt'].extend([o, a])
-            subopts['gplcpt'].extend([o, a])
-            subopts['avlcpt'].extend([o, a])
+            for prog in progs_bfn : 
+                subopts[prog].extend([o, a])
         elif o in ("-p", "--preview") :
-            subopts['cptsvg'].extend([o])
-            subopts['gimpsvg'].extend([o])
-            subopts['pspsvg'].extend([o])
+            for prog in progs_p : 
+                subopts[prog].extend([o])
         elif o in ("-T", "--transparency") :
-            # only svg to cpt, gpt, sao
-            subopts['svgcpt'].extend([o, a])
-            subopts['svggpt'].extend([o, a])
-            subopts['svgsao'].extend([o, a])
+            for prog in progs_T : 
+                subopts[prog].extend([o, a])
         elif o in ("-o", "--output-format") :
             ofmt = gtypedict.get(a)
             assert ofmt, "no such output format: %s" % (a)
@@ -492,6 +468,19 @@ def main() :
 
     atexit.register(cleanup_dirs, False)
     atexit.register(cleanup_files, False)
+
+    if ifmt is None :
+        ifmt = gradtype(ipath)
+
+    if ofmt is None :
+        ofmt = gradtype(opath)
+    
+    if verbose :
+        print "input: %s" % (gnames[ifmt])
+        print "  %s" % (ipath)
+        print "output: %s" % (gnames[ofmt])
+        print "  %s" % (opath)
+        print "call sequence:"
 
     opt = (verbose, subopts, ifmt, ofmt, burst)
 
