@@ -12,16 +12,18 @@
 /*
   these are the GMT colour types : 
 
-  rgb_t : rgb triple of integers in the range 0-255
-  hsv_t : hsv triple of doubles, hue in the range 0-360.
-          saturation & value in the range of 0-1. The hue
-	  rotates clockwise (ie, corresponds to a gimp
-	  GRAD_HSV_CW type gradient)
+  rgb_t :  rgb triple of integers in the range 0-255
+  hsv_t :  hsv triple of doubles, hue in the range 0-360.
+           saturation & value in the range of 0-1. The hue
+	   rotates clockwise (ie, corresponds to a gimp
+	   GRAD_HSV_CW type gradient)
+  hsvp_t : as hsv_t, but interpolating paths are in HSV
+           space rather than RGB
 
   these correspond to colours as interpreted in cpt files.
 */
 
-typedef enum {model_rgb, model_hsv} model_t;
+typedef enum {model_rgb, model_hsv, model_hsvp} model_t;
 
 typedef struct rgb_t
 {

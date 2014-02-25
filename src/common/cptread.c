@@ -123,6 +123,8 @@ static int cpt_parse_comment(const char *line, model_t *model)
 	*model = model_rgb;
       else if (strcmp(mstr, "HSV") == 0)
 	*model = model_hsv;
+      else if (strcmp(mstr, "+HSV") == 0)
+	*model = model_hsvp;
       else
 	{
 	  fprintf(stderr, "colour model not handled: %s\n", mstr);
@@ -360,6 +362,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
 	return set_rgb(r, g, b, &(fill->u.colour.rgb));
       break;
     case model_hsv:
+    case model_hsvp:
       if (sscanf(str, "%lf/%lf/%lf", &h, &s, &v) == 3)
 	return set_hsv(h, s, v, &(fill->u.colour.hsv));
       break;
@@ -408,6 +411,7 @@ static int cpt_parse_3fill(const char *s1,
       err += set_rgb(atoi(s1), atoi(s2), atoi(s3), &(fill->u.colour.rgb));
       break;
     case model_hsv:
+    case model_hsvp:
       err += set_hsv(atof(s1), atof(s2), atof(s3), &(fill->u.colour.hsv));
       break;
     default:
@@ -448,18 +452,19 @@ static int set_hsv(double h, double s, double v, hsv_t *hsv)
 {
   if ((h < 0.0) || (h > 360.0))
     {
-      fprintf(stderr, "hue %f out of range\n", h);
+      fprintf(stderr, "hue %.3f out of range\n", h);
       return 1;
     }
 
-  if ((s < 0.0) || (v > 0.0))
+  if ((s < 0.0) || (s > 1.0))
     {
-      fprintf(stderr, "saturation %f out of range\n", s);
+      fprintf(stderr, "saturation %.3f out of range\n", s);
       return 1;
     }
-  if ((v < 0.0) || (v > 0.0))
+
+  if ((v < 0.0) || (v > 1.0))
     {
-      fprintf(stderr, "value %f out of range\n", v);
+      fprintf(stderr, "value %.3f out of range\n", v);
       return 1;
     }
 

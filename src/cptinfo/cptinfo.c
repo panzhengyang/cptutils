@@ -250,6 +250,7 @@ static int output_plain(info_t info,FILE* stream)
       modstr = "RGB";
       break;
     case model_hsv:
+    case model_hsvp:
       modstr = "HSV";
       break;
     default:
@@ -281,6 +282,7 @@ static int output_csv(info_t info,FILE* stream)
       modstr = "rgb";
       break;
     case model_hsv:
+    case model_hsvp:
       modstr = "hsv";
       break;
     default:
