@@ -207,13 +207,11 @@ def convert(ipath, opath, opt) :
     verbose, subopts, ifmt, ofmt, burst = opt
 
     # for the intermediate filenames; use the basename
-    # of the final output file, but make the file location
+    # of the input file, but make the file location
     # in a tmpname() directory (so that we won't stomp on
     # users local data)
 
-    basename = os.path.splitext( os.path.split(opath)[1] )[0]
     tempdir = tempfile.mkdtemp()
-
     deldirs.append(tempdir)
 
     # Here we handle the multiple-gradient files, although this
@@ -222,6 +220,13 @@ def convert(ipath, opath, opt) :
     # any other multi-gradient formats in any case
 
     if burst : 
+
+        # basename used in the title, so make it meaningful,
+        # we don't take it from the output (as that will ba a 
+        # directory, and may well be ".")
+
+        basename = os.path.splitext( os.path.split(ipath)[1] )[0]
+
         if ifmt == 'grd' :
 
             # input is a single grd file, convert it to a single 
@@ -238,7 +243,7 @@ def convert(ipath, opath, opt) :
             # need to enhance pssvg to generate format string after
             # counting the gradient to reduce the redundant zeros
 
-            svgmulti = "%s/%s-multiple.svg" % (tempdir, basename)  
+            svgmulti = "%s/%s.svg" % (tempdir, basename)  
             clist = ['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath]
             if verbose :
                 print "  %s" % (" ".join(clist))
@@ -265,7 +270,7 @@ def convert(ipath, opath, opt) :
                 # final output is not svg, so burst into a temp
                 # directory, then call convert() on each file in
                 # that directory, this time with burst = False
-                svgdir = "%s/%s-single" % (tempdir, basename)
+                svgdir = "%s/%s" % (tempdir, basename)
                 os.mkdir(svgdir)
                 deldirs.append(svgdir)
                 clist = ['svgsvg', '-o', svgdir, '-a', ipath]
@@ -280,6 +285,10 @@ def convert(ipath, opath, opt) :
                     if not convert(ipath2, opath2, opts2) :
                         return False
             return True
+
+    # basename for non-burst is only used in temporary files
+
+    basename = "cptutils"
 
     # create the system-call sequence, first we create
     # a list of dictionaries of call data
