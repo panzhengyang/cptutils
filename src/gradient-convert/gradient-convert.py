@@ -39,10 +39,10 @@ gdata = {
 gnames     = {}
 gtypealias = {}
 gburstable = {}
-gext       = {}
+gexts      = {}
 
 for t, gdatum in gdata.iteritems() :
-    gnames[t], gtypealias[t], gext[t], gburstable[t] = gdatum
+    gnames[t], gtypealias[t], gexts[t], gburstable[t] = gdatum
 
 # generate type dict from alias list
 
@@ -127,9 +127,9 @@ def formats_supported(M, N) :
 # likewise, but in YAML format (it would not be difficult
 # to make this JSON)
 
-def capabilities(M, N, A) :
+def capabilities() :
 
-    rfmt, wfmt = rwformats(M, N)
+    rfmt, wfmt = rwformats(gajmat, gnames)
 
     def quoted(s) :
         return '"'+ s + '"'
@@ -138,16 +138,18 @@ def capabilities(M, N, A) :
         return "true" if val else "false"
 
     lines = []
-    for name in sorted(N.keys()) :
-        alias = ", ".join( map(quoted, A[name]) )
-        fmt = "%13s: {read: %5s, write: %5s, burst: %5s, desc: %s, alias: [%s]}"
+    fmt = "%s: {read: %5s, write: %5s, burst: %5s, desc: %s, alias: [%s], ext: %s}"
+    for name in sorted(gnames.keys()) :
+        alias = ", ".join( map(quoted, gtypealias[name]) )
         lines.append(fmt % \
-                         (quoted(gext[name]),
+                         (name,
                           boolstring(rfmt[name]),
                           boolstring(wfmt[name]),
                           boolstring(gburstable[name]),
-                          quoted(N[name]),
-                          alias))
+                          quoted(gnames[name]),
+                          alias,
+                          quoted(gexts[name])
+                          ))
     print "# gradient-convert %s capabilities" % (version)
     print "{\n  %s\n}" % (",\n  ".join(lines))
 
@@ -438,7 +440,7 @@ def main() :
             print "gradient-convert %s" % (version)
             sys.exit(0)
         elif o in ("-c", "--capabilities") :
-            capabilities(gajmat, gnames, gtypealias)
+            capabilities()
             sys.exit(0)
         elif o in ("-B", "--burst") : 
             burst = True
