@@ -15,22 +15,22 @@ delfiles = []
 deldirs  = []
 
 # data on gradient types, a hash with values of array of
-# [name, aliases, burstable]
+# [name, aliases, ext, burstable]
 
 gdata = {
-    'avl' : ["ArcView legend", [], False],
-    'c3g' : ["CSS3 gradient", ['css3'], False],
-    'cpt' : ["GMT colour table palette", [], False],
-    'ggr' : ["GIMP gradient", [], False],
-    'gpf' : ["Gnuplot palette", [], False],
-    'gpl' : ["GIMP palette", [], False],
-    'grd' : ["Photoshop gradient", ['grd5'], True],
-    'inc' : ["POV-Ray header", ['pov'], False],
-    'lut' : ["Medcon lookup table", [], False],
-    'png' : ["PNG image", [], False],
-    'psp' : ["PaintShop Pro gradient", ['grd3', 'jgd', 'PspGradient'], False],
-    'sao' : ["DS9/SAO colour table", [], False],
-    'svg' : ["SVG gradient", [], True],
+    'avl' : ['ArcView legend', [], 'avl', False],
+    'c3g' : ['CSS3 gradient', ['css3'], 'c3g', False],
+    'cpt' : ['GMT colour table palette', [], 'cpt', False],
+    'ggr' : ['GIMP gradient', [], 'ggr', False],
+    'gpf' : ['Gnuplot palette', [], 'gpf', False],
+    'gpl' : ['GIMP palette', [], 'gpl', False],
+    'grd' : ['Photoshop gradient', ['grd5'], 'grd', True],
+    'inc' : ['POV-Ray header', ['pov'], 'inc', False],
+    'lut' : ['Medcon lookup table', [], 'lut', False],
+    'png' : ['PNG image', [], 'png', False],
+    'psp' : ['PaintShop Pro gradient', ['grd3', 'jgd'], 'PspGradient', False],
+    'sao' : ['DS9/SAO colour table', [], 'sao', False],
+    'svg' : ['SVG gradient', [], 'svg', True],
     }
 
 # it is convenient to have separate dicts for each of
@@ -39,9 +39,10 @@ gdata = {
 gnames     = {}
 gtypealias = {}
 gburstable = {}
+gext       = {}
 
 for t, gdatum in gdata.iteritems() :
-    gnames[t], gtypealias[t], gburstable[t] = gdatum
+    gnames[t], gtypealias[t], gext[t], gburstable[t] = gdatum
 
 # generate type dict from alias list
 
@@ -139,9 +140,9 @@ def capabilities(M, N, A) :
     lines = []
     for name in sorted(N.keys()) :
         alias = ", ".join( map(quoted, A[name]) )
-        fmt = "%s: {read: %5s, write: %5s, burst: %5s, desc: %s, alias: [%s]}"
+        fmt = "%13s: {read: %5s, write: %5s, burst: %5s, desc: %s, alias: [%s]}"
         lines.append(fmt % \
-                         (name,
+                         (quoted(gext[name]),
                           boolstring(rfmt[name]),
                           boolstring(wfmt[name]),
                           boolstring(gburstable[name]),
