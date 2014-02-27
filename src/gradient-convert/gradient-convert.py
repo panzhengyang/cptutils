@@ -282,7 +282,7 @@ def convert(ipath, opath, opt) :
                 for svg in os.listdir(svgdir) :
                     svgbase = os.path.splitext(svg)[0]
                     ipath2 = "%s/%s" % (svgdir, svg)
-                    opath2 = "%s/%s.%s" % (opath, svgbase, ofmt)
+                    opath2 = "%s/%s.%s" % (opath, svgbase, gexts[ofmt])
                     opts2  = (verbose, subopts, 'svg', ofmt, False)             
                     delfiles.append(ipath2)
                     if not convert(ipath2, opath2, opts2) :
@@ -332,7 +332,7 @@ def convert(ipath, opath, opt) :
     for cd0, cd1 in pairs(cdlist) :
 
         totype = cd0['totype']
-        path = ("%s/%s.%s" % (tempdir, basename, totype))
+        path = ("%s/%s.%s" % (tempdir, basename, gexts[totype]))
 
         cd0['topath']   = path
         cd1['frompath'] = path
