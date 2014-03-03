@@ -83,8 +83,12 @@ extern int grd5_model(grd5_string_t *str)
 	model = GRD5_MODEL_RGB;
       break;
     case 'H':
-      if (grd5_string_matches(str, "HSBC"))
-	model = GRD5_MODEL_HSB;
+      /*
+	Oddly, HSBl seems only to be used in noise gradients; not sure
+	if it should be interpreted as HSB
+      */
+      if (grd5_string_matches(str, "HSBC") || grd5_string_matches(str, "HSBl"))
+      model = GRD5_MODEL_HSB;
       break;
     case 'L':
       if (grd5_string_matches(str, "LbCl"))
