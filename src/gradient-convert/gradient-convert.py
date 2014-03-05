@@ -44,11 +44,13 @@ gexts      = {}
 for t, gdatum in gdata.iteritems() :
     gnames[t], gtypealias[t], gexts[t], gburstable[t] = gdatum
 
-# generate type dict from alias list
+# generate type dict from alias list, this used to specify
+# types (eg -i psp) and to guess file-types from extensions.
 
 gtypedict = {}
 for gtype, galiases in gtypealias.iteritems() :
     gtypedict[gtype] = gtype
+    gtypedict[gexts[gtype]] = gtype
     for galias in galiases :
         gtypedict[galias] = gtype
 

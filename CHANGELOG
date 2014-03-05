@@ -1,5 +1,9 @@
 Changes
 
+1.52 (pending)
+  - gradient-convert detecting psp type from extension
+  - fixed pssgv parse error on HSBl noise gradients
+
 1.51 (27 Feb 2014)
   pssvg feature enhancements
   - grd5 parser handles all known grd5 constructs
