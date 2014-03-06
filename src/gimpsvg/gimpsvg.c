@@ -57,7 +57,7 @@ extern int gimpsvg(const char *infile,
     
     if ((gradient = grad_load_gradient(infile)) == NULL)
       {
-	fprintf(stderr,"failed to load gradient from %s",
+	fprintf(stderr,"failed to load gradient from %s\n",
 		(infile ? infile : "<stdin>"));
 	return 1;
       }
