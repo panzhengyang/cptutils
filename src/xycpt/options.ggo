@@ -1,4 +1,3 @@
-# -*- sh -*-
 # gengetopt input for cptgimp
 # (c) J. J. Green 2004
 package "xycpt"

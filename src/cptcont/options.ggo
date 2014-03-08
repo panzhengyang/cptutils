@@ -1,4 +1,3 @@
-# -*- sh -*-
 # gengetopt input for cptcont
 # (c) J.J. Green 2010
 package "cptcont"
