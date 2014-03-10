@@ -51,7 +51,22 @@ int main(int argc, char** argv)
 
   /* title format string */
 
-  opt.title = (info.title_given ? info.title_arg : NULL);
+  if (info.title_given && info.basename_given)
+    {
+      fprintf(stderr, "only one of --basename and --title allowed\n");
+      return EXIT_FAILURE;
+    }
+
+  opt.title    = (info.title_given ? info.title_arg : NULL);
+  opt.basename = (info.basename_given ? info.basename_arg : NULL);
+
+  /* FIXME */
+
+  if (opt.basename)
+    {
+      fprintf(stderr, "--basename not yet implemented\n");
+      return EXIT_FAILURE;
+    }
 
   /* fore/background */
 
