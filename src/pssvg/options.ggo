@@ -3,7 +3,6 @@
 package "pssvg"
 purpose "convert Photoshop gradient to other formats"
 option  "background" b "background colour"   string  default="0/0/0" no
-option  "basename"   B "title basename"      string  no
 option  "foreground" f "foreground colour"   string  default="255/255/255" no
 option	"output"     o "output filename"     string  no
 option  "title"      t "title format string" string  no

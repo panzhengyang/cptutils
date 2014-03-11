@@ -28,7 +28,6 @@
 <cmdsynopsis>
   <command>pssvg</command>
   <arg choice='opt'>-b <replaceable>rgb</replaceable></arg>
-  <arg choice='opt'>-B <replaceable>basename</replaceable></arg>
   <arg choice='opt'>-f <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-h </arg>
   <arg choice='opt'>-o <replaceable>file</replaceable></arg>
@@ -71,23 +70,6 @@
 
   <xi:include href="../docbook/varlistentry-background.xml"/>
 
-  <varlistentry>
-    <term>
-      <option>-B</option>, <option>--basename</option>  
-      <replaceable>string</replaceable>
-    </term>
-    <listitem>
-      <para>
-	As the <option>--title</option> option, except that the
-	number fromatting is determined automatically. For a 
-	Photoshop file containing 50 gradients, 
-	<option>--basename foo</option> will give results the
-	same as <option>--title foo-%02i</option>, i.e., 
-	gradient names "foo-00", "foo-01", ...
-      </para>
-    </listitem>
-  </varlistentry>
-
   <xi:include href="../docbook/varlistentry-foreground.xml"/>
 
   <xi:include href="../docbook/varlistentry-help.xml"/>
@@ -114,12 +96,8 @@
 	</citerefentry>
 	format string containing a single integer directive (and
 	that directive will be replaced by the gradient number). 
-	Thus <option>--title gradient-%03i</option> will produce 
-	names "gradient-000", "gradient-001" ...
-      </para>
-
-      <para>
-	See also the <option>--basename</option> option.
+	Thus "gradient-%03i" will produce names "gradient-000",
+	"gradient-001" ...
       </para>
     </listitem>
   </varlistentry>

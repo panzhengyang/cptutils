@@ -14,7 +14,7 @@
 typedef struct
 {
   bool verbose, debug;
-  char *title, *basename;
+  char *title;
   rgb_t fg, bg;
   struct
   {
