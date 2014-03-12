@@ -552,7 +552,7 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
 	  return 1;
 	}
 
-      intptr_t title_count = (intptr_t)(ep->data) + 1;
+      uintptr_t title_count = (uintptr_t)(ep->data) + 1;
       ep->data = (void*)title_count;
 
       if (title_count > 1)
