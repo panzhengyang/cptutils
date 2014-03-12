@@ -585,8 +585,7 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
 
 static int pssvg_convert_one(grd5_grad_custom_t *grd5_gradc, 
 			     svg_t *svg, 
-			     pssvg_opt_t opt,
-			     int gradnum)
+			     pssvg_opt_t opt)
 {
   gstack_t *rgbrec;
   int err = 0;
@@ -666,8 +665,8 @@ static int pssvg_convert_all(grd5_t *grd5,
 	case GRD5_GRAD_CUSTOM:
 
 	  if ((svg = svg_new()) == NULL) return 1;
-	  if (pssvg_title(grd5_grad, svg, opt, i) != 0) return 1;
-	  if (pssvg_convert_one(&(grd5_grad->u.custom), svg, opt, i) == 0)
+	  if (pssvg_title(grd5_grad, svg, opt, i+1) != 0) return 1;
+	  if (pssvg_convert_one(&(grd5_grad->u.custom), svg, opt) == 0)
 	    {
 	      if (gstack_push(gstack, &svg) != 0)
 		{

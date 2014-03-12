@@ -54,10 +54,22 @@
 </para>
 
 <para>
+  Photoshop gradient files will often contain a number of gradients
+  with the same name. These names are used as the basis for the SVG
+  titles (the <literal>id</literal> attributes), but since these must 
+  be unique, the program will append 
+  <literal>_01</literal>, 
+  <literal>_02</literal>, ...
+  to duplicate names in order to form the titles.  Alternatively
+  once can employ the <option>--title</option> option to generate
+  a uniform sequence of titles.
+</para>
+
+<para>
   Atypically, the input Photoshop grd5 file is a mandatory argument.
   The program will write to 
   <filename moreinfo="refentry" path="/dev">stdout</filename> 
-  if the <option>-o</option> option is not specified.
+  if the <option>--output</option> option is not specified.
 </para>
 
 </refsect1>
@@ -83,9 +95,9 @@
     </term>
     <listitem>
       <para>
-	Photoshop gradient files will often contain a number of gradients
-	with the same name; this option replaces the gradient name in the
-	output by the specified <replaceable>format</replaceable>.
+	This option generates the SVG gradient titles (the 
+	<literal>id</literal> attributes) according to the specified 
+	<replaceable>format</replaceable>.
       </para>
 
       <para>
@@ -96,8 +108,9 @@
 	</citerefentry>
 	format string containing a single integer directive (and
 	that directive will be replaced by the gradient number). 
-	Thus "gradient-%03i" will produce names "gradient-000",
-	"gradient-001" ...
+	Thus "gradient-%03i" will produce <literal>id</literal>s 
+	"gradient-001",
+	"gradient-002", ...
       </para>
     </listitem>
   </varlistentry>
@@ -114,7 +127,7 @@
 
 <para>
   Convert a Photoshop gradient, foo.grd, to a set of GIMP gradients,
-  foo-000.ggr, foo-001.ggr, ...
+  foo-001.ggr, foo-002.ggr, ...
 </para>
 
 <programlisting>
@@ -142,11 +155,11 @@
 </para>
 
 <para>
-  The SVG output format does not support back/forground colours; 
-  consequently, if the input specifies any stops with back/forground 
-  colours then these will be converted to the colour specified
-  by the <option>-b</option> and <option>-f</option> options,
-  respectively.
+  The SVG output format does not support back/foreground colours; 
+  consequently, if the input specifies any stops with back/fairground 
+  colours then these will be converted to the colour specified by the 
+  <option>--background</option> and 
+  <option>--foreground</option> options, respectively.
 </para>
 
 <para>
