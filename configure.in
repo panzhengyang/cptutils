@@ -68,6 +68,7 @@ AC_CHECK_FUNCS(strdup)
 AC_CHECK_FUNCS(getopt)
 AC_CHECK_FUNCS(glob)
 AC_CHECK_FUNCS(tsearch)
+AC_CHECK_FUNCS(hsearch)
 
 dnl special case, check for be64toh which is usually a 
 dnl macro defined in endian.h
