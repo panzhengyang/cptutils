@@ -238,18 +238,10 @@ def convert(ipath, opath, opt) :
             # svg file with muliple gradients; then call convert()
             # with that file as input and burst = True (so that
             # we execute the ifmt == 'svg' case below).
-            #
-            # Note that we use the -t argument to pssvg as in many
-            # cases grd files have identical titles (which would
-            # cause name clashes in the svgsvg call below), and 
-            # we don't know in advance how many there are, so use 
-            # quite large format string giving titles base-000, 
-            # base-001, ..., so handling 1000 gradients.  We'd
-            # need to enhance pssvg to generate format string after
             # counting the gradient to reduce the redundant zeros
 
             svgmulti = "%s/%s.svg" % (tempdir, basename)  
-            clist = ['pssvg', '-t', basename + '-%03i', '-o', svgmulti, ipath]
+            clist = ['pssvg', '-o', svgmulti, ipath]
             if verbose :
                 print "  %s" % (" ".join(clist))
             if subprocess.call(clist) != 0 :

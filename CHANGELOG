@@ -1,6 +1,7 @@
 Changes
 
 1.52 (pending)
+  - pssvg gives unique SVG ids for input with repeated titles 
   - gradient-convert detecting psp type from extension
   - fixed pssgv parse error on HSBl noise gradients
 
