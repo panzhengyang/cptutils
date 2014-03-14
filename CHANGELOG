@@ -1,5 +1,9 @@
 Changes
 
+1.53 (pending)
+  - svgx -a now sanitises the filenames devrived from the svg ids, 
+    replacing forward-slashes and leading dots by underscores. 
+
 1.52 (13 Mar 2014)
   - pssvg gives unique SVG ids for input with repeated titles 
   - gradient-convert detecting psp type from extension

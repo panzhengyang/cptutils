@@ -4,7 +4,7 @@
 
 OBJ      = svgx.o svgxdump.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
-LDLIBS  += -lgrd3 -lcss3 -lgpt -lpov -lsvg -lsao -lggr -lcpt -lfill
+LDLIBS  += -lgrd3 -lcss3 -lgpt -lpov -lsvg -lsao -lggr -lcpt -lfill -lutf8
 RUBBISH += svgx $(OBJ) test/* test.png
 
 default : all
@@ -23,7 +23,7 @@ SVGSVG  = ./svgx -t svg
 TSPARG = -T255/0/0
 CPTARG = -b10 -f1/2/3 -n0/12/0 $(TSPARG)
 
-check test : svgx test-named test-list test-all
+check test : svgx test-named test-list test-mad-ids test-all
 
 test-all :
 	for file in Gradients_01 ; do \
@@ -59,6 +59,9 @@ test-named :
 	    $(SVGSVG) -s $$name -p -o test/$$name.svg $$path  || exit 1 ; \
 	  done ;\
 	done
+
+test-mad-ids :
+	$(SVGSVG) -a -o test $(TESTD)/svg/mad-ids.svg
 
 test.png : test.pov
 	povray  +H480 +W640 +L. +A0.1 +Q11 +Itest.pov
