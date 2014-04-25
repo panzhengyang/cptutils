@@ -24,6 +24,8 @@ XML2C		= @XML2C@
 GPERF		= @GPERF@
 XSLTP           = @XSLTP@
 
+WITH_UNIT = @WITH_UNIT@
+
 prefix      = @prefix@
 exec_prefix = @exec_prefix@
 bindir      = @bindir@

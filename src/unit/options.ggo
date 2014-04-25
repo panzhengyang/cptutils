@@ -1,0 +1,8 @@
+# gengetopt input for unit
+package "unit"
+purpose "unit-tests for the cptutils package"
+option	"verbose"	v "verbose operation"	             flag    off
+
+
+
+

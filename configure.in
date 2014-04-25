@@ -80,6 +80,19 @@ AC_CHECK_HEADERS([sys/endian.h],
 	AX_CHECK_DEFINE([endian.h], [be64toh],,
 		AC_CHECK_FUNCS(be64toh)))
 
+dnl cunit option
+
+opt_enable_tests=no
+
+AC_ARG_ENABLE(tests,
+        AC_HELP_STRING([--enable-tests],[unit testing support (default is no)]),
+        [ opt_enable_tests=$enableval ])
+
+if test $opt_enable_tests = yes; then
+   AC_CHECK_LIB(cunit, CU_add_test)      
+   AC_SUBST(WITH_UNIT, 1)
+fi
+
 dnl used by gengetop output
 
 AC_DEFINE(VERSION, PACKAGE_VERSION, "version of package")

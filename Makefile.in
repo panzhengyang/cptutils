@@ -22,6 +22,9 @@ install :
 test check :
 	cd src ; $(MAKE) test
 
+unit :
+	cd src ; $(MAKE) unit
+
 clean :
 	$(RM) $(RUBBISH)
 	cd src ; $(MAKE) clean

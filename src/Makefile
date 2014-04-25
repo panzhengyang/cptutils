@@ -41,8 +41,13 @@ test check :
 	  cd $$dir ; $(MAKE) test || exit 1 ; cd .. ; \
 	done
 
+unit :
+	cd unit ; $(MAKE) unit || exit 1 ; cd ..
+
 veryclean : 
 	$(RM) $(CONFIG)
+
+.PHONY : all install install-dirs clean test check unit
 
 include Common.mk
 
