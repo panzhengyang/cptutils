@@ -33,13 +33,15 @@ int main(int argc, char** argv)
   CU_set_error_action(error_action);
 
   int status = CU_basic_run_tests();
+  int nfail = CU_get_number_of_failures();
 
   if (verbose)
-    printf("\nSuite returned %d.\n", status);
+    printf("\nSuite %s: %d failed\n", 
+	   (status == 0 ? "OK" : "errored"),
+	   nfail);
 
   CU_cleanup_registry();
-
   options_free(&info);
 
-  return (CU_get_number_of_failures() > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+  return (nfail > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
