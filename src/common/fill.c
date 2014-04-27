@@ -51,7 +51,7 @@ extern int fill_interpolate(double z, fill_t a, fill_t b,
       break;
 
     case fill_grey :
-      f->u.grey = (a.u.grey*(1-z) + b.u.grey*z);
+      f->u.grey = (a.u.grey*(1-z) + b.u.grey);
       break;
 
     case fill_hatch :
