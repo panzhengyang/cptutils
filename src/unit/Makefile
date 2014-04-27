@@ -1,10 +1,10 @@
 # Makefile for cunit test-suite
 
-LDLIBS  += 
+LDLIBS  += -lcpt -lfill
 LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
 
-OBJ = options.o main.o tests.o template.o
+OBJ = options.o main.o tests.o tests-cpt.o
 
 RUBBISH += *~ $(OBJ) unit-test
 

@@ -4,13 +4,14 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libxml2-dev libpng12-dev gengetopt gperf docbook-xsl xsltproc
+  - sudo apt-get install -qq libxml2-dev libpng12-dev gengetopt gperf docbook-xsl xsltproc libcunit1-dev
   - autoconf
   - autoheader
 install:
-  - ./configure
+  - ./configure --enable-tests
   - make version
   - make
   - sudo make install
 script :
+  - make unit
   - make test

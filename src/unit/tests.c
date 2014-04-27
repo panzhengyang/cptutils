@@ -9,13 +9,13 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "template.h"
+#include "tests-cpt.h"
 
 #include <CUnit/CUnit.h>
 
 static CU_SuiteInfo suites[] = 
   {
-    { "template", NULL, NULL, tests_template },
+    { "cpt", NULL, NULL, tests_cpt },
     CU_SUITE_INFO_NULL,
   };
 
