@@ -32,7 +32,7 @@ install-dirs :
 
 clean :
 	$(RM) $(RUBBISH)
-	for dir in $(SRC) ; do \
+	for dir in $(SRC) unit ; do \
 	  cd $$dir ; $(MAKE) clean || exit 1 ; cd .. ; \
 	done
 
