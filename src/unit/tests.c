@@ -1,7 +1,7 @@
 /*
   tests.c
   testcase loader
-  J.J.Green 2007
+  J.J.Green 2014
   $Id: tests.c,v 1.10 2008/09/10 22:34:42 jjg Exp $
 */
 
@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "tests-cpt.h"
+#include "tests_cpt.h"
 
 #include <CUnit/CUnit.h>
 

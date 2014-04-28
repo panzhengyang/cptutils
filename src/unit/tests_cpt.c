@@ -1,10 +1,11 @@
 /*
   cunit tests for cpt.c
-  J.J.Green 2014
+  J.J.Green 2014,
 */
 
 #include <cpt.h>
-#include "tests-cpt.h"
+#include "tests_cpt_helper.h"
+#include "tests_cpt.h"
 
 CU_TestInfo tests_cpt[] = 
   {
@@ -15,6 +16,7 @@ CU_TestInfo tests_cpt[] =
     {"cpt segment shift", test_cpt_shift},
     {"cpt zrange", test_cpt_zrange},
     {"cpt zfill (grey)", test_cpt_zfill_grey},
+    {"cpt zfill (rgb)", test_cpt_zfill_rgb},
     CU_TEST_INFO_NULL,
   };
 
@@ -51,31 +53,14 @@ extern void test_cpt_append(void)
   cpt_destroy(cpt);
 }
 
-static cpt_seg_t* grey_segment(int g, double z0, double z1)
-{
-  cpt_seg_t *cpt_seg = cpt_seg_new();
-
-  cpt_seg->lsmp.val = z0;
-  cpt_seg->rsmp.val = z1;
-
-  fill_t fill = {
-    .type = fill_grey,
-    .u = {
-      .grey = g
-    }
-  };
-
-  cpt_seg->lsmp.fill = fill;
-  cpt_seg->rsmp.fill = fill;
-
-  return cpt_seg;
-}
-
 extern void test_cpt_pop(void)
 {
+  fill_t 
+    grey100 = build_fill_grey(100),
+    grey200 = build_fill_grey(200);
   cpt_seg_t 
-    *seg1 = grey_segment(200, 0.0, 1.0),
-    *seg2 = grey_segment(100, 1.0, 2.0);
+    *seg1 = build_segment(grey100, grey200, 0.0, 1.0),
+    *seg2 = build_segment(grey100, grey200, 1.0, 2.0);
 
   cpt_t *cpt = cpt_new();
 
@@ -102,9 +87,12 @@ extern void test_cpt_pop(void)
 
 extern void test_cpt_shift(void)
 {
+  fill_t 
+    grey100 = build_fill_grey(100),
+    grey200 = build_fill_grey(200);
   cpt_seg_t 
-    *seg1 = grey_segment(200, 0.0, 1.0),
-    *seg2 = grey_segment(100, 1.0, 2.0);
+    *seg1 = build_segment(grey100, grey200, 0.0, 1.0),
+    *seg2 = build_segment(grey100, grey200, 1.0, 2.0);
 
   cpt_t *cpt = cpt_new();
 
@@ -131,9 +119,12 @@ extern void test_cpt_shift(void)
 
 extern void test_cpt_zrange(void)
 {
+  fill_t 
+    grey100 = build_fill_grey(100),
+    grey200 = build_fill_grey(200);
   cpt_seg_t 
-    *seg1 = grey_segment(200, 0.0, 1.0),
-    *seg2 = grey_segment(100, 1.0, 2.0);
+    *seg1 = build_segment(grey100, grey200, 0.0, 1.0),
+    *seg2 = build_segment(grey100, grey200, 1.0, 2.0);
 
   cpt_t *cpt = cpt_new();
 
@@ -152,13 +143,33 @@ extern void test_cpt_zrange(void)
 
 extern void test_cpt_zfill_grey(void)
 {
-  cpt_seg_t *seg = grey_segment(200, 0.0, 1.0);
+  fill_t 
+    grey100 = build_fill_grey(100),
+    grey200 = build_fill_grey(200);
+  cpt_seg_t *seg = build_segment(grey100, grey200, 0.0, 1.0);
+
   cpt_t *cpt = cpt_new();
   CU_ASSERT_EQUAL(cpt_append(seg, cpt), 0);
 
   fill_t fill;
   CU_ASSERT_EQUAL(cpt_zfill(cpt, 0.5, &fill), 0);
   CU_ASSERT_EQUAL(fill.type, fill_grey);
-  CU_ASSERT_EQUAL(fill.u.grey, 200);
+  CU_ASSERT_EQUAL(fill.u.grey, 150);
+}
+
+extern void test_cpt_zfill_rgb(void)
+{
+  fill_t 
+    grey100 = build_fill_rgb(100, 100, 100),
+    grey200 = build_fill_rgb(200, 200, 200);
+  cpt_seg_t *seg = build_segment(grey100, grey200, 0.0, 1.0);
+
+  cpt_t *cpt = cpt_new();
+  CU_ASSERT_EQUAL(cpt_append(seg, cpt), 0);
+
+  fill_t fill;
+  CU_ASSERT_EQUAL(cpt_zfill(cpt, 0.5, &fill), 0);
+  CU_ASSERT_EQUAL(fill.type, fill_colour);
+  CU_ASSERT_EQUAL(fill.u.colour.rgb.red, 150);
 }
 

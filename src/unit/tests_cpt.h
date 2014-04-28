@@ -16,5 +16,6 @@ extern void test_cpt_pop(void);
 extern void test_cpt_shift(void);
 extern void test_cpt_zrange(void);
 extern void test_cpt_zfill_grey(void);
+extern void test_cpt_zfill_rgb(void);
 
 #endif
