@@ -10,12 +10,14 @@
 #include <assert.h>
 
 #include "tests_cpt.h"
+#include "tests_fill.h"
 
 #include <CUnit/CUnit.h>
 
 static CU_SuiteInfo suites[] = 
   {
     { "cpt", NULL, NULL, tests_cpt },
+    { "fill", NULL, NULL, tests_fill },
     CU_SUITE_INFO_NULL,
   };
 
