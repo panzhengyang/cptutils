@@ -4,6 +4,7 @@
 */
 
 #include <cpt.h>
+#include "tests_fill_helper.h"
 #include "tests_cpt_helper.h"
 #include "tests_cpt.h"
 

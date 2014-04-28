@@ -5,7 +5,8 @@ LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
 
 OBJ = options.o main.o tests.o \
-  tests_cpt.o tests_cpt_helper.o
+  tests_cpt.o tests_cpt_helper.o \
+  tests_fill_helper.o
 
 RUBBISH += *~ $(OBJ) unit-test
 
