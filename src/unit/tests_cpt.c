@@ -10,14 +10,14 @@
 
 CU_TestInfo tests_cpt[] = 
   {
-    {"cpt constructor", test_cpt_new},
-    {"cpt segment constructor", test_cpt_seg_new},
-    {"cpt segment append", test_cpt_append},
-    {"cpt segment pop", test_cpt_pop},
-    {"cpt segment shift", test_cpt_shift},
-    {"cpt zrange", test_cpt_zrange},
-    {"cpt zfill (grey)", test_cpt_zfill_grey},
-    {"cpt zfill (rgb)", test_cpt_zfill_rgb},
+    {"constructor", test_cpt_new},
+    {"segment constructor", test_cpt_seg_new},
+    {"segment append", test_cpt_append},
+    {"segment pop", test_cpt_pop},
+    {"segment shift", test_cpt_shift},
+    {"zrange", test_cpt_zrange},
+    {"zfill (grey)", test_cpt_zfill_grey},
+    {"zfill (rgb)", test_cpt_zfill_rgb},
     CU_TEST_INFO_NULL,
   };
 
