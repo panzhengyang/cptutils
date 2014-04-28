@@ -10,5 +10,6 @@
 
 extern fill_t build_fill_grey(int g);
 extern fill_t build_fill_rgb(int r, int g, int b);
+extern fill_t build_fill_hsv(double h, double s, double v);
 
 #endif

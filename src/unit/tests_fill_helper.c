@@ -27,3 +27,20 @@ extern fill_t build_fill_rgb(int r, int g, int b)
   };
   return fill;
 }
+
+extern fill_t build_fill_hsv(double h, double s, double v)
+{
+  fill_t fill = {
+    .type = fill_colour,
+    .u = {
+      .colour = {
+	.hsv = {
+	  .hue = h,
+	  .sat = s,
+	  .val = v
+	}
+      }
+    }
+  };
+  return fill;
+}
