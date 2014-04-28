@@ -132,7 +132,7 @@ extern int cpt_increasing(cpt_t* cpt)
   return z[0] < z[1];
 }
 
-extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
+extern int cpt_zfill(cpt_t* cpt, double z, fill_t* fill)
 {
   cpt_seg_t *seg;
   model_t    model;
@@ -150,7 +150,7 @@ extern int cpt_zfill(cpt_t* cpt,double z,fill_t* fill)
 
   do
     {
-      double z0,z1;
+      double z0, z1;
 
       z0 = seg->lsmp.val;
       z1 = seg->rsmp.val;
