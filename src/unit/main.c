@@ -39,9 +39,19 @@ int main(int argc, char** argv)
     that portable and we might need some autoconf 
   */
 
-  freopen("/dev/null", "w", stderr);
+  if (freopen("/dev/null", "w", stderr) == NULL)
+    {
+      printf("failed to redirect stderr\n");
+      return EXIT_FAILURE;
+    }
+
   status = CU_basic_run_tests();
-  freopen("/dev/stderr", "w", stderr);
+
+  if (freopen("/dev/stderr", "w", stderr) == NULL)
+    {
+      printf("failed to redirect stderr back\n");
+      return EXIT_FAILURE;
+    }
 
   int nfail = CU_get_number_of_failures();
 
