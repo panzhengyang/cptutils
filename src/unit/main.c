@@ -32,7 +32,17 @@ int main(int argc, char** argv)
   CU_basic_set_mode(mode);
   CU_set_error_action(error_action);
 
-  int status = CU_basic_run_tests();
+  int status;
+
+  /*
+    suppress stderr during the tests, this is not 
+    that portable and we might need some autoconf 
+  */
+
+  freopen("/dev/null", "w", stderr);
+  status = CU_basic_run_tests();
+  freopen("/dev/stderr", "w", stderr);
+
   int nfail = CU_get_number_of_failures();
 
   if (verbose)
