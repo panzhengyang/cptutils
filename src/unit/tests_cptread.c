@@ -3,7 +3,7 @@
   J.J.Green 2014,
 */
 
-#include <cpt.h>
+#include <cptread.h>
 #include "fixture.h"
 #include "tests_cptread.h"
 
@@ -51,3 +51,4 @@ extern void test_cptread_nofile(void)
   CU_ASSERT(cpt_read("/tmp/no-such-file", cpt) != 0);
   cpt_destroy(cpt);
 }
+

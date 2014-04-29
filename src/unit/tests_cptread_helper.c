@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <cptread.h>
+#include "fixture.h"
 #include "tests_cptread_helper.h"
 
 extern cpt_t* load_cpt(const char* file)
