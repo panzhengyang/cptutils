@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "fixture.h"
 
-#define FIXTURE_BASE "../t"
+#define FIXTURE_BASE "../fixtures"
 
 extern int fixture(char *buff, size_t n, const char *type, const char *file)
 {

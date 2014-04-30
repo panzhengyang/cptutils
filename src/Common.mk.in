@@ -11,7 +11,7 @@ LDLIBS   += @LIBS@
 CFLAGS   += -I../common/
 LDFLAGS  += -L../common/  
 
-TESTD     = ../t
+TESTD     = ../fixtures
 
 PYTHON    = @PYTHON@
 
