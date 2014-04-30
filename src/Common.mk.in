@@ -3,6 +3,8 @@
 
 VERSION   = @PACKAGE_VERSION@
 
+export PATH := bin:$(PATH)
+
 CC        = @CC@
 CFLAGS   += @CFLAGS@ @DEFS@ 
 LDFLAGS  += 
