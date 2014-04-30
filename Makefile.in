@@ -8,22 +8,23 @@ VERSION   = @PACKAGE_VERSION@
 RUBBISH   = *~
 CONFFILES = config.cache config.log config.status configure Makefile
 DIST      = cptutils-$(VERSION)
+MAKE_SRC  = $(MAKE) -C src
 
 # targets
 
 default : all
 
 all : 
-	cd src ; $(MAKE) all
+	$(MAKE_SRC) all
 
 install :
-	cd src ; $(MAKE) install
+	$(MAKE_SRC) install
 
 test check :
-	cd src ; $(MAKE) test
+	$(MAKE_SRC) test
 
 unit :
-	cd src ; $(MAKE) unit
+	$(MAKE_SRC) unit
 
 clean :
 	$(RM) $(RUBBISH)

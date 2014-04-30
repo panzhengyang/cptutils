@@ -16,14 +16,10 @@ endif
 default : all
 
 all :
-	for dir in $(SRC) ; do \
-	  cd $$dir ; $(MAKE) all || exit 1 ; cd .. ; \
-	done
+	for dir in $(SRC) ; do $(MAKE) -C $$dir ; done
 
 install : install-dirs
-	for dir in $(SRC) ; do \
-	  cd $$dir ; $(MAKE) install || exit 1 ; cd .. ; \
-	done
+	for dir in $(SRC) ; do $(MAKE) -C $$dir install ; done
 
 install-dirs :
 	for dir in $(bindir) $(mandir) $(mandir)/man1 ; do \
@@ -32,17 +28,13 @@ install-dirs :
 
 clean :
 	$(RM) $(RUBBISH)
-	for dir in $(SRC) unit ; do \
-	  cd $$dir ; $(MAKE) clean || exit 1 ; cd .. ; \
-	done
+	for dir in $(SRC) unit ; do $(MAKE) -C $$dir clean ; done
 
 test check :
-	for dir in $(SRC) ; do \
-	  cd $$dir ; $(MAKE) test || exit 1 ; cd .. ; \
-	done
+	for dir in $(SRC) ; do $(MAKE) -C $$dir test ; done
 
 unit :
-	cd unit ; $(MAKE) unit || exit 1 ; cd ..
+	$(MAKE) -C unit unit
 
 veryclean : 
 	$(RM) $(CONFIG)
