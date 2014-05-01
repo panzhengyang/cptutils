@@ -3,8 +3,6 @@
 
 VERSION   = @PACKAGE_VERSION@
 
-export PATH := bin:$(PATH)
-
 CC        = @CC@
 CFLAGS   += @CFLAGS@ @DEFS@ 
 LDFLAGS  += 
@@ -14,6 +12,7 @@ CFLAGS   += -I../common/
 LDFLAGS  += -L../common/  
 
 TESTD     = ../fixtures
+TESTX     = ../test
 
 PYTHON    = @PYTHON@
 
@@ -36,6 +35,13 @@ datarootdir = @datarootdir@
 localedir   = @localedir@
 
 RUBBISH += *~
+
+# acceptance tests
+
+accept :
+	if [ -x accept.sh ] ; then ./accept.sh $(TESTX) ; fi
+
+.PHONY : accept
 
 # generate .c files from .gperf
 
