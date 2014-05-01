@@ -40,7 +40,7 @@ RUBBISH += *~
 # testexec path (where test scripts are kept)
 
 accept :
-	if [ -x accept.sh ] ; then ./accept.sh $(NAME) $(TESTX) ; fi
+	if [ -x accept.sh ] ; then ./accept.sh $(NAME) $(TESTX) $(TESTD) ; fi
 
 .PHONY : accept
 

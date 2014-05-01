@@ -16,7 +16,7 @@ install :
 	$(INSTALL_DATA) avlcpt.1 $(DESTDIR)$(mandir)/man1/avlcpt.1
 	$(INSTALL_PROGRAM) avlcpt $(DESTDIR)$(bindir)/avlcpt
 
-clean : cpt-clean
+clean : 
 	$(RM) $(RUBBISH)
 
 veryclean : 
@@ -35,24 +35,6 @@ odbparse.c : odbparse.y
 
 include ../Common.mk
 
-# for testing (96004SP.avl is in the test directory
-# but fails, it contains no gradient) 
-
-TESTBASE = ddvelev1a ddvelev9c 
-
-RUBBISH += $(CPT)
-
-cpt : avlcpt
-	for base in $(TESTBASE) ; do \
-	  ./avlcpt -b0/0/20 -f0/20/0 -n20/0/0 -v -o $$base.cpt \
-	  	$(TESTD)/avl/$$base.avl ; \
-	done
-
-cpt-clean : 
-	for base in $(TESTBASE) ; do \
-	  $(RM) $$base.cpt ; \
-	done
-
-test check : cpt
+test check : accept
 
 
