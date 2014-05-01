@@ -2,7 +2,8 @@
 #
 # (c) J.J.Green 2001,2004
 
-OBJ      =  avlcpt.o main.o options.o avlgrad.o
+NAME     = avlcpt
+OBJ      = avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
 
 LDLIBS  += -lcpt -lfill -lodb -lident

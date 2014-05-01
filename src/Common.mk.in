@@ -36,10 +36,11 @@ localedir   = @localedir@
 
 RUBBISH += *~
 
-# acceptance tests
+# acceptance tests, pass the program name and relative 
+# testexec path (where test scripts are kept)
 
 accept :
-	if [ -x accept.sh ] ; then ./accept.sh $(TESTX) ; fi
+	if [ -x accept.sh ] ; then ./accept.sh $(NAME) $(TESTX) ; fi
 
 .PHONY : accept
 

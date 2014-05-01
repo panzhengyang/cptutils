@@ -1,11 +1,9 @@
 #!/bin/bash
 
-set -e
-
-TESTLIB=$1
-NAME='avlcpt'
-. $TESTLIB/assert.sh
+source $2/accept-header.sh
 
 assert "echo test" "test"
+assert "echo test" "test"
+assert "echo test" "test"
 
-assert_end $NAME
+source accept-footer.sh
