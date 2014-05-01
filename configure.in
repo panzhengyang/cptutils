@@ -89,6 +89,10 @@ AC_ARG_ENABLE(tests,
         [ opt_enable_tests=$enableval ])
 
 if test $opt_enable_tests = yes; then
+   AC_PATH_PROG(BC, bc, no)
+   if test "$BC" = no; then
+     AC_MSG_WARN(no bc! (not very POSIX))       
+   fi
    AC_CHECK_LIB(cunit, CU_add_test)      
    AC_SUBST(WITH_UNIT, 1)
 fi
