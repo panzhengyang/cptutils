@@ -30,21 +30,7 @@ include ../Common.mk
 
 # for testing 
 
-BASE    = RdBu_10
-CPT     = $(TESTD)/cpt/$(BASE).cpt
-CPTCC   = $(BASE)-cc.cpt
-CPTCD   = $(BASE)-cd.cpt
-CPTTEST = $(CPTCC) $(CPTCD)
-
-test : $(CPTTEST)
-
-$(CPTCC) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTCC) -v -R 2.5/5 $(CPT)
-
-$(CPTCD) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTCD) -v -s -R 2/5 $(CPT)
-
-RUBBISH +=  $(CPTTEST)
+test : accept
 
 
 
