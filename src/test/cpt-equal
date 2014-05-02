@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# test whether cpts are the same (excluding comments), this
+# would probably be best done as a C program inspecting the 
+# loaded cpt structure
+#
+# J.J. Green 2014
+
+usage()
+{
+    echo "usage : cpt-equal [options] cpt1 cpt2"
+    echo "  -b  boolean"
+    echo "  -h  this help"
+}
+
+format="boolean"
+
+while [ "$#" -gt "2" ]
+  do
+  case $1 in
+      -b | --boolean )
+          format="boolean"
+          ;;
+      -h | --help )           
+          usage
+          exit
+          ;;
+      * )                     
+          usage
+          exit 1
+  esac
+  shift
+done
+
+cpt1=$1
+cpt2=$2
+
+for file in $cpt1 $cpt2
+do
+    if [ ! -e $file ]
+    then
+	echo "file not found: $file"
+	exit 1
+    fi
+done
+
+ndiff=`diff -I cptutils $cpt1 $cpt2 | wc -l`
+
+case $format in
+    boolean )
+	if [ $ndiff -eq '0' ]
+	then
+	    echo 'true'
+	else
+	    echo 'false'
+	fi
+	    ;;
+    * )
+	usage
+	exit 1
+esac
+
+exit

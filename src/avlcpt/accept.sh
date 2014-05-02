@@ -11,7 +11,7 @@ do
     output="$base.cpt"
     reference="accept/$output"
     assert_raises "./avlcpt -n20/0/0 -v -o $output $fixture" 0
-    assert "diff -I cptutils $output $reference"
+    assert "cpt-equal -b $output $reference" true
     rm $output
 done
 
