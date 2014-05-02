@@ -21,10 +21,10 @@ install :
 	$(MAKE_SRC) install
 
 test check :
-	$(MAKE_SRC) test
+	$(MAKE_SRC) --quiet test
 
 unit :
-	$(MAKE_SRC) unit
+	$(MAKE_SRC) --quiet unit
 
 clean :
 	$(RM) $(RUBBISH)
