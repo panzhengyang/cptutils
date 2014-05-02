@@ -3,7 +3,7 @@ Changes
 1.53 (25 Apr 2014)
   - fixed a null-deference when writing a cpt with a NULL name
     (typically when the cpt is read from stdin)
-  - svgx -a now sanitises the filenames devrived from the svg ids, 
+  - svgx -a now sanitises the filenames derived from the svg ids, 
     replacing forward-slashes and leading dots by underscores. 
 
 1.52 (13 Mar 2014)
