@@ -44,7 +44,7 @@ do
     fi
 done
 
-ndiff=`diff -I cptutils $cpt1 $cpt2 | wc -l`
+ndiff=`diff -I \# $cpt1 $cpt2 | wc -l`
 
 case $format in
     boolean )

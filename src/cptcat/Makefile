@@ -28,20 +28,7 @@ $(NAME) : $(OBJ)
 
 include ../Common.mk
 
-CPTBATH = $(TESTD)/cpt/tpsfhm.cpt
-CPTTOPO = $(TESTD)/cpt/pakistan.cpt
-CPTA    = tpsfhm-pakistan.cpt
-CPTB    = pakistan-tpsfhm.cpt
-
-test : $(CPTA) $(CPTB)
-
-$(CPTA) : $(NAME)
-	./$(NAME) -o $(CPTA) -v $(CPTBATH) $(CPTTOPO)
-
-$(CPTB) : $(NAME)
-	./$(NAME) -o $(CPTB) -v $(CPTTOPO) $(CPTBATH)
-
-RUBBISH += $(CPTA) $(CPTB)
+test : accept
 
 
 
