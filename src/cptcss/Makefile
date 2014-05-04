@@ -1,6 +1,8 @@
 # Makefile for cptcss
 # (c) J.J.Green 2001,2004
 
+NAME = cptcss
+
 OBJ      = main.o options.o cptcss.o
 RUBBISH += $(OBJ) cptcss
 
@@ -23,14 +25,10 @@ veryclean :
 
 cptcss : $(OBJ)
 
-# for testing 
-
-CPT = $(TESTD)/cpt/GMT_haxby.cpt
-
-test check : cptcss
-	./cptcss -f "level-%.2i" -v $(CPT)
-	./cptcss -v $(CPT)
-
 include ../Common.mk
+
+test check : accept
+
+
 
 
