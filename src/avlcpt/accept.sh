@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $2/accept-header.sh
+source $2/accept-setup.sh
 
 # 96004SP.avl is in the test directory, but does not
 # contain a gradient
@@ -15,4 +15,4 @@ do
     rm $output
 done
 
-source accept-footer.sh
+source accept-teardown.sh

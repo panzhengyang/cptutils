@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $2/accept-header.sh
+source $2/accept-setup.sh
 
 base="RdBu_10"
 
@@ -18,4 +18,4 @@ assert "cpt-equal -b $base-cd.cpt accept/$base-cd.cpt" true
 
 rm -f "$base-cc.cpt" "$base-cd.cpt"
 
-source accept-footer.sh
+source accept-teardown.sh

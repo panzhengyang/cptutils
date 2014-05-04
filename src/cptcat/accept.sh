@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $2/accept-header.sh
+source $2/accept-setup.sh
 
 base1=tpsfhm
 base2=pakistan
@@ -20,4 +20,4 @@ assert "cpt-equal -b $out12 $reference" true
 
 rm -f $out12 $out21
 
-source accept-footer.sh
+source accept-teardown.sh
