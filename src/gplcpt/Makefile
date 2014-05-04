@@ -2,6 +2,8 @@
 #
 # (c) J.J.Green 2010
 
+NAME = gplcpt
+
 OBJ      =  gplcpt.o main.o options.o
 RUBBISH += $(OBJ) gplcpt
 
@@ -24,16 +26,6 @@ veryclean :
 
 gplcpt : $(OBJ)
 
-# for testing 
-
-GRAD     = Caramel
-RUBBISH += $(GRAD).cpt
-
-test check : $(GRAD).cpt
-
-$(GRAD).cpt : gplcpt 
-	./gplcpt -v -o $(GRAD).cpt $(TESTD)/gpl/$(GRAD).gpl 
-
 include ../Common.mk
 
-
+test check : accept
