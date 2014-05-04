@@ -1,0 +1,10 @@
+model:      RGB
+continuous: no
+discrete:   yes
+segments:
+  hatchure  0
+  greyscale 0
+  colour    9
+  total     9
+z-range:    -7000.000 - 0.000
+file size:  692

@@ -1,6 +1,8 @@
 # Makefile for cptgimp
 # (c) J.J.Green 2001,2004
 
+NAME = cptinfo
+
 OBJ      = main.o options.o cptinfo.o
 RUBBISH += $(OBJ) cptinfo
 
@@ -23,14 +25,10 @@ veryclean :
 
 cptinfo : $(OBJ)
 
-# for testing 
-
-CPT = $(TESTD)/cpt/GMT_gebco.cpt
-
-test check : cptinfo
-	./cptinfo --plain $(CPT)
-	./cptinfo --csv $(CPT)
-
 include ../Common.mk
+
+test check : accept
+
+
 
 
