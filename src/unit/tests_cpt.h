@@ -4,7 +4,7 @@
 */
 
 #ifndef TESTS_CPT_H
-#define TESTS_CPT__H
+#define TESTS_CPT_H
 
 #include <CUnit/CUnit.h>
 
