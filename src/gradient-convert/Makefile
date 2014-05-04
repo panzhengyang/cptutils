@@ -15,11 +15,10 @@ install :
 clean :
 	$(RM) $(RUBBISH)
 
-# this script requires that the other programs have 
-# already been installed, so the "standard" test target
-# does no conversion, it just prints the version
+# this script requires that the other cptutils programs
+# have already been installed, so we do nothing for the
+# standard test-targets
 
 test check :
-	./$(NAME) --version
 
 include ../Common.mk
