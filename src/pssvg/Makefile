@@ -1,20 +1,15 @@
 # Makefile for pssvg
 # J.J. Green 2014
 
+NAME = pssvg
+
 OBJ       = options.o main.o pssvg.o ucs2utf8.o
 CFLAGS   += 
 LDLIBS   += -lsvg -lfill -lgrdx -lgrd5 -lgstk 
-RUBBISH  += pssvg $(OBJ) test/*
+RUBBISH  += pssvg $(OBJ)
 FIXTURES  = $(TESTD)/grd5
 
 default : all
-
-.PHONY : check test
-check test : pssvg
-	./pssvg -v -o test/rgb.svg $(FIXTURES)/my-custom-gradient-3-rgb.grd
-	./pssvg -v -o test/hsb.svg $(FIXTURES)/my-custom-gradient-3-hsb.grd
-	./pssvg -v -o test/lab.svg $(FIXTURES)/my-custom-gradient-3-lab.grd
-	./pssvg -v -o test/multi.svg $(FIXTURES)/neverhappens-titi-montoya.grd
 
 clean :
 	$(RM) $(RUBBISH)
@@ -32,11 +27,13 @@ all : pssvg pssvg.1
 install : all
 	$(INSTALL) -m755 pssvg $(DESTDIR)$(bindir)/pssvg
 	$(INSTALL) -m644 pssvg.1 $(DESTDIR)$(mandir)/man1/pssvg.1 
+test check : accept
 
 else
 
 all :
 install :
+test check :
 
 endif
 
