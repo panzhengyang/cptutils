@@ -14,4 +14,4 @@ install:
   - sudo make install
 script :
   - make --quiet unit
-  - make --quite test
+  - make --quiet test
