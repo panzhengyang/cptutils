@@ -28,16 +28,5 @@ $(NAME) : $(OBJ)
 
 include ../Common.mk
 
-# for testing 
+test : accept
 
-BASE  = subtle
-CPT   = $(TESTD)/cpt/$(BASE).cpt
-SAT   = $(BASE)-sat.cpt
-DESAT = $(BASE)-desat.cpt
-
-test : $(SAT)
-
-$(SAT) : $(NAME) $(ORIG)
-	./$(NAME) -o $(SAT) -T s90,v110 -v $(CPT)
-
-RUBBISH += $(SAT)
