@@ -1,6 +1,8 @@
 # Makefile for cptsvg
 # (c) J.J.Green 2001,2004
 
+NAME = cptsvg
+
 OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
 
@@ -26,16 +28,5 @@ cptsvg : $(OBJ)
 
 include ../Common.mk
 
-# for testing 
-
-BASE = subtle
-CPT  = $(TESTD)/cpt/$(BASE).cpt
-SVG  = $(BASE).svg 
-
-$(SVG) : cptsvg
-	./cptsvg --geometry 500x100 -o $(SVG) -v $(CPT)
-
-check test : $(SVG)
-
-RUBBISH += $(SVG)
+check test : accept
 
