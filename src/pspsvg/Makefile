@@ -2,6 +2,8 @@
 #
 # (c) J.J.Green 2001,2004
 
+NAME = pspsvg
+
 OBJ      =  pspsvg.o main.o options.o
 RUBBISH += $(OBJ) pspsvg
 
@@ -27,15 +29,6 @@ pspsvg : $(OBJ)
 
 include ../Common.mk
 
-TESTSVG  = t1.svg t2.svg t3.svg t4.svg
-RUBBISH += $(TESTSVG)
-
-$(TESTSVG) : pspsvg
-	for n in `seq 1 4` ; do \
-	  ./pspsvg -p -v -o t$$n.svg \
-	              $(TESTD)/grd3/test.$$n.jgd ; \
-	done
-
-test check : $(TESTSVG)
+test check : accept
 
 
