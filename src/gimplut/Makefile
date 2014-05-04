@@ -26,16 +26,6 @@ veryclean :
 $(NAME) : $(OBJ)
 main.o : options.h
 
-# for testing 
-
-GRAD     = Sunrise
-RUBBISH += $(GRAD).lut
-
-$(GRAD).lut : $(NAME)
-	export GIMP_GRADIENTS="$(TESTD)/ggr" ; \
-	./$(NAME) -o $(GRAD).lut -v $(GRAD)
-check test : $(GRAD).lut 
-
 include ../Common.mk
 
-
+check test : accept
