@@ -27,23 +27,8 @@ veryclean :
 $(NAME) : $(OBJ)
 main.o : options.h
 
-# for testing 
-
-GRAD     = Sunrise
-RUBBISH += $(GRAD).svg $(GRAD).png
-GGRDIR   = $(TESTD)/ggr
-
-$(GRAD).svg : $(NAME)
-	export GIMP_GRADIENTS="$(GGRDIR)" ; \
-	  ./$(NAME) -p -o $(GRAD).svg -v $(GRAD)
-
-$(GRAD).png : $(GRAD).svg
-	svgpng -v -o $(GRAD).png $(GRAD).svg
-
-showpng : $(GRAD).png ; feh $(GRAD).png 
-
-check test : $(GRAD).svg 
-
 include ../Common.mk
+
+check test : accept
 
 
