@@ -31,7 +31,7 @@ clean :
 	for dir in $(SRC) unit ; do $(MAKE) -C $$dir clean ; done
 
 test check :
-	for dir in $(SRC) ; do $(MAKE) -C $$dir test ; done
+	for dir in $(SRC) ; do $(MAKE) -C $$dir test || exit 1 ; done
 
 unit :
 	$(MAKE) -C unit unit
