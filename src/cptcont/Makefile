@@ -30,21 +30,7 @@ include ../Common.mk
 
 # for testing 
 
-BASE    = RdBu_10
-CPT     = $(TESTD)/cpt/$(BASE).cpt
-CPTCONT = $(BASE)-cont.cpt
-CPTAC   = $(BASE)-ac.cpt
-CPTTEST = $(CPTCONT) $(CPTAC) 
-
-test : $(CPTTEST)
-
-$(CPTCONT) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTCONT) -m -v $(CPT)
-
-$(CPTAC) : $(NAME) $(CPT)
-	./$(NAME) -o $(CPTAC) -v -m -p 60 $(CPT)
-
-RUBBISH += $(CPTCONT) $(CPTTEST)
+test : accept
 
 
 
