@@ -12,14 +12,16 @@
 #include "tests_fill.h"
 #include "tests_cpt.h"
 #include "tests_cptread.h"
+#include "tests_cptwrite.h"
 
 #include <CUnit/CUnit.h>
 
 static CU_SuiteInfo suites[] = 
   {
-    { "fill",    NULL, NULL, tests_fill },
-    { "cpt",     NULL, NULL, tests_cpt },
-    { "cptread", NULL, NULL, tests_cptread },
+    { "fill",     NULL, NULL, tests_fill },
+    { "cpt",      NULL, NULL, tests_cpt },
+    { "cptread",  NULL, NULL, tests_cptread },
+    { "cptwrite", NULL, NULL, tests_cptwrite },
     CU_SUITE_INFO_NULL,
   };
 

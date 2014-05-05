@@ -7,6 +7,7 @@ CFLAGS  += -I../common/
 OBJ = options.o main.o tests.o fixture.o \
   tests_cpt.o tests_cpt_helper.o \
   tests_cptread.o tests_cptread_helper.o \
+  tests_cptwrite.o \
   tests_fill.o tests_fill_helper.o
 
 RUBBISH += *~ $(OBJ) unit-test
