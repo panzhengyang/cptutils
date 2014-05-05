@@ -9,7 +9,7 @@ fixture_dir="$TESTFIX/ggr"
 
 assert_raises \
     "export GIMP_GRADIENTS=$fixture_dir ; ./gimplut -o $lut $base" 0
-assert "lut-equal -b $lut accept/$lut" true
+assert "equal-lut $lut accept/$lut" true
 
 rm -f $lut
 

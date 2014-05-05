@@ -9,7 +9,7 @@ fixtures="$TESTFIX/ggr"
 
 assert_raises \
     "export GIMP_GRADIENTS=$fixtures ; ./gimpsvg -p -o $svg $base" 0
-assert "svg-equal -b $svg accept/$svg" true
+assert "equal-svg $svg accept/$svg" true
 
 rm -f $svg
 

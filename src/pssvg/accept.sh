@@ -17,7 +17,7 @@ do
     grd="$base.grd"
     svg="$base.svg"
     assert_raises "./pssvg -o $svg $fixtures/$grd" 0
-    assert "svg-equal -b $svg accept/$svg" true
+    assert "equal-svg $svg accept/$svg" true
     rm -f $svg
 done
 

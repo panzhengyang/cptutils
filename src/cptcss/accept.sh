@@ -12,12 +12,12 @@ fixture="$TESTFIX/cpt/$cpt"
 # default 
 
 assert_raises "./cptcss $fixture > $css1" 0
-assert "css-equal -b $css1 accept/$css1" true
+assert "equal-css $css1 accept/$css1" true
 
 # custom label
 
 assert_raises "./cptcss -f 'level-%.2' $fixture > $css2" 0
-assert "css-equal -b $css2 accept/$css2" true
+assert "equal-css $css2 accept/$css2" true
 
 rm -f $css1 $css2
 

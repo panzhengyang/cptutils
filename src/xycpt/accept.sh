@@ -10,14 +10,14 @@ do
     cpt="$base.cpt"
     dat="$base.dat"
     assert_raises "./xycpt -o $cpt $fixtures/$dat" 0
-    assert "cpt-equal -b $cpt accept/$cpt" true
+    assert "equal-cpt $cpt accept/$cpt" true
     rm -f $cpt
 
     base="test-u$n" 
     cpt="$base.cpt"
     dat="$base.dat"
     assert_raises "./xycpt -u -o $cpt $fixtures/$dat" 0
-    assert "cpt-equal -b $cpt accept/$cpt" true
+    assert "equal-cpt $cpt accept/$cpt" true
     rm -f $cpt
 done
 

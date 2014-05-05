@@ -8,7 +8,7 @@ svg="$base.svg"
 fixture="$TESTFIX/cpt/$base.cpt"
 
 assert_raises "./cptsvg --geometry 500x100 -o $svg $fixture" 0
-assert "svg-equal -b $svg accept/$svg" true
+assert "equal-svg $svg accept/$svg" true
 
 rm -f $svg
 

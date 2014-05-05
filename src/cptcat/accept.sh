@@ -15,8 +15,8 @@ reference="accept/$out21"
 
 assert_raises "./cptcat -o $out12 $fix1 $fix2" 0
 assert_raises "./cptcat -o $out21 $fix2 $fix1" 0
-assert "cpt-equal -b $out12 $out21" true
-assert "cpt-equal -b $out12 $reference" true
+assert "equal-cpt $out12 $out21" true
+assert "equal-cpt $out12 $reference" true
 
 rm -f $out12 $out21
 

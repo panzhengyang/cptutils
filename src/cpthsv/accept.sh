@@ -10,7 +10,7 @@ cpt_sat="$base-sat.cpt"
 # saturation
 
 assert_raises "./cpthsv -o $cpt_sat -T s90,v110 $fixture" 0
-assert "cpt-equal -b $cpt_sat accept/$cpt_sat" true
+assert "equal-cpt $cpt_sat accept/$cpt_sat" true
 
 rm -f $cpt_sat
 

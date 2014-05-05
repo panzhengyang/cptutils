@@ -10,7 +10,7 @@ do
     jgd="$base.jgd"
     svg="$base.svg"
     assert_raises "./pspsvg -p -o $svg $fixture_dir/$jgd" 0
-    assert "svg-equal -b $svg accept/$svg" true
+    assert "equal-svg $svg accept/$svg" true
     rm -f $svg
 done
 
