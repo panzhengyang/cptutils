@@ -1,3 +1,10 @@
+Credits
+-------
+
 The files src/common/utf8.* are by Jeff Bezanson 
 http://www.cprogramming.com/tutorial/unicode.html
+
+The file src/test/assert.sh is the bash unit testing framework 
+by Robert Lehmann, http://github.com/lehmannro/assert.sh
+
 
