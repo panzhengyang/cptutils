@@ -1,1 +1,2 @@
-echo "true"
+equal-bin $1 $2
+

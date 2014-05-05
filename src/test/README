@@ -1,0 +1,13 @@
+Helper scripts for acceptance tests
+-----------------------------------
+
+The programs all have an 'accept' target which runs acceptance
+tests, this directory contains some supporting scripts
+
+  accept-*.sh : sourced by the accept.sh script, setup & teardown
+  assert.sh   : likewise, used for test assetions [1]
+  equal-*     : scripts which test if files are essentially the same
+
+[1] assert.sh bash unit testing framework by Robert Lehmann
+    http://github.com/lehmannro/assert.sh
+

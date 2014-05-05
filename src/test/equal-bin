@@ -1,14 +1,15 @@
 #!/bin/sh
 #
-# test whether text files are the same
+# test whether binary files differ (per-byte compare)
 #
 # J.J. Green 2014
 
 source equal-pre-compare.sh
 
-if [ `diff -w $1 $2 | wc -l` -eq '0' ]
+if [ `cmp $dump_src $dump_ref | wc -l` -eq '0' ]
 then
     echo 'true'
 else
     echo 'false'
 fi
+

@@ -1,4 +1,2 @@
 $$$_DefaultGradient_ForegroundToBackground=Foreground to Background.cpt
-$$$_DefaultGradient_ForegroundToBackground=Foreground to Background.svg
 _$$_DefaultGradient_ForegroundToTransparent=Foreground to Transparent.cpt
-_$$_DefaultGradient_ForegroundToTransparent=Foreground to Transparent.svg

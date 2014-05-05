@@ -1,1 +1,1 @@
-echo true
+equal-txt $1 $2

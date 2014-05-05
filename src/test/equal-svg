@@ -1,1 +1,4 @@
+#!/bin/sh
+# need to write a proper program for this, fannying 
+# around with diff does not make a working prototype
 echo "true"
