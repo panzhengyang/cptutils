@@ -7,13 +7,14 @@
 #include <unistd.h>
 
 #include <cptwrite.h>
-#include <cptread.h>
-#include "fixture.h"
 #include "tests_cptwrite.h"
+
+#include "fixture_cpt.h"
 
 CU_TestInfo tests_cptwrite[] = 
   {
     {"fixtures", test_cptwrite_fixtures},
+    {"no such directory", test_cptwrite_nosuchdir},
     CU_TEST_INFO_NULL,
   };
 
@@ -21,8 +22,6 @@ CU_TestInfo tests_cptwrite[] =
 
 extern void test_cptwrite_fixtures(void)
 {
-  size_t n = 1024;
-  char buf[n];
   const char* files[] = {
     "blue.cpt",
     "Exxon88.cpt",
@@ -39,21 +38,21 @@ extern void test_cptwrite_fixtures(void)
 
   for (i=0 ; i<nfile ; i++)
     {
-      cpt_t* cpt;
+      cpt_t* cpt = load_cpt_fixture(files[i]);
+      char *path = tmpnam(NULL);
 
-      if ((cpt = cpt_new()) != NULL)
-	{ 
-	  if (fixture(buf, n, "cpt", files[i]) < n)
-	    {
-	      if (cpt_read(buf, cpt) == 0)
-		{
-		  char *path = tmpnam(NULL);
+      CU_ASSERT(cpt_write(path, cpt) == 0);
 
-		  CU_ASSERT(cpt_write(path, cpt) == 0);
-		  unlink(path);
-		}
-	    }
-	  cpt_destroy(cpt);
-	}
+      unlink(path);
+      cpt_destroy(cpt);
     }
+}
+
+/* write a cpt to a non-existant directory */
+
+extern void test_cptwrite_nosuchdir(void)
+{
+  cpt_t* cpt = load_cpt_fixture("blue.cpt");
+  CU_ASSERT(cpt_write("/no/such/directory/exists", cpt) != 0);
+  cpt_destroy(cpt);
 }

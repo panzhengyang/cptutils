@@ -1,14 +1,14 @@
 #include <stdlib.h>
 #include <cptread.h>
 #include "fixture.h"
-#include "tests_cptread_helper.h"
+#include "fixture_cpt.h"
 
-extern cpt_t* load_cpt(const char* file)
+extern cpt_t* load_cpt_fixture(const char* file)
 {
   size_t n = 1024;
-  char buf[n];
+  char path[n];
 
-  if (fixture(buf, n, "cpt", file) < n)
+  if (fixture(path, n, "cpt", file) >= n)
     return NULL;
 
   cpt_t *cpt;
@@ -16,13 +16,11 @@ extern cpt_t* load_cpt(const char* file)
   if ((cpt = cpt_new()) == NULL)
     return NULL;
 
-  if (cpt_read(buf, cpt) == 0)
-    {
-      return cpt;
-    }
-  else
+  if (cpt_read(path, cpt) != 0)
     {
       cpt_destroy(cpt);
       return NULL;
     }
+
+  return cpt;
 }

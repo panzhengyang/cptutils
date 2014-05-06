@@ -10,5 +10,6 @@
 
 extern CU_TestInfo tests_cptwrite[]; 
 extern void test_cptwrite_fixtures(void);
+extern void test_cptwrite_nosuchdir(void);
 
 #endif
