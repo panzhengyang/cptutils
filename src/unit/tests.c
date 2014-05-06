@@ -13,6 +13,7 @@
 #include "tests_cpt.h"
 #include "tests_cptread.h"
 #include "tests_cptwrite.h"
+#include "tests_cptname.h"
 
 #include <CUnit/CUnit.h>
 
@@ -22,6 +23,7 @@ static CU_SuiteInfo suites[] =
     { "cpt",      NULL, NULL, tests_cpt },
     { "cptread",  NULL, NULL, tests_cptread },
     { "cptwrite", NULL, NULL, tests_cptwrite },
+    { "cptname",  NULL, NULL, tests_cptname },
     CU_SUITE_INFO_NULL,
   };
 
