@@ -14,6 +14,7 @@
 #include "tests_cptread.h"
 #include "tests_cptwrite.h"
 #include "tests_cptname.h"
+#include "tests_gmtcol.h"
 
 #include <CUnit/CUnit.h>
 
@@ -24,6 +25,7 @@ static CU_SuiteInfo suites[] =
     { "cptread",  NULL, NULL, tests_cptread },
     { "cptwrite", NULL, NULL, tests_cptwrite },
     { "cptname",  NULL, NULL, tests_cptname },
+    { "gmtcol",   NULL, NULL, tests_gmtcol },
     CU_SUITE_INFO_NULL,
   };
 

@@ -10,7 +10,8 @@ OBJ = options.o main.o tests.o \
   tests_cpt.o tests_cpt_helper.o \
   tests_cptread.o  \
   tests_cptwrite.o \
-  tests_cptname.o
+  tests_cptname.o \
+  tests_gmtcol.o
 
 RUBBISH += *~ $(OBJ) unit-test
 
