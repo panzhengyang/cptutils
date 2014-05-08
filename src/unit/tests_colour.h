@@ -12,6 +12,14 @@ extern CU_TestInfo tests_colour[];
 
 extern void test_colour_hsvD_to_rgbD(void);
 extern void test_colour_rgbD_to_hsvD(void);
+
+extern void test_colour_rgbD_to_rgb(void);
+extern void test_colour_rgb_to_rgbD(void);
+
+extern void test_colour_rgbD_to_hsv(void);
+extern void test_colour_hsv_to_rgbD(void);
+
 extern void test_colour_parse_rgb(void);
+
 
 #endif

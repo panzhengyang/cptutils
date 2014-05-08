@@ -10,6 +10,7 @@
 #include <colour.h>
 
 extern bool rgb_equal(rgb_t, rgb_t);
+extern bool hsv_equal(hsv_t, hsv_t, double);
 extern bool triple_equal(double*, double*, double);
 
 #endif

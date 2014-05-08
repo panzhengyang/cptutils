@@ -11,6 +11,15 @@ extern bool rgb_equal(rgb_t a, rgb_t b)
     (a.blue  == b.blue);
 }
 
+#define HSVD3(X) {(X).hue, (X).sat, (X).val}
+
+extern bool hsv_equal(hsv_t a, hsv_t b, double eps)
+{
+  double A[3] = HSVD3(a), B[3] = HSVD3(b);
+
+  return triple_equal(A, B, eps);
+}
+
 extern bool triple_equal(double *a, double *b, double eps)
 {
   size_t i;
