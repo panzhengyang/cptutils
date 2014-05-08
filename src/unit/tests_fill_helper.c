@@ -1,3 +1,4 @@
+#include "tests_colour_helper.h"
 #include "tests_fill_helper.h"
 
 extern fill_t build_fill_grey(int g)
@@ -17,11 +18,7 @@ extern fill_t build_fill_rgb(int r, int g, int b)
     .type = fill_colour,
     .u = {
       .colour = {
-	.rgb = {
-	  .red   = r,
-	  .green = g,
-	  .blue  = b
-	}
+	.rgb = build_rgb(r, g, b)
       }
     }
   };
@@ -34,11 +31,7 @@ extern fill_t build_fill_hsv(double h, double s, double v)
     .type = fill_colour,
     .u = {
       .colour = {
-	.hsv = {
-	  .hue = h,
-	  .sat = s,
-	  .val = v
-	}
+	.hsv = build_hsv(h, s, v)
       }
     }
   };

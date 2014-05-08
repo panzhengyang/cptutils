@@ -32,3 +32,25 @@ extern bool triple_equal(double *a, double *b, double eps)
 
   return true;
 }
+
+extern rgb_t build_rgb(int r, int g, int b)
+{
+  rgb_t rgb = {
+    .red   = r,
+    .green = g,
+    .blue  = b
+  };
+
+  return rgb;
+}
+
+extern hsv_t build_hsv(double h, double s, double v)
+{
+  hsv_t hsv = {
+    .hue = h,
+    .sat = s,
+    .val = v
+  };
+
+  return hsv;
+}
