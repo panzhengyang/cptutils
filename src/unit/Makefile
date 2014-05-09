@@ -1,17 +1,18 @@
 # Makefile for cunit test-suite
 
-LDLIBS  += -lcpt -lfill
+LDLIBS  += -lcpt -lfill -lcss3
 LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
 
 OBJ = options.o main.o tests.o \
   fixture.o fixture_cpt.o \
   tests_colour.o tests_colour_helper.o \
-  tests_fill.o tests_fill_helper.o \
   tests_cpt.o tests_cpt_helper.o \
   tests_cptread.o  \
   tests_cptwrite.o \
   tests_cptname.o \
+  tests_css3write.o \
+  tests_fill.o tests_fill_helper.o \
   tests_gmtcol.o
 
 RUBBISH += *~ $(OBJ) unit-test
