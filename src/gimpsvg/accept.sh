@@ -4,11 +4,11 @@ source $2/accept-setup.sh
 
 base="Sunrise"
 svg="$base.svg"
+ggr="$base.ggr"
 
 fixtures="$TESTFIX/ggr"
 
-assert_raises \
-    "export GIMP_GRADIENTS=$fixtures ; ./gimpsvg -p -o $svg $base" 0
+assert_raises "./gimpsvg -p -o $svg $fixtures/$ggr" 0
 assert "equal-svg $svg accept/$svg" true
 
 rm -f $svg

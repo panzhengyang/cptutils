@@ -92,10 +92,6 @@
 </variablelist>
 </refsect1>
 
-<xi:include href="../docbook/refsect1-gimp-files.xml"/>
-
-<xi:include href="../docbook/refsect1-gimp-environment.xml"/>
-
 <xi:include href="../docbook/refsect1-author.xml"/>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>

@@ -13,7 +13,6 @@ OBJ = options.o main.o tests.o \
   tests_cptname.o \
   tests_css3write.o \
   tests_fill.o tests_fill_helper.o \
-  tests_files.o \
   tests_gmtcol.o
 
 RUBBISH += *~ $(OBJ) unit-test

@@ -11,8 +11,6 @@
 
 #include "gimplut.h"
 #include "ggr.h"
-#include "findggr.h"
-#include "files.h"
 
 /*
   #define DEBUG
@@ -24,7 +22,6 @@
 #define ERR_NULL   2
 #define ERR_INSERT 3
 
-static char* find_infile(char*);
 static int gimplut_st(FILE*,gradient_t*,glopt_t);
 
 extern int gimplut(char* infile,char* outfile,glopt_t opt)
@@ -32,27 +29,6 @@ extern int gimplut(char* infile,char* outfile,glopt_t opt)
     gradient_t* gradient;
     int         err;
 
-    /* get the full filename */
-    
-    if (infile)
-      {
-	char* found = NULL;
-	
-	found = find_infile(infile);
-	
-	if (found)
-	  {
-	    if (opt.verbose) printf("gradient file %s\n",found);
-	  }
-	else
-	  {
-	    fprintf(stderr,"gradient file %s not found\n",infile);
-	    return 1;
-	  }
-	
-	infile = found;
-      }
-    
     /* load the gradient */
     
     gradient = grad_load_gradient(infile);
@@ -95,41 +71,6 @@ extern int gimplut(char* infile,char* outfile,glopt_t opt)
     return err;
 }
 
-static char* find_infile(char* infile)
-{
-  char  *gimp_grads,*found;
-
-  /* try just the name */
-  
-  found = findggr_explicit(infile);
-
-  if (found) return found;
-  else if (is_absolute_filename(infile)) return NULL;
-  
-  /* check the GIMP_GRADIENTS directories */
-  
-  if ((gimp_grads = getenv("GIMP_GRADIENTS")) != NULL)
-    {
-      char* dir;
-      
-      if ((gimp_grads = strdup(gimp_grads)) == NULL)
-	return NULL;
-      
-      dir = strtok(gimp_grads,":");
-      while (dir && !found)
-	{
-	  found = findggr_indir(infile,dir);
-	  dir = strtok(NULL,":");
-	} 
-      free(gimp_grads);
-      
-      if (found) return found;
-    }
-  
-  /* now try the usual places */
-  
-  return findggr_implicit(infile);
-}
 
 static int gimplut_st(FILE* st,gradient_t* g,glopt_t opt)
 {

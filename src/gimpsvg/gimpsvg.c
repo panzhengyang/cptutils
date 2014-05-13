@@ -12,8 +12,6 @@
 #include "gimpsvg.h"
 
 #include "ggr.h"
-#include "findggr.h"
-#include "files.h"
 
 #include "svg.h"
 #include "svgwrite.h"
@@ -24,8 +22,6 @@
 
 static int gimpsvg_convert(gradient_t*, svg_t*, gimpsvg_opt_t);
 
-static char* find_infile(const char*);
-
 extern int gimpsvg(const char *infile, 
 		   const char *outfile, 
 		   gimpsvg_opt_t opt)
@@ -34,25 +30,6 @@ extern int gimpsvg(const char *infile,
     svg_t *svg;
     int err;
 
-    /* get the full filename */
-    
-    if (infile)
-      {
-	char* found;
-		
-	if ((found = find_infile(infile)) == NULL)
-	  {
-	    fprintf(stderr,"gradient file %s not found\n",infile);
-	    return 1;
-	  }
-	else
-	  {
-	    if (opt.verbose) printf("gradient file %s\n",found);
-	  }
-	
-	infile = found;
-      }
-    
     /* load the gradient */
     
     if ((gradient = grad_load_gradient(infile)) == NULL)
@@ -109,44 +86,6 @@ extern int gimpsvg(const char *infile,
     grad_free_gradient(gradient);
     
     return 0;
-}
-
-static char* find_infile(const char* infile)
-{
-  char  *gimp_grads, *found;
-
-  /* try just the name */
-  
-  found = findggr_explicit(infile);
-
-  if (found) return found;
-  else if (is_absolute_filename(infile)) return NULL;
-  
-  /* check the GIMP_GRADIENTS directories */
-  
-  if ((gimp_grads = getenv("GIMP_GRADIENTS")) != NULL)
-    {
-      char* dir;
-      
-      if ((gimp_grads = strdup(gimp_grads)) == NULL)
-	return NULL;
-      
-      dir = strtok(gimp_grads,":");
-
-      while (dir && !found)
-	{
-	  found = findggr_indir(infile,dir);
-	  dir = strtok(NULL,":");
-	} 
-
-      free(gimp_grads);
-      
-      if (found) return found;
-    }
-  
-  /* now try the usual places */
-  
-  return findggr_implicit(infile);
 }
 
 #define EPSRGB   (0.5 / 256.0)

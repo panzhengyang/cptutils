@@ -3,7 +3,7 @@
 
 OBJFILL = colour.o fill.o 
 OBJCPT  = cpt.o cptread.o cptwrite.o gmtcol.o cptname.o
-OBJGGR  = ggr.o findggr.o files.o
+OBJGGR  = ggr.o
 OBJGRD3 = grd3read.o grd3write.o grd3.o
 OBJGRD5 = grd5type.o grd5read.o grd5string.o grd5.o
 OBJGRDX = grdxsvg.o

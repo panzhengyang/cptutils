@@ -16,7 +16,6 @@
 #include "tests_cptname.h"
 #include "tests_css3write.h"
 #include "tests_fill.h"
-#include "tests_files.h"
 #include "tests_gmtcol.h"
 
 #include <CUnit/CUnit.h>
@@ -30,7 +29,6 @@ static CU_SuiteInfo suites[] =
     { "cptname",   NULL, NULL, tests_cptname },
     { "css3write", NULL, NULL, tests_css3write }, 
     { "fill",      NULL, NULL, tests_fill },
-    { "files",     NULL, NULL, tests_files },
     { "gmtcol",    NULL, NULL, tests_gmtcol },
     CU_SUITE_INFO_NULL,
   };
@@ -42,7 +40,7 @@ void tests_load(void)
 
   if (CU_register_suites(suites) != CUE_SUCCESS) 
     {
-      fprintf(stderr,"suite registration failed - %s\n",
+      fprintf(stderr, "suite registration failed - %s\n",
 	      CU_get_error_msg());
       exit(EXIT_FAILURE);
     }

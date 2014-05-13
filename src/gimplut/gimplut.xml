@@ -91,10 +91,6 @@
 </variablelist>
 </refsect1>
 
-<xi:include href="../docbook/refsect1-gimp-files.xml"/>
-
-<xi:include href="../docbook/refsect1-gimp-environment.xml"/>
-
 <refsect1 id='caveats'><title>CAVEATS</title>
 
 <para>
