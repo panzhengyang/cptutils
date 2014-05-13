@@ -104,7 +104,7 @@ static char* find_infile(char* infile)
   found = findggr_explicit(infile);
 
   if (found) return found;
-  else if (absolute_filename(infile)) return NULL;
+  else if (is_absolute_filename(infile)) return NULL;
   
   /* check the GIMP_GRADIENTS directories */
   

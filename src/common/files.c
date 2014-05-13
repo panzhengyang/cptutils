@@ -10,12 +10,12 @@
 #include <unistd.h>
 #include "files.h"
 
-extern int file_readable(const char* name)
+extern int is_readable(const char* name)
 {
-    return (access(name,R_OK) == 0);
+    return access(name, R_OK) == 0;
 }
 
-extern  int absolute_filename(const char* name)
+extern  int is_absolute_filename(const char* name)
 {
-    return (*name == '/');
+    return *name == '/';
 }

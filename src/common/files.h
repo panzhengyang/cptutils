@@ -10,7 +10,7 @@
 #ifndef FILES_H
 #define FILES_H
 
-extern int file_readable(const char*);
-extern int absolute_filename(const char*);
+extern int is_readable(const char*);
+extern int is_absolute_filename(const char*);
 
 #endif

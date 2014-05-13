@@ -28,7 +28,7 @@ extern char* findggr_explicit(const char* name)
 {
   if (!name) return NULL;
      
-  return (file_readable(name) ? strdup(name) : NULL);
+  return (is_readable(name) ? strdup(name) : NULL);
 }
 
 /*
@@ -42,12 +42,12 @@ extern char* findggr_indir(const char* name, const char* dir)
   if (snprintf(buffer,BUFFSIZE,"%s/%s.ggr",dir,name) == -1)
     return NULL;
   
-  if (file_readable(buffer)) return strdup(buffer);
+  if (is_readable(buffer)) return strdup(buffer);
     
   if (snprintf(buffer,BUFFSIZE,"%s/%s",dir,name) == -1)
     return NULL;
     
-  if (file_readable(buffer)) return strdup(buffer);
+  if (is_readable(buffer)) return strdup(buffer);
   
   return NULL;
 }
@@ -81,7 +81,7 @@ extern char* findggr_implicit(const char* name)
 
 	    path = globdata.gl_pathv[i];
 
-	    if (file_readable(path)) found = strdup(path);
+	    if (is_readable(path)) found = strdup(path);
 	}
 
 	globfree(&globdata);
@@ -106,7 +106,7 @@ extern char* findggr_implicit(const char* name)
 
 	    path = globdata.gl_pathv[j];
 
-	    if (file_readable(path)) found = strdup(path);
+	    if (is_readable(path)) found = strdup(path);
 	}
 
 	globfree(&globdata);
