@@ -3,6 +3,9 @@
   Copyright (c) J.J. Green 2014
 */
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include <ggr.h>
 
 #include "tests_ggr.h"
