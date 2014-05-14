@@ -21,6 +21,7 @@
 #include "tests_gpt.h"
 #include "tests_gptwrite.h"
 #include "tests_grd3.h"
+#include "tests_grd3read.h"
 
 #include <CUnit/CUnit.h>
 
@@ -38,6 +39,7 @@ static CU_SuiteInfo suites[] =
     { "gpt",       NULL, NULL, tests_gpt },
     { "gptwrite",  NULL, NULL, tests_gptwrite },
     { "grd3",      NULL, NULL, tests_grd3 },
+    { "grdread3",  NULL, NULL, tests_grd3read },
     CU_SUITE_INFO_NULL,
   };
 
