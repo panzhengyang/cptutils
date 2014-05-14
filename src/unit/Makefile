@@ -15,7 +15,8 @@ OBJ = options.o main.o tests.o \
   tests_fill.o tests_fill_helper.o \
   tests_ggr.o fixture_ggr.o \
   tests_gmtcol.o \
-  tests_gpt.o
+  tests_gpt.o \
+  tests_gptwrite.o
 
 RUBBISH += *~ $(OBJ) unit-test
 
