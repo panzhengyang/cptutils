@@ -18,6 +18,7 @@
 #include "tests_fill.h"
 #include "tests_ggr.h"
 #include "tests_gmtcol.h"
+#include "tests_gpt.h"
 
 #include <CUnit/CUnit.h>
 
@@ -32,6 +33,7 @@ static CU_SuiteInfo suites[] =
     { "fill",      NULL, NULL, tests_fill },
     { "ggr",       NULL, NULL, tests_ggr },
     { "gmtcol",    NULL, NULL, tests_gmtcol },
+    { "gpt",       NULL, NULL, tests_gpt },
     CU_SUITE_INFO_NULL,
   };
 
