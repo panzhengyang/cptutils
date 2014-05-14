@@ -20,6 +20,7 @@
 #include "tests_gmtcol.h"
 #include "tests_gpt.h"
 #include "tests_gptwrite.h"
+#include "tests_grd3.h"
 
 #include <CUnit/CUnit.h>
 
@@ -36,6 +37,7 @@ static CU_SuiteInfo suites[] =
     { "gmtcol",    NULL, NULL, tests_gmtcol },
     { "gpt",       NULL, NULL, tests_gpt },
     { "gptwrite",  NULL, NULL, tests_gptwrite },
+    { "grd3",      NULL, NULL, tests_grd3 },
     CU_SUITE_INFO_NULL,
   };
 
