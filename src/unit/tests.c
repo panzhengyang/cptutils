@@ -23,6 +23,7 @@
 #include "tests_grd3.h"
 #include "tests_grd3read.h"
 #include "tests_grd3write.h"
+#include "tests_grd5.h"
 
 #include <CUnit/CUnit.h>
 
@@ -42,6 +43,7 @@ static CU_SuiteInfo suites[] =
     { "grd3",      NULL, NULL, tests_grd3 },
     { "grd3read",  NULL, NULL, tests_grd3read },
     { "grd3write", NULL, NULL, tests_grd3write },
+    { "grd5",      NULL, NULL, tests_grd5 },
     CU_SUITE_INFO_NULL,
   };
 
