@@ -5,6 +5,7 @@
 
 #include <grd5.h>
 #include "tests_grd5.h"
+#include "tests_grd5_helper.h"
 
 CU_TestInfo tests_grd5[] = 
   {
@@ -13,39 +14,41 @@ CU_TestInfo tests_grd5[] =
   };
 
 
-static void build_grd5_string(const char* content, grd5_string_t* str)
-{
-  str->content = (char*)content;
-  str->len = strlen(content);
-}
-
 extern void test_grd5_model(void)
 {
-  grd5_string_t str;
+  grd5_string_t *str;
 
-  build_grd5_string("RGBC", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_RGB );
+  CU_TEST_FATAL( (str = build_grd5string("RGBC")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_RGB );
+  grd5_string_destroy(str);
 
-  build_grd5_string("HSBC", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_HSB );
+  CU_TEST_FATAL( (str = build_grd5string("HSBC")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_HSB );
+  grd5_string_destroy(str);
 
-  build_grd5_string("LbCl", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_LAB );
+  CU_TEST_FATAL( (str = build_grd5string("LbCl")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_LAB );
+  grd5_string_destroy(str);
 
-  build_grd5_string("CMYC", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_CMYC );
+  CU_TEST_FATAL( (str = build_grd5string("CMYC")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_CMYC );
+  grd5_string_destroy(str);
 
-  build_grd5_string("Grsc", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_GRSC );
+  CU_TEST_FATAL( (str = build_grd5string("Grsc")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_GRSC );
+  grd5_string_destroy(str);
 
-  build_grd5_string("FrgC", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_FRGC );
+  CU_TEST_FATAL( (str = build_grd5string("FrgC")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_FRGC );
+  grd5_string_destroy(str);
 
-  build_grd5_string("BckC", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_BCKC );
+  CU_TEST_FATAL( (str = build_grd5string("BckC")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_BCKC );
+  grd5_string_destroy(str);
 
-  build_grd5_string("BkCl", &str);
-  CU_ASSERT( grd5_model(&str) == GRD5_MODEL_BOOK );
+  CU_TEST_FATAL( (str = build_grd5string("BkCl")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_BOOK );
+  grd5_string_destroy(str);
 }
 
 
