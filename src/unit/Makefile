@@ -20,9 +20,11 @@ OBJ = options.o main.o tests.o \
   tests_grd3.o fixture_grd3.o \
   tests_grd3read.o \
   tests_grd3write.o \
-  tests_grd5.o fixture_grd5.o \
+  tests_grd5.o tests_grd5_helper.o fixture_grd5.o \
   tests_grd5read.o \
-  tests_grd5string.o
+  tests_grd5string.o \
+  tests_grd5type.o \
+
 
 RUBBISH += *~ $(OBJ) unit-test
 
