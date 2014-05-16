@@ -7,6 +7,8 @@
 #include "options.h"
 #include "tests.h"
 
+#define NO_STDERR
+
 int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
@@ -39,19 +41,27 @@ int main(int argc, char** argv)
     that portable and we might need some autoconf 
   */
 
+#ifdef NO_STDERR
+
   if (freopen("/dev/null", "w", stderr) == NULL)
     {
       printf("failed to redirect stderr\n");
       return EXIT_FAILURE;
     }
 
+#endif
+
   status = CU_basic_run_tests();
+
+#ifdef NO_STDERR
 
   if (freopen("/dev/stderr", "w", stderr) == NULL)
     {
       printf("failed to redirect stderr back\n");
       return EXIT_FAILURE;
     }
+
+#endif
 
   int nfail = CU_get_number_of_failures();
 
