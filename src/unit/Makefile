@@ -1,6 +1,8 @@
 # Makefile for cunit test-suite
 
-LDLIBS  += -lcpt -lfill -lcss3 -lggr -lgpt -lgrd3 -lgrd5
+LDLIBS  += -lcpt -lfill -lcss3 -lggr -lgpt -lgrd3 -lgrd5 \
+           -lgstk -lgrdx -lsvg
+
 LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
 
@@ -24,7 +26,7 @@ OBJ = options.o main.o tests.o \
   tests_grd5read.o \
   tests_grd5string.o \
   tests_grd5type.o \
-
+  tests_grdxsvg.o
 
 RUBBISH += *~ $(OBJ) unit-test
 

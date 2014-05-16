@@ -2,7 +2,6 @@
   tests.c
   testcase loader
   J.J.Green 2014
-  $Id: tests.c,v 1.10 2008/09/10 22:34:42 jjg Exp $
 */
 
 #include <stdlib.h>
@@ -27,6 +26,7 @@
 #include "tests_grd5read.h"
 #include "tests_grd5string.h"
 #include "tests_grd5type.h"
+#include "tests_grdxsvg.h"
 
 #include <CUnit/CUnit.h>
 
@@ -50,6 +50,7 @@ static CU_SuiteInfo suites[] =
     { "grd5read",   NULL, NULL, tests_grd5read },
     { "grd5string", NULL, NULL, tests_grd5string },
     { "grd5type",   NULL, NULL, tests_grd5type },
+    { "grdxsvg",    NULL, NULL, tests_grdxsvg },
     CU_SUITE_INFO_NULL,
   };
 

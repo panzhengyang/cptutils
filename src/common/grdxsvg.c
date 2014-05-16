@@ -93,7 +93,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   if (err)
     {
-      fprintf(stderr,"%i errors rgb\n",err);
+      fprintf(stderr, "%i errors rgb\n",err);
       return NULL;
     }
 
@@ -104,7 +104,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   if (err)
     {
-      fprintf(stderr,"%i errors rgb\n",err);
+      fprintf(stderr, "%i errors op\n",err);
       return NULL;
     }
 
@@ -230,7 +230,7 @@ extern int grdxsvg(gstack_t *rgb_stops,
 {
   gstack_t *merged_stops;
   int err;
-    
+
   if ((merged_stops = merge(rgb_stops, op_stops)) == NULL)
     return 1;
 
