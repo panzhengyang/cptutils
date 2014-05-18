@@ -27,6 +27,7 @@
 #include "tests_grd5string.h"
 #include "tests_grd5type.h"
 #include "tests_grdxsvg.h"
+#include "tests_gstack.h"
 
 #include <CUnit/CUnit.h>
 
@@ -51,6 +52,7 @@ static CU_SuiteInfo suites[] =
     { "grd5string", NULL, NULL, tests_grd5string },
     { "grd5type",   NULL, NULL, tests_grd5type },
     { "grdxsvg",    NULL, NULL, tests_grdxsvg },
+    { "gstack",     NULL, NULL, tests_gstack },
     CU_SUITE_INFO_NULL,
   };
 
