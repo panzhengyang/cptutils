@@ -1,0 +1,2 @@
+This file is grd3 rather than grd5, notable since it
+causes pssvg 1.53 to segfault
