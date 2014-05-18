@@ -59,12 +59,15 @@ extern void grd5_grad_destroy(grd5_grad_t *grad)
 
 extern void grd5_destroy(grd5_t *grd5)
 {
-  int i;
+  if (grd5->n > 0)
+    {
+      int i;
 
-  for (i=0 ; i < grd5->n ; i++)
-    grd5_grad_destroy(grd5->gradients+i);
+      for (i=0 ; i < grd5->n ; i++)
+	grd5_grad_destroy(grd5->gradients+i);
 
-  free(grd5->gradients);
+      free(grd5->gradients);
+    }
 
   free(grd5);
 }

@@ -40,6 +40,9 @@ extern int grd5_read(const char* file, grd5_t** pgrd5)
   grd5_t *grd5 = malloc(sizeof(grd5_t));
   if (grd5 == NULL) return GRD5_READ_MALLOC;
 
+  grd5->n         = 0;
+  grd5->gradients = NULL;
+
   if (file)
     {
       FILE *stream;
@@ -984,6 +987,9 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   int i;
   
+  for (i = 0 ; i < grd5->n ; i++)
+    grd5->gradients[i].title = NULL;
+
   for (i = 0 ; i < grd5->n ; i++)
     {
       int type;

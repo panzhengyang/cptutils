@@ -11,6 +11,7 @@
 extern CU_TestInfo tests_grd5read[]; 
 
 extern void test_grd5read_fixtures(void);
+extern void test_grd5read_grd3(void);
 extern void test_grd5read_nofile(void);
 
 #endif

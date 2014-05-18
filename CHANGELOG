@@ -1,8 +1,9 @@
 Changes
 
 1.54 (pending)
+  - fixed null-deference in grd5read (when given a grd3 file)
   - improved acceptance testing
-  - initial cunit unit-tests
+  - unit-tests
 
 1.53 (25 Apr 2014)
   - fixed a null-deference when writing a cpt with a NULL name

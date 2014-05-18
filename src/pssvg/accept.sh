@@ -21,4 +21,10 @@ do
     rm -f $svg
 done
 
+# pssgv 1.53 segfaulted when passed this file (which is
+# a grd3 file rather than a grd5 one), rather than 
+# exiting gracefully
+
+assert_raises "./pssvg -o not_exist.svg $fixtures/ES_Coffe.grd" 1
+
 source accept-teardown.sh
