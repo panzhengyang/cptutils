@@ -29,6 +29,7 @@
 #include "tests_grdxsvg.h"
 #include "tests_gstack.h"
 #include "tests_ident.h"
+#include "tests_identtab.h"
 
 #include <CUnit/CUnit.h>
 
@@ -55,6 +56,7 @@ static CU_SuiteInfo suites[] =
     { "grdxsvg",    NULL, NULL, tests_grdxsvg },
     { "gstack",     NULL, NULL, tests_gstack },
     { "ident",      NULL, NULL, tests_ident },
+    { "identtab",   NULL, NULL, tests_identtab },
     CU_SUITE_INFO_NULL,
   };
 
