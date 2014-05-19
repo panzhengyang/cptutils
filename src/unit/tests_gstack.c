@@ -86,13 +86,22 @@ extern void test_gstack_reverse(void)
   gstack_destroy(g);
 }
 
+static int add_cb(int *dat, int *sum)
+{
+  *sum += *dat;
+  return 1;
+}
+
 extern void test_gstack_foreach(void)
 {
   gstack_t* g;
 
   CU_TEST_FATAL( (g = build_gstack(4)) != NULL );
 
-  // fixme
+  int sum = 0;
+
+  CU_ASSERT( gstack_foreach(g, (int (*)(void*, void*))add_cb, &sum) == 0 );
+  CU_ASSERT( sum == 6 );
 
   gstack_destroy(g);
 }
