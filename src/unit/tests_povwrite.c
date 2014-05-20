@@ -3,6 +3,7 @@
   Copyright (c) J.J. Green 2014
 */
 
+#include <stdio.h>
 #include <unistd.h>
 
 #include <povwrite.h>
@@ -48,6 +49,7 @@ extern void test_povwrite_2stop(void)
   char *path;
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
 
+  CU_ASSERT( access(path, F_OK)   != 0 );
   CU_ASSERT( pov_write(path, pov) == 0 );
   CU_ASSERT( access(path, F_OK)   == 0 );
 
