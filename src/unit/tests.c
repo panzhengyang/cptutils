@@ -30,6 +30,7 @@
 #include "tests_gstack.h"
 #include "tests_ident.h"
 #include "tests_identtab.h"
+#include "tests_pov.h"
 
 #include <CUnit/CUnit.h>
 
@@ -57,6 +58,7 @@ static CU_SuiteInfo suites[] =
     { "gstack",     NULL, NULL, tests_gstack },
     { "ident",      NULL, NULL, tests_ident },
     { "identtab",   NULL, NULL, tests_identtab },
+    { "pov",        NULL, NULL, tests_pov },
     CU_SUITE_INFO_NULL,
   };
 

@@ -1,7 +1,7 @@
 # Makefile for cunit test-suite
 
 LDLIBS  += -lcpt -lfill -lcss3 -lggr -lgpt -lgrd3 -lgrd5 \
-           -lgstk -lgrdx -lident -lsvg
+           -lgstk -lgrdx -lident -lpov -lsvg
 
 LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
@@ -29,7 +29,8 @@ OBJ = options.o main.o tests.o \
   tests_grdxsvg.o \
   tests_gstack.o \
   tests_ident.o \
-  tests_identtab.o tests_identtab_helper.o
+  tests_identtab.o tests_identtab_helper.o \
+  tests_pov.o
 
 RUBBISH += *~ $(OBJ) unit-test
 
