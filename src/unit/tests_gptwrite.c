@@ -49,6 +49,8 @@ extern void test_gptwrite_write(void)
   CU_ASSERT( gpt_write(path, gpt) == 0 );
   CU_ASSERT( access(path, F_OK)   == 0 );
 
+  unlink(path);
+
   gpt_destroy(gpt);
 }
 
