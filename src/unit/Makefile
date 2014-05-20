@@ -30,7 +30,8 @@ OBJ = options.o main.o tests.o \
   tests_gstack.o \
   tests_ident.o \
   tests_identtab.o tests_identtab_helper.o \
-  tests_pov.o
+  tests_pov.o \
+  tests_povwrite.o
 
 RUBBISH += *~ $(OBJ) unit-test
 
