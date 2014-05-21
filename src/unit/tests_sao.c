@@ -5,6 +5,7 @@
 
 #include <sao.h>
 #include "tests_sao.h"
+#include "tests_sao_helper.h"
 
 CU_TestInfo tests_sao[] = 
   {
@@ -48,14 +49,13 @@ extern void test_sao_each(void)
 {
   sao_t *sao;
 
-  CU_TEST_FATAL( (sao = sao_new()) != NULL);
-  CU_ASSERT( sao_red_push(sao,  0.0, 0.25) == 0 );
-  CU_ASSERT( sao_red_push(sao,  0.5, 0.50) == 0 );
-  CU_ASSERT( sao_red_push(sao,  1.0, 0.25) == 0 );
+  CU_TEST_FATAL( (sao = build_sao()) != NULL);
 
   double sum = 0.0;
 
   CU_ASSERT( sao_eachred(sao, (stop_fn_t*)sum_stop_fn, 
 			 (void*)&sum) == 0 );
   CU_ASSERT( sum == 1.0 );
+
+  sao_destroy(sao);
 }
