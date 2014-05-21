@@ -32,6 +32,7 @@
 #include "tests_identtab.h"
 #include "tests_pov.h"
 #include "tests_povwrite.h"
+#include "tests_sao.h"
 
 #include <CUnit/CUnit.h>
 
@@ -61,6 +62,7 @@ static CU_SuiteInfo suites[] =
     { "identtab",   NULL, NULL, tests_identtab },
     { "pov",        NULL, NULL, tests_pov },
     { "povwrite",   NULL, NULL, tests_povwrite },
+    { "sao",        NULL, NULL, tests_sao },
     CU_SUITE_INFO_NULL,
   };
 
