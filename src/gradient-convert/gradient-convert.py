@@ -383,7 +383,8 @@ def cleanup_files(verbose) :
     for path in delfiles :
         if verbose :
             print path
-        os.unlink(path)
+        if os.path.isfile(path) :
+            os.unlink(path)
 
 def main() :
 
