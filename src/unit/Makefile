@@ -33,7 +33,8 @@ OBJ = options.o main.o tests.o \
   tests_pov.o \
   tests_povwrite.o \
   tests_sao.o tests_sao_helper.o \
-  tests_saowrite.o 
+  tests_saowrite.o \
+  tests_stdcol.o
 
 RUBBISH += *~ $(OBJ) unit-test
 
