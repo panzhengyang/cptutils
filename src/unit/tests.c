@@ -35,6 +35,7 @@
 #include "tests_sao.h"
 #include "tests_saowrite.h"
 #include "tests_stdcol.h"
+#include "tests_svg.h"
 
 #include <CUnit/CUnit.h>
 
@@ -67,6 +68,7 @@ static CU_SuiteInfo suites[] =
     { "sao",        NULL, NULL, tests_sao },
     { "saowrite",   NULL, NULL, tests_saowrite },
     { "stdcol",     NULL, NULL, tests_stdcol },
+    { "svg",        NULL, NULL, tests_svg },
     CU_SUITE_INFO_NULL,
   };
 
