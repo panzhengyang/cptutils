@@ -64,14 +64,12 @@ AC_CHECK_HEADERS(unistd.h)
 AC_CHECK_HEADERS(iconv.h)
 AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(png.h)
-AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(search.h)
 
 dnl Checks for library functions.
 
 AC_CHECK_FUNCS(strdup)
 AC_CHECK_FUNCS(getopt)
-AC_CHECK_FUNCS(glob)
 AC_CHECK_FUNCS(tsearch)
 AC_CHECK_FUNCS(hsearch)
 
