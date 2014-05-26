@@ -35,7 +35,9 @@ OBJ = options.o main.o tests.o \
   tests_sao.o tests_sao_helper.o \
   tests_saowrite.o \
   tests_stdcol.o \
-  tests_svg.o tests_svg_helper.o
+  tests_svg.o tests_svg_helper.o \
+  tests_svglist.o tests_svglist_helper.o
+
 
 RUBBISH += *~ $(OBJ) unit-test
 
