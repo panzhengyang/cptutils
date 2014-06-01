@@ -35,7 +35,14 @@
 int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  cptinfo_opt_t opt = {0};
+  cptinfo_opt_t opt = {
+    .file = {
+      .input  = NULL,
+      .output = NULL
+    },
+    .verbose = false,
+    .format  = plain
+  };
   char *infile, *outfile;
 
   /* use gengetopt */
