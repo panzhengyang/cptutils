@@ -3,6 +3,7 @@
   Copyright (c) J.J. Green 2014
 */
 
+#include <stdio.h>
 #include "tests_svglist_helper.h"
 
 extern svg_list_t* build_svg_list(size_t n)
@@ -21,7 +22,7 @@ extern svg_list_t* build_svg_list(size_t n)
       if ( (svg = svg_list_svg(svglist)) == NULL )
 	return NULL;
 
-      sprintf(svg->name, "id-%02d", i);
+      sprintf((char*)svg->name, "id-%02zi", i);
     }
 
   return svglist;

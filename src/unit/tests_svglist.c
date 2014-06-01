@@ -82,7 +82,7 @@ extern void test_svglist_select(void)
 			       (void*)&n);
   CU_ASSERT( svg != NULL );
 
-  CU_ASSERT( strcmp(svg->name, "id-02") == 0 );
+  CU_ASSERT( strcmp((char*)svg->name, "id-02") == 0 );
 
   svg_list_destroy(svglist);
 }
