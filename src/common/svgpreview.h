@@ -9,6 +9,7 @@
 #ifndef SVGPREVIEW_H
 #define SVGPREVIEW_H
 
+#include <stdlib.h>
 #include <stdbool.h>
 
 typedef struct
