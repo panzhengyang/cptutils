@@ -71,6 +71,9 @@ endif
 
 .SECONDARY : options.c options.h
 
+options.o : options.c options.h
+	$(CC) $(CFLAGS) -Wno-unused-but-set-variable -c -o $@ $< 
+
 # generate manpages from docbook source, the location
 # of the xsl is as used by Debian/Ubuntu
 
