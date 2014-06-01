@@ -37,6 +37,7 @@
 #include "tests_stdcol.h"
 #include "tests_svg.h"
 #include "tests_svglist.h"
+#include "tests_svgpreview.h"
 
 #include <CUnit/CUnit.h>
 
@@ -71,6 +72,7 @@ static CU_SuiteInfo suites[] =
     { "stdcol",     NULL, NULL, tests_stdcol },
     { "svg",        NULL, NULL, tests_svg },
     { "svglist",    NULL, NULL, tests_svglist },
+    { "svgpreview", NULL, NULL, tests_svgpreview },
     CU_SUITE_INFO_NULL,
   };
 
