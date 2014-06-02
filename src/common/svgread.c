@@ -555,6 +555,8 @@ static int parse_opacity(char *st,double *opacity)
 {
   if (st == NULL) return 1;
 
+  errno = 0;
+
   *opacity = strtod(st,NULL);
 
   if (errno) return 1;
