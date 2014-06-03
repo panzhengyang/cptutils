@@ -38,11 +38,14 @@ extern void test_cptwrite_fixtures(void)
 
   for (i=0 ; i<nfile ; i++)
     {
-      cpt_t* cpt = load_cpt_fixture(files[i]);
       char *path = tmpnam(NULL);
+      cpt_t* cpt;
 
-      CU_ASSERT(cpt_write(path, cpt) == 0);
-
+      CU_TEST_FATAL( (cpt = load_cpt_fixture(files[i])) != NULL );
+      CU_ASSERT( access(path, F_OK) != 0 );
+      CU_ASSERT( cpt_write(path, cpt) == 0 );
+      CU_ASSERT( access(path, F_OK) == 0 );
+  
       unlink(path);
       cpt_destroy(cpt);
     }
@@ -52,7 +55,10 @@ extern void test_cptwrite_fixtures(void)
 
 extern void test_cptwrite_nosuchdir(void)
 {
-  cpt_t* cpt = load_cpt_fixture("blue.cpt");
+  cpt_t* cpt;
+
+  CU_TEST_FATAL( (cpt = load_cpt_fixture("blue.cpt")) != NULL );
   CU_ASSERT(cpt_write("/no/such/directory/exists", cpt) != 0);
+
   cpt_destroy(cpt);
 }
