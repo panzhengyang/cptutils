@@ -1,7 +1,9 @@
 Changes
 
-1.54 (pending)
+1.54 (4 June 2014)
+  - fixed error parsing geometry strings
   - fixed null-deference in grd5read (when given a grd3 file)
+  - removed ggr searching (unused and crufty)
   - improved acceptance testing
   - unit-tests
 
