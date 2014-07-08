@@ -79,7 +79,7 @@ options.o : options.c options.h
 
 ifneq (no,$(XSLTP))
 
-MANXSL = /usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl
+MANXSL = http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl
 
 %.1 : %.xml ../docbook
 	$(XSLTP) --xinclude $(MANXSL) $<
