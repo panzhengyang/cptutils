@@ -17,8 +17,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// #define DEBUG
-
 #ifdef DEBUG
 #define debug_error(...) fprintf(stderr, __VA_ARGS__)
 #else

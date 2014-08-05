@@ -635,7 +635,7 @@ static int pssvg_convert_all(grd5_t *grd5,
 	common) so that the output SVG titles are unique.  We
 	do this by appending _2, _3, ... to repeated titles.
 	So we need to keep track of how many occurenced of
-	each title we have seen so far.  The ppropriate data 
+	each title we have seen so far.  The appropriate data 
 	structure is an associative array or hashmap, but 
 	we don't really want to add another dependancy to the
 	package; so we use the limited features of the POSIX 
@@ -756,6 +756,12 @@ extern int pssvg(pssvg_opt_t opt)
       return 1;
     case GRD5_READ_PARSE:
       fprintf(stderr, "failed to parse input\n");
+      return 1;
+    case GRD5_READ_NOT_GRD:
+      fprintf(stderr, "not a GRD file\n");
+      return 1;
+    case GRD5_READ_NOT_GRD5:
+      fprintf(stderr, "not a PhotoShop GRD file\n");
       return 1;
     case GRD5_READ_MALLOC:
       fprintf(stderr, "out of memory\n");
