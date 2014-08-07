@@ -209,8 +209,6 @@ def convert(ipath, opath, opt) :
     global delfiles
     global deldirs
 
-    verbose, subopts, ifmt, ofmt, burst = opt
-
     # for the intermediate filenames; use the basename
     # of the input file, but make the file location
     # in a tmpname() directory (so that we won't stomp on
@@ -222,17 +220,17 @@ def convert(ipath, opath, opt) :
     # Here we handle the multiple-gradient files, although this
     # is a bit convoluted it is much less messy than my attempt
     # to do this in a generic fashion; we'd not expect to support
-    # any other multi-gradient formats in any case
+    # many other multi-gradient formats in any case
 
-    if burst : 
+    if opt['burst'] : 
 
         # basename used in the title, so make it meaningful,
         # we don't take it from the output (as that will ba a 
         # directory, and may well be ".")
 
-        basename = os.path.splitext( os.path.split(ipath)[1] )[0]
+        basename = os.path.splitext( os.path.split( opt['ipath'] )[1] )[0]
 
-        if ifmt == 'grd' :
+        if opt['ifmt'] == 'grd' :
 
             # input is a single grd file, convert it to a single 
             # svg file with muliple gradients; then call convert()
@@ -241,27 +239,29 @@ def convert(ipath, opath, opt) :
             # counting the gradient to reduce the redundant zeros
 
             svgmulti = "%s/%s.svg" % (tempdir, basename)  
-            clist = ['pssvg', '-o', svgmulti, ipath]
-            if verbose :
+            clist = ['pssvg', '-o', svgmulti, opt['ipath']]
+            if opt['verbose'] :
                 print "  %s" % (" ".join(clist))
             if subprocess.call(clist) != 0 :
                 print "failed call to %s : aborting" % (clist[0])
                 return False
             delfiles.append(svgmulti)
 
-            opt2 = (verbose, subopts, 'svg', ofmt, True)
-            return convert(svgmulti, opath, opt2)
+            opt['ifmt']  = 'svg'
+            opt['burst'] = True
 
-        elif ifmt == 'svg' :
+            return convert(svgmulti, opath, opt)
+
+        elif opt['ifmt'] == 'svg' :
 
             # input is a single svg file (which may be from the 
             # case above, or an original infile).
 
-            if ofmt == 'svg' :
+            if opt['ofmt'] == 'svg' :
                 # final output is svg, burst to output directory
                 clist = ['svgsvg', '-o', opath, '-a', ipath]
-                clist.extend(subopts['svgsvg'])
-                if not run_clist(clist, opath, verbose) :
+                clist.extend(opt['subopts']['svgsvg'])
+                if not run_clist(clist, opath, opt['verbose']) :
                     return False
             else :
                 # final output is not svg, so burst into a temp
@@ -271,15 +271,16 @@ def convert(ipath, opath, opt) :
                 os.mkdir(svgdir)
                 deldirs.append(svgdir)
                 clist = ['svgsvg', '-o', svgdir, '-a', ipath]
-                if not run_clist(clist, None, verbose) :
+                if not run_clist(clist, None, opt['verbose']) :
                     return False
+                opt['ifmt']  = 'svg'
+                opt['burst'] = False
                 for svg in os.listdir(svgdir) :
                     svgbase = os.path.splitext(svg)[0]
                     ipath2 = "%s/%s" % (svgdir, svg)
-                    opath2 = "%s/%s.%s" % (opath, svgbase, gexts[ofmt])
-                    opts2  = (verbose, subopts, 'svg', ofmt, False)             
+                    opath2 = "%s/%s.%s" % (opath, svgbase, gexts[opt['ofmt']])
                     delfiles.append(ipath2)
-                    if not convert(ipath2, opath2, opts2) :
+                    if not convert(ipath2, opath2, opt) :
                         return False
             return True
 
@@ -299,10 +300,10 @@ def convert(ipath, opath, opt) :
 
     cdlist = []
 
-    callpath = shortest_path(gdgraph, ifmt, ofmt)
+    callpath = shortest_path(gdgraph, opt['ifmt'], opt['ofmt'])
 
     if callpath is None :
-        print "cannot convert %s to %s yet, sorry" % (ifmt, ofmt)
+        print "cannot convert %s to %s yet, sorry" % (opt['ifmt'], opt['ofmt'])
         formats_supported(gajmat, gnames)
         return None
 
@@ -312,7 +313,6 @@ def convert(ipath, opath, opt) :
             'totype'   : t1,
             'program'  : gajmat[t0][t1]
             }
-
         cdlist.append(cd)
 
     # add input/output filenames
@@ -342,10 +342,10 @@ def convert(ipath, opath, opt) :
         frompath = cd['frompath']
 
         clist = [program, '-o', topath]
-        clist.extend(subopts[program])
+        clist.extend(opt['subopts'][program])
         clist.append(frompath)
 
-        if not run_clist(clist, topath, verbose) :
+        if not run_clist(clist, topath, opt['verbose']) :
             return False
 
     return True
@@ -368,6 +368,7 @@ def usage() :
     print " -T rgb      : transparency (cpt, gpt, sao)"
     print " -v          : verbose"
     print " -V          : version"
+    print " -z          : zip multiple gradients"
     print "the type in brackets indicates the file type affected"
     print
 
@@ -393,7 +394,7 @@ def main() :
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "Bb:cf:g:hi:m:n:o:pT:vV",
+                                   "Bb:cf:g:hi:m:n:o:pT:vVz",
                                    ["burst",
                                     "background=",
                                     "capabilities",
@@ -407,7 +408,8 @@ def main() :
                                     "preview"
                                     "transparency=",
                                     "verbose",
-                                    "version"])
+                                    "version",
+                                    "zip"])
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -418,6 +420,7 @@ def main() :
     ifmt    = None
     ofmt    = None
     burst   = False
+    zipped  = False
     subopts = dict((p, []) for p in programs)
 
     # progs_<x> accept the -<x> option
@@ -461,6 +464,8 @@ def main() :
             assert ifmt, "no such input format: %s" % (a)
         elif o in ("-v", "--verbose") :
             verbose = True
+        elif o in ("-z", "--zip") :
+            zipped = True
         else:
             assert False, "unhandled option"
 
@@ -480,6 +485,9 @@ def main() :
         ifmt = gradtype(ipath)
 
     if ofmt is None :
+        if burst or zipped :
+            print "Output format must be specified (see -o option)"
+            sys.exit(1)
         ofmt = gradtype(opath)
     
     if verbose :
@@ -489,7 +497,12 @@ def main() :
         print "  %s" % (opath)
         print "call sequence:"
 
-    opt = (verbose, subopts, ifmt, ofmt, burst)
+    opt = { 'verbose' : verbose, 
+            'subopts' : subopts, 
+            'ifmt'    : ifmt, 
+            'ofmt'    : ofmt, 
+            'burst'   : burst, 
+            'zipped'  : zipped }
 
     success = convert(ipath, opath, opt)
 

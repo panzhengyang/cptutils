@@ -38,6 +38,7 @@
   <arg choice='opt'>-T <replaceable>rgb</replaceable></arg>
   <arg choice='opt'>-v </arg>
   <arg choice='opt'>-V </arg>
+  <arg choice='opt'>-z </arg>
   <arg choice='plain'><replaceable>infile</replaceable></arg>
   <arg choice='plain'><replaceable>outfile</replaceable></arg>
 </cmdsynopsis>
@@ -152,17 +153,45 @@
 
   <xi:include href="../docbook/varlistentry-version.xml"/>
 
+  <varlistentry>
+    <term>
+      <option>-z</option>, <option>--zip</option>
+    </term>
+    <listitem>
+      <para>
+	For input formats which may contain mutliple gradients
+	(grd, svg) the <option>-z</option> extracts all of the
+	gradients and zips them up.  Thus it can be veiwed as
+	similar to the burst option (<option>-B</option>).  
+	The zipfile to be created should be the final argument 
+	and when unzipped it will create a directory (containing 
+	the converted gradients) with the same name as the file 
+	with the <literal>.zip</literal> extension removed.
+      </para>
+    </listitem>
+  </varlistentry>
+
+
 </variablelist>
 </refsect1>
 
 <refsect1 id='examples'><title>EXAMPLES</title>
 
 <para>
-  Convert an Arcview Legend to a 200x20 pixel PNG image
+  Convert an Arcview Legend to a 200x20 pixel PNG image:
 </para>
 
 <programlisting>
   gradient-convert -v -g 200x20 legend.avl legend.png 
+</programlisting>
+
+<para>
+  Convert all gradients in a PhotoShop gradient to GMT
+  cpt files in a zipfile:
+</para>
+
+<programlisting>
+  gradient-convert -v -i grd -o cpt -z froob.grd froob.zip 
 </programlisting>
 
 </refsect1>
