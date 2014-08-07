@@ -3,7 +3,7 @@
 # python wrapper script for cptutils
 # Copyright (c) J.J. Green 2012, 2014
 
-import os, sys, getopt, tempfile, subprocess, atexit
+import os, sys, getopt, tempfile, subprocess, atexit, zipfile
 
 # version string, set by sed
 
@@ -222,13 +222,41 @@ def convert(ipath, opath, opt) :
     # to do this in a generic fashion; we'd not expect to support
     # many other multi-gradient formats in any case
 
-    if opt['burst'] : 
+    if opt['zipped'] :
+
+        # first call with burst to create the files in tempdir
+
+        opt['burst']  = True
+        opt['zipped'] = False
+        convert(ipath, tempdir, opt)
+
+        # now zip the results
+
+        if opt['verbose'] :
+            print "creating zipfile"
+
+        arcdir = os.path.splitext( os.path.split( opath )[1] )[0]
+
+        zf = zipfile.ZipFile(opath, mode='w')
+
+        try:
+            for f in os.listdir(tempdir) :
+                ipath  = "%s/%s" % (tempdir, f)
+                apath  = "%s/%s" % (arcdir, f)
+                zf.write(ipath, arcname=apath)
+                delfiles.append(ipath)
+        finally:
+            zf.close()
+
+        return True
+
+    elif opt['burst'] : 
 
         # basename used in the title, so make it meaningful,
         # we don't take it from the output (as that will ba a 
         # directory, and may well be ".")
 
-        basename = os.path.splitext( os.path.split( opt['ipath'] )[1] )[0]
+        basename = os.path.splitext( os.path.split( ipath )[1] )[0]
 
         if opt['ifmt'] == 'grd' :
 
@@ -239,7 +267,7 @@ def convert(ipath, opath, opt) :
             # counting the gradient to reduce the redundant zeros
 
             svgmulti = "%s/%s.svg" % (tempdir, basename)  
-            clist = ['pssvg', '-o', svgmulti, opt['ipath']]
+            clist = ['pssvg', '-o', svgmulti, ipath]
             if opt['verbose'] :
                 print "  %s" % (" ".join(clist))
             if subprocess.call(clist) != 0 :
