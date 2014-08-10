@@ -230,6 +230,14 @@ def convert(ipath, opath, opt) :
         opt['zipped'] = False
         convert(ipath, tempdir, opt)
 
+        # number of file created by burst
+
+        nburst = len([f for f in os.listdir(tempdir)])
+
+        if nburst == 0 :
+            print "nothing to zip"
+            return False
+
         # now zip the results
 
         if opt['verbose'] :
