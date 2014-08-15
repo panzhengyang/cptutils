@@ -228,7 +228,9 @@ def convert(ipath, opath, opt) :
 
         opt['burst']  = True
         opt['zipped'] = False
-        convert(ipath, tempdir, opt)
+
+        if not convert(ipath, tempdir, opt) :
+            return False
 
         # number of file created by burst
 
