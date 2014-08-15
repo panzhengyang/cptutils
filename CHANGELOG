@@ -2,6 +2,8 @@ Changes
 
 1.56 (pending)
   - gradient-convert -z does not make empty zipfiles
+  - gradient-convert -z returns correct error-code
+  - configure checks that compiler flags are handled
 
 1.55 (10 Aug 2014)
   - added -z (zip) option to gradient-convert
