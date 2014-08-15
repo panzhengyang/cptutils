@@ -3,12 +3,19 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(cptutils, 1.55, j.j.green@gmx.fr)
 
 m4_include([m4/ax_check_define.m4])
-
-CFXTRA="-Wall"
+m4_include([m4/ax_check_compile_flag.m4])
 
 dnl Checks for programs.
 
 AC_PROG_CC
+
+AX_CHECK_COMPILE_FLAG([-Wall], 
+	AC_SUBST(CFEXTRA, [-Wall]),
+	AC_SUBST(CFEXTRA, []))
+AX_CHECK_COMPILE_FLAG([-Wno-unused-but-set-variable],
+	AC_SUBST(CFNUBS, [-Wno-unused-but-set-variable]),
+	AC_SUBST(CFNUBS, []))
+
 AC_PROG_CC_STDC
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
