@@ -324,7 +324,7 @@ def convert(ipath, opath, opt) :
 
     # basename for non-burst is only used in temporary files
 
-    basename = "cptutils"
+    basename = os.path.splitext( os.path.split( opath )[1] )[0]
 
     # create the system-call sequence, first we create
     # a list of dictionaries of call data
