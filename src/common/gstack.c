@@ -33,26 +33,26 @@ static int gstack_expand(gstack_t*);
 extern gstack_t* gstack_new(size_t size,int initial,int inc)
 {
   gstack_t* gstack;
-  void* data;
 
-  if ((gstack = malloc(sizeof(gstack_t))) == NULL)
-    return NULL;
-
-  if (initial>0)
+  if ((gstack = malloc(sizeof(gstack_t))) != NULL)
     {
-      if ((data = malloc(size*initial)) == NULL)
-	return NULL;
+      void* data = NULL;
+
+      if ((initial == 0) || ((data = malloc(size*initial)) != NULL))
+	{
+	  gstack->size  = size;
+	  gstack->alloc = initial;
+	  gstack->inc   = inc;
+	  gstack->n     = 0;
+	  gstack->data  = data;
+
+	  return gstack;
+	}
+
+      free(gstack);
     }
-  else
-    data = NULL;
-
-  gstack->size  = size;
-  gstack->alloc = initial;
-  gstack->inc   = inc;
-  gstack->n     = 0;
-  gstack->data  = data;
-
-  return gstack;
+  
+  return NULL;
 }
 
 /*
