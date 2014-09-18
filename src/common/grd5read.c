@@ -174,39 +174,33 @@ static grd5_string_t* parse_grd5_string(FILE *stream,
       break;
     default:
       *perr = GRD5_READ_BUG;
+      return NULL;
     }
 
   char *content;
 
   if ((content = malloc(len)) == NULL)
+    *perr = GRD5_READ_MALLOC;
+  else
     {
-      *perr = GRD5_READ_MALLOC;
-      return NULL;
-    }
+      if (fread(content, 1, len, stream) != len)
+	*perr = GRD5_READ_FREAD;
+      else
+	{
+	  grd5_string_t* gstr;
 
-  if (fread(content, 1, len, stream) != len)
-    {
-      *perr = GRD5_READ_FREAD;
-      goto cleanup_content;
-    }
+	  if ((gstr = malloc(sizeof(grd5_string_t))) == NULL)
+	    *perr = GRD5_READ_MALLOC;
+	  else
+	    {
+	      gstr->len     = len;
+	      gstr->content = content;
+	      return gstr;
+	    }
+	}
+      free(content);
+    }  
 
-  grd5_string_t* gstr;
-
-  if ((gstr = malloc(sizeof(grd5_string_t))) == NULL)
-    {
-      *perr = GRD5_READ_MALLOC;
-      goto cleanup_content;
-    }
-
-  gstr->len     = len;
-  gstr->content = content;
-
-  return gstr;
-
- cleanup_content:
-  
-  free(content);
-  
   return NULL;
 }
 
@@ -360,8 +354,8 @@ static int parse_enum(FILE *stream,
 	  *psubname = subname;
 	  return GRD5_READ_OK; 
 	}
-      else
-	grd5_string_destroy(name);
+
+      grd5_string_destroy(name);
     }
 
   return err;
@@ -556,7 +550,7 @@ static int parse_GrdF_GrdF(FILE *stream, grd5_string_t **pgtype)
 static int parse_Type_Clry(FILE *stream, grd5_string_t **pctype)
 {
   int err;
-  grd5_string_t *name, *subname = NULL;
+  grd5_string_t *name = NULL, *subname = NULL;
 
   if ((err = parse_enum(stream, "Type", &name, &subname)) != GRD5_READ_OK)
     return err;
