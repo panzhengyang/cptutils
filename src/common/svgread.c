@@ -231,7 +231,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
       if (node->type != XML_ELEMENT_NODE) continue;
 	
-      if (strcmp((const char*)node->name,"stop") != 0)
+      if (strcmp((const char*)node->name, "stop") != 0)
 	{
 	  fprintf(stderr,"unexpected %s node\n",node->name);
 	  continue;	  
@@ -241,73 +241,79 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
       stop = node;
 
+      int err = 0;
+
       /* offset is required */
 
       if ((offset = xmlGetProp(stop,(const unsigned char*)"offset")) == NULL)
 	{
 	  fprintf(stderr,"stop has no offset attribute, skipping\n");
+	  err++;
 	}
       else
 	{
 	  double z, op = 1.0;
-	  rgb_t rgb;
+	  rgb_t rgb = {0};
 
-	  if (parse_offset((char*)offset,&z) != 0)
+	  if (parse_offset((char*)offset, &z) != 0)
 	    {
-	      fprintf(stderr,"failed to parse offset \"%s\"\n",offset);
+	      fprintf(stderr,"failed to parse offset \"%s\"\n", offset);
+	      err++;
 	    }      
 	  else
 	    {
-	      xmlChar *colour,*opacity,*style;
-	      svg_stop_t svgstop;
-
-	      if ((colour = xmlGetProp(stop,(const unsigned char*)"stop-color")) != NULL)
-		{
-		  if (parse_colour((char*)colour, &rgb, &op) != 0)
-		    {
-		      fprintf(stderr,"failed on bad colour : %s\n",colour);
-		      return 1;
-		    }
-
-		  xmlFree(colour);
-		}
+	      xmlChar *colour, *opacity, *style;
 
 	      if ((style = xmlGetProp(stop,(const unsigned char*)"style")) != NULL)
 		{
 		  if (parse_style((char*)style, &rgb, &op) != 0)
 		    {
-		      fprintf(stderr,"error parsing stop style \"%s\"\n",style);
-		      return 1;
+		      fprintf(stderr, "error parsing stop style \"%s\"\n", style);
+		      err++;
 		    }
 
 		  xmlFree(style);
 		}
 
-	      if ((opacity = xmlGetProp(stop,(const unsigned char*)"stop-opacity")) != NULL)
+	      if ((colour = xmlGetProp(stop, (const unsigned char*)"stop-color")) != NULL)
 		{
-		  if (parse_opacity((char*)opacity,&op) != 0)
+		  if (parse_colour((char*)colour, &rgb, &op) != 0)
 		    {
-		      fprintf(stderr,"problem parsing opacity \"%s\"\n",opacity);
-		      return 1;
+		      fprintf(stderr, "failed on bad colour : %s\n", colour);
+		      err++;
 		    }
+		  
+		  xmlFree(colour);
+		}
 
+	      if ((opacity = xmlGetProp(stop, (const unsigned char*)"stop-opacity")) != NULL)
+		{
+		  if (parse_opacity((char*)opacity, &op) != 0)
+		    {
+		      fprintf(stderr,"problem parsing opacity \"%s\"\n", opacity);
+		      err++;
+		    }
+		  
 		  xmlFree(opacity);
 		}
 
-	      /* need to check we have everything, assume it for now */
-
-	      svgstop.value   = z;
-	      svgstop.opacity = op;
-	      svgstop.colour  = rgb;
-	      
-	      if (svg_append(svgstop, svg) != 0)
+	      if ( ! err )
 		{
-		  fprintf(stderr,"failed to insert stop\n");
-		  return 1;
+		  svg_stop_t svgstop = { .value   = z,
+					 .opacity = op,
+					 .colour  = rgb };
+		  if (svg_append(svgstop, svg) != 0)
+		    {
+		      fprintf(stderr,"failed to insert stop\n");
+		      err;
+		    }
 		}
-	    }
-	
+	    }	
+
 	  xmlFree(offset);
+
+	  if (err)
+	    return 1;
 	}
     }
 
@@ -374,7 +380,7 @@ static int parse_style(const char *style,rgb_t* rgb,double* opacity)
   return 0;
 }
 
-static int parse_style_statement(const char *stmnt,rgb_t* rgb,double* opacity)
+static int parse_style_statement(const char *stmnt, rgb_t* rgb, double* opacity)
 {
   size_t sz = strlen(stmnt);
   char buf[sz+1],*key,*val,*state;
@@ -414,7 +420,7 @@ static int parse_colour_numeric2(const char*);
 
 static char* whitespace_trim(char*,int*); 
 
-static int parse_colour(char *st,rgb_t *rgb,double *opacity)
+static int parse_colour(char *st, rgb_t *rgb, double *opacity)
 {
   struct stdcol_t *p;
   int r,g,b;
