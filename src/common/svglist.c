@@ -22,18 +22,24 @@ struct svg_list_t
 extern svg_list_t* svg_list_new(void)
 {
   svg_list_t *list;
-  svg_t *svg;
 
-  list = malloc(sizeof(svg_list_t));
-  svg  = malloc(sizeof(svg_t)*LIST_INI);
+  if ((list = malloc(sizeof(svg_list_t))) != NULL)
+    {
+      svg_t *svg;
 
-  if ( ! (list && svg) ) return NULL;
+      if ((svg = malloc(sizeof(svg_t)*LIST_INI)) != NULL)
+	{
+	  list->svg   = svg;
+	  list->alloc = LIST_INI;
+	  list->n     = 0;
 
-  list->svg   = svg;
-  list->alloc = LIST_INI;
-  list->n     = 0;
+	  return list;
+	}
 
-  return list;
+      free(list);
+    }
+
+  return NULL;
 }
 
 extern void svg_list_destroy(svg_list_t* list)

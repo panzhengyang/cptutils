@@ -3,7 +3,7 @@
 # run scan-build (clang) static analysis and dump the
 # results in the parent-directory
 
-SCAN_RESULTS="/tmp"
+SCAN_RESULTS="/tmp/scan-build"
 
 if [ -e Makefile ]
 then

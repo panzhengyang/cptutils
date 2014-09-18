@@ -9,16 +9,20 @@ extern png_t* png_new(size_t w, size_t h)
 {
   png_t *png;
 
-  if ((png = malloc(sizeof(png_t))) == NULL) return NULL;
+  if ((png = malloc(sizeof(png_t))) != NULL)
+    {
+      if ((png->row = malloc(4 * w)) != NULL)
+	{
+	  png->width  = w;
+	  png->height = h;
 
-  png->width  = w;
-  png->height = h;
+	  return png;
+	}
 
-  png->row = malloc(4 * w);
-
-  if (png->row == NULL) return NULL;
+      free(png);
+    }
  
-  return png;
+  return NULL;
 }
 
 extern void png_destroy(png_t* png)

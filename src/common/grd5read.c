@@ -890,19 +890,28 @@ static int parse_transp_stop(FILE *stream, grd5_transp_stop_t *stop)
   
   if ((objc = parse_objc(stream, &err)) == NULL)
     return err;
-  
-  uint32_t ncomp = objc->value;
 
-  if (ncomp != 3)
+  err = GRD5_READ_OK;
+  uint32_t ncomp; 
+
+  if ((ncomp = objc->value) != 3)
     {
       debug_error("can't handle %i component transparency stop\n", ncomp);
-      return GRD5_READ_PARSE;
+      err = GRD5_READ_PARSE;
+    }
+  else
+    {
+      if (! typename_matches(objc->name.type, "TrnS"))
+	{
+	  debug_error("expected type TrnS, got %s\n", objc->name.type);
+	  err = GRD5_READ_PARSE;
+	}
     }
 
-  if (! typename_matches(objc->name.type, "TrnS"))
-    return GRD5_READ_PARSE;
-
   objc_destroy(objc);
+
+  if (err != GRD5_READ_OK)
+    return err;
 
   if ((err = parse_Opct(stream, &(stop->Opct))) != GRD5_READ_OK)
     return err;
