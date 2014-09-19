@@ -16,18 +16,19 @@ OBJID   = ident.o identtab.o
 OBJODB  = odbbridge.o odb.o odbscan.o odbparse.o 
 OBJSAO  = sao.o saowrite.o
 OBJUTF8 = utf8.o
+OBJBT   = btrace.o
 
 CFLAGS += 
 LDLIBS +=
 
 CPTULIBS = libfill.a libcpt.a libggr.a libgrd3.a libgrd5.a libgrdx.a \
 	libgstk.a libsvg.a libpov.a libident.a libodb.a libgpt.a \
-	libcss3.a libsao.a libutf8.a
+	libcss3.a libsao.a libutf8.a libbt.a
 
 RUBBISH +=  $(CPTULIBS) $(OBJFILL) $(OBJCPT) $(OBJGGR) \
 	   $(OBJGRD3) $(OBJGRD5) $(OBJGRDX) \
 	   $(OBJSVG) $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3) \
-	   $(OBJSAO) $(OBJGSTK) $(OBJUTF8)
+	   $(OBJSAO) $(OBJGSTK) $(OBJUTF8) $(OBJBT)
 
 default : all
 
@@ -97,6 +98,9 @@ libsao.a : $(OBJSAO)
 
 libutf8.a : $(OBJUTF8)
 	ar r libutf8.a $(OBJUTF8)
+
+libbt.a : $(OBJBT)
+	ar r libbt.a $(OBJBT)
 
 include ../Common.mk
 
