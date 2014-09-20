@@ -305,7 +305,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 		  if (svg_append(svgstop, svg) != 0)
 		    {
 		      fprintf(stderr,"failed to insert stop\n");
-		      err;
+		      err++;
 		    }
 		}
 	    }	
