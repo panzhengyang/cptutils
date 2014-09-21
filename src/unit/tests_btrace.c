@@ -104,10 +104,10 @@ extern void test_btrace_print_plain(void)
   CU_TEST_FATAL( (stream = fopen(path, "r")) != NULL );
   CU_TEST_FATAL( fread(msg, 1, msg_size, stream) == msg_size );
   CU_TEST_FATAL( fclose(stream) == 0 );
-  
-  CU_ASSERT( strncmp(msg, MESSAGE, msg_size) == 0 );
 
   unlink(path);
+  
+  CU_ASSERT( strncmp(msg, MESSAGE, msg_size) == 0 );
 }
 
 /* just a stub at present -- needs a XML validation */
