@@ -122,21 +122,60 @@ extern void btrace_add_real(const char* file, int line, const char* format, ...)
   btrace_register(file, line, buffer);
 }
 
-static void btrace_line_print_plain(FILE *stream, btrace_line_t *btl)
+/* print plain format */
+
+static void line_print_plain(FILE *stream, btrace_line_t *btl)
 {
   fprintf(stream, "%s (%s %i)\n", btl->message, btl->file, btl->line);
 }
 
-static void btrace_lines_print_plain(FILE *stream, btrace_line_t *btl)
+static void lines_print_plain(FILE *stream, btrace_line_t *btl)
 {
   if (btl)
     {
-      btrace_lines_print_plain(stream, btl->next);
-      btrace_line_print_plain(stream, btl);
+      lines_print_plain(stream, btl->next);
+      line_print_plain(stream, btl);
     }
+}
+
+static void print_plain(FILE *stream, btrace_t *bt)
+{
+  lines_print_plain(stream, bt->lines);
 }
 
 extern void btrace_print_plain(FILE *stream)
 {
-  btrace_lines_print_plain(stream, btrace_global.lines);
+  print_plain(stream, &(btrace_global));
+}
+
+/* print XML format */
+
+static void line_print_xml(FILE *stream, btrace_line_t *btl)
+{
+  fprintf(stream, "<message file='%s' line='%i'>%s</message>\n", 
+	  btl->file, btl->line, btl->message);
+}
+
+static void lines_print_xml(FILE *stream, btrace_line_t *btl)
+{
+  if (btl)
+    {
+      lines_print_xml(stream, btl->next);
+      line_print_xml(stream, btl);
+    }
+}
+
+static void print_xml(FILE *stream, btrace_t *bt)
+{
+  if (bt->lines)
+    {
+      fprintf(stream, "<backtrace>\n");
+      lines_print_xml(stream, bt->lines);
+      fprintf(stream, "</backtrace>\n");
+    }
+}
+
+extern void btrace_print_xml(FILE *stream)
+{
+  print_xml(stream, &btrace_global);
 }

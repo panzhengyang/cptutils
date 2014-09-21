@@ -16,5 +16,6 @@ extern void test_btrace_disable(void);
 extern void test_btrace_count(void);
 extern void test_btrace_add(void);
 extern void test_btrace_print_plain(void);
+extern void test_btrace_print_xml(void);
 
 #endif

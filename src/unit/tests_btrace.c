@@ -15,6 +15,7 @@ CU_TestInfo tests_btrace[] =
     {"count",       test_btrace_count},
     {"add",         test_btrace_add},
     {"print plain", test_btrace_print_plain},
+    {"print XML",   test_btrace_print_xml},
     CU_TEST_INFO_NULL,
   };
 
@@ -79,7 +80,7 @@ extern void test_btrace_add(void)
 
 #define MESSAGE "a message"
 
-extern void test_btrace_print_plain()
+extern void test_btrace_print_plain(void)
 {
   char *path;
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
@@ -105,6 +106,29 @@ extern void test_btrace_print_plain()
   CU_TEST_FATAL( fclose(stream) == 0 );
   
   CU_ASSERT( strncmp(msg, MESSAGE, msg_size) == 0 );
+
+  unlink(path);
+}
+
+/* just a stub at present -- needs a XML validation */
+
+extern void test_btrace_print_xml(void)
+{
+  char *path;
+  CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
+
+  btrace_enable();
+  btrace_add(MESSAGE);
+  
+  FILE *stream;
+  CU_TEST_FATAL( (stream = fopen(path, "w")) != NULL );
+
+  btrace_print_xml(stream);
+
+  CU_TEST_FATAL( fclose(stream) == 0 );
+  
+  btrace_reset();
+  btrace_disable();
 
   unlink(path);
 }
