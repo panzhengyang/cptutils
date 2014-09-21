@@ -3,6 +3,7 @@
   Copyright (c) J.J. Green 2014
 */
 
+#include <unistd.h>
 #include <btrace.h>
 #include "tests_btrace.h"
 
@@ -13,7 +14,7 @@ CU_TestInfo tests_btrace[] =
     {"disable",     test_btrace_disable},
     {"count",       test_btrace_count},
     {"add",         test_btrace_add},
-    // {"print plain", test_btrace_print_plain},
+    {"print plain", test_btrace_print_plain},
     CU_TEST_INFO_NULL,
   };
 
@@ -71,22 +72,39 @@ extern void test_btrace_add(void)
   btrace_disable();
 }
 
+/*
+  print_plain should print lines to the specifed FILE 
+  and the lines should start with the message added
+*/
+
+#define MESSAGE "a message"
+
 extern void test_btrace_print_plain()
 {
   char *path;
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
+
+  btrace_enable();
+  btrace_add(MESSAGE);
   
   FILE *stream;
   CU_TEST_FATAL( (stream = fopen(path, "w")) != NULL );
 
-  btrace_enable();
-  btrace_add("no arguments");
   btrace_print_plain(stream);
 
   CU_TEST_FATAL( fclose(stream) == 0 );
-
-  /* check file is not empty */
   
   btrace_reset();
   btrace_disable();
+
+  size_t msg_size = strlen(MESSAGE);
+  char msg[msg_size];
+
+  CU_TEST_FATAL( (stream = fopen(path, "r")) != NULL );
+  CU_TEST_FATAL( fread(msg, 1, msg_size, stream) == msg_size );
+  CU_TEST_FATAL( fclose(stream) == 0 );
+  
+  CU_ASSERT( strncmp(msg, MESSAGE, msg_size) == 0 );
+
+  unlink(path);
 }
