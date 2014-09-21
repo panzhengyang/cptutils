@@ -13,10 +13,11 @@ extern void btrace_enable(void);
 extern void btrace_disable(void);
 extern bool btrace_is_enabled(void);
 
-extern void btrace_reset(void);
-extern void btrace_print_plain(FILE*);
-extern void btrace_print_json(FILE*);
-extern void btrace_add_real(const char* file, int line, const char*, ...);
+extern void   btrace_reset(void);
+extern size_t btrace_count(void);
+extern void   btrace_print_plain(FILE*);
+extern void   btrace_print_json(FILE*);
+extern void   btrace_add_real(const char* file, int line, const char*, ...);
 
 #define btrace_add(...) btrace_add_real(__FILE__, __LINE__, __VA_ARGS__)
 

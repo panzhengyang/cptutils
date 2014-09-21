@@ -100,6 +100,16 @@ extern void btrace_reset(void)
   btrace_global.lines = NULL;
 }
 
+static size_t btrace_count_lines(btrace_line_t *btl)
+{
+  return btl == NULL ? 0 : btrace_count_lines(btl->next) + 1;
+}
+
+extern size_t btrace_count(void)
+{
+  return btrace_count_lines(btrace_global.lines);
+}
+
 extern void btrace_add_real(const char* file, int line, const char* format, ...)
 {
   char buffer[512];
