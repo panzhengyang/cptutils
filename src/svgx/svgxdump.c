@@ -12,20 +12,22 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "svgxdump.h"
+#include <btrace.h>
+#include <cpt.h>
+#include <cptwrite.h>
+#include <ggr.h>
+#include <povwrite.h>
+#include <gptwrite.h>
+#include <css3write.h>
+#include <grd3write.h>
+#include <saowrite.h>
+#include <svgwrite.h>
+#include <utf8.h>
 
-#include "cpt.h"
-#include "cptwrite.h"
-#include "ggr.h"
-#include "povwrite.h"
-#include "gptwrite.h"
-#include "css3write.h"
-#include "grd3write.h"
-#include "saowrite.h"
+// FIXME - move to common
 #include "pngwrite.h"
-#include "svgwrite.h"
-#include "utf8.h"
 
+#include "svgxdump.h"
 #include "utf8x.h"
 
 /*
@@ -73,13 +75,13 @@ static int call_autonamed(const svg_t *svg,
 
   if (snprintf(file, n, "%s.%s", name, suffix) >= n)
     {
-      fprintf(stderr,"filename truncated! %s\n",file);
+      btrace_add("filename truncated! %s", file);
       return 1;
     }
 
   if (posixify(file) != 0)
     {
-      fprintf(stderr,"failed to create POSIX filename\n");
+      btrace_add("failed to create POSIX filename");
       return 0;
     }
 
@@ -95,7 +97,7 @@ static int call_autonamed(const svg_t *svg,
 
       if (snprintf(path, m, "%s/%s", opt->output.file, file) >= m)
 	{
-	  fprintf(stderr,"filename truncated! %s\n", path);
+	  btrace_add("filename truncated! %s", path);
 	  return 1;
 	}
 
@@ -149,7 +151,7 @@ static int svgcpt(const svg_t *svg, cpt_t *cpt)
 
 	  if ((seg = cpt_seg_new()) == NULL)
 	    {
-	      fprintf(stderr,"failed to create cpt segment\n");
+	      btrace_add("failed to create cpt segment");
 	      return 1;
 	    }
 
@@ -164,7 +166,7 @@ static int svgcpt(const svg_t *svg, cpt_t *cpt)
 
 	  if (cpt_append(seg,cpt) != 0)
 	    {
-	      fprintf(stderr,"failed to append segment\n");
+	      btrace_add("failed to append segment");
 	      return 1;
 	    }
 	}
@@ -187,7 +189,7 @@ extern int svgcpt_dump(const svg_t *svg, svgx_opt_t *opt)
 
   if ((cpt = cpt_new()) == NULL)
     {
-      fprintf(stderr,"failed to create cpt structure\n");
+      btrace_add("failed to create cpt structure");
       return 1;
     }
 
@@ -203,13 +205,13 @@ extern int svgcpt_dump(const svg_t *svg, svgx_opt_t *opt)
   
   if (svgcpt(svg,cpt) != 0)
     {
-      fprintf(stderr,"failed to convert %s to cpt\n",name);
+      btrace_add("failed to convert %s to cpt", name);
       return 1;
     }
 
   if (cpt_write(file,cpt) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -306,19 +308,19 @@ extern int svgggr_dump(const svg_t *svg, svgx_opt_t *opt)
 
   if ((ggr = grad_new_gradient()) == NULL)
     {
-      fprintf(stderr,"failed to create ggr structure\n");
+      btrace_add("failed to create ggr structure");
       return 1;
     }
 
   if (svgggr(svg,ggr) != 0)
     {
-      fprintf(stderr,"failed to convert %s to cpt\n",name);
+      btrace_add("failed to convert %s to cpt", name);
       return 1;
     }
 
   if (grad_save_gradient(ggr,file) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -343,10 +345,9 @@ static int svgpov_valid(const svg_t *svg, int permissive, int verbose)
 	}
       else
 	{
-	  fprintf(stderr,
-		  "format limit: POV-ray allows no more than %i stops,\n"
-		  "but this gradient has %i\n",
-		  POV_STOPS_MAX, m);
+	  btrace_add("format limit: POV-ray allows no more than %i stops, "
+		     "but this gradient has %i",
+		     POV_STOPS_MAX, m);
 
 	  return 0;
 	}
@@ -354,7 +355,7 @@ static int svgpov_valid(const svg_t *svg, int permissive, int verbose)
   
   if (m < 2)
     {
-      fprintf(stderr,"found %i stops, but at least 2 required\n",m);
+      btrace_add("found %i stops, but at least 2 required", m);
       return 0;
     }
   
@@ -372,13 +373,13 @@ static int svgpov(const svg_t *svg, pov_t *pov)
   
   if (m < 2)
     {
-      fprintf(stderr,"bad number of stops : %i\n",m);
+      btrace_add("bad number of stops : %i", m);
       return 1;
     }
 
   if (pov_stops_alloc(pov,m) != 0)
     {
-      fprintf(stderr,"failed alloc for %i stops\n",m);
+      btrace_add("failed alloc for %i stops", m);
       return 1;
     }
 
@@ -394,7 +395,7 @@ static int svgpov(const svg_t *svg, pov_t *pov)
 
       if (rgb_to_rgbD(rgb,c) != 0)
 	{
-	  fprintf(stderr,"failed conversion to rgbD\n");
+	  btrace_add("failed conversion to rgbD");
 	  return 1;
 	}
       
@@ -402,7 +403,7 @@ static int svgpov(const svg_t *svg, pov_t *pov)
       
       if ((t < 0.0) || (t > 1.0))
 	{
-	  fprintf(stderr,"bad value for transparency : %f\n",t);
+	  btrace_add("bad value for transparency : %f", t);
 	  return 1;
 	}
       
@@ -410,7 +411,7 @@ static int svgpov(const svg_t *svg, pov_t *pov)
 
       if ((z < 0.0) || (z > 1.0))
 	{
-	  fprintf(stderr,"bad z value : %f\n",t);
+	  btrace_add("bad z value : %f", t);
 	  return 1;
 	}
       
@@ -426,9 +427,8 @@ static int svgpov(const svg_t *svg, pov_t *pov)
 
   if (n != m)
     {
-      fprintf(stderr,
-	      "missmatch between stops expected (%i) and found (%i)\n",
-	      m,n);
+      btrace_add("missmatch between stops expected (%i) and found (%i)",
+		 m, n);
       return 1;
     }
 
@@ -442,25 +442,20 @@ static int svgpov(const svg_t *svg, pov_t *pov)
 
       if (utf8_to_x("ASCII", svg->name, aname, SVG_NAME_LEN) != 0)
 	{
-	  fprintf(stderr,"failed to convert name %s to ascii\n",aname);
+	  btrace_add("failed to convert name %s to ascii", aname);
 	  return 1;
 	}
 
       if (pov_set_name(pov,aname,&nmod) != 0)
 	{
-	  fprintf(stderr,
-		  "failed to assign povray name (%s)\n",
-		  aname);
+	  btrace_add("failed to assign povray name (%s)", aname);
 	  return 1;
 	}
  
       /* warn if name was modified */
 
       if (nmod > 0)
-	fprintf(stderr,
-		"name modified : %s to %s\n",
-		svg->name,
-		pov->name); 
+	btrace_add("name modified : %s to %s", svg->name, pov->name); 
     }
   else
     {      
@@ -468,9 +463,7 @@ static int svgpov(const svg_t *svg, pov_t *pov)
 
       if (pov_set_name(pov,aname,&nmod) != 0)
 	{
-	  fprintf(stderr,
-		  "failed to assign povray name (%s)\n",
-		  aname);
+	  btrace_add("failed to assign povray name (%s)", aname);
 	  return 1;
 	}
     }
@@ -489,25 +482,25 @@ extern int svgpov_dump(const svg_t *svg, svgx_opt_t *opt)
 
   if (! svgpov_valid(svg, opt->permissive, opt->verbose))
     {
-      fprintf(stderr,"cannot create valid povray file \n");
+      btrace_add("cannot create valid povray file");
       return 1;
     }
 
   if ((pov = pov_new()) == NULL)
     {
-      fprintf(stderr,"failed to create pov structure\n");
+      btrace_add("failed to create pov structure");
       return 1;
     }
 
   if (svgpov(svg,pov) != 0)
     {
-      fprintf(stderr,"failed to convert %s to pov\n",name);
+      btrace_add("failed to convert %s to pov", name);
       return 1;
     }
 
   if (pov_write(file, pov) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -529,7 +522,7 @@ static int svgsao(const svg_t *svg, sao_t *sao)
 
       if (rgb_to_rgbD(node->stop.colour, rgbD) != 0)
 	{
-	  fprintf(stderr,"error converting colour of stop %i\n",n+1);
+	  btrace_add("error converting colour of stop %i", n+1);
 	  return 1;
 	}
 
@@ -541,7 +534,7 @@ static int svgsao(const svg_t *svg, sao_t *sao)
 
       if (err)
 	{
-	  fprintf(stderr,"error adding sao stop %i\n",n+1);
+	  btrace_add("error adding sao stop %i", n+1);
 	  return 1;
 	}
     }
@@ -560,19 +553,19 @@ extern int svgsao_dump(const svg_t *svg, svgx_opt_t *opt)
   
   if ((sao = sao_new()) == NULL)
     {
-      fprintf(stderr,"failed to create sao structure\n");
+      btrace_add("failed to create sao structure");
       return 1;
     }
   
   if (svgsao(svg,sao) != 0)
     {
-      fprintf(stderr,"failed to convert %s to sao\n",opt->name);
+      btrace_add("failed to convert %s to sao", opt->name);
       return 1;
     }
   
   if (sao_write(file, sao, name) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
   
@@ -594,13 +587,13 @@ static int svggpt(const svg_t *svg, gpt_t *gpt)
   
   if (m < 2)
     {
-      fprintf(stderr,"bad number of stops : %i\n",m);
+      btrace_add("bad number of stops : %i", m);
       return 1;
     }
 
   if (gpt_stops_alloc(gpt,m) != 0)
     {
-      fprintf(stderr,"failed alloc for %i stops\n",m);
+      btrace_add("failed alloc for %i stops", m);
       return 1;
     }
 
@@ -616,7 +609,7 @@ static int svggpt(const svg_t *svg, gpt_t *gpt)
 
       if (rgb_to_rgbD(rgb,c) != 0)
 	{
-	  fprintf(stderr,"failed conversion to rgbD\n");
+	  btrace_add("failed conversion to rgbD");
 	  return 1;
 	}
       
@@ -631,9 +624,8 @@ static int svggpt(const svg_t *svg, gpt_t *gpt)
 
   if (n != m)
     {
-      fprintf(stderr,
-	      "missmatch between stops expected (%i) and found (%i)\n",
-	      m,n);
+      btrace_add("missmatch between stops expected (%i) and found (%i)",
+		 m, n);
       return 1;
     }
 
@@ -653,19 +645,19 @@ extern int svggpt_dump(const svg_t *svg, svgx_opt_t *opt)
 
   if ((gpt = gpt_new()) == NULL)
     {
-      fprintf(stderr,"failed to create gpt structure\n");
+      btrace_add("failed to create gpt structure");
       return 1;
     }
 
   if (svggpt(svg,gpt) != 0)
     {
-      fprintf(stderr,"failed to convert %s to gpt\n",name);
+      btrace_add("failed to convert %s to gpt", name);
       return 1;
     }
 
   if (gpt_write(file,gpt) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -687,13 +679,13 @@ static int svgcss3(const svg_t *svg, css3_t *css3)
   
   if (m < 2)
     {
-      fprintf(stderr,"bad number of stops : %i\n",m);
+      btrace_add("bad number of stops : %i", m);
       return 1;
     }
 
   if (css3_stops_alloc(css3,m) != 0)
     {
-      fprintf(stderr,"failed alloc for %i stops\n",m);
+      btrace_add("failed alloc for %i stops", m);
       return 1;
     }
 
@@ -712,9 +704,8 @@ static int svgcss3(const svg_t *svg, css3_t *css3)
 
   if (n != m)
     {
-      fprintf(stderr,
-	      "missmatch between stops expected (%i) and found (%i)\n",
-	      m,n);
+      btrace_add("missmatch between stops expected (%i) and found (%i)",
+		 m, n);
       return 1;
     }
 
@@ -734,19 +725,19 @@ extern int svgcss3_dump(const svg_t *svg, svgx_opt_t *opt)
 
   if ((css3 = css3_new()) == NULL)
     {
-      fprintf(stderr,"failed to create css3 structure\n");
+      btrace_add("failed to create css3 structure");
       return 1;
     }
 
   if (svgcss3(svg,css3) != 0)
     {
-      fprintf(stderr,"failed to convert %s to css3\n",name);
+      btrace_add("failed to convert %s to css3", name);
       return 1;
     }
 
   if (css3_write(file,css3) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -786,7 +777,7 @@ static int svggrd3(const svg_t *svg, grd3_t *grd3)
   
   if (m < 2)
     {
-      fprintf(stderr,"bad number of stops : %i\n",m);
+      btrace_add("bad number of stops : %i", m);
       return 1;
     }
 
@@ -795,7 +786,7 @@ static int svggrd3(const svg_t *svg, grd3_t *grd3)
   
   if (! (pcseg && poseg))
     {
-      fprintf(stderr,"failed to allocate segments\n");
+      btrace_add("failed to allocate segments");
       return 1;
     }
 
@@ -827,7 +818,7 @@ static int svggrd3(const svg_t *svg, grd3_t *grd3)
 
   if (utf8_to_x("LATIN1", svg->name, buffer, SVG_NAME_LEN) != 0)
     {
-      fprintf(stderr,"failed to convert utf name to latin1\n");
+      btrace_add("failed to convert utf name to latin1");
       return 1;
     }
 
@@ -853,19 +844,19 @@ extern int svggrd3_dump(const svg_t *svg, svgx_opt_t *opt)
 
   if ((grd3 = grd3_new()) == NULL)
     {
-      fprintf(stderr,"failed to create grd3 structure\n");
+      btrace_add("failed to create grd3 structure");
       return 1;
     }
       
   if (svggrd3(svg, grd3) != 0)
     {
-      fprintf(stderr,"failed to convert %s to grd3\n", name);
+      btrace_add("failed to convert %s to grd3", name);
       return 1;
     }
             
   if (grd3_write(file, grd3) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -890,7 +881,7 @@ static int svgpng(const svg_t *svg, png_t *png)
 
       if (svg_interpolate(svg, z, &rgb, &op) != 0)
 	{
-	  fprintf(stderr,"failed svg interpolate at %.3g\n", z);
+	  btrace_add("failed svg interpolate at %.3g", z);
 	  return 1;
 	}
       
@@ -919,19 +910,19 @@ extern int svgpng_dump(const svg_t *svg, svgx_opt_t *opt)
   if ((png = png_new(opt->format.png.width, 
 		     opt->format.png.height)) == NULL)
     {
-      fprintf(stderr,"failed to create png structure\n");
+      btrace_add("failed to create png structure");
       return 1;
     }
       
   if (svgpng(svg, png) != 0)
     {
-      fprintf(stderr,"failed to convert %s to png\n", name);
+      btrace_add("failed to convert %s to png", name);
       return 1;
     }
   
   if (png_write(file, png, name) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n", file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 
@@ -953,7 +944,7 @@ extern int svgsvg_dump(const svg_t *svg, svgx_opt_t *opt)
 		(const svg_t**)(&svg), 
 		&(opt->format.svg.preview)) != 0)
     {
-      fprintf(stderr,"failed to write to %s\n",file);
+      btrace_add("failed to write to %s", file);
       return 1;
     }
 

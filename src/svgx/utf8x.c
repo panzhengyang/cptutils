@@ -10,6 +10,8 @@
 #include <iconv.h>
 #include <locale.h>
 
+#include <btrace.h>
+
 #include "utf8x.h"
 
 extern int utf8_to_x(const char *type,
@@ -24,13 +26,13 @@ extern int utf8_to_x(const char *type,
 
   if (snprintf(icname, icnamelen, "%s//%s", type, icopt) > icnamelen)
     {
-      fprintf(stderr, "failed to create iconv string\n");
+      btrace_add( "failed to create iconv string");
       return 1;
     }
 
   if (setlocale(LC_CTYPE, lname) == NULL)
     {
-      fprintf(stderr, "failed to set locale to %s\n", lname);
+      btrace_add("failed to set locale to %s", lname);
       return 1;
     }
 
@@ -38,8 +40,7 @@ extern int utf8_to_x(const char *type,
   
   if (cv == (iconv_t)(-1))
     {
-      fprintf(stderr, "error opening iconv descriptor: %s\n", 
-	      strerror(errno));
+      btrace_add("error opening iconv descriptor: %s", strerror(errno));
       return 1;
     }
 
@@ -49,15 +50,13 @@ extern int utf8_to_x(const char *type,
 	    (char**)&(in), &(lenin), 
 	    (char**)&(out), &(lenout)) == (size_t)-1)
     {
-      fprintf(stderr, "error in iconv: %s\n", 
-	      strerror(errno));
+      btrace_add("error in iconv: %s", strerror(errno));
       return 1;
     }
 
   if (iconv_close(cv) == -1)
     {
-      fprintf(stderr, "error closing iconv descriptor: %s\n",
-	      strerror(errno));
+      btrace_add("error closing iconv descriptor: %s", strerror(errno));
       return 1;
     }
 

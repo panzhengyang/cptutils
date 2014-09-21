@@ -4,6 +4,7 @@
 */
 
 #include <png.h>
+#include <btrace.h>
 #include "pngwrite.h"
 
 extern int png_write(const char *path, png_t *png, const char* name)
@@ -16,13 +17,22 @@ extern int png_write(const char *path, png_t *png, const char* name)
   pngH = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
   if (pngH == NULL)
-    return 1;
-    
+    {
+      btrace_add("failed to create png write struct");
+      return 1;
+    }    
+
   if ((infoH = png_create_info_struct(pngH)) == NULL)
-    return 1;
+    {
+      btrace_add("failed to create png info struct");
+      return 1;
+    }
 
   if (setjmp(png_jmpbuf(pngH)))
-    return 1;
+    {
+      btrace_add("failed to set lonjump");
+      return 1;
+    }
     
   /* Set image attributes. */
 
@@ -49,7 +59,10 @@ extern int png_write(const char *path, png_t *png, const char* name)
   */
 
   if ((rows = malloc(png->height * sizeof(png_byte*))) == NULL)
-    return 1;
+    {
+      btrace_add("failed to allocate memory");
+      return 1;
+    }
 
   size_t j;
 

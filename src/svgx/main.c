@@ -27,10 +27,12 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "svgx.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
   svgx_opt_t opt = {0};
@@ -278,9 +280,33 @@ int main(int argc,char** argv)
 	       opt.format.svg.preview.height);
     }
 
+  /* backtrace */
+
+  btrace_enable();
+
   err = svgx(opt);
 
-  if (err) fprintf(stderr,"failed (error %i)\n",err);
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+
+      if (info.backtrace_file_given)
+	{
+	  FILE *stream;
+
+	  if ((stream = fopen(info.backtrace_file_arg, "w")) == NULL)
+	    fprintf(stderr, "failed to open %s\n", info.backtrace_file_arg);
+	  else
+	    {
+	      btrace_print_xml(stream);
+	      fclose(stream);
+	    }
+	}
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose) printf("done.\n");
 

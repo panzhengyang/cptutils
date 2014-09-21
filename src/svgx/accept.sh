@@ -91,4 +91,11 @@ assert "equal-txt $txt accept/$txt" 'true'
 rm -f $txt $testdir/*
 rmdir $testdir
 
+# create a backtrace file
+bt="backtrace.xml"
+malformed="$fixtures/malformed.svg"
+assert_raises "./svgx --backtrace-file $bt -a -o nope.svg $malformed" 1
+assert "equal-txt $bt accept/$bt" 'true'
+rm $bt
+
 source accept-teardown.sh

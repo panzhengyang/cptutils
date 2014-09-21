@@ -6,7 +6,7 @@ NAME = svgx
 
 OBJ      = svgx.o svgxdump.o png.o pngwrite.o main.o options.o utf8x.o
 CFLAGS  += 
-LDLIBS  += -lgrd3 -lcss3 -lgpt -lpov -lsvg -lsao -lggr -lcpt -lfill -lutf8
+LDLIBS  += -lgrd3 -lcss3 -lgpt -lpov -lsvg -lsao -lggr -lcpt -lfill -lutf8 -lbt
 RUBBISH += svgx $(OBJ) test.png
 
 default : all

@@ -3,6 +3,7 @@
   J.J.Green
 */
 
+#include <btrace.h>
 #include "png.h"
 
 extern png_t* png_new(size_t w, size_t h)
@@ -18,10 +19,14 @@ extern png_t* png_new(size_t w, size_t h)
 
 	  return png;
 	}
+      else
+	btrace_add("failed to allocate memory for png row");
 
       free(png);
     }
- 
+  else
+    btrace_add("failed to allocate memory for png structure");
+
   return NULL;
 }
 

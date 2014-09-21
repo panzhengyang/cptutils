@@ -10,8 +10,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "colour.h"
-#include "svgread.h"
+#include <colour.h>
+#include <svgread.h>
+#include <btrace.h>
 
 #include "svgx.h"
 #include "svgxdump.h"
@@ -28,14 +29,14 @@ extern int svgx(svgx_opt_t opt)
 
   if ((list = svg_list_new()) == NULL)
     {
-      fprintf(stderr,"error creating new list\n");
+      btrace_add("error creating new list");
       err++;
     }
   else
     {
       if (svg_read(opt.input.file, list) != 0)
 	{
-	  fprintf(stderr,"error reading svg\n");
+	  btrace_add("error reading svg");
 	  err++;
 	}
       else
@@ -43,19 +44,19 @@ extern int svgx(svgx_opt_t opt)
 	  switch (opt.job)
 	    {
 	    case job_list:
-	      err = svgx_list(opt,list);
+	      err = svgx_list(opt, list);
 	      break;
 	      
 	    case job_first:
-	      err = svgx_first(opt,list);
+	      err = svgx_first(opt, list);
 	      break;
 
 	    case job_named:
-	      err = svgx_named(opt,list);
+	      err = svgx_named(opt, list);
 	      break;
 	      
 	    case job_all:
-	      err = svgx_all(opt,list);
+	      err = svgx_all(opt, list);
 	      break;
 
 	    default:
@@ -92,17 +93,17 @@ static int svgx_list(svgx_opt_t opt, svg_list_t *list)
 	}
       else
 	{
-	  printf("found %i gradient%s\n",n,(n==1 ? "" : "s"));
-	  err = svg_list_iterate(list,(int (*)(svg_t*,void*))svg_id,"  %s\n");
+	  printf("found %i gradient%s\n", n, (n==1 ? "" : "s"));
+	  err = svg_list_iterate(list, (int (*)(svg_t*,void*))svg_id,"  %s\n");
 	}
     }
   else
     {
-      err = svg_list_iterate(list,(int (*)(svg_t*,void*))svg_id,"%s\n");
+      err = svg_list_iterate(list, (int (*)(svg_t*,void*))svg_id, "%s\n");
     }
 
   if (err)  
-    fprintf(stderr,"error listing svg\n");
+    btrace_add("error listing svg");
 
   return err;
 }
@@ -119,7 +120,7 @@ static int svgx_first(svgx_opt_t opt, svg_list_t *list)
 			     (int (*)(svg_t*,void*))svg_select_first,
 			     NULL)) == NULL)
     {
-      fprintf(stderr,"couldn't find first gradient!\n");
+      btrace_add("couldn't find first gradient!");
       return 1;
     }
 
@@ -134,7 +135,7 @@ static int svgx_named(svgx_opt_t opt, svg_list_t *list)
 			     (int (*)(svg_t*,void*))svg_select_name,
 			     opt.name)) == NULL)
     {
-      fprintf(stderr,"couldn't find gradient named %s\n",opt.name);
+      btrace_add("couldn't find gradient named %s", opt.name);
       return 1;
     }
 
@@ -159,7 +160,7 @@ static int flatten_type(svgx_type_t type)
     case type_svg:
       return 0;
     default:
-      fprintf(stderr,"strange type\n");
+      btrace_add("strange type");
       return -1;
     }
 }
@@ -176,7 +177,7 @@ static dump_f dump_type(svgx_type_t type)
     {
     case type_cpt:  dump = svgcpt_dump;  break;
     case type_ggr:  dump = svgggr_dump;  break;
-    case type_grd3: dump = svggrd3_dump;  break;
+    case type_grd3: dump = svggrd3_dump; break;
     case type_pov:  dump = svgpov_dump;  break;
     case type_gpt:  dump = svggpt_dump;  break;
     case type_css3: dump = svgcss3_dump; break;
@@ -186,7 +187,7 @@ static dump_f dump_type(svgx_type_t type)
  
     default:
 
-      fprintf(stderr,"strange output format!\n");
+      btrace_add("strange output format!");
       dump = NULL;
     }
   
@@ -201,7 +202,7 @@ static int svgx_single(svgx_opt_t opt, svg_t *svg)
 
   if (svg_explicit(svg) != 0)
     {
-      fprintf(stderr,"failed adding explicit stops\n");
+      btrace_add("failed adding explicit stops");
       return 1;
     }
 
@@ -211,7 +212,7 @@ static int svgx_single(svgx_opt_t opt, svg_t *svg)
     {
       if (svg_flatten(svg, opt.format.alpha) != 0)
 	{
-	  fprintf(stderr,"failed to flatten transparency\n");
+	  btrace_add("failed to flatten transparency");
 	  return 1;
 	}
     }
@@ -221,9 +222,9 @@ static int svgx_single(svgx_opt_t opt, svg_t *svg)
   if ((dump = dump_type(opt.type)) == NULL)
     return 1;
 
-  if (dump(svg,&opt) != 0)
+  if (dump(svg, &opt) != 0)
     {
-      fprintf(stderr,"failed conversion\n");
+      btrace_add("failed conversion");
       return 1;
     }
 
@@ -261,7 +262,7 @@ static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 
   if (svg_list_iterate(list, svg_explicit2, NULL) != 0)
     {
-      fprintf(stderr,"failed coerce explicit\n");
+      btrace_add("failed coerce explicit");
       return 1;
     }
 
@@ -273,7 +274,7 @@ static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 			   (int (*)(svg_t*, void*))svg_flatten2, 
 			   &(opt.format.alpha)) != 0)
 	{
-	  fprintf(stderr,"failed coerce explicit\n");
+	  btrace_add("failed coerce explicit");
 	  return 1;
 	}
     }
@@ -288,7 +289,7 @@ static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 
   if (svg_list_iterate(list, dump, &opt) != 0)
     {
-      fprintf(stderr,"failed writing all gradients\n");
+      btrace_add("failed writing all gradients");
       return 1;
     }
 
