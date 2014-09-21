@@ -199,6 +199,7 @@ extern cpt_t* cpt_new(void)
   
   cpt->name     = NULL;
   cpt->segment  = NULL;
+  cpt->model    = model_rgb;
   cpt->fg.type  = fill_empty;
   cpt->bg.type  = fill_empty;
   cpt->nan.type = fill_empty;
