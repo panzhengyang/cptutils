@@ -24,10 +24,30 @@ struct btrace_line_t
 
 typedef struct
 {
+  bool enabled;
   btrace_line_t *lines;
 } btrace_t;
 
-static btrace_t btrace_global;
+static btrace_t btrace_global = 
+  {
+    .enabled = false,
+    .lines   = NULL
+  };
+
+extern void btrace_enable(void)
+{
+  btrace_global.enabled = true; 
+}
+
+extern void btrace_disable(void)
+{
+  btrace_global.enabled = false; 
+}
+
+extern bool btrace_is_enabled(void)
+{
+  return btrace_global.enabled; 
+}
 
 static btrace_line_t* btrace_line_new(const char* file, int line, char *message)
 {
@@ -74,13 +94,9 @@ static void btrace_lines_free(btrace_line_t *btl)
     }
 }
 
-extern void btrace_free(void)
+extern void btrace_reset(void)
 {
   btrace_lines_free(btrace_global.lines);
-}
-
-extern void btrace_init(void)
-{
   btrace_global.lines = NULL;
 }
 

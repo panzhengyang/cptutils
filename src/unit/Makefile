@@ -1,13 +1,14 @@
 # Makefile for cunit test-suite
 
 LDLIBS  += -lcpt -lfill -lcss3 -lggr -lgpt -lgrd3 -lgrd5 \
-           -lgstk -lgrdx -lident -lpov -lsao -lsvg -lutf8
+           -lgstk -lgrdx -lident -lpov -lsao -lsvg -lutf8 -lbt
 
 LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
 
 OBJ = options.o main.o tests.o \
   fixture.o \
+  tests_btrace.o \
   tests_colour.o tests_colour_helper.o \
   tests_cpt.o tests_cpt_helper.o fixture_cpt.o \
   tests_cptread.o  \

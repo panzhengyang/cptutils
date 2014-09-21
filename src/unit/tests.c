@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "tests_btrace.h"
 #include "tests_colour.h"
 #include "tests_cpt.h"
 #include "tests_cptread.h"
@@ -45,6 +46,7 @@
 
 static CU_SuiteInfo suites[] = 
   {
+    { "btrace",     NULL, NULL, tests_btrace },
     { "colour",     NULL, NULL, tests_colour },
     { "cpt",        NULL, NULL, tests_cpt },
     { "cptread",    NULL, NULL, tests_cptread },

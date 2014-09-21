@@ -7,9 +7,13 @@
 #define BTRACE_H
 
 #include <stdio.h>
+#include <stdbool.h>
 
-extern void btrace_init(void);
-extern void btrace_free(void);
+extern void btrace_enable(void);
+extern void btrace_disable(void);
+extern bool btrace_is_enabled(void);
+
+extern void btrace_reset(void);
 extern void btrace_print_plain(FILE*);
 extern void btrace_print_json(FILE*);
 extern void btrace_add_real(const char* file, int line, const char*, ...);
