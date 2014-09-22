@@ -7,7 +7,7 @@ OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
 CFLAGS  += 
-LDLIBS  += -lcpt -lfill
+LDLIBS  += -lcpt -lfill -lbt
 
 default : all
 

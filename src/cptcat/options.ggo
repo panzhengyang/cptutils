@@ -2,8 +2,9 @@
 # (c) J.J. Green 2013
 package "cptcat"
 purpose "concatenate GMT colour palette tables"
-option	"output"	o "output filename"	string  no
-option	"verbose"	v "verbose operation"	flag    off
+option  "backtrace-file" - "write backtrace to file"	string  no
+option	"output"	 o "output filename"   		string  no
+option	"verbose"	 v "verbose operation"		flag    off
 
 
 

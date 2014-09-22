@@ -29,6 +29,8 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "cptcat.h"
 
@@ -69,10 +71,20 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is cptcat (version %s)\n",VERSION);
 
+  btrace_enable();
+
   int err = cptcat(opt);
 
-  if (err != 0)
-    fprintf(stderr,"failed (error %i)\n", err);
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");
