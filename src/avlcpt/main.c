@@ -29,6 +29,8 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "avlcpt.h"
 
@@ -118,10 +120,20 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
+  btrace_enable();
+
   int err = avlcpt(opt);
 
   if (err)
-    fprintf(stderr,"failed (error %i)\n", err);
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

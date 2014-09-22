@@ -11,11 +11,12 @@
 #include <string.h>
 #include <math.h>
 
-#include "cpt.h"
-#include "cptwrite.h"
-#include "cptname.h"
-#include "avlgrad.h"
+#include <cpt.h>
+#include <cptwrite.h>
+#include <cptname.h>
+#include <btrace.h>
 
+#include "avlgrad.h"
 #include "avlcpt.h"
 
 static int avlcpt_convert(avl_grad_t*, cpt_t*, avlcpt_opt_t);
@@ -30,7 +31,7 @@ extern int avlcpt(avlcpt_opt_t opt)
 
   if ((cpt = cpt_new()) == NULL)
     {
-      fprintf(stderr, "failed to get new cpt strcture\n");
+      btrace_add("failed to get new cpt strcture");
       return 1;
     }
 
@@ -48,8 +49,8 @@ extern int avlcpt(avlcpt_opt_t opt)
 
   if (avl_readfile(opt.file.input, &avl, opt) != 0)
     {
-      fprintf(stderr, "failed to read data from %s\n", 
-	      (opt.file.input ?  opt.file.input : "<stdin>"));
+      btrace_add("failed to read data from %s", 
+		 (opt.file.input ?  opt.file.input : "<stdin>"));
       return 1;
     }
 
@@ -58,7 +59,7 @@ extern int avlcpt(avlcpt_opt_t opt)
 
   if (avlcpt_convert(&avl, cpt, opt) != 0)
     {
-      fprintf(stderr, "failed to convert data\n");
+      btrace_add("failed to convert data");
       return 1;
     }
 
@@ -74,8 +75,8 @@ extern int avlcpt(avlcpt_opt_t opt)
   
   if (cpt_write(opt.file.output, cpt) != 0)
     {
-      fprintf(stderr, "failed to write palette to %s\n", 
-	      (opt.file.output ? opt.file.output : "<stdout>"));
+      btrace_add("failed to write palette to %s", 
+		 (opt.file.output ? opt.file.output : "<stdout>"));
       return 1;
     }
   
@@ -101,7 +102,7 @@ static int avlcpt_convert(avl_grad_t* avl, cpt_t *cpt, avlcpt_opt_t opt)
 
   if ((dir = avlcpt_direction(avl)) == AVLCPT_ERROR)
     {
-      fprintf(stderr, "avl gradient direction error\n");
+      btrace_add("avl gradient direction error");
       return 1;
     }
 
@@ -177,12 +178,12 @@ static int avlcpt_direction(avl_grad_t* avl)
 
   if (m == 0)
     {
-      fprintf(stderr, "gradient has no segments!\n");
+      btrace_add("gradient has no segments!");
       return AVLCPT_ERROR;
     }
   else if (m == 1)
     {
-      fprintf(stderr, "gradient has at one segment!\n");
+      btrace_add("gradient has at one segment!");
       return AVLCPT_INC;
     }
   else
@@ -209,9 +210,9 @@ static int avlcpt_direction(avl_grad_t* avl)
 	    {
 	      if (! (min[i] < min[i+1]))
 		{
-		  fprintf(stderr, "increasing gradient started to decrease!\n");
-		  fprintf(stderr, "(%.4f, %.4f) -> (%.4f, %.4f)\n", 
-			  min[i], max[i], min[i+1], max[i+1]);
+		  btrace_add("increasing gradient started to decrease!");
+		  btrace_add("(%.4f, %.4f) -> (%.4f, %.4f)", 
+			     min[i], max[i], min[i+1], max[i+1]);
 		  return AVLCPT_ERROR;
 		}
 	    }
@@ -223,9 +224,9 @@ static int avlcpt_direction(avl_grad_t* avl)
 	    {
 	      if (min[i] < min[i+1])
 		{
-		  fprintf(stderr, "decreasing gradient started to increase!\n");
-		  fprintf(stderr, "(%.4f, %.4f) -> (%.4f, %.4f)\n", 
-			  min[i], max[i], min[i+1], max[i+1]);
+		  btrace_add("decreasing gradient started to increase!");
+		  btrace_add("(%.4f, %.4f) -> (%.4f, %.4f)", 
+			     min[i], max[i], min[i+1], max[i+1]);
 		  return AVLCPT_ERROR;
 		}
 	    }
@@ -244,7 +245,7 @@ static cpt_seg_t* cpt_seg_new_err(void)
 
   if ((seg = cpt_seg_new()) == NULL) 
     {
-      fprintf(stderr, "error creating segment\n");
+      btrace_add("error creating segment");
       return NULL;
     }
 
@@ -257,7 +258,7 @@ static int cpt_append_err(cpt_seg_t* seg, cpt_t* cpt)
 {
   if (cpt_append(seg, cpt) != 0)
     {
-      fprintf(stderr, "error adding segment\n");
+      btrace_add("error adding segment");
       return 1;
     }
 
@@ -278,7 +279,7 @@ static int avl_readfile(char* file, avl_grad_t* avl, avlcpt_opt_t opt)
 
       if ((s = fopen(file, "r")) == NULL)
 	{
-	  fprintf(stderr, "failed to open %s\n", file);
+	  btrace_add("failed to open %s", file);
 	  return 1;
 	}
 

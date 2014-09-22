@@ -6,7 +6,7 @@ NAME     = avlcpt
 OBJ      = avlcpt.o main.o options.o avlgrad.o
 RUBBISH += $(OBJ) avlcpt
 
-LDLIBS  += -lcpt -lfill -lodb -lident
+LDLIBS  += -lcpt -lfill -lodb -lident -lbt
 
 default : all
 
