@@ -9,8 +9,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "cptread.h"
-#include "cptwrite.h"
+#include <cptread.h>
+#include <cptwrite.h>
+#include <btrace.h>
 
 #include "cptclip.h"
 
@@ -35,26 +36,26 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
 		    }
 		  else
 		    {
-		      fprintf(stderr,"error writing cpt struct\n");
+		      btrace_add("error writing cpt struct");
 		      err = 1;
 		    }
 		}
 	      else
 		{
-		  fprintf(stderr,"clipped result has no segments\n");
+		  btrace_add("clipped result has no segments");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      fprintf(stderr,"failed to convert\n");
+	      btrace_add("failed to convert");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  fprintf(stderr,"failed to load cpt from %s\n",
-		  (infile ? infile : "<stdin>"));
+	  btrace_add("failed to load cpt from %s",
+		     (infile ? infile : "<stdin>"));
 	  err = 1;
 	}
       
@@ -62,13 +63,13 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
     }	
   else
     {
-      fprintf(stderr,"failed to create cpt struct\n");
+      btrace_add("failed to create cpt struct");
       err = 1;
     }
   
   if (err)
-    fprintf(stderr,"failed to write cpt to %s\n",
-	    (outfile ? outfile : "<stdout>"));
+    btrace_add("failed to write cpt to %s",
+	       (outfile ? outfile : "<stdout>"));
   
   return err;
 }
@@ -80,7 +81,7 @@ static int cptclip_convert(cpt_t* cpt,cptclip_opt_t opt)
 {
   if (cpt->segment == NULL)
     {
-      fprintf(stderr,"cpt has no segments\n");
+      btrace_add("cpt has no segments");
       return 1;
     }
 
@@ -156,7 +157,7 @@ static int cptclip_z_id(cpt_t* cpt,
 				cpt->model,
 				&fill) != 0)
             {
-              fprintf(stderr,"fill interpolation failed\n");
+              btrace_add("fill interpolation failed");
               return 1;
             }
 
@@ -197,7 +198,7 @@ static int cptclip_z_id(cpt_t* cpt,
 				cpt->model,
 				&fill) != 0)
             {
-              fprintf(stderr,"fill interpolation failed\n");
+              btrace_add("fill interpolation failed");
               return 1;
             }
 
