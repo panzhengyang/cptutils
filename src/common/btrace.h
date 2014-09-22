@@ -18,6 +18,7 @@ extern void btrace_disable(void);
 extern bool btrace_is_enabled(void);
 
 extern void   btrace_reset(void);
+extern bool   btrace_nonempty(void);
 extern size_t btrace_count(void);
 extern void   btrace_print_plain(FILE*);
 extern void   btrace_print_xml(FILE*);
