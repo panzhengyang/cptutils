@@ -30,6 +30,8 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "cptcont.h"
 
@@ -84,12 +86,25 @@ int main(int argc, char** argv)
   
   opt.partial = (info.partial_given ? info.partial_arg/100.0 : 1.0);
 
+  btrace_enable();
+
   int err = cptcont(infile, outfile, opt);
 
-  if (err) 
-    fprintf(stderr,"failed (error %i)\n",err);
-  else if (opt.verbose)
-    printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
+  else
+    {
+      if (opt.verbose)
+	printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

@@ -9,8 +9,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "cptread.h"
-#include "cptwrite.h"
+#include <cptread.h>
+#include <cptwrite.h>
+#include <btrace.h>
 
 #include "cptcont.h"
 
@@ -33,20 +34,20 @@ extern int cptcont(char* infile,char* outfile,cptcont_opt_t opt)
 		}
 	      else
 		{
-		  fprintf(stderr,"error writing cpt struct\n");
+		  btrace_add("error writing cpt struct");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      fprintf(stderr,"failed to convert\n");
+	      btrace_add("failed to convert");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  fprintf(stderr,"failed to load cpt from %s\n",
-		  (infile ? infile : "<stdin>"));
+	  btrace_add("failed to load cpt from %s",
+		     (infile ? infile : "<stdin>"));
 	  err = 1;
 	}
       
@@ -54,13 +55,13 @@ extern int cptcont(char* infile,char* outfile,cptcont_opt_t opt)
     }	
   else
     {
-      fprintf(stderr,"failed to create cpt struct\n");
+      btrace_add("failed to create cpt struct");
       err = 1;
     }
   
   if (err)
-    fprintf(stderr,"failed to write cpt to %s\n",
-	    (outfile ? outfile : "<stdout>"));
+    btrace_add("failed to write cpt to %s",
+	       (outfile ? outfile : "<stdout>"));
   
   return err;
 }
@@ -73,7 +74,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 
   if (cpt->segment == NULL)
     {
-      fprintf(stderr,"cpt has no segments\n");
+      btrace_add("cpt has no segments");
       return 1;
     }
 
@@ -86,7 +87,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 
       if (midpoint_split(cpt->segment,cpt->model) != 0)
 	{
-	  fprintf(stderr,"error splitting at midpoints\n");
+	  btrace_add("error splitting at midpoints");
 	  return 1;
 	}
     }
@@ -103,7 +104,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
     {
       if (s1->rsmp.fill.type != s2->lsmp.fill.type)
         {
-          fprintf(stderr,"sorry, can't convert mixed fill types\n");
+          btrace_add("sorry, can't convert mixed fill types");
           return 1;
         }
 
@@ -125,7 +126,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 	  
 	  if (err)
 	    {
-	      fprintf(stderr,"failed fill intepolate\n");
+	      btrace_add("failed fill intepolate");
 	      return 1;
 	    }
 
@@ -167,7 +168,7 @@ static int midpoint_split(cpt_seg_t* s,model_t model)
 
   if (!sl)
     {
-      fprintf(stderr,"failed to create new segment\n");
+      btrace_add("failed to create new segment");
       return 1;
     }
 
