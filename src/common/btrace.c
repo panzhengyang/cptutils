@@ -34,22 +34,100 @@ static btrace_t btrace_global =
     .lines   = NULL
   };
 
+/* enable/disable */
+
+static void enable(btrace_t *bt)
+{
+  bt->enabled = true;
+}
+
 extern void btrace_enable(void)
 {
-  btrace_global.enabled = true; 
+  enable(&btrace_global); 
+}
+
+static void disable(btrace_t *bt)
+{
+  bt->enabled = false;
 }
 
 extern void btrace_disable(void)
 {
-  btrace_global.enabled = false; 
+  disable(&btrace_global);
+}
+
+static bool is_enabled(btrace_t *bt)
+{
+  return bt->enabled;
 }
 
 extern bool btrace_is_enabled(void)
 {
-  return btrace_global.enabled; 
+  return is_enabled(&btrace_global); 
 }
 
-static btrace_line_t* btrace_line_new(const char* file, int line, char *message)
+/* testing nonempty */
+
+static bool nonempty(btrace_t* bt)
+{
+  return bt->lines != NULL;
+}
+
+extern bool btrace_nonempty(void)
+{
+  return nonempty(&btrace_global);
+}
+
+/* free lines */
+
+static void line_free(btrace_line_t *btl)
+{
+  free(btl->message);
+  free(btl);
+}
+
+static void lines_free(btrace_line_t *btl)
+{
+  if (btl)
+    {
+      lines_free(btl->next);
+      line_free(btl);
+    }
+}
+
+/* reset the btrace */
+
+static void reset(btrace_t *bt)
+{
+  lines_free(bt->lines);
+  bt->lines = NULL;
+}
+
+extern void btrace_reset(void)
+{
+  reset(&btrace_global);
+}
+
+/* count lines */
+
+static size_t count_lines(btrace_line_t *btl)
+{
+  return btl == NULL ? 0 : count_lines(btl->next) + 1;
+}
+
+static size_t count(btrace_t *bt)
+{
+  return count_lines(bt->lines);
+}
+
+extern size_t btrace_count(void)
+{
+  return count(&(btrace_global));
+}
+
+/* adding */
+
+static btrace_line_t* line_new(const char* file, int line, char *message)
 {
   btrace_line_t *btl;
 
@@ -68,46 +146,15 @@ static btrace_line_t* btrace_line_new(const char* file, int line, char *message)
   return NULL;
 }
 
-static void btrace_register(const char* file, int line, char *message)
+static void append(btrace_t *bt, const char* file, int line, char *message)
 {
   btrace_line_t *btl;
 
-  if ((btl = btrace_line_new(file, line, message)) == NULL)
+  if ((btl = line_new(file, line, message)) == NULL)
     return;
 
-  btl->next = btrace_global.lines;
-  btrace_global.lines = btl;
-}
-
-static void btrace_line_free(btrace_line_t *btl)
-{
-  free(btl->message);
-  free(btl);
-}
-
-static void btrace_lines_free(btrace_line_t *btl)
-{
-  if (btl)
-    {
-      btrace_lines_free(btl->next);
-      btrace_line_free(btl);
-    }
-}
-
-extern void btrace_reset(void)
-{
-  btrace_lines_free(btrace_global.lines);
-  btrace_global.lines = NULL;
-}
-
-static size_t btrace_count_lines(btrace_line_t *btl)
-{
-  return btl == NULL ? 0 : btrace_count_lines(btl->next) + 1;
-}
-
-extern size_t btrace_count(void)
-{
-  return btrace_count_lines(btrace_global.lines);
+  btl->next = bt->lines;
+  bt->lines = btl;
 }
 
 extern void btrace_add_real(const char* file, int line, const char* format, ...)
@@ -119,7 +166,7 @@ extern void btrace_add_real(const char* file, int line, const char* format, ...)
   vsnprintf(buffer, BUFSZ, format, args);
   va_end(args);
 
-  btrace_register(file, line, buffer);
+  append(&btrace_global, file, line, buffer);
 }
 
 /* print plain format */
@@ -178,4 +225,36 @@ static void print_xml(FILE *stream, btrace_t *bt)
 extern void btrace_print_xml(FILE *stream)
 {
   print_xml(stream, &btrace_global);
+}
+
+extern int btrace_print(const char* path, int type)
+{
+  if (btrace_nonempty())
+    {
+      void (*f)(FILE *);
+
+      switch (type)
+	{
+	case BTRACE_PLAIN: 
+	  f = btrace_print_plain;
+	  break;
+	case BTRACE_XML:
+	  f = btrace_print_xml;
+	  break;
+	default:
+	  return 1;
+	}
+
+      FILE* stream;
+
+      if ((stream = fopen(path, "w")) == NULL)
+	return 1;
+
+      f(stream);
+
+      if (fclose(stream) != 0)
+	return 1;
+    }
+
+  return 0;
 }

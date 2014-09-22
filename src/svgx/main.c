@@ -290,19 +290,8 @@ int main(int argc, char** argv)
     {
       btrace_add("failed (error %i)", err);
       btrace_print_plain(stderr);
-
       if (info.backtrace_file_given)
-	{
-	  FILE *stream;
-
-	  if ((stream = fopen(info.backtrace_file_arg, "w")) == NULL)
-	    fprintf(stderr, "failed to open %s\n", info.backtrace_file_arg);
-	  else
-	    {
-	      btrace_print_xml(stream);
-	      fclose(stream);
-	    }
-	}
+	btrace_print(info.backtrace_file_arg, BTRACE_XML);
     }
 
   btrace_reset();

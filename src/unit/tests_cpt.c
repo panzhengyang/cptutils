@@ -27,7 +27,6 @@ extern void test_cpt_new(void)
 
   CU_ASSERT_NOT_EQUAL(cpt, NULL);
   CU_ASSERT_EQUAL(cpt->name, NULL);
-  printf("[%i]\n",cpt->model);
   CU_ASSERT_EQUAL(cpt->model, model_rgb);
   CU_ASSERT_EQUAL(cpt->segment, NULL);
   CU_ASSERT_EQUAL(cpt_nseg(cpt), 0);

@@ -9,13 +9,15 @@
 
 CU_TestInfo tests_btrace[] = 
   {
-    {"default",     test_btrace_default},
-    {"enable",      test_btrace_enable},
-    {"disable",     test_btrace_disable},
-    {"count",       test_btrace_count},
-    {"add",         test_btrace_add},
-    {"print plain", test_btrace_print_plain},
-    {"print XML",   test_btrace_print_xml},
+    {"default",       test_btrace_default},
+    {"enable",        test_btrace_enable},
+    {"disable",       test_btrace_disable},
+    {"nonempty",      test_btrace_nonempty},
+    {"count",         test_btrace_count},
+    {"add",           test_btrace_add},
+    {"print plain",   test_btrace_print_plain},
+    {"print XML",     test_btrace_print_xml},
+    {"print to file", test_btrace_print},
     CU_TEST_INFO_NULL,
   };
 
@@ -45,6 +47,19 @@ extern void test_btrace_disable(void)
   CU_TEST_FATAL( btrace_is_enabled() == true );
   btrace_disable();
   CU_ASSERT( btrace_is_enabled() == false );
+}
+
+/* btrace_nonempty should initally be false */
+
+extern void test_btrace_nonempty(void)
+{
+  CU_ASSERT( btrace_nonempty() == false );
+  btrace_enable();
+  btrace_add("a message");
+  CU_ASSERT( btrace_nonempty() == true );
+  btrace_reset();
+  CU_ASSERT( btrace_nonempty() == false );
+  btrace_disable();
 }
 
 /* btrace_count() should return 0 by default */
@@ -126,6 +141,24 @@ extern void test_btrace_print_xml(void)
   btrace_print_xml(stream);
 
   CU_TEST_FATAL( fclose(stream) == 0 );
+  
+  btrace_reset();
+  btrace_disable();
+
+  unlink(path);
+}
+
+/* just a stub */
+
+extern void test_btrace_print(void)
+{
+  char *path;
+  CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
+
+  btrace_enable();
+  btrace_add(MESSAGE);
+  
+  CU_ASSERT( btrace_print(path, BTRACE_XML) == 0 );
   
   btrace_reset();
   btrace_disable();

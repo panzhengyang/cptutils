@@ -13,9 +13,11 @@ extern CU_TestInfo tests_btrace[];
 extern void test_btrace_default(void);
 extern void test_btrace_enable(void);
 extern void test_btrace_disable(void);
+extern void test_btrace_nonempty(void);
 extern void test_btrace_count(void);
 extern void test_btrace_add(void);
 extern void test_btrace_print_plain(void);
 extern void test_btrace_print_xml(void);
+extern void test_btrace_print(void);
 
 #endif
