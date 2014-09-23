@@ -1,4 +1,2 @@
-<backtrace>
-<message file='svgx.c' line='39'>error reading svg</message>
-<message file='main.c' line='291'>failed (error 1)</message>
-</backtrace>
+<?xml version="1.0" encoding="UTF-8"?>
+<backtrace version="1.55"><message file="svgx.c" line="39">error reading svg</message><message file="main.c" line="291">failed (error 1)</message></backtrace>
