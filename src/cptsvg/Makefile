@@ -7,7 +7,7 @@ OBJ      = cptsvg.o main.o options.o
 RUBBISH += $(OBJ) cptsvg
 
 CFLAGS  += 
-LDLIBS  += -lcpt -lfill -lsvg
+LDLIBS  += -lcpt -lfill -lsvg -lbt
 
 default : all
 

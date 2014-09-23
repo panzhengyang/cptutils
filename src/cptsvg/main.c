@@ -29,19 +29,20 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+#include <colour.h>
+#include <svg.h>
+
 #include "options.h"
 #include "cptsvg.h"
 
-#include "colour.h"
-#include "svg.h"
-
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
-  char    *infile = NULL, *outfile = NULL;
+  char *infile = NULL, *outfile = NULL;
   cptsvg_opt_t opt = {0};
 
-  /* use gengetopt */
+  /* gengetopt */
 
   if (options(argc, argv, &info) != 0)
     {
@@ -100,10 +101,17 @@ int main(int argc,char** argv)
 
   svg_srand();
 
+  btrace_enable();
+
   int err = cptsvg(infile, outfile, opt);
 
   if (err)
-    fprintf(stderr,"failed (error %i)\n",err);
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
   else if (opt.verbose)
     {
       printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
@@ -115,6 +123,9 @@ int main(int argc,char** argv)
 	}
     }
 
+  btrace_reset();
+  btrace_disable();
+ 
   if (opt.verbose)
     printf("done.\n");
   

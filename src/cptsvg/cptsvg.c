@@ -9,8 +9,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "cptread.h"
-#include "svgwrite.h"
+#include <btrace.h>
+#include <cptread.h>
+#include <svgwrite.h>
 
 #include "cptsvg.h"
 
@@ -20,7 +21,7 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 {
     cpt_t *cpt;
     svg_t *svg;
-    int err=0;
+    int err = 0;
 
     if ((cpt = cpt_new()) != NULL)
       {
@@ -28,7 +29,7 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 	  {
 	    if ((svg = svg_new()) != NULL)
 	      {
-		if (cptsvg_convert(cpt,svg,opt) == 0)
+		if (cptsvg_convert(cpt, svg, opt) == 0)
 		  {
 		    if (svg_write(outfile, 1, 
 				  (const svg_t**)(&svg), 
@@ -38,13 +39,13 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 		      }
 		    else
 		      {
-			fprintf(stderr,"error writing sgv struct\n");
+			btrace_add("error writing sgv struct");
 			err = 1;
 		      }
 		  }
 		else
 		  {
-		    fprintf(stderr,"failed to convert cpt to svg\n");
+		    btrace_add("failed to convert cpt to svg");
 		    err = 1;
 		  }
 
@@ -52,13 +53,14 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 	      }
 	    else
 	      {
-		fprintf(stderr,"failed to allocate svg\n");
+		btrace_add("failed to allocate svg");
 		err = 1;
 	      }
 	  }
 	else
 	  {
-	    fprintf(stderr,"failed to load cpt from %s\n",(infile ? infile : "<stdin>"));
+	    btrace_add("failed to load cpt from %s", 
+		       (infile ? infile : "<stdin>"));
 	    err = 1;
 	  }
 
@@ -66,28 +68,28 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
       }	
     else
       {
-	fprintf(stderr,"failed to create cpt struct\n");
+	btrace_add("failed to create cpt struct");
 	err = 1;
       }
 
     if (err)
-      fprintf(stderr,"failed to write svg to %s\n",(outfile ? outfile : "<stdout>"));
+      btrace_add("failed to write svg to %s", (outfile ? outfile : "<stdout>"));
 
     return err;
 }
 
-static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
+static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
 {
   cpt_seg_t *seg;
-  svg_stop_t lstop,rstop;
-  double min,max;
-  int n,m=0;
+  svg_stop_t lstop, rstop;
+  double min, max;
+  int n, m = 0;
 
   /* check we have at least one cpt segment */
 
   if (cpt->segment == NULL)
     {
-      fprintf(stderr,"cpt has no segments\n");
+      btrace_add("cpt has no segments");
       return 1;
     }
 
@@ -95,10 +97,10 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
   if (cpt->name)
     {
-      if (snprintf((char*)svg->name,
-		   SVG_NAME_LEN,
+      if (snprintf((char*)svg->name, 
+		   SVG_NAME_LEN, 
 		   "%s", cpt->name) >= SVG_NAME_LEN)
-	fprintf(stderr,"truncated svg name!\n");
+	btrace_add("truncated svg name!");
     }
 
   /* find the min/max of the cpt range */
@@ -118,16 +120,16 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
     case model_hsv: 
       break;
     default:
-      fprintf(stderr,"unknown colour model\n");
+      btrace_add("unknown colour model");
       return 1;
     }
 
   /* convert cpt segments to svg stops*/
 
-  for (n=0,seg=cpt->segment ; seg ; seg=seg->rseg)
+  for (n=0, seg=cpt->segment ; seg ; seg=seg->rseg)
     {
-      cpt_sample_t lsmp,rsmp;
-      rgb_t rcol,lcol;
+      cpt_sample_t lsmp, rsmp;
+      rgb_t rcol, lcol;
       filltype_t type;
 
       lsmp = seg->lsmp;
@@ -135,7 +137,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 
       if (lsmp.fill.type != rsmp.fill.type)
         {
-          fprintf(stderr,"sorry, can't convert mixed fill types\n");
+          btrace_add("sorry, can't convert mixed fill types");
           return 1;
         }
             
@@ -153,7 +155,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
               break;
             case model_hsv:
 	      /* fixme */
-	      fprintf(stderr,"conversion of hsv not yet implemeted\n");
+	      btrace_add("conversion of hsv not yet implemeted");
               return 1;
             default:
               return 1;
@@ -165,11 +167,11 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
         case fill_file:
         case fill_empty:
 	  /* fixme */
-	  fprintf(stderr,"fill type not implemeted yet\n");
+	  btrace_add("fill type not implemeted yet");
           return 1;
 
         default:
-          fprintf(stderr,"strange fill type\n");
+          btrace_add("strange fill type");
           return 1;
         }
 
@@ -179,10 +181,10 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
       lstop.colour  = lcol;
       lstop.opacity = 1.0; 
 
-      if (svg_append(lstop,svg) == 0) m++;
+      if (svg_append(lstop, svg) == 0) m++;
       else 
 	{
-	  fprintf(stderr,"error adding stop for segment %i left\n",n);
+	  btrace_add("error adding stop for segment %i left", n);
 	  return 1;
 	}
 
@@ -198,10 +200,10 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
 	  rstop.colour  = rcol;
 	  rstop.opacity = 1.0; 
 
-	  if (svg_append(rstop,svg) == 0) m++;
+	  if (svg_append(rstop, svg) == 0) m++;
 	  else
 	    {
-	      fprintf(stderr,"error adding stop for segment %i right\n",n);
+	      btrace_add("error adding stop for segment %i right", n);
 	      return 1;
 	    }
 	}
@@ -210,7 +212,7 @@ static int cptsvg_convert(cpt_t* cpt,svg_t* svg,cptsvg_opt_t opt)
     }
 
   if (opt.verbose)
-    printf("converted %i segments to %i stops\n",n,m);
+    printf("converted %i segments to %i stops", n, m);
 
   return 0;
 }
