@@ -4,9 +4,16 @@
   Copyright (c) J.J. Green 2014
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <libxml/encoding.h>
+#include <libxml/xmlwriter.h>
 
 #include "btrace.h"
 
@@ -68,14 +75,14 @@ extern bool btrace_is_enabled(void)
 
 /* testing nonempty */
 
-static bool nonempty(btrace_t* bt)
+static bool empty(btrace_t* bt)
 {
-  return bt->lines != NULL;
+  return bt->lines == NULL;
 }
 
 extern bool btrace_nonempty(void)
 {
-  return nonempty(&btrace_global);
+  return ! empty(&btrace_global);
 }
 
 /* free lines */
@@ -197,28 +204,132 @@ extern void btrace_print_plain(FILE *stream)
 
 /* print XML format */
 
-static void line_print_xml(FILE *stream, btrace_line_t *btl)
+static int line_print_xml(xmlTextWriter* writer, btrace_line_t *btl)
 {
-  fprintf(stream, "<message file='%s' line='%i'>%s</message>\n", 
-	  btl->file, btl->line, btl->message);
+  if (xmlTextWriterStartElement(writer, BAD_CAST "message") < 0)
+    {
+      fprintf(stderr, "error from open message\n");
+      return 1;
+    }
+
+  if (xmlTextWriterWriteAttribute(writer, 
+				  BAD_CAST "file", 
+				  BAD_CAST btl->file) < 0)
+    {
+      fprintf(stderr, "error setting file attribute\n");
+      return 1;
+    }
+
+  char linestring[32];
+
+  if (snprintf(linestring, 32, "%d", btl->line) >= 32)
+    {
+      fprintf(stderr, "buffer overflow formatting line number\n");
+      return 1;
+    }
+
+  if (xmlTextWriterWriteAttribute(writer, 
+				  BAD_CAST "line", 
+				  BAD_CAST linestring) < 0)
+    {
+      fprintf(stderr, "error setting file attribute\n");
+      return 1;
+    }
+
+  if (xmlTextWriterWriteString(writer, BAD_CAST btl->message) < 0)
+    {
+      fprintf(stderr, "error writing message body\n");
+      return 1;
+    }
+
+  if (xmlTextWriterEndElement(writer) < 0)
+    {
+      fprintf(stderr, "error from close message\n");
+      return 1;
+    }
+
+  return 0;
 }
 
-static void lines_print_xml(FILE *stream, btrace_line_t *btl)
+static int lines_print_xml(xmlTextWriter* writer, btrace_line_t *btl)
 {
   if (btl)
     {
-      lines_print_xml(stream, btl->next);
-      line_print_xml(stream, btl);
+      return 
+	lines_print_xml(writer, btl->next) +
+	line_print_xml(writer, btl);
+    }  
+
+  return 0;
+}
+
+static int print_xml_doc(xmlTextWriter* writer, btrace_t *bt)
+{
+  if (xmlTextWriterStartDocument(writer, NULL, "UTF-8", NULL) < 0)
+    {
+      fprintf(stderr, "error from start document\n");
+      return 1;
     }
+
+  if (xmlTextWriterStartElement(writer, BAD_CAST "backtrace") < 0)
+    {
+      fprintf(stderr, "error from open backtrace\n");
+      return 1;
+    }
+
+  if (xmlTextWriterWriteAttribute(writer, 
+				  BAD_CAST "version", 
+				  BAD_CAST VERSION) < 0)
+    {
+      fprintf(stderr, "error setting file attribute\n");
+      return 1;
+    }
+
+
+  if (lines_print_xml(writer, bt->lines) != 0)
+    {
+      fprintf(stderr, "error writing lines\n");
+      return 1;
+    }
+
+  if (xmlTextWriterEndElement(writer) < 0)
+    {
+      fprintf(stderr, "error from close backtrace\n");
+      return 1;
+    }
+
+  if (xmlTextWriterEndDocument(writer) < 0)
+    {
+      fprintf(stderr, "error from end document\n");
+      return 1;
+    }
+
+  return 0;
 }
 
 static void print_xml(FILE *stream, btrace_t *bt)
 {
-  if (bt->lines)
+  if (empty(bt))
+    return;
+
+  xmlBuffer* buffer;
+  int err = 0;
+            
+  if ((buffer = xmlBufferCreate()) != NULL)
     {
-      fprintf(stream, "<backtrace>\n");
-      lines_print_xml(stream, bt->lines);
-      fprintf(stream, "</backtrace>\n");
+      xmlTextWriter* writer;
+      
+      if ((writer = xmlNewTextWriterMemory(buffer, 0)) != NULL) 
+	{
+	  err = print_xml_doc(writer, bt);
+	  
+	  xmlFreeTextWriter(writer);
+	  
+	  if (err == 0)
+	    fprintf(stream, "%s", buffer->content);
+	}
+      
+      xmlBufferFree(buffer);
     }
 }
 
