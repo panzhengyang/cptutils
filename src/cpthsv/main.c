@@ -30,9 +30,11 @@
 
 #include <unistd.h>
 
+#include <colour.h>
+#include <btrace.h>
+
 #include "options.h"
 #include "cpthsv.h"
-#include "colour.h"
 
 static int parse_transforms(const char*,cpthsv_opt_t*);
 
@@ -97,12 +99,22 @@ int main(int argc,char** argv)
       return EXIT_FAILURE;
     }
 
+  btrace_enable();
+
   int err = cpthsv(infile, outfile, opt);
 
-  if (err) 
-    fprintf(stderr, "failed (error %i)\n", err);
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
   else if (opt.verbose)
     printf("gradient written to %s\n", (outfile ? outfile : "<stdin>"));
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

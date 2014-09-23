@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cptread.h"
-#include "cptwrite.h"
+#include <cptread.h>
+#include <cptwrite.h>
+#include <btrace.h>
 
 #include "cpthsv.h"
 
@@ -32,19 +33,20 @@ extern int cpthsv(char* infile,char* outfile,cpthsv_opt_t opt)
 		}
 	      else
 		{
-		  fprintf(stderr, "error writing cpt struct\n");
+		  btrace_add("error writing cpt struct");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      fprintf(stderr, "failed to convert\n");
+	      btrace_add("failed to convert");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  fprintf(stderr,"failed to load cpt from %s\n",(infile ? infile : "<stdin>"));
+	  btrace_add("failed to load cpt from %s",
+		     (infile ? infile : "<stdin>"));
 	  err = 1;
 	}
       
@@ -52,12 +54,12 @@ extern int cpthsv(char* infile,char* outfile,cpthsv_opt_t opt)
     }	
   else
     {
-      fprintf(stderr,"failed to create cpt struct\n");
+      btrace_add("failed to create cpt struct");
       err = 1;
     }
   
   if (err)
-    fprintf(stderr,"failed to write cpt to %s\n",(outfile ? outfile : "<stdout>"));
+    btrace_add("failed to write cpt to %s", (outfile ? outfile : "<stdout>"));
   
   return err;
 }
@@ -70,7 +72,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
 
   if (cpt->segment == NULL)
     {
-      fprintf(stderr,"cpt has no segments\n");
+      btrace_add("cpt has no segments");
       return 1;
     }
 
@@ -78,7 +80,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
 
   if (cpt->model != model_rgb)
     {
-      fprintf(stderr,"cannot process non-rgb palette, sorry\n");
+      btrace_add("cannot process non-rgb palette, sorry");
       return 1;
     }
 
@@ -91,7 +93,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
     {
       if (seg->lsmp.fill.type != seg->rsmp.fill.type)
         {
-          fprintf(stderr,"sorry, can't convert mixed fill types\n");
+          btrace_add("sorry, can't convert mixed fill types");
           return 1;
         }
 
@@ -135,8 +137,6 @@ static double norm360(double);
 
 static void hsv_transform(hsv_t* hsv,hsvtrans_t t)
 {
-  // printf("%f,%f,%f -> ",hsv->hue,hsv->sat,hsv->val);
-
   switch (t.channel)
     {
     case hue:
@@ -152,14 +152,10 @@ static void hsv_transform(hsv_t* hsv,hsvtrans_t t)
       hsv->val = norm1(hsv->val);
       break;
     }
-
-  // printf("%f,%f,%f\n",hsv->hue,hsv->sat,hsv->val);
 }
 
 static void double_transform(double* x,hsvtrans_t t)
 {
-  // printf("(%.2f) ",t.z);
-
   switch (t.op)
     {
     case times:   *x *= t.z; break;
