@@ -17,7 +17,12 @@ and libpng
 
   http://www.libpng.org/pub/png/libpng.html
 
-installed to compile the programs.  
+installed to compile the programs. The Jansson library 
+
+   http://www.digip.org/jansson/
+
+is needed only if you wish to have backtraces in the JSON
+format.
 
 Some other programs will be required if you wish to compile 
 modified sources (bison, flex, gperf, xsltproc) but prebuilt 
