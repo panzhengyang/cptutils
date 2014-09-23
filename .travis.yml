@@ -4,8 +4,14 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libxml2-dev libpng12-dev gengetopt gperf \
-         docbook-xsl xsltproc libcunit1-dev bc libjansson-dev
+  - sudo apt-get install -qq 
+      bc gengetopt gperf
+      libxml2-dev
+      libpng12-dev 
+      libjansson-dev
+      libcunit1-dev 
+      xsltproc 
+      docbook-xsl 
   - autoconf
   - autoheader
 install:
