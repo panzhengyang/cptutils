@@ -62,7 +62,9 @@ dnl Checks for libraries.
 
 AC_CHECK_LIB(m, pow)
 AC_CHECK_LIB(png, png_create_read_struct, [], AC_MSG_ERROR(libpng not found))
-AC_SEARCH_LIBS(iconv, iconv, [], AC_MSG_ERROR(iconv not found))
+AC_CHECK_LIB(jansson, json_pack, [], AC_MSG_WARN(libjansson not found))
+AC_CHECK_LIB(iconv, iconv, [], AC_MSG_ERROR(iconv not found))
+
 
 dnl Checks for header files.
 
@@ -72,6 +74,7 @@ AC_CHECK_HEADERS(iconv.h)
 AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(png.h)
 AC_CHECK_HEADERS(search.h)
+AC_CHECK_HEADERS(jansson.h)
 
 dnl Checks for library functions.
 
