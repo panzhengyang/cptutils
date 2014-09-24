@@ -280,6 +280,13 @@ static int print_xml_doc(xmlTextWriter* writer, btrace_t *bt)
       return 1;
     }
 
+  if (xmlTextWriterWriteAttribute(writer, 
+				  BAD_CAST "program", 
+				  BAD_CAST bt->program) < 0)
+    {
+      fprintf(stderr, "error setting program attribute\n");
+      return 1;
+    }
 
   if (lines_print_xml(writer, bt->lines) != 0)
     {
