@@ -43,7 +43,7 @@ extern int gimplut(char* infile, char* outfile, glopt_t opt)
       
       if (!lutst)
 	{
-	  btrace_add("failed to open %s\n", outfile);
+	  btrace_add("failed to open %s", outfile);
 	  return 1;
 	}
       

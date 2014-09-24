@@ -34,7 +34,7 @@ extern int gimpsvg(const char *infile,
     
     if ((gradient = grad_load_gradient(infile)) == NULL)
       {
-	btrace_add("failed to load gradient from %s\n",
+	btrace_add("failed to load gradient from %s",
 		   (infile ? infile : "<stdin>"));
 	return 1;
       }
@@ -43,7 +43,7 @@ extern int gimpsvg(const char *infile,
 
     if ((svg = svg_new()) == NULL)
       {
-	btrace_add("failed to get new cpt strcture\n");
+	btrace_add("failed to get new cpt strcture");
 	return 1;
       }
     
@@ -54,16 +54,16 @@ extern int gimpsvg(const char *infile,
 	switch (err)
 	  {
 	  case ERR_SEGMENT_RGBA:
-	    btrace_add("error gretting colour from segment\n");
+	    btrace_add("error gretting colour from segment");
 	    break;
 	  case ERR_NULL:
-	    btrace_add("null structure\n");
+	    btrace_add("null structure");
 	    break;
 	  case ERR_INSERT:
-	    btrace_add("failed structure insert\n");
+	    btrace_add("failed structure insert");
 	    break;
 	  default:
-	    btrace_add("unknown error\n");
+	    btrace_add("unknown error");
 	  }
 	return 1;
       }
@@ -75,7 +75,7 @@ extern int gimpsvg(const char *infile,
     
     if (svg_write(outfile, 1, (const svg_t**)(&svg), &(opt.preview)) != 0)
       {
-	btrace_add("failed to write gradient to %s\n",
+	btrace_add("failed to write gradient to %s",
 		   (outfile ? outfile : "<stdout>"));
 	return 1;
       }
