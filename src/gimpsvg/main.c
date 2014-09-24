@@ -29,10 +29,12 @@
 
 #include <unistd.h>
 
+#include <colour.h>
+#include <svg.h>
+#include <btrace.h>
+
 #include "options.h"
 #include "gimpsvg.h"
-#include "colour.h"
-#include "svg.h"
 
 #define SAMPLES_MIN 5
 
@@ -46,7 +48,7 @@ int main(int argc, char** argv)
 
   if (options(argc, argv, &info) != 0)
     {
-      fprintf(stderr,"failed to parse command line\n");
+      fprintf(stderr, "failed to parse command line\n");
       return EXIT_FAILURE;
     }
 
@@ -57,7 +59,7 @@ int main(int argc, char** argv)
 
   if ((opt.samples = info.samples_arg) < SAMPLES_MIN)
     {
-      fprintf(stderr,"at least %i samples required\n",SAMPLES_MIN);
+      fprintf(stderr, "at least %i samples required\n", SAMPLES_MIN);
       opt.samples = SAMPLES_MIN;
     }
 
@@ -68,7 +70,7 @@ int main(int argc, char** argv)
       opt.preview.use = true;
       if (svg_preview_geometry(info.geometry_arg, &(opt.preview)) != 0)
         {
-          fprintf(stderr,"failed parse of geometry : %s\n",
+          fprintf(stderr, "failed parse of geometry : %s\n", 
                   info.geometry_arg);
           return EXIT_FAILURE;
         }
@@ -82,7 +84,7 @@ int main(int argc, char** argv)
 
   if (!outfile && opt.verbose)
     {
-      fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
+      fprintf(stderr, "verbosity suppressed (<stdout> for results)\n");
       opt.verbose = 0;
     }
 
@@ -97,29 +99,39 @@ int main(int argc, char** argv)
       infile = info.inputs[0];
       break;
     default:
-      fprintf(stderr,"Sorry, only one file at a time\n");
+      fprintf(stderr, "Sorry, only one file at a time\n");
       return EXIT_FAILURE;
     }
   
   if (opt.verbose)
-    printf("This is gimpsvg (version %s)\n",VERSION);
+    printf("This is gimpsvg (version %s)\n", VERSION);
 
   svg_srand();
+
+  btrace_enable();
 
   int err = gimpsvg(infile, outfile, opt);
 
   if (err)
-    fprintf(stderr, "failed (error %i)\n", err);
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
   else if (opt.verbose)
     {
-      printf("palette written to %s\n",(outfile ? outfile : "<stdin>"));
+      printf("palette written to %s\n", (outfile ? outfile : "<stdin>"));
       if (opt.preview.use)
 	{
 	  printf("with preview (%zu x %zu px)\n", 
-		 opt.preview.width,
+		 opt.preview.width, 
 		 opt.preview.height);
 	}
     }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

@@ -57,6 +57,8 @@
 <refsect1 id='options'><title>OPTIONS</title>
 <variablelist remap='TP'>
 
+  <xi:include href="../docbook/varlistentry-backtrace-file.xml"/>
+
   <xi:include href="../docbook/varlistentry-geometry-svg.xml"/>
 
   <xi:include href="../docbook/varlistentry-help.xml"/>

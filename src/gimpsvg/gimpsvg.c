@@ -1,7 +1,7 @@
 /*
   gimpcpt.c
 
-  (c) J.J.Green 2011
+  (c) J.J.Green 2011, 2014
 */
 
 #include <stdio.h>
@@ -9,12 +9,12 @@
 #include <string.h>
 #include <math.h>
 
+#include <ggr.h>
+#include <svg.h>
+#include <svgwrite.h>
+#include <btrace.h>
+
 #include "gimpsvg.h"
-
-#include "ggr.h"
-
-#include "svg.h"
-#include "svgwrite.h"
 
 #define ERR_SEGMENT_RGBA 1
 #define ERR_NULL         2
@@ -34,8 +34,8 @@ extern int gimpsvg(const char *infile,
     
     if ((gradient = grad_load_gradient(infile)) == NULL)
       {
-	fprintf(stderr,"failed to load gradient from %s\n",
-		(infile ? infile : "<stdin>"));
+	btrace_add("failed to load gradient from %s\n",
+		   (infile ? infile : "<stdin>"));
 	return 1;
       }
     
@@ -43,7 +43,7 @@ extern int gimpsvg(const char *infile,
 
     if ((svg = svg_new()) == NULL)
       {
-	fprintf(stderr,"failed to get new cpt strcture\n");
+	btrace_add("failed to get new cpt strcture\n");
 	return 1;
       }
     
@@ -54,16 +54,16 @@ extern int gimpsvg(const char *infile,
 	switch (err)
 	  {
 	  case ERR_SEGMENT_RGBA:
-	    fprintf(stderr,"error gretting colour from segment\n");
+	    btrace_add("error gretting colour from segment\n");
 	    break;
 	  case ERR_NULL:
-	    fprintf(stderr,"null structure\n");
+	    btrace_add("null structure\n");
 	    break;
 	  case ERR_INSERT:
-	    fprintf(stderr,"failed structure insert\n");
+	    btrace_add("failed structure insert\n");
 	    break;
 	  default:
-	    fprintf(stderr,"unknown error\n");
+	    btrace_add("unknown error\n");
 	  }
 	return 1;
       }
@@ -75,8 +75,8 @@ extern int gimpsvg(const char *infile,
     
     if (svg_write(outfile, 1, (const svg_t**)(&svg), &(opt.preview)) != 0)
       {
-	fprintf(stderr,"failed to write gradient to %s\n",
-		(outfile ? outfile : "<stdout>"));
+	btrace_add("failed to write gradient to %s\n",
+		   (outfile ? outfile : "<stdout>"));
 	return 1;
       }
     

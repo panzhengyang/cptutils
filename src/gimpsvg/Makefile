@@ -6,7 +6,7 @@ NAME = gimpsvg
 OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
-LDLIBS += -lsvg -lggr -lfill
+LDLIBS += -lsvg -lggr -lfill -lbt
 CFLAGS += 
 
 default : all
