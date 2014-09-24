@@ -13,15 +13,13 @@
 #define BTRACE_XML   2
 #define BTRACE_JSON  3
 
-extern void btrace_enable(void);
-extern void btrace_disable(void);
-extern bool btrace_is_enabled(void);
-
+extern void   btrace_enable(void);
+extern void   btrace_disable(void);
+extern bool   btrace_is_enabled(void);
 extern void   btrace_reset(void);
 extern bool   btrace_nonempty(void);
 extern size_t btrace_count(void);
-extern void   btrace_print_plain(FILE*);
-extern void   btrace_print_xml(FILE*);
+extern int    btrace_print_stream(FILE*, int);
 extern int    btrace_print(const char*, int);
 extern void   btrace_add(const char* file, int line, const char*, ...);
 

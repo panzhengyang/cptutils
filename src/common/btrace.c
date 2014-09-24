@@ -197,11 +197,6 @@ static void print_plain(FILE *stream, btrace_t *bt)
   lines_print_plain(stream, bt->lines);
 }
 
-extern void btrace_print_plain(FILE *stream)
-{
-  print_plain(stream, &(btrace_global));
-}
-
 /* print XML format */
 
 static int line_print_xml(xmlTextWriter* writer, btrace_line_t *btl)
@@ -333,35 +328,33 @@ static void print_xml(FILE *stream, btrace_t *bt)
     }
 }
 
-extern void btrace_print_xml(FILE *stream)
+extern int btrace_print_stream(FILE* stream, int type)
 {
-  print_xml(stream, &btrace_global);
+  switch (type)
+    {
+    case BTRACE_PLAIN: 
+      print_plain(stream, &btrace_global);
+      break;
+    case BTRACE_XML:
+      print_xml(stream, &btrace_global);
+      break;
+    default:
+      return 1;
+    }
+
+  return 0;
 }
 
 extern int btrace_print(const char* path, int type)
 {
   if (btrace_nonempty())
     {
-      void (*f)(FILE *);
-
-      switch (type)
-	{
-	case BTRACE_PLAIN: 
-	  f = btrace_print_plain;
-	  break;
-	case BTRACE_XML:
-	  f = btrace_print_xml;
-	  break;
-	default:
-	  return 1;
-	}
-
       FILE* stream;
 
       if ((stream = fopen(path, "w")) == NULL)
 	return 1;
-
-      f(stream);
+      
+      btrace_print_stream(stream, type);
 
       if (fclose(stream) != 0)
 	return 1;

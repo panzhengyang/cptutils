@@ -108,7 +108,7 @@ int main(int argc, char** argv)
   if (err)
     {
       btrace("failed (error %i)", err);
-      btrace_print_plain(stderr);
+      btrace_print_stream(stderr, BTRACE_PLAIN);
       if (info.backtrace_file_given)
         btrace_print(info.backtrace_file_arg, BTRACE_XML);
     }
