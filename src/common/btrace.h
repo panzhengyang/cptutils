@@ -23,8 +23,8 @@ extern size_t btrace_count(void);
 extern void   btrace_print_plain(FILE*);
 extern void   btrace_print_xml(FILE*);
 extern int    btrace_print(const char*, int);
-extern void   btrace_add_real(const char* file, int line, const char*, ...);
+extern void   btrace_add(const char* file, int line, const char*, ...);
 
-#define btrace_add(...) btrace_add_real(__FILE__, __LINE__, __VA_ARGS__)
+#define btrace(...) btrace_add(__FILE__, __LINE__, __VA_ARGS__)
 
 #endif

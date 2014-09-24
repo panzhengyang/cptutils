@@ -33,7 +33,7 @@ extern int gimplut(char* infile, char* outfile, glopt_t opt)
   
   if (!gradient)
     {
-      btrace_add("failed to load gradient from %s", (infile ? infile : "<stdin>"));
+      btrace("failed to load gradient from %s", (infile ? infile : "<stdin>"));
       return 1;
     }
   
@@ -43,7 +43,7 @@ extern int gimplut(char* infile, char* outfile, glopt_t opt)
       
       if (!lutst)
 	{
-	  btrace_add("failed to open %s", outfile);
+	  btrace("failed to open %s", outfile);
 	  return 1;
 	}
       

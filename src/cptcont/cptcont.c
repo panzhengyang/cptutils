@@ -34,19 +34,19 @@ extern int cptcont(char* infile,char* outfile,cptcont_opt_t opt)
 		}
 	      else
 		{
-		  btrace_add("error writing cpt struct");
+		  btrace("error writing cpt struct");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      btrace_add("failed to convert");
+	      btrace("failed to convert");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  btrace_add("failed to load cpt from %s",
+	  btrace("failed to load cpt from %s",
 		     (infile ? infile : "<stdin>"));
 	  err = 1;
 	}
@@ -55,12 +55,12 @@ extern int cptcont(char* infile,char* outfile,cptcont_opt_t opt)
     }	
   else
     {
-      btrace_add("failed to create cpt struct");
+      btrace("failed to create cpt struct");
       err = 1;
     }
   
   if (err)
-    btrace_add("failed to write cpt to %s",
+    btrace("failed to write cpt to %s",
 	       (outfile ? outfile : "<stdout>"));
   
   return err;
@@ -74,7 +74,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 
   if (cpt->segment == NULL)
     {
-      btrace_add("cpt has no segments");
+      btrace("cpt has no segments");
       return 1;
     }
 
@@ -87,7 +87,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 
       if (midpoint_split(cpt->segment,cpt->model) != 0)
 	{
-	  btrace_add("error splitting at midpoints");
+	  btrace("error splitting at midpoints");
 	  return 1;
 	}
     }
@@ -104,7 +104,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
     {
       if (s1->rsmp.fill.type != s2->lsmp.fill.type)
         {
-          btrace_add("sorry, can't convert mixed fill types");
+          btrace("sorry, can't convert mixed fill types");
           return 1;
         }
 
@@ -126,7 +126,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
 	  
 	  if (err)
 	    {
-	      btrace_add("failed fill intepolate");
+	      btrace("failed fill intepolate");
 	      return 1;
 	    }
 
@@ -168,7 +168,7 @@ static int midpoint_split(cpt_seg_t* s,model_t model)
 
   if (!sl)
     {
-      btrace_add("failed to create new segment");
+      btrace("failed to create new segment");
       return 1;
     }
 

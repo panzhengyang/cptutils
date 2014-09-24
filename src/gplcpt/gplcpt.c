@@ -25,7 +25,7 @@ extern int gplcpt(gplcpt_opt_t opt)
 
       if ((st = fopen(opt.file.input, "r")) == NULL)
         {
-          btrace_add("failed to open %s", opt.file.input);
+          btrace("failed to open %s", opt.file.input);
           err++;
         }
       else
@@ -53,7 +53,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 
   if (fgets(buf, BUFSIZE, st) == NULL) 
     {
-      btrace_add("no first data line");
+      btrace("no first data line");
       return 1;
     }
 
@@ -61,8 +61,8 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 
   if (strncmp(buf, "GIMP Palette", 12) != 0)
     {
-      btrace_add("file does not seem to be a GIMP palette");
-      btrace_add("%s", buf);
+      btrace("file does not seem to be a GIMP palette");
+      btrace("%s", buf);
       return 1;
     }
 
@@ -139,7 +139,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 
       if (sscanf(buf, "%i %i %i", &r, &g, &b) != 3)
 	{
-	  btrace_add("bad line %s", buf);
+	  btrace("bad line %s", buf);
 	  return 1;
 	} 
 
@@ -151,7 +151,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 
       if ((seg = cpt_seg_new()) == NULL)
 	{
-	  btrace_add("failed to create new segment");
+	  btrace("failed to create new segment");
 	  return 1;
 	}
 
@@ -163,7 +163,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 
       if (cpt_append(seg, cpt) != 0)
 	{
-	  btrace_add("failed append of segment %i", (int)n);
+	  btrace("failed append of segment %i", (int)n);
 	  return 1;
 	}
 
@@ -191,7 +191,7 @@ static int gplcpt_write(gplcpt_opt_t opt, cpt_t *cpt)
 {
   if (cpt_step_optimise(cpt) != 0)
     {
-      btrace_add("failed optimise");
+      btrace("failed optimise");
       return 1;
     }
 

@@ -18,19 +18,19 @@ extern int png_write(const char *path, png_t *png, const char* name)
 
   if (pngH == NULL)
     {
-      btrace_add("failed to create png write struct");
+      btrace("failed to create png write struct");
       return 1;
     }    
 
   if ((infoH = png_create_info_struct(pngH)) == NULL)
     {
-      btrace_add("failed to create png info struct");
+      btrace("failed to create png info struct");
       return 1;
     }
 
   if (setjmp(png_jmpbuf(pngH)))
     {
-      btrace_add("failed to set lonjump");
+      btrace("failed to set lonjump");
       return 1;
     }
     
@@ -60,7 +60,7 @@ extern int png_write(const char *path, png_t *png, const char* name)
 
   if ((rows = malloc(png->height * sizeof(png_byte*))) == NULL)
     {
-      btrace_add("failed to allocate memory");
+      btrace("failed to allocate memory");
       return 1;
     }
 

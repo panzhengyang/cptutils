@@ -4,7 +4,7 @@
 */
 
 #ifndef TESTS_BTRACE_H
-#define TESTS_BTRACE_H
+#define TESTS_BTRACE_Hx5
 
 #include <CUnit/CUnit.h>
 

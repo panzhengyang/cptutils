@@ -55,7 +55,7 @@ extern void test_btrace_nonempty(void)
 {
   CU_ASSERT( btrace_nonempty() == false );
   btrace_enable();
-  btrace_add("a message");
+  btrace("a message");
   CU_ASSERT( btrace_nonempty() == true );
   btrace_reset();
   CU_ASSERT( btrace_nonempty() == false );
@@ -68,7 +68,7 @@ extern void test_btrace_count(void)
 {
   CU_ASSERT( btrace_count() == 0 );
   btrace_enable();
-  btrace_add("a message");
+  btrace("a message");
   CU_ASSERT( btrace_count() == 1 );
   btrace_reset();
   CU_ASSERT( btrace_count() == 0 );
@@ -80,9 +80,9 @@ extern void test_btrace_count(void)
 extern void test_btrace_add(void)
 {
   btrace_enable();
-  btrace_add("no arguments");
-  btrace_add("%d arguments", 1);
-  btrace_add("%d %s", 2, "arguments");
+  btrace("no arguments");
+  btrace("%d arguments", 1);
+  btrace("%d %s", 2, "arguments");
   CU_ASSERT( btrace_count() == 3 );
   btrace_reset();
   btrace_disable();
@@ -101,7 +101,7 @@ extern void test_btrace_print_plain(void)
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
 
   btrace_enable();
-  btrace_add(MESSAGE);
+  btrace(MESSAGE);
   
   FILE *stream;
   CU_TEST_FATAL( (stream = fopen(path, "w")) != NULL );
@@ -133,7 +133,7 @@ extern void test_btrace_print_xml(void)
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
 
   btrace_enable();
-  btrace_add(MESSAGE);
+  btrace(MESSAGE);
   
   FILE *stream;
   CU_TEST_FATAL( (stream = fopen(path, "w")) != NULL );
@@ -156,7 +156,7 @@ extern void test_btrace_print(void)
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
 
   btrace_enable();
-  btrace_add(MESSAGE);
+  btrace(MESSAGE);
   
   CU_ASSERT( btrace_print(path, BTRACE_XML) == 0 );
   

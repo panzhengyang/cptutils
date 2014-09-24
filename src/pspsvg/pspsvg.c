@@ -30,7 +30,7 @@ extern int pspsvg(pspsvg_opt_t opt)
 
   if ((svg = svg_new()) == NULL)
     {
-      btrace_add("failed to get new svg strcture");
+      btrace("failed to get new svg strcture");
       return 1;
     }
 
@@ -38,14 +38,14 @@ extern int pspsvg(pspsvg_opt_t opt)
 
   if ((grd3 = grd3_new()) == NULL)
     {
-      btrace_add("failed to get new grd3 struture");
+      btrace("failed to get new grd3 struture");
       return 1;
     }
 
   if (grd3_read(opt.file.input, grd3) != 0)
     {
-      btrace_add("failed to read data from %s",
-	      (opt.file.input ?  opt.file.input : "<stdin>"));
+      btrace("failed to read data from %s",
+	     (opt.file.input ?  opt.file.input : "<stdin>"));
       return 1;
     }
   
@@ -53,7 +53,7 @@ extern int pspsvg(pspsvg_opt_t opt)
 
   if (pspsvg_convert(grd3, svg, opt) != 0)
     {
-      btrace_add("failed to convert data");
+      btrace("failed to convert data");
       return 1;
     }
   
@@ -61,8 +61,8 @@ extern int pspsvg(pspsvg_opt_t opt)
   
   if (svg_write(opt.file.output, 1, (const svg_t**)(&svg), &(opt.preview)) != 0)
     {
-      btrace_add("failed to write palette to %s",
-	      (opt.file.output ? opt.file.output : "<stdout>"));
+      btrace("failed to write palette to %s",
+	     (opt.file.output ? opt.file.output : "<stdout>"));
       return 1;
     }
   
@@ -174,7 +174,7 @@ static gstack_t* rectify_rgb(grd3_t* grd3)
 
   if (n<2)
     {
-      btrace_add("input (grd) has %i rgb stop(s)", n);
+      btrace("input (grd) has %i rgb stop(s)", n);
       return NULL;
     }
 
@@ -241,7 +241,7 @@ static gstack_t* rectify_op(grd3_t* grd3)
 
   if (n<2)
     {
-      btrace_add("input (grd) has %i opacity stop(s)",n);
+      btrace("input (grd) has %i opacity stop(s)",n);
       return NULL;
     }
 
@@ -348,7 +348,7 @@ static int pspsvg_convert(grd3_t *grd3, svg_t *svg, pspsvg_opt_t opt)
 
   if (latin1_to_utf8(grd3->name, svg->name, SVG_NAME_LEN) != 0)
     {
-      btrace_add("failed latin1 to unicode name conversion");
+      btrace("failed latin1 to unicode name conversion");
       return 1;
     }
 
@@ -370,7 +370,7 @@ static int pspsvg_convert(grd3_t *grd3, svg_t *svg, pspsvg_opt_t opt)
 
   if (grdxsvg(rgbrec, oprec, svg) != 0)
     {
-      btrace_add("failed conversion of rectified stops to svg");
+      btrace("failed conversion of rectified stops to svg");
       return 1;
     }
   

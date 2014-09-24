@@ -29,14 +29,14 @@ extern int svgx(svgx_opt_t opt)
 
   if ((list = svg_list_new()) == NULL)
     {
-      btrace_add("error creating new list");
+      btrace("error creating new list");
       err++;
     }
   else
     {
       if (svg_read(opt.input.file, list) != 0)
 	{
-	  btrace_add("error reading svg");
+	  btrace("error reading svg");
 	  err++;
 	}
       else
@@ -103,7 +103,7 @@ static int svgx_list(svgx_opt_t opt, svg_list_t *list)
     }
 
   if (err)  
-    btrace_add("error listing svg");
+    btrace("error listing svg");
 
   return err;
 }
@@ -120,7 +120,7 @@ static int svgx_first(svgx_opt_t opt, svg_list_t *list)
 			     (int (*)(svg_t*,void*))svg_select_first,
 			     NULL)) == NULL)
     {
-      btrace_add("couldn't find first gradient!");
+      btrace("couldn't find first gradient!");
       return 1;
     }
 
@@ -135,7 +135,7 @@ static int svgx_named(svgx_opt_t opt, svg_list_t *list)
 			     (int (*)(svg_t*,void*))svg_select_name,
 			     opt.name)) == NULL)
     {
-      btrace_add("couldn't find gradient named %s", opt.name);
+      btrace("couldn't find gradient named %s", opt.name);
       return 1;
     }
 
@@ -160,7 +160,7 @@ static int flatten_type(svgx_type_t type)
     case type_svg:
       return 0;
     default:
-      btrace_add("strange type");
+      btrace("strange type");
       return -1;
     }
 }
@@ -187,7 +187,7 @@ static dump_f dump_type(svgx_type_t type)
  
     default:
 
-      btrace_add("strange output format!");
+      btrace("strange output format!");
       dump = NULL;
     }
   
@@ -202,7 +202,7 @@ static int svgx_single(svgx_opt_t opt, svg_t *svg)
 
   if (svg_explicit(svg) != 0)
     {
-      btrace_add("failed adding explicit stops");
+      btrace("failed adding explicit stops");
       return 1;
     }
 
@@ -212,7 +212,7 @@ static int svgx_single(svgx_opt_t opt, svg_t *svg)
     {
       if (svg_flatten(svg, opt.format.alpha) != 0)
 	{
-	  btrace_add("failed to flatten transparency");
+	  btrace("failed to flatten transparency");
 	  return 1;
 	}
     }
@@ -224,7 +224,7 @@ static int svgx_single(svgx_opt_t opt, svg_t *svg)
 
   if (dump(svg, &opt) != 0)
     {
-      btrace_add("failed conversion");
+      btrace("failed conversion");
       return 1;
     }
 
@@ -262,7 +262,7 @@ static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 
   if (svg_list_iterate(list, svg_explicit2, NULL) != 0)
     {
-      btrace_add("failed coerce explicit");
+      btrace("failed coerce explicit");
       return 1;
     }
 
@@ -274,7 +274,7 @@ static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 			   (int (*)(svg_t*, void*))svg_flatten2, 
 			   &(opt.format.alpha)) != 0)
 	{
-	  btrace_add("failed coerce explicit");
+	  btrace("failed coerce explicit");
 	  return 1;
 	}
     }
@@ -289,7 +289,7 @@ static int svgx_all(svgx_opt_t opt, svg_list_t *list)
 
   if (svg_list_iterate(list, dump, &opt) != 0)
     {
-      btrace_add("failed writing all gradients");
+      btrace("failed writing all gradients");
       return 1;
     }
 

@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 
   if (err)
     {
-      btrace_add("failed (error %i)", err);
+      btrace("failed (error %i)", err);
       btrace_print_plain(stderr);
       if (info.backtrace_file_given)
         btrace_print(info.backtrace_file_arg, BTRACE_XML);

@@ -39,13 +39,13 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 		      }
 		    else
 		      {
-			btrace_add("error writing sgv struct");
+			btrace("error writing sgv struct");
 			err = 1;
 		      }
 		  }
 		else
 		  {
-		    btrace_add("failed to convert cpt to svg");
+		    btrace("failed to convert cpt to svg");
 		    err = 1;
 		  }
 
@@ -53,13 +53,13 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
 	      }
 	    else
 	      {
-		btrace_add("failed to allocate svg");
+		btrace("failed to allocate svg");
 		err = 1;
 	      }
 	  }
 	else
 	  {
-	    btrace_add("failed to load cpt from %s", 
+	    btrace("failed to load cpt from %s", 
 		       (infile ? infile : "<stdin>"));
 	    err = 1;
 	  }
@@ -68,12 +68,12 @@ extern int cptsvg(char* infile, char* outfile, cptsvg_opt_t opt)
       }	
     else
       {
-	btrace_add("failed to create cpt struct");
+	btrace("failed to create cpt struct");
 	err = 1;
       }
 
     if (err)
-      btrace_add("failed to write svg to %s", (outfile ? outfile : "<stdout>"));
+      btrace("failed to write svg to %s", (outfile ? outfile : "<stdout>"));
 
     return err;
 }
@@ -89,7 +89,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
 
   if (cpt->segment == NULL)
     {
-      btrace_add("cpt has no segments");
+      btrace("cpt has no segments");
       return 1;
     }
 
@@ -100,7 +100,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
       if (snprintf((char*)svg->name, 
 		   SVG_NAME_LEN, 
 		   "%s", cpt->name) >= SVG_NAME_LEN)
-	btrace_add("truncated svg name!");
+	btrace("truncated svg name!");
     }
 
   /* find the min/max of the cpt range */
@@ -120,7 +120,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
     case model_hsv: 
       break;
     default:
-      btrace_add("unknown colour model");
+      btrace("unknown colour model");
       return 1;
     }
 
@@ -137,7 +137,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
 
       if (lsmp.fill.type != rsmp.fill.type)
         {
-          btrace_add("sorry, can't convert mixed fill types");
+          btrace("sorry, can't convert mixed fill types");
           return 1;
         }
             
@@ -155,7 +155,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
               break;
             case model_hsv:
 	      /* fixme */
-	      btrace_add("conversion of hsv not yet implemeted");
+	      btrace("conversion of hsv not yet implemeted");
               return 1;
             default:
               return 1;
@@ -167,11 +167,11 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
         case fill_file:
         case fill_empty:
 	  /* fixme */
-	  btrace_add("fill type not implemeted yet");
+	  btrace("fill type not implemeted yet");
           return 1;
 
         default:
-          btrace_add("strange fill type");
+          btrace("strange fill type");
           return 1;
         }
 
@@ -184,7 +184,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
       if (svg_append(lstop, svg) == 0) m++;
       else 
 	{
-	  btrace_add("error adding stop for segment %i left", n);
+	  btrace("error adding stop for segment %i left", n);
 	  return 1;
 	}
 
@@ -203,7 +203,7 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
 	  if (svg_append(rstop, svg) == 0) m++;
 	  else
 	    {
-	      btrace_add("error adding stop for segment %i right", n);
+	      btrace("error adding stop for segment %i right", n);
 	      return 1;
 	    }
 	}

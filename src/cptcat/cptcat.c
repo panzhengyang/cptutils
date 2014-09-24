@@ -46,13 +46,13 @@ extern int cptcat(cptcat_opt_t opt)
 
       if (cpt_read(dat[i].file, dat[i].cpt) != 0)
 	{
-	  btrace_add("failed to read %s", dat[i].file);
+	  btrace("failed to read %s", dat[i].file);
 	  return 1;
 	}
 
       if (cpt_zrange(dat[i].cpt, dat[i].range) != 0)
 	{
-	  btrace_add("failed to get zrange");
+	  btrace("failed to get zrange");
 	  return 1;
 	}
 
@@ -72,7 +72,7 @@ extern int cptcat(cptcat_opt_t opt)
 
       if (range[0] >= range[1])
 	{
-	  btrace_add("%s is decreasing", dat[i].file); 
+	  btrace("%s is decreasing", dat[i].file); 
 	  return 1;
 	}
     }
@@ -88,10 +88,10 @@ extern int cptcat(cptcat_opt_t opt)
     {
       if (dat[i].range[1] != dat[i+1].range[0])
 	{
-	  btrace_add("non-contiguous input:");
-	  btrace_add("  %s : %g < z < %g", 
+	  btrace("non-contiguous input:");
+	  btrace("  %s : %g < z < %g", 
 		     dat[i].file, dat[i].range[0], dat[i].range[1]);
-	  btrace_add("  %s : %g < z < %g", 
+	  btrace("  %s : %g < z < %g", 
 		     dat[i+1].file, dat[i+1].range[0], dat[i+1].range[1]);
 	  return 1;
 	}
@@ -105,7 +105,7 @@ extern int cptcat(cptcat_opt_t opt)
     {
       if (dat[0].cpt->model != model)
 	{
-	  btrace_add("incompatible colour models in input");
+	  btrace("incompatible colour models in input");
 	  return 1;
 	}
     }
@@ -131,7 +131,7 @@ extern int cptcat(cptcat_opt_t opt)
 	{
 	  if (cpt_append(seg, cpt) != 0)
 	    {
-	      btrace_add("failed prepend");
+	      btrace("failed prepend");
 	      return 1;
 	    }
 	}
@@ -166,7 +166,7 @@ extern int cptcat(cptcat_opt_t opt)
 
   if (cpt_write(opt.output, cpt) != 0)
     {
-      btrace_add("failed write to %s", opt.output);
+      btrace("failed write to %s", opt.output);
       return 1;
     }
 

@@ -36,7 +36,7 @@ extern int xycpt(xycpt_opt_t opt)
     
   if (!xy)
     {
-      btrace_add("failed to read data from %s",
+      btrace("failed to read data from %s",
 	      (opt.file.input ?  opt.file.input : "<stdin>"));
       return 1;
     }
@@ -45,7 +45,7 @@ extern int xycpt(xycpt_opt_t opt)
 
   if ((cpt = cpt_new()) == NULL)
     {
-      btrace_add("failed to get new cpt strcture");
+      btrace("failed to get new cpt strcture");
       return 1;
     }
 
@@ -66,7 +66,7 @@ extern int xycpt(xycpt_opt_t opt)
 
   if (xycpt_convert(xy, cpt, opt) != 0)
     {
-      btrace_add("failed to convert data");
+      btrace("failed to convert data");
       return 1;
     }
   
@@ -80,7 +80,7 @@ extern int xycpt(xycpt_opt_t opt)
   
   if (cpt_write(opt.file.output, cpt) != 0)
     {
-      btrace_add("failed to write palette to %s",
+      btrace("failed to write palette to %s",
 	      (opt.file.output ? opt.file.output : "<stdout>"));
       return 1;
     }
@@ -107,7 +107,7 @@ static int xycpt_convert(fill_stack_t* fstack, cpt_t *cpt, xycpt_opt_t opt)
 
   if (n<2)
     {
-      btrace_add("there is not enough data to make a palette!");
+      btrace("there is not enough data to make a palette!");
       return 1;
     }
 
@@ -222,7 +222,7 @@ static cpt_seg_t* cpt_seg_new_err(void)
 
   if ((seg = cpt_seg_new()) == NULL) 
     {
-      btrace_add("error creating segment");
+      btrace("error creating segment");
       return NULL;
     }
 
@@ -235,7 +235,7 @@ static int cpt_append_err(cpt_seg_t* seg, cpt_t* cpt)
 {
   if (cpt_append(seg, cpt) != 0)
     {
-      btrace_add("error adding segment");
+      btrace("error adding segment");
       return 1;
     }
 
@@ -257,7 +257,7 @@ static fill_stack_t* xyread(char* file, xycpt_opt_t opt)
     {
       if ((stream = fopen(file, "r")) == NULL)
 	{
-	  btrace_add("failed to open %s", file);
+	  btrace("failed to open %s", file);
 	  return NULL;
 	}
 
@@ -317,7 +317,7 @@ static fill_stack_t* xyread_stream(FILE* stream, xycpt_opt_t opt)
   do
     if (fgets(buf, BUFSIZE, stream) == NULL) 
       {
-	btrace_add("no first data line");
+	btrace("no first data line");
 	return NULL;
       }
   while (skipline(buf));
@@ -326,7 +326,7 @@ static fill_stack_t* xyread_stream(FILE* stream, xycpt_opt_t opt)
 
   if ((tok[0] = strtok(buf, " \t\n")) == NULL)
     {
-      btrace_add("no tokens");
+      btrace("no tokens");
       return NULL;
     }
 
@@ -391,7 +391,7 @@ static fill_stack_t* xyread_stream(FILE* stream, xycpt_opt_t opt)
       break;
 
     default:
-      btrace_add("bad input : found %i tokens", i);
+      btrace("bad input: found %i tokens", i);
       free(f);
       return NULL;
     }
@@ -411,7 +411,7 @@ static fill_stack_t* xyread1i(FILE* stream, char* buf, int n)
   
   if (sscanf(buf, "%d", &i) != 1)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -438,7 +438,7 @@ static fill_stack_t* xyread1f(FILE* stream, char* buf, int n)
   
   if (sscanf(buf, "%lf", &d) != 1)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -466,7 +466,7 @@ static fill_stack_t* xyread2i(FILE* stream, char* buf)
   
   if (sscanf(buf, "%lf %d", &v, &i) != 2)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -493,7 +493,7 @@ static fill_stack_t* xyread2f(FILE* stream, char* buf)
   
   if (sscanf(buf, "%lf %lf", &v, &d) != 2)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -520,7 +520,7 @@ static fill_stack_t* xyread3i(FILE* stream, char* buf, int n)
   
   if (sscanf(buf, "%d %d %d", &r, &g, &b) != 3)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -551,7 +551,7 @@ static fill_stack_t* xyread3f(FILE* stream, char* buf, int n)
   
   if (sscanf(buf, "%lf %lf %lf", &r, &g, &b) != 3)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -583,7 +583,7 @@ static fill_stack_t* xyread4i(FILE* stream, char* buf)
   
   if (sscanf(buf, "%lf %d %d %d", &z, &r, &g, &b) != 4)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line: %s", buf);
       return NULL;
     }
 
@@ -615,7 +615,7 @@ static fill_stack_t* xyread4f(FILE* stream, char* buf)
   
   if (sscanf(buf, "%lf %lf %lf %lf", &z, &r, &g, &b) != 4)
     {
-      btrace_add("bad line\n  %s", buf);
+      btrace("bad line:  %s", buf);
       return NULL;
     }
 

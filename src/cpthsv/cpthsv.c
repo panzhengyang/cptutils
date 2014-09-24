@@ -33,19 +33,19 @@ extern int cpthsv(char* infile,char* outfile,cpthsv_opt_t opt)
 		}
 	      else
 		{
-		  btrace_add("error writing cpt struct");
+		  btrace("error writing cpt struct");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      btrace_add("failed to convert");
+	      btrace("failed to convert");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  btrace_add("failed to load cpt from %s",
+	  btrace("failed to load cpt from %s",
 		     (infile ? infile : "<stdin>"));
 	  err = 1;
 	}
@@ -54,12 +54,12 @@ extern int cpthsv(char* infile,char* outfile,cpthsv_opt_t opt)
     }	
   else
     {
-      btrace_add("failed to create cpt struct");
+      btrace("failed to create cpt struct");
       err = 1;
     }
   
   if (err)
-    btrace_add("failed to write cpt to %s", (outfile ? outfile : "<stdout>"));
+    btrace("failed to write cpt to %s", (outfile ? outfile : "<stdout>"));
   
   return err;
 }
@@ -72,7 +72,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
 
   if (cpt->segment == NULL)
     {
-      btrace_add("cpt has no segments");
+      btrace("cpt has no segments");
       return 1;
     }
 
@@ -80,7 +80,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
 
   if (cpt->model != model_rgb)
     {
-      btrace_add("cannot process non-rgb palette, sorry");
+      btrace("cannot process non-rgb palette, sorry");
       return 1;
     }
 
@@ -93,7 +93,7 @@ static int cpthsv_convert(cpt_t* cpt,cpthsv_opt_t opt)
     {
       if (seg->lsmp.fill.type != seg->rsmp.fill.type)
         {
-          btrace_add("sorry, can't convert mixed fill types");
+          btrace("sorry, can't convert mixed fill types");
           return 1;
         }
 

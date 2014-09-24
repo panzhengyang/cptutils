@@ -26,13 +26,13 @@ extern int utf8_to_x(const char *type,
 
   if (snprintf(icname, icnamelen, "%s//%s", type, icopt) > icnamelen)
     {
-      btrace_add( "failed to create iconv string");
+      btrace("failed to create iconv string");
       return 1;
     }
 
   if (setlocale(LC_CTYPE, lname) == NULL)
     {
-      btrace_add("failed to set locale to %s", lname);
+      btrace("failed to set locale to %s", lname);
       return 1;
     }
 
@@ -40,7 +40,7 @@ extern int utf8_to_x(const char *type,
   
   if (cv == (iconv_t)(-1))
     {
-      btrace_add("error opening iconv descriptor: %s", strerror(errno));
+      btrace("error opening iconv descriptor: %s", strerror(errno));
       return 1;
     }
 
@@ -50,13 +50,13 @@ extern int utf8_to_x(const char *type,
 	    (char**)&(in), &(lenin), 
 	    (char**)&(out), &(lenout)) == (size_t)-1)
     {
-      btrace_add("error in iconv: %s", strerror(errno));
+      btrace("error in iconv: %s", strerror(errno));
       return 1;
     }
 
   if (iconv_close(cv) == -1)
     {
-      btrace_add("error closing iconv descriptor: %s", strerror(errno));
+      btrace("error closing iconv descriptor: %s", strerror(errno));
       return 1;
     }
 

@@ -36,26 +36,26 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
 		    }
 		  else
 		    {
-		      btrace_add("error writing cpt struct");
+		      btrace("error writing cpt struct");
 		      err = 1;
 		    }
 		}
 	      else
 		{
-		  btrace_add("clipped result has no segments");
+		  btrace("clipped result has no segments");
 		  err = 1;
 		}
 	    }
 	  else
 	    {
-	      btrace_add("failed to convert");
+	      btrace("failed to convert");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  btrace_add("failed to load cpt from %s",
-		     (infile ? infile : "<stdin>"));
+	  btrace("failed to load cpt from %s",
+		 (infile ? infile : "<stdin>"));
 	  err = 1;
 	}
       
@@ -63,13 +63,13 @@ extern int cptclip(char* infile,char* outfile,cptclip_opt_t opt)
     }	
   else
     {
-      btrace_add("failed to create cpt struct");
+      btrace("failed to create cpt struct");
       err = 1;
     }
   
   if (err)
-    btrace_add("failed to write cpt to %s",
-	       (outfile ? outfile : "<stdout>"));
+    btrace("failed to write cpt to %s",
+	   (outfile ? outfile : "<stdout>"));
   
   return err;
 }
@@ -81,7 +81,7 @@ static int cptclip_convert(cpt_t* cpt,cptclip_opt_t opt)
 {
   if (cpt->segment == NULL)
     {
-      btrace_add("cpt has no segments");
+      btrace("cpt has no segments");
       return 1;
     }
 
@@ -157,7 +157,7 @@ static int cptclip_z_id(cpt_t* cpt,
 				cpt->model,
 				&fill) != 0)
             {
-              btrace_add("fill interpolation failed");
+              btrace("fill interpolation failed");
               return 1;
             }
 
@@ -198,7 +198,7 @@ static int cptclip_z_id(cpt_t* cpt,
 				cpt->model,
 				&fill) != 0)
             {
-              btrace_add("fill interpolation failed");
+              btrace("fill interpolation failed");
               return 1;
             }
 

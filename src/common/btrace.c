@@ -164,7 +164,7 @@ static void append(btrace_t *bt, const char* file, int line, char *message)
   bt->lines = btl;
 }
 
-extern void btrace_add_real(const char* file, int line, const char* format, ...)
+extern void btrace_add(const char* file, int line, const char* format, ...)
 {
   char buffer[512];
   va_list args;
