@@ -1,13 +1,13 @@
 # Makefile for xycpt
 #
-# (c) J.J.Green 2001,2004
+# (c) J.J.Green 2001, 2004, 2014
 
 NAME = xycpt
 
 OBJ      =  xycpt.o main.o options.o
 RUBBISH += $(OBJ) xycpt
 
-LDLIBS += -lcpt -lfill
+LDLIBS += -lcpt -lfill -lbt
 
 default : all
 

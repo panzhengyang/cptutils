@@ -1,7 +1,7 @@
 /*
   main.c 
 
-  part of the gimpcpt package
+  part of the cptutils package
 
   This program is free software; you can redistribute it
   and/or modify it under the terms of the GNU General
@@ -27,17 +27,18 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "xycpt.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
   xycpt_opt_t opt = {0};
-  char *infile,*outfile;
-  int err;
+  char *infile, *outfile;
 
-  /* use gengetopt */
+  /* gengetopt */
 
   if (options(argc, argv, &info) != 0)
     {
@@ -153,14 +154,24 @@ int main(int argc,char** argv)
 	      return EXIT_FAILURE;
 	    }
 
-	  printf("converting to discrete palette (%s registration)\n",regstr);
+	  printf("converting to discrete palette (%s registration)\n", regstr);
 	}
     }
 
-  err = xycpt(opt);
+  btrace_enable();
 
-  if (err != 0)
-    fprintf(stderr,"failed (error %i)\n",err);
+  int err = xycpt(opt);
+
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");
