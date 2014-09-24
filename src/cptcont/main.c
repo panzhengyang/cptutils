@@ -84,7 +84,7 @@ int main(int argc, char** argv)
   
   opt.partial = (info.partial_given ? info.partial_arg/100.0 : 1.0);
 
-  btrace_enable();
+  btrace_enable("cptcont");
 
   int err = cptcont(infile, outfile, opt);
 

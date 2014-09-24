@@ -31,7 +31,7 @@ extern void test_btrace_default(void)
 extern void test_btrace_enable(void)
 {
   CU_TEST_FATAL( btrace_is_enabled() == false );
-  btrace_enable();
+  btrace_enable("foo");
   CU_ASSERT( btrace_is_enabled() == true );
   btrace_disable();
   CU_TEST_FATAL( btrace_is_enabled() == false );
@@ -41,7 +41,7 @@ extern void test_btrace_enable(void)
 
 extern void test_btrace_disable(void)
 {
-  btrace_enable();
+  btrace_enable("foo");
   CU_TEST_FATAL( btrace_is_enabled() == true );
   btrace_disable();
   CU_ASSERT( btrace_is_enabled() == false );
@@ -52,7 +52,7 @@ extern void test_btrace_disable(void)
 extern void test_btrace_nonempty(void)
 {
   CU_ASSERT( btrace_nonempty() == false );
-  btrace_enable();
+  btrace_enable("foo");
   btrace("a message");
   CU_ASSERT( btrace_nonempty() == true );
   btrace_reset();
@@ -65,7 +65,7 @@ extern void test_btrace_nonempty(void)
 extern void test_btrace_count(void)
 {
   CU_ASSERT( btrace_count() == 0 );
-  btrace_enable();
+  btrace_enable("foo");
   btrace("a message");
   CU_ASSERT( btrace_count() == 1 );
   btrace_reset();
@@ -77,7 +77,7 @@ extern void test_btrace_count(void)
 
 extern void test_btrace_add(void)
 {
-  btrace_enable();
+  btrace_enable("foo");
   btrace("no arguments");
   btrace("%d arguments", 1);
   btrace("%d %s", 2, "arguments");
@@ -100,7 +100,7 @@ extern void test_btrace_print(void)
   char *path;
   CU_TEST_FATAL( (path = tmpnam(NULL)) != NULL );
 
-  btrace_enable();
+  btrace_enable("foo");
   btrace(MESSAGE);
 
   btrace_print(path, BTRACE_XML);

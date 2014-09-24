@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 	     opt.fg.red,  opt.fg.green,  opt.fg.blue);
     }
 
-  btrace_enable();
+  btrace_enable("pssvg");
 
   int err = pssvg(opt);
 

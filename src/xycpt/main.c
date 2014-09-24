@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 	}
     }
 
-  btrace_enable();
+  btrace_enable("xycpt");
 
   int err = xycpt(opt);
 

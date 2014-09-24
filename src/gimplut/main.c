@@ -84,7 +84,7 @@ int main(int argc, char** argv)
   if (opt.verbose)
     printf("This is gimplut (version %s)\n", VERSION);
 
-  btrace_enable();
+  btrace_enable("gimplut");
 
   int err = gimplut(infile, outfile, opt);
 

@@ -282,7 +282,7 @@ int main(int argc, char** argv)
 
   /* backtrace */
 
-  btrace_enable();
+  btrace_enable("svgx");
 
   err = svgx(opt);
 

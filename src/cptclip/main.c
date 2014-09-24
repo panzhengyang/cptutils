@@ -138,7 +138,7 @@ int main(int argc, char** argv)
 
     }
 
-  btrace_enable();
+  btrace_enable("cptclip");
 
   int err = cptclip(infile,outfile,opt);
 

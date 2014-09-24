@@ -97,7 +97,7 @@ int main(int argc, char** argv)
 
   svg_srand();
 
-  btrace_enable();
+  btrace_enable("pspsvg");
 
   int err = pspsvg(opt);
 

@@ -69,7 +69,7 @@ int main(int argc,char** argv)
   if (opt.verbose)
     printf("This is cptcat (version %s)\n",VERSION);
 
-  btrace_enable();
+  btrace_enable("cptcat");
 
   int err = cptcat(opt);
 

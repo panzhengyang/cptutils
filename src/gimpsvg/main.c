@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
   svg_srand();
 
-  btrace_enable();
+  btrace_enable("gimpsvg");
 
   int err = gimpsvg(infile, outfile, opt);
 

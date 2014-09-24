@@ -13,7 +13,7 @@
 #define BTRACE_XML   2
 #define BTRACE_JSON  3
 
-extern void   btrace_enable(void);
+extern void   btrace_enable(const char*);
 extern void   btrace_disable(void);
 extern bool   btrace_is_enabled(void);
 extern void   btrace_reset(void);

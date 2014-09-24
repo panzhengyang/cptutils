@@ -101,7 +101,7 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 
-  btrace_enable();
+  btrace_enable("gplcpt");
 
   int err = gplcpt(opt);
 

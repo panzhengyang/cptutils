@@ -99,7 +99,7 @@ int main(int argc, char** argv)
 
   svg_srand();
 
-  btrace_enable();
+  btrace_enable("cptsvg");
 
   int err = cptsvg(infile, outfile, opt);
 

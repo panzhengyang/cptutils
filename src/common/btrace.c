@@ -31,31 +31,31 @@ struct btrace_line_t
 
 typedef struct
 {
-  bool enabled;
+  const char *program;
   btrace_line_t *lines;
 } btrace_t;
 
 static btrace_t btrace_global = 
   {
-    .enabled = false,
+    .program = NULL,
     .lines   = NULL
   };
 
 /* enable/disable */
 
-static void enable(btrace_t *bt)
+static void enable(const char *program, btrace_t *bt)
 {
-  bt->enabled = true;
+  bt->program = program;
 }
 
-extern void btrace_enable(void)
+extern void btrace_enable(const char *program)
 {
-  enable(&btrace_global); 
+  enable(program, &btrace_global); 
 }
 
 static void disable(btrace_t *bt)
 {
-  bt->enabled = false;
+  bt->program = NULL;
 }
 
 extern void btrace_disable(void)
@@ -65,7 +65,7 @@ extern void btrace_disable(void)
 
 static bool is_enabled(btrace_t *bt)
 {
-  return bt->enabled;
+  return bt->program != NULL;
 }
 
 extern bool btrace_is_enabled(void)
