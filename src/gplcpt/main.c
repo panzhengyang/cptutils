@@ -27,6 +27,8 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "gplcpt.h"
 
@@ -35,7 +37,6 @@ int main(int argc, char** argv)
   struct gengetopt_args_info info;
   gplcpt_opt_t opt = {0};
   char *infile,*outfile;
-  int err;
 
   /* use gengetopt */
 
@@ -100,10 +101,20 @@ int main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 
-  err = gplcpt(opt);
+  btrace_enable();
+
+  int err = gplcpt(opt);
 
   if (err)
-    fprintf(stderr,"failed (error %i)\n",err);
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

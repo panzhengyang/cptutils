@@ -7,11 +7,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cpt.h"
-#include "cptwrite.h"
+#include <cpt.h>
+#include <cptwrite.h>
+#include <btrace.h>
+
 #include "gplcpt.h"
 
-static int gplcpt_st(gplcpt_opt_t,FILE*);
+static int gplcpt_st(gplcpt_opt_t, FILE*);
 
 extern int gplcpt(gplcpt_opt_t opt)
 {
@@ -21,46 +23,46 @@ extern int gplcpt(gplcpt_opt_t opt)
     {
       FILE* st;
 
-      if ((st = fopen(opt.file.input,"r")) == NULL)
+      if ((st = fopen(opt.file.input, "r")) == NULL)
         {
-          fprintf(stderr,"failed to open %s\n",opt.file.input);
+          btrace_add("failed to open %s", opt.file.input);
           err++;
         }
       else
 	{
-	  err = gplcpt_st(opt,st);
+	  err = gplcpt_st(opt, st);
 	  fclose(st);
 	}
     }
   else
-    err = gplcpt_st(opt,stdin);
+    err = gplcpt_st(opt, stdin);
 
   return err;
 }
 
 #define BUFSIZE 1024
 
-static int gplcpt_write(gplcpt_opt_t,cpt_t*);
+static int gplcpt_write(gplcpt_opt_t, cpt_t*);
 static int skipline(const char*);
 
-extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
+extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 {
   char buf[BUFSIZE];
 
   /* get first line */
 
-  if (fgets(buf,BUFSIZE,st) == NULL) 
+  if (fgets(buf, BUFSIZE, st) == NULL) 
     {
-      fprintf(stderr,"no first data line\n");
+      btrace_add("no first data line");
       return 1;
     }
 
   /* check it is a gimp palette */
 
-  if (strncmp(buf,"GIMP Palette",12) != 0)
+  if (strncmp(buf, "GIMP Palette", 12) != 0)
     {
-      fprintf(stderr,"file does not seem to be a GIMP palette\n");
-      fprintf(stderr,"%s",buf);
+      btrace_add("file does not seem to be a GIMP palette");
+      btrace_add("%s", buf);
       return 1;
     }
 
@@ -83,18 +85,18 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
   /* get next non-comment line */
 
   do
-    if (fgets(buf,BUFSIZE,st) == NULL) return 1;
+    if (fgets(buf, BUFSIZE, st) == NULL) return 1;
   while (skipline(buf));
 
   /* see if it is a name line */
   
   char name[BUFSIZE];
 
-  if (sscanf(buf,"Name: %s",name) == 1)
+  if (sscanf(buf, "Name: %s", name) == 1)
     {
       if (opt.verbose)
 	{
-	  printf("GIMP palette %s\n",name);
+	  printf("GIMP palette %s\n", name);
 	}
 
       cpt->name = strdup(name);
@@ -102,7 +104,7 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
       /* skip to next non-comment */
 
       do
-	if (fgets(buf,BUFSIZE,st) == NULL) return 1;
+	if (fgets(buf, BUFSIZE, st) == NULL) return 1;
       while (skipline(buf));
     }
 
@@ -110,17 +112,17 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 
   int columns;
 
-  if (sscanf(buf,"Columns: %i",&columns) == 1)
+  if (sscanf(buf, "Columns: %i", &columns) == 1)
     {
       if (opt.verbose)
 	{
-	  printf("%i columns\n",columns);
+	  printf("%i columns\n", columns);
 	}
 
       /* skip to next non-comment */
 
       do
-	if (fgets(buf,BUFSIZE,st) == NULL) return 1;
+	if (fgets(buf, BUFSIZE, st) == NULL) return 1;
       while (skipline(buf));
     }
 
@@ -133,11 +135,11 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 
   while (1)
     {
-      int r,g,b;
+      int r, g, b;
 
-      if (sscanf(buf,"%i %i %i",&r,&g,&b) != 3)
+      if (sscanf(buf, "%i %i %i", &r, &g, &b) != 3)
 	{
-	  fprintf(stderr,"bad line %s\n",buf);
+	  btrace_add("bad line %s", buf);
 	  return 1;
 	} 
 
@@ -149,7 +151,7 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 
       if ((seg = cpt_seg_new()) == NULL)
 	{
-	  fprintf(stderr,"failed to create new segment\n");
+	  btrace_add("failed to create new segment");
 	  return 1;
 	}
 
@@ -159,23 +161,23 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
       seg->rsmp.val  = n+1;
       seg->rsmp.fill = fill;
 
-      if (cpt_append(seg,cpt) != 0)
+      if (cpt_append(seg, cpt) != 0)
 	{
-	  fprintf(stderr,"failed append of segment %i\n",(int)n);
+	  btrace_add("failed append of segment %i", (int)n);
 	  return 1;
 	}
 
       n++;
 
       do
-	if (fgets(buf,BUFSIZE,st) == NULL)
+	if (fgets(buf, BUFSIZE, st) == NULL)
 	  {
 	    if (opt.verbose)
 	      {
-		printf("read %zu RGB triples\n",n);
+		printf("read %zu RGB triples\n", n);
 	      }
 
-	    return gplcpt_write(opt,cpt);
+	    return gplcpt_write(opt, cpt);
 	  }
       while (skipline(buf));
     }
@@ -185,31 +187,31 @@ extern int gplcpt_st(gplcpt_opt_t opt,FILE *st)
 
 static int cpt_step_optimise(cpt_t*);
 
-static int gplcpt_write(gplcpt_opt_t opt,cpt_t *cpt)
+static int gplcpt_write(gplcpt_opt_t opt, cpt_t *cpt)
 {
   if (cpt_step_optimise(cpt) != 0)
     {
-      fprintf(stderr,"failed optimise\n");
+      btrace_add("failed optimise");
       return 1;
     }
 
   if (opt.verbose)
     {
-      printf("converted to %i segment cpt\n",cpt_nseg(cpt));
+      printf("converted to %i segment cpt\n", cpt_nseg(cpt));
     }
 
-  return cpt_write(opt.file.output,cpt);
+  return cpt_write(opt.file.output, cpt);
 }
 
 /*
-  aggregates segments which have the same fill,
+  aggregates segments which have the same fill, 
   assuming that the input consists of piecewise
   constant segments (as here) 
 */
 
 static int cpt_step_optimise(cpt_t* cpt)
 {
-  cpt_seg_t *left,*right;
+  cpt_seg_t *left, *right;
 
   left  = cpt->segment;
   right = left->rseg; 
@@ -241,7 +243,7 @@ static int cpt_step_optimise(cpt_t* cpt)
 }
 
 /* 
-   returns whether the line is a comment line or not,
+   returns whether the line is a comment line or not, 
    it must not be null
 */
 

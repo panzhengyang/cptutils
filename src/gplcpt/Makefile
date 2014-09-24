@@ -7,7 +7,7 @@ NAME = gplcpt
 OBJ      =  gplcpt.o main.o options.o
 RUBBISH += $(OBJ) gplcpt
 
-LDLIBS += -lcpt -lfill
+LDLIBS += -lcpt -lfill -lbt
 
 default : all
 
