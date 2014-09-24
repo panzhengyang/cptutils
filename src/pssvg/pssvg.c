@@ -16,6 +16,7 @@
 #include <svg.h>
 #include <gstack.h>
 #include <grdxsvg.h>
+#include <btrace.h>
 
 #include "ucs2utf8.h"
 #include "pssvg.h"
@@ -304,7 +305,7 @@ static gstack_t* rectify_rgb(grd5_grad_custom_t* gradc, pssvg_opt_t opt)
 
   if (n<2)
     {
-      fprintf(stderr,"input (grd5) has %i rgb stop(s)\n", n);
+      btrace_add("input (grd5) has %i rgb stop(s)", n);
       return NULL;
     }
 
@@ -348,19 +349,17 @@ static gstack_t* rectify_rgb(grd5_grad_custom_t* gradc, pssvg_opt_t opt)
 	  break;
 
 	case GRD5_MODEL_BOOK:
-	  fprintf(stderr, "stop %i (book colour) not converted\n", i);
+	  btrace_add("stop %i (book colour) not converted", i);
 	  return NULL;
 
 	default:
-	  fprintf(stderr, "stop %i unknown colour type %i\n", 
-		  i, stop->type);
+	  btrace_add("stop %i unknown colour type %i", i, stop->type);
 	  return NULL;
 	}
 
       if (stop->type != GRD5_MODEL_RGB)
 	{
-	  fprintf(stderr, "stop %i is non-RGB (type %i)\n", 
-		  i, stop->type);
+	  btrace_add("stop %i is non-RGB (type %i)", i, stop->type);
 	  return NULL;
 	}
     }
@@ -444,7 +443,7 @@ static gstack_t* rectify_op(grd5_grad_custom_t* gradc)
 
   if (n<2)
     {
-      fprintf(stderr,"input (grd5) has %i opacity stop(s)\n",n);
+      btrace_add("input (grd5) has %i opacity stop(s)", n);
       return NULL;
     }
 
@@ -530,7 +529,7 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
 		       utf8_title,
 		       utf8_title_len) != 0)
 	{
-	  fprintf(stderr,"failed ucs2 to utf8 conversion\n");
+	  btrace_add("failed ucs2 to utf8 conversion");
 	  return 1;		   
 	}
 
@@ -547,8 +546,8 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
 
       if ((ep = hsearch(e, ENTER)) == NULL)
 	{
-	  fprintf(stderr, "failed insert of %s into count hash\n", utf8_title);
-	  fprintf(stderr, "hsearch error: %s\n", strerror(errno));
+	  btrace_add("failed insert of %s into count hash", utf8_title);
+	  btrace_add("hsearch error: %s", strerror(errno));
 	  return 1;
 	}
 
@@ -576,7 +575,7 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
 
   if (len >= SVG_NAME_LEN)
     {
-      fprintf(stderr, "title truncated\n");
+      btrace_add("title truncated");
       return 1;
     }
 
@@ -608,7 +607,7 @@ static int pssvg_convert_one(grd5_grad_custom_t *grd5_gradc,
     }
 
   if (err)
-    fprintf(stderr, "failed conversion of rectified stops to svg\n");
+    btrace_add("failed conversion of rectified stops to svg");
   else if (opt.verbose)
     printf("  '%s', %i%% smooth; %i colour, %i opacity converted to %i RGBA\n", 
 	   svg->name,
@@ -650,7 +649,7 @@ static int pssvg_convert_all(grd5_t *grd5,
 
       if (hcreate((size_t)ceil(1.25*n)) == 0)
 	{
-	  fprintf(stderr, "error in hcreate: %s\n", strerror(errno));
+	  btrace_add("error in hcreate: %s", strerror(errno));
 	  return 1;
 	}
     }
@@ -670,13 +669,13 @@ static int pssvg_convert_all(grd5_t *grd5,
 	    {
 	      if (gstack_push(gstack, &svg) != 0)
 		{
-		  fprintf(stderr, "error pushing result to stack\n");
+		  btrace_add("error pushing result to stack");
 		  return 1;
 		}
 	    }
 	  else
 	    {
-	      fprintf(stderr, "failed convert of gradient %i\n", i);
+	      btrace_add("failed convert of gradient %i", i);
 	      svg_destroy(svg);
 	    }
 
@@ -684,12 +683,12 @@ static int pssvg_convert_all(grd5_t *grd5,
 
 	case GRD5_GRAD_NOISE:
 	  
-	  fprintf(stderr, "no conversion of (noise) gradient %i\n", i);
+	  btrace_add("no conversion of (noise) gradient %i", i);
 	  break;
 
 	default:
 
-	  fprintf(stderr, "bad type (%i) for gradient %i\n", grd5_grad->type, i);
+	  btrace_add("bad type (%i) for gradient %i", grd5_grad->type, i);
 	}
     }
 
@@ -712,13 +711,13 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
 
       if (m == 0)
 	{
-	  fprintf(stderr, "no gradients converted\n");
+	  btrace_add("no gradients converted");
 	  err++;
 	}
       else
 	{
 	  if (m < n)
-	    fprintf(stderr, "only %d/%d gradient converted\n", m, n); 
+	    btrace_add("only %d/%d gradient converted", m, n); 
 
 	  if (gstack_reverse(gstack) != 0)
 	    return 1;
@@ -748,34 +747,34 @@ extern int pssvg(pssvg_opt_t opt)
     case GRD5_READ_OK: 
       break;
     case GRD5_READ_FOPEN:
-      fprintf(stderr, "failed to read %s\n", 
+      btrace_add("failed to read %s", 
 	      (opt.file.input ? opt.file.input : "stdin"));
       return 1;
     case GRD5_READ_FREAD:
-      fprintf(stderr, "failed read from stream\n");
+      btrace_add("failed read from stream");
       return 1;
     case GRD5_READ_PARSE:
-      fprintf(stderr, "failed to parse input\n");
+      btrace_add("failed to parse input");
       return 1;
     case GRD5_READ_NOT_GRD:
-      fprintf(stderr, "not a GRD file\n");
+      btrace_add("not a GRD file");
       return 1;
     case GRD5_READ_NOT_GRD5:
-      fprintf(stderr, "not a PhotoShop GRD file\n");
+      btrace_add("not a PhotoShop GRD file");
       return 1;
     case GRD5_READ_MALLOC:
-      fprintf(stderr, "out of memory\n");
+      btrace_add("out of memory");
       return 1;
     case GRD5_READ_BUG:
       /* fall-through */
     default:
-      fprintf(stderr, "internal error - please report this\n");
+      btrace_add("internal error - please report this");
       return 1;
     }
 
   if (grd5->n == 0)
     {
-      fprintf(stderr, "no gradients parsed\n");
+      btrace_add("no gradients parsed");
       err++;
       goto cleanup_grd5;
     }
@@ -792,14 +791,14 @@ extern int pssvg(pssvg_opt_t opt)
 
   if (pssvg_convert(grd5, svgset, opt) != 0)
     {
-      fprintf(stderr, "conversion failed\n");
+      btrace_add("conversion failed");
       err++;
       goto cleanup_svgset;
     }
 
   if (svgset->n == 0)
     {
-      fprintf(stderr, "no svg gradients converted\n");
+      btrace_add("no svg gradients converted");
       err++;
       goto cleanup_svgset;
     }
@@ -812,7 +811,7 @@ extern int pssvg(pssvg_opt_t opt)
 		(const svg_t**)svgset->svg, 
 		&preview) != 0)
     {
-      fprintf(stderr, "failed write of svg\n");
+      btrace_add("failed write of svg");
       err++;
       goto cleanup_svgset;
     }

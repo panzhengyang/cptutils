@@ -5,7 +5,7 @@ NAME = pssvg
 
 OBJ       = options.o main.o pssvg.o ucs2utf8.o
 CFLAGS   += 
-LDLIBS   += -lsvg -lfill -lgrdx -lgrd5 -lgstk 
+LDLIBS   += -lsvg -lfill -lgrdx -lgrd5 -lgstk -lbt
 RUBBISH  += pssvg $(OBJ)
 FIXTURES  = $(TESTD)/grd5
 

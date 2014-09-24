@@ -27,6 +27,8 @@
 
 #include <unistd.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "pssvg.h"
 
@@ -35,9 +37,8 @@ int main(int argc, char** argv)
   struct gengetopt_args_info info;
   pssvg_opt_t opt = {0};
   char *infile, *outfile;
-  int err;
 
-  /* use gengetopt */
+  /* gengetopt */
 
   if (options(argc, argv, &info) != 0)
     {
@@ -114,11 +115,21 @@ int main(int argc, char** argv)
       printf("foreground %3i/%3i/%3i\n", 
 	     opt.fg.red,  opt.fg.green,  opt.fg.blue);
     }
-  
-  err = pssvg(opt);
 
-  if (err) 
-    fprintf(stderr, "failed (error %i)\n", err);
+  btrace_enable();
+
+  int err = pssvg(opt);
+
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");
