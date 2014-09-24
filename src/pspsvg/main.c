@@ -27,22 +27,23 @@
 
 #include <unistd.h>
 
+#include <svg.h>
+#include <btrace.h>
+
 #include "options.h"
 #include "pspsvg.h"
-#include "svg.h"
 
-int main(int argc,char** argv)
+int main(int argc, char** argv)
 {
   struct gengetopt_args_info info;
   pspsvg_opt_t opt = {0};
   char *infile, *outfile;
-  int err;
 
-  /* use gengetopt */
+  /* gengetopt */
 
   if (options(argc, argv, &info) != 0)
     {
-      fprintf(stderr,"failed to parse command line\n");
+      fprintf(stderr, "failed to parse command line\n");
       return EXIT_FAILURE;
     }
 
@@ -55,7 +56,7 @@ int main(int argc,char** argv)
       opt.preview.use = true;
       if (svg_preview_geometry(info.geometry_arg, &(opt.preview)) != 0)
         {
-          fprintf(stderr,"failed parse of preview geometry : %s\n",
+          fprintf(stderr, "failed parse of preview geometry : %s\n", 
                   info.geometry_arg);
           return EXIT_FAILURE;
         }
@@ -69,7 +70,7 @@ int main(int argc,char** argv)
 
   if (!outfile && opt.verbose)
     {
-      fprintf(stderr,"verbosity suppressed (<stdout> for results)\n");
+      fprintf(stderr, "verbosity suppressed (<stdout> for results)\n");
       opt.verbose = 0;
     }
 
@@ -84,32 +85,42 @@ int main(int argc,char** argv)
       infile = info.inputs[0];
       break;
     default:
-      fprintf(stderr,"Sorry, only one file at a time\n");
+      fprintf(stderr, "Sorry, only one file at a time\n");
       return EXIT_FAILURE;
     }
   
   if (opt.verbose)
-    printf("This is pspsvg (version %s)\n",VERSION);
+    printf("This is pspsvg (version %s)\n", VERSION);
   
   opt.file.input  = infile;  
   opt.file.output = outfile;
 
   svg_srand();
 
-  err = pspsvg(opt);
+  btrace_enable();
+
+  int err = pspsvg(opt);
 
   if (err)
-    fprintf(stderr,"failed (error %i)\n",err);
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
   else if (opt.verbose)
     {
-      printf("gradient written to %s\n",(outfile ? outfile : "<stdin>"));
+      printf("gradient written to %s\n", (outfile ? outfile : "<stdin>"));
       if (opt.preview.use)
 	{
 	  printf("with preview (%zu x %zu px)\n", 
-		 opt.preview.width,
+		 opt.preview.width, 
 		 opt.preview.height);
 	}
     }
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

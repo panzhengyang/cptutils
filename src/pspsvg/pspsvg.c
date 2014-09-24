@@ -11,12 +11,13 @@
 #include <string.h>
 #include <math.h>
 
-#include "grd3read.h"
-#include "svgwrite.h"
+#include <grd3read.h>
+#include <svgwrite.h>
+#include <grdxsvg.h>
+#include <gstack.h>
+#include <btrace.h>
 
 #include "pspsvg.h"
-#include "grdxsvg.h"
-#include "gstack.h"
 
 static int pspsvg_convert(grd3_t*, svg_t*, pspsvg_opt_t);
 
@@ -29,7 +30,7 @@ extern int pspsvg(pspsvg_opt_t opt)
 
   if ((svg = svg_new()) == NULL)
     {
-      fprintf(stderr,"failed to get new svg strcture\n");
+      btrace_add("failed to get new svg strcture");
       return 1;
     }
 
@@ -37,13 +38,13 @@ extern int pspsvg(pspsvg_opt_t opt)
 
   if ((grd3 = grd3_new()) == NULL)
     {
-      fprintf(stderr,"failed to get new grd3 struture\n");
+      btrace_add("failed to get new grd3 struture");
       return 1;
     }
 
   if (grd3_read(opt.file.input, grd3) != 0)
     {
-      fprintf(stderr,"failed to read data from %s\n",
+      btrace_add("failed to read data from %s",
 	      (opt.file.input ?  opt.file.input : "<stdin>"));
       return 1;
     }
@@ -52,7 +53,7 @@ extern int pspsvg(pspsvg_opt_t opt)
 
   if (pspsvg_convert(grd3, svg, opt) != 0)
     {
-      fprintf(stderr,"failed to convert data\n");
+      btrace_add("failed to convert data");
       return 1;
     }
   
@@ -60,7 +61,7 @@ extern int pspsvg(pspsvg_opt_t opt)
   
   if (svg_write(opt.file.output, 1, (const svg_t**)(&svg), &(opt.preview)) != 0)
     {
-      fprintf(stderr,"failed to write palette to %s\n",
+      btrace_add("failed to write palette to %s",
 	      (opt.file.output ? opt.file.output : "<stdout>"));
       return 1;
     }
@@ -117,7 +118,7 @@ static int trim_rgb(gstack_t* stack)
       if (stop.z >= 409600)
 	{
 	  while (! gstack_empty(stack))
-	    gstack_pop(stack,&stop);
+	    gstack_pop(stack, &stop);
 	}
     }
 
@@ -153,8 +154,8 @@ static int trim_op(gstack_t* stack)
 
   while (! gstack_empty(stack0))
     {
-      gstack_pop(stack0,&stop);
-      gstack_push(stack,&stop);
+      gstack_pop(stack0, &stop);
+      gstack_push(stack, &stop);
     }
 
   return 0;
@@ -173,7 +174,7 @@ static gstack_t* rectify_rgb(grd3_t* grd3)
 
   if (n<2)
     {
-      fprintf(stderr,"input (grd) has %i rgb stop(s)\n",n);
+      btrace_add("input (grd) has %i rgb stop(s)", n);
       return NULL;
     }
 
@@ -240,7 +241,7 @@ static gstack_t* rectify_op(grd3_t* grd3)
 
   if (n<2)
     {
-      fprintf(stderr,"input (grd) has %i opacity stop(s)\n",n);
+      btrace_add("input (grd) has %i opacity stop(s)",n);
       return NULL;
     }
 
@@ -347,7 +348,7 @@ static int pspsvg_convert(grd3_t *grd3, svg_t *svg, pspsvg_opt_t opt)
 
   if (latin1_to_utf8(grd3->name, svg->name, SVG_NAME_LEN) != 0)
     {
-      fprintf(stderr, "failed latin1 to unicode name conversion\n");
+      btrace_add("failed latin1 to unicode name conversion");
       return 1;
     }
 
@@ -369,7 +370,7 @@ static int pspsvg_convert(grd3_t *grd3, svg_t *svg, pspsvg_opt_t opt)
 
   if (grdxsvg(rgbrec, oprec, svg) != 0)
     {
-      fprintf(stderr, "failed conversion of rectified stops to svg\n");
+      btrace_add("failed conversion of rectified stops to svg");
       return 1;
     }
   

@@ -1,6 +1,6 @@
 # Makefile for pspsvg
 #
-# (c) J.J.Green 2001,2004
+# (c) J.J.Green 2001, 2004
 
 NAME = pspsvg
 
@@ -8,7 +8,7 @@ OBJ      =  pspsvg.o main.o options.o
 RUBBISH += $(OBJ) pspsvg
 
 CFLAGS += 
-LDLIBS += -lsvg -lgrdx -lgrd3 -lgstk -lfill
+LDLIBS += -lsvg -lgrdx -lgrd3 -lgstk -lfill -lbt
 
 default : all
 
