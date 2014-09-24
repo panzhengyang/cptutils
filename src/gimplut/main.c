@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <btrace.h>
+
 #include "options.h"
 #include "gimplut.h"
 
@@ -82,14 +84,24 @@ int main(int argc, char** argv)
     }
   
   if (opt.verbose)
-    printf("This is gimplut (version %s)\n",VERSION);
-  
-  int err = gimplut(infile,outfile,opt);
+    printf("This is gimplut (version %s)\n", VERSION);
 
-  if (err != 0)
-    fprintf(stderr,"failed (error %i)\n",err);
+  btrace_enable();
+
+  int err = gimplut(infile, outfile, opt);
+
+  if (err)
+    {
+      btrace_add("failed (error %i)", err);
+      btrace_print_plain(stderr);
+      if (info.backtrace_file_given)
+        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+    }
   else if (opt.verbose)
     printf("lookup table written to %s\n",(outfile ? outfile : "<stdin>"));
+
+  btrace_reset();
+  btrace_disable();
 
   if (opt.verbose)
     printf("done.\n");

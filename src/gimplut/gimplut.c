@@ -1,7 +1,7 @@
 /*
   gimpcpt.c
-
-  (c) J.J.Green 2001,2004
+  
+  (c) J.J.Green 2001, 2004, 2014
 */
 
 #include <stdio.h>
@@ -9,70 +9,60 @@
 #include <string.h>
 #include <math.h>
 
+#include <ggr.h>
+#include <btrace.h>
+
 #include "gimplut.h"
-#include "ggr.h"
 
-/*
-  #define DEBUG
-*/
-
-#define SCALE(x,opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
+#define SCALE(x, opt) ((opt.min) + ((opt.max) - (opt.min))*(x))
 
 #define ERR_CMOD   1
 #define ERR_NULL   2
 #define ERR_INSERT 3
 
-static int gimplut_st(FILE*,gradient_t*,glopt_t);
+static int gimplut_st(FILE*, gradient_t*, glopt_t);
 
-extern int gimplut(char* infile,char* outfile,glopt_t opt)
+extern int gimplut(char* infile, char* outfile, glopt_t opt)
 {
-    gradient_t* gradient;
-    int         err;
-
-    /* load the gradient */
-    
-    gradient = grad_load_gradient(infile);
-    
-    if (!gradient)
-      {
-	fprintf(stderr,"failed to load gradient from ");
-	if (infile)
-	  {
-	    fprintf(stderr,"%s\n",infile);
-	    free(infile);
-	  }
-	else
-	  fprintf(stderr,"<stdin>\n");
-	
-	return 1;
-      }
-    
-    if (outfile)
-      {
-	FILE *lutst = fopen(outfile,"w");
-
-	if (!lutst)
-	  {
-	    fprintf(stderr,"failed to open %s\n",outfile);
-	    return 1;
-	  }
-
-	err = gimplut_st(lutst,gradient,opt);
-
-	fclose(lutst);
-      }
-    else err = gimplut_st(stdout,gradient,opt);
-
-    if ((!err) && opt.verbose) 
-      printf("converted to %zu entry LUT\n",opt.numsamp);
-    
-    grad_free_gradient(gradient);
-    
-    return err;
+  gradient_t* gradient;
+  int         err;
+  
+  /* load the gradient */
+  
+  gradient = grad_load_gradient(infile);
+  
+  if (!gradient)
+    {
+      btrace_add("failed to load gradient from %s", (infile ? infile : "<stdin>"));
+      return 1;
+    }
+  
+  if (outfile)
+    {
+      FILE *lutst = fopen(outfile, "w");
+      
+      if (!lutst)
+	{
+	  btrace_add("failed to open %s\n", outfile);
+	  return 1;
+	}
+      
+      err = gimplut_st(lutst, gradient, opt);
+      
+      fclose(lutst);
+    }
+  else err = gimplut_st(stdout, gradient, opt);
+  
+  if ((!err) && opt.verbose) 
+    printf("converted to %zu entry LUT\n", opt.numsamp);
+  
+  grad_free_gradient(gradient);
+  
+  return err;
 }
 
 
-static int gimplut_st(FILE* st,gradient_t* g,glopt_t opt)
+static int gimplut_st(FILE* st, gradient_t* g, glopt_t opt)
 {
   size_t i, n=opt.numsamp, err = 0;
   double bg[3] = {0.0, 0.0, 0.0}, c[3];
@@ -83,15 +73,15 @@ static int gimplut_st(FILE* st,gradient_t* g,glopt_t opt)
     {
       double pos = ((double)i)/((double)(n-1));
 
-      err += gradient_colour(pos,g,bg,c);
-      err += rgbD_to_rgb(c,&rgb);
+      err += gradient_colour(pos, g, bg, c);
+      err += rgbD_to_rgb(c, &rgb);
 
       lut[i]     = rgb.red;
       lut[n+i]   = rgb.green;
       lut[2*n+i] = rgb.blue;
     }
 
-  if (fwrite(lut,1,3*n,st) != 3*n) err++;
+  if (fwrite(lut, 1, 3*n, st) != 3*n) err++;
 
   return err != 0;
 }

@@ -2,9 +2,10 @@
 # (c) J. J. Green 2008
 package "gimplut"
 purpose "convert gimp gradients to binary lookup table"
-option	"output"	o "output filename"		string	no
-option  "samples"       s "number of samples"           int     default="256" no
-option	"verbose"	v "verbose operation"		flag	off
+option "backtrace-file"	- "write backtrace to file"	string  no
+option "output"		o "output filename"		string	no
+option "samples"	s "number of samples"           int     default="256" no
+option "verbose"	v "verbose operation"		flag	off
 
 
 

@@ -5,7 +5,7 @@ NAME     = gimplut
 OBJ      = $(NAME).o main.o options.o
 RUBBISH += $(OBJ) $(NAME)
 
-LDLIBS += -lggr -lfill
+LDLIBS += -lggr -lfill -lbt
 CFLAGS += 
 
 default : all
