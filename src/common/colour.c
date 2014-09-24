@@ -6,8 +6,6 @@
   (c) J.J.Green 2001,2004
 */
 
-#define _GNU_SOURCE
-
 #define MAX(a,b) (((a)>(b)) ? (a) : (b))
 #define MIN(a,b) (((a)>(b)) ? (b) : (a))
 

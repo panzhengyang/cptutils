@@ -4,8 +4,6 @@
   (c) J.J. Green 2005, 2013
 */
 
-#define _GNU_SOURCE
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
