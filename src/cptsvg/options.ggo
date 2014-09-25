@@ -2,12 +2,12 @@
 # (c) J. J. Green 2012
 package "cptsvg"
 purpose "convert GMT colour palette to SVG gradient"
-
-option "backtrace-file" - "write backtrace to file"	string  no
-option "geometry"	g "geometry of preview"		string  default="340x36" no
-option "output"		o "output filename"		string  no
-option "preview"	p "include preview in output"	flag    off
-option "verbose"	v "verbose operation" 		flag	off
+option	"backtrace-file"    - "write backtrace to file"		string  no
+option  "backtrace-format"  - "backtrace format"  		string  no
+option 	"geometry"	    g "geometry of preview"		string  default="340x36" no
+option 	"output"	    o "output filename"			string  no
+option 	"preview"	    p "include preview in output"	flag    off
+option 	"verbose"	    v "verbose operation" 		flag	off
 
 
 

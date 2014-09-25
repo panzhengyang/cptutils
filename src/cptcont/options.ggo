@@ -2,11 +2,12 @@
 # (c) J.J. Green 2010
 package "cptcont"
 purpose "Create a continuous colour table from non-continuous"
-option  "backtrace-file"   - "write backtrace to file"		string  no
-option  "midpoint"  	   m "split segments at the midpoint"	flag off
-option	"output"    	   o "output filename"	    		string no
-option  "partial"   	   p "percentage towards continuous"	double default="100.0" no
-option	"verbose"   	   v "verbose operation" 		flag   off
+option  "backtrace-file"     - "write backtrace to file"	string  no
+option  "backtrace-format"   - "backtrace format"  		string  no
+option  "midpoint"  	     m "split segments at the midpoint"	flag off
+option	"output"    	     o "output filename"	    	string no
+option  "partial"   	     p "percentage towards continuous"	double default="100.0" no
+option	"verbose"   	     v "verbose operation" 		flag   off
 
 
 

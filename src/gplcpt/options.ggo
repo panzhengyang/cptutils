@@ -2,8 +2,9 @@
 # (c) J.J. Green 2010, 2014
 package "gplcpt"
 purpose "convert GIMP color palette to GMT colour palette table"
+option  "background"	    b "background colour"	  string  default="0/0/0" no
 option  "backtrace-file"    - "write backtrace to file"	  string  no
-option  "background"	    b "background colour" 	  string  default="0/0/0" no
+option  "backtrace-format"  - "backtrace format"  	  string  no
 option  "foreground"	    f "foreground colour"	  string  default="255/255/255" no
 option  "nan"		    n "nan colour"		  string  default="255/0/0" no
 option	"output"	    o "output filename"		  string  no

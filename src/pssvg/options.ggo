@@ -2,8 +2,9 @@
 # (c) J. J. Green 2014
 package "pssvg"
 purpose "convert Photoshop gradient to SVG gradient"
-option  "backtrace-file"   - "write backtrace to file"	string  no
 option  "background"	   b "background colour" 	string  default="0/0/0" no
+option  "backtrace-file"   - "write backtrace to file"	string  no
+option  "backtrace-format" - "backtrace format"	 	string  no
 option  "foreground"	   f "foreground colour"	string  default="255/255/255" no
 option	"output"	   o "output filename"		string  no
 option  "title"		   t "title format string"	string  no

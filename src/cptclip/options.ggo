@@ -2,11 +2,12 @@
 # (c) J.J. Green 2010
 package "cptclip"
 purpose "Create cpt file with restricted z-range"
-option  "backtrace-file" - "write backtrace to file"		string no
-option	"output"    	 o "output filename"   			string no
-option  "range"     	 R "z-range of output"			string yes
-option  "segments"  	 s "min/max are segment numbers"	flag   off
-option	"verbose"   	 v "verbose operation"			flag   off
+option  "backtrace-file"      - "write backtrace to file"	string no
+option  "backtrace-format"    - "backtrace format"  		string  no
+option	"output"    	      o "output filename"   		string no
+option  "range"     	      R "z-range of output"		string yes
+option  "segments"  	      s "min/max are segment numbers"	flag   off
+option	"verbose"   	      v "verbose operation"		flag   off
 
 
 

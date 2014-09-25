@@ -3,11 +3,12 @@
 package "gimpsvg"
 purpose "convert GIMP gradient to SVG format"
 option  "backtrace-file"   - "write backtrace to file"	  string  no
+option  "backtrace-format" - "backtrace format"  	  string  no
 option  "geometry"         g "geometry of preview"	  string  default="340x36" no
 option	"output"	   o "output filename"		  string  no
-option  "preview"          p "include preview in output"  flag	   off
-option  "samples"          s "number of samples"          int	   default="100" no
-option	"verbose"	   v "verbose operation"	  flag	   off
+option  "preview"          p "include preview in output"  flag	  off
+option  "samples"          s "number of samples"          int	  default="100" no
+option	"verbose"	   v "verbose operation"	  flag	  off
 
 
 

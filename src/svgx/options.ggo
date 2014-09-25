@@ -3,8 +3,9 @@
 package "svgx"
 purpose "convert SVG gradient to other formats"
 option	"all"	           a "convert all gradients"			flag    off
-option  "backtrace-file"   - "write backtrace to file"			string	no
 option  "background"       b "background colour (cpt)"			string  default="0/0/0" no
+option  "backtrace-file"   - "write backtrace to file"			string	no
+option  "backtrace-format" - "backtrace format"	 			string  no
 option  "foreground"       f "foreground colour (cpt)"			string  default="255/255/255" no
 option  "geometry"         g "image size (png, svg)"			string  default="340x36" no
 option  "nan"              n "nan colour (cpt)"				string  default="255/0/0" no
