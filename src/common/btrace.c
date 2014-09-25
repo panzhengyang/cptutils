@@ -41,6 +41,22 @@ static btrace_t btrace_global =
     .lines   = NULL
   };
 
+/* string to format */
+
+extern int btrace_format(const char* name)
+{
+  if (name == NULL) 
+    return BTRACE_NONE;
+  else if (strcmp(name, "plain") == 0)
+    return BTRACE_PLAIN;
+  else if (strcmp(name, "xml") == 0)
+    return BTRACE_XML;
+  else if (strcmp(name, "json") == 0)
+    return BTRACE_JSON;
+    
+  return BTRACE_ERROR;
+}
+
 /* enable/disable */
 
 static void enable(const char *program, btrace_t *bt)
@@ -75,14 +91,14 @@ extern bool btrace_is_enabled(void)
 
 /* testing nonempty */
 
-static bool empty(btrace_t* bt)
+static bool is_empty(btrace_t* bt)
 {
   return bt->lines == NULL;
 }
 
-extern bool btrace_nonempty(void)
+extern bool btrace_is_empty(void)
 {
-  return ! empty(&btrace_global);
+  return is_empty(&btrace_global);
 }
 
 /* free lines */
@@ -311,7 +327,7 @@ static int print_xml_doc(xmlTextWriter* writer, btrace_t *bt)
 
 static void print_xml(FILE *stream, btrace_t *bt)
 {
-  if (empty(bt))
+  if (is_empty(bt))
     return;
 
   xmlBuffer* buffer;
@@ -354,7 +370,7 @@ extern int btrace_print_stream(FILE* stream, int type)
 
 extern int btrace_print(const char* path, int type)
 {
-  if (btrace_nonempty())
+  if (! btrace_is_empty() )
     {
       FILE* stream;
 

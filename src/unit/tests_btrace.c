@@ -12,7 +12,8 @@ CU_TestInfo tests_btrace[] =
     {"default",       test_btrace_default},
     {"enable",        test_btrace_enable},
     {"disable",       test_btrace_disable},
-    {"nonempty",      test_btrace_nonempty},
+    {"test empty",    test_btrace_is_empty},
+    {"format",        test_btrace_format},
     {"count",         test_btrace_count},
     {"add",           test_btrace_add},
     {"print to file", test_btrace_print},
@@ -47,16 +48,16 @@ extern void test_btrace_disable(void)
   CU_ASSERT( btrace_is_enabled() == false );
 }
 
-/* btrace_nonempty should initally be false */
+/* btrace_is_empty should initally be false */
 
-extern void test_btrace_nonempty(void)
+extern void test_btrace_is_empty(void)
 {
-  CU_ASSERT( btrace_nonempty() == false );
+  CU_ASSERT( btrace_is_empty() == true );
   btrace_enable("foo");
   btrace("a message");
-  CU_ASSERT( btrace_nonempty() == true );
+  CU_ASSERT( btrace_is_empty() == false );
   btrace_reset();
-  CU_ASSERT( btrace_nonempty() == false );
+  CU_ASSERT( btrace_is_empty() == true );
   btrace_disable();
 }
 
@@ -71,6 +72,17 @@ extern void test_btrace_count(void)
   btrace_reset();
   CU_ASSERT( btrace_count() == 0 );
   btrace_disable();
+}
+
+/* get (integer) format from string */
+
+extern void test_btrace_format(void)
+{
+  CU_ASSERT( btrace_format(NULL)    == BTRACE_NONE  );
+  CU_ASSERT( btrace_format("plain") == BTRACE_PLAIN );
+  CU_ASSERT( btrace_format("xml")   == BTRACE_XML   );
+  CU_ASSERT( btrace_format("json")  == BTRACE_JSON  );
+  CU_ASSERT( btrace_format("goats") == BTRACE_ERROR );
 }
 
 /* adding lines should increase the count */
