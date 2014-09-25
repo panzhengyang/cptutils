@@ -277,7 +277,7 @@ def convert(ipath, opath, opt) :
             # counting the gradient to reduce the redundant zeros
 
             svgmulti = "%s/%s.svg" % (tempdir, basename)  
-            clist = ['pssvg', '-o', svgmulti, ipath]
+            clist = ['pssvg'] + opt['btopts'] + ['-o', svgmulti, ipath]
             if opt['verbose'] :
                 print "  %s" % (" ".join(clist))
             if subprocess.call(clist) != 0 :
@@ -297,7 +297,7 @@ def convert(ipath, opath, opt) :
 
             if opt['ofmt'] == 'svg' :
                 # final output is svg, burst to output directory
-                clist = ['svgsvg', '-o', opath, '-a', ipath]
+                clist = ['svgsvg'] + opt['btopts'] + ['-o', opath, '-a', ipath]
                 clist.extend(opt['subopts']['svgsvg'])
                 if not run_clist(clist, opath, opt['verbose']) :
                     return False
@@ -308,7 +308,7 @@ def convert(ipath, opath, opt) :
                 svgdir = "%s/%s" % (tempdir, basename)
                 os.mkdir(svgdir)
                 deldirs.append(svgdir)
-                clist = ['svgsvg', '-o', svgdir, '-a', ipath]
+                clist = ['svgsvg'] + opt['btopts'] + ['-o', svgdir, '-a', ipath]
                 if not run_clist(clist, None, opt['verbose']) :
                     return False
                 opt['ifmt']  = 'svg'
@@ -379,9 +379,13 @@ def convert(ipath, opath, opt) :
         topath   = cd['topath']
         frompath = cd['frompath']
 
-        clist = [program, '-o', topath]
-        clist.extend(opt['subopts'][program])
-        clist.append(frompath)
+        clist = (
+            [program] + 
+            opt['btopts'] + 
+            ['-o', topath] +
+            opt['subopts'][program] + 
+            [frompath]
+            )
 
         if not run_clist(clist, topath, opt['verbose']) :
             return False
@@ -434,6 +438,8 @@ def main() :
         opts, args = getopt.getopt(sys.argv[1:],
                                    "Bb:cf:g:hi:m:n:o:pT:vVz",
                                    ["burst",
+                                    "backtrace-file=",
+                                    "backtrace-format=",
                                     "background=",
                                     "capabilities",
                                     "foreground=",
@@ -459,7 +465,10 @@ def main() :
     ofmt    = None
     burst   = False
     zipped  = False
+    btfmt   = None
+    btfile  = None
     subopts = dict((p, []) for p in programs)
+    btopts  = []
 
     # progs_<x> accept the -<x> option
     progs_p   = ['cptsvg', 'gimpsvg', 'pspsvg', 'svgsvg']
@@ -504,6 +513,8 @@ def main() :
             verbose = True
         elif o in ("-z", "--zip") :
             zipped = True
+        elif o in ("--backtrace-file", "--backtrace-format") :
+            btopts.extend([o, a])
         else:
             assert False, "unhandled option"
 
@@ -540,7 +551,8 @@ def main() :
             'ifmt'    : ifmt, 
             'ofmt'    : ofmt, 
             'burst'   : burst, 
-            'zipped'  : zipped }
+            'zipped'  : zipped,
+            'btopts'  : btopts }
 
     success = convert(ipath, opath, opt)
 
