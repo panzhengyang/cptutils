@@ -1,6 +1,9 @@
 Changes
 
 1.56 (pending)
+  - introduced a soft dependancy on the jansson JSON library
+  - added --backtrace-file and --backtrace-format options
+    to all conversion programs
   - gradient-convert -z does not make empty zipfiles
   - gradient-convert -z returns correct error-code
   - configure checks that compiler flags are handled
