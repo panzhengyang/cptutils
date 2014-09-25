@@ -66,6 +66,8 @@ is included in recent versions of the GMT program
 
   <xi:include href="../docbook/varlistentry-backtrace-file.xml"/>
 
+  <xi:include href="../docbook/varlistentry-backtrace-format.xml"/>
+
   <xi:include href="../docbook/varlistentry-help.xml"/>
 
   <xi:include href="../docbook/varlistentry-output.xml"/>

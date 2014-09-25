@@ -118,9 +118,11 @@
   </listitem>
   </varlistentry>
 
+  <xi:include href="../docbook/varlistentry-background-svgx.xml"/>
+
   <xi:include href="../docbook/varlistentry-backtrace-file.xml"/>
 
-  <xi:include href="../docbook/varlistentry-background-svgx.xml"/>
+  <xi:include href="../docbook/varlistentry-backtrace-format.xml"/>
 
   <xi:include href="../docbook/varlistentry-foreground-svgx.xml"/>
 

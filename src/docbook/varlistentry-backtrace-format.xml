@@ -1,0 +1,16 @@
+<varlistentry>
+  <term>
+    <option>--backtrace-format</option>
+    <replaceable>format</replaceable>
+  </term>
+  <listitem>
+    <para>
+      Specify the <replaceable>format</replaceable> of the 
+      backtrace written to the files specified by 
+      <option>--backtrace-file</option>, one of 
+      <option>plain</option>, 
+      <option>xml</option> or 
+      <option>json</option>.
+    </para>
+  </listitem>
+</varlistentry>
