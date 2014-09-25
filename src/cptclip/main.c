@@ -146,8 +146,22 @@ int main(int argc, char** argv)
     {
       btrace("failed (error %i)", err);
       btrace_print_stream(stderr, BTRACE_PLAIN);
+
       if (info.backtrace_file_given)
-        btrace_print(info.backtrace_file_arg, BTRACE_XML);
+        {
+          int format = BTRACE_XML;
+          if (info.backtrace_format_given)
+            {
+              format = btrace_format(info.backtrace_format_arg);
+              if (format == BTRACE_ERROR)
+                {
+                  fprintf(stderr, "no such backtrace format %s\n", 
+                          info.backtrace_format_arg);
+                  return EXIT_FAILURE;
+                }
+            }     
+          btrace_print(info.backtrace_file_arg, format);
+        }
     }
   else
     {
