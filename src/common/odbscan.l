@@ -21,11 +21,12 @@
 
 %{
 
+#define YYSTYPE odb_value_t
+
 #include "odb.h"
 #include "odbparse.h"
 #include "odbbridge.h"
-
-#define YYSTYPE odb_value_t
+#include "btrace.h"
 
   static int identifier_insert(char*,identtab_t*);
 
@@ -79,7 +80,7 @@ STRING \"(.*)\"
 {IDENT}            yylval->ident = identifier_insert(yytext,identtab); return IDENT;
 {BITBLK}           yylval->b     = identifier_insert(yytext,stringtab); return BITBLK;
 <<EOF>>            yyterminate();  
-.                  fprintf(stderr,"didn't expect (%s)\n",yytext);
+.                  btrace("didn't expect (%s)", yytext);
 
 %%
 
@@ -106,13 +107,13 @@ static int identifier_insert(char* name,identtab_t* tab)
       
       if ((ident = ident_new(name,sid)) == NULL)
 	{
-	  fprintf(stderr,"failed to create identifier wrapper\n");
+	  btrace("failed to create identifier wrapper");
 	  return -1;
 	}
 
       if (identtab_insert(tab,ident) != 0)
 	{
-	  fprintf(stderr,"failed to insert identifier\n");
+	  btrace("failed to insert identifier");
 	  return -1;
 	}
 

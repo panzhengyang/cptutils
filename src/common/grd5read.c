@@ -10,18 +10,13 @@
 #include "grd5read.h"
 #include "grd5type.h"
 #include "grd5string.h"
+#include "btrace.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-#ifdef DEBUG
-#define debug_error(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define debug_error(...)
-#endif
 
 /* FIXME : this is linux-specific : handle *BSD too */
 
@@ -59,7 +54,7 @@ extern int grd5_read(const char* file, grd5_t** pgrd5)
     *pgrd5 = grd5;
   else
     {
-      debug_error("failed read\n");
+      btrace("failed read");
       grd5_destroy(grd5);
     }
 
@@ -240,7 +235,7 @@ static int parse_named_type(FILE *stream,
       bool matches = typename_matches(typename, expected_name);
       if (!matches)
 	{
-	  debug_error("expected type '%s', read '%*s'\n",
+	  btrace("expected type '%s', read '%*s'",
 		      expected_name, typename->len, typename->content);
 	  grd5_string_destroy(typename);
 	  return GRD5_READ_PARSE;
@@ -253,7 +248,7 @@ static int parse_named_type(FILE *stream,
     return err;
 
   if (type == TYPE_UNKNOWN)
-    debug_error("unknown type\n");
+    btrace("unknown type");
 
   if (type != expected_type)
     return GRD5_READ_PARSE;
@@ -284,7 +279,7 @@ static int parse_untf(FILE *stream,
 
   if (strncmp(unit, expected_unit, 4) != 0)
     {
-      debug_error("expected unit %s, read %4s\n", expected_unit, unit);
+      btrace("expected unit %s, read %4s", expected_unit, unit);
       return GRD5_READ_PARSE;
     }
 
@@ -726,7 +721,7 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 
   if (model == GRD5_MODEL_UNKNOWN)
     {
-      debug_error("bad colour model %*s\n", 
+      btrace("bad colour model %*s", 
 		  model_name->len,
 		  model_name->content);	      
       objc_destroy(objc);
@@ -827,7 +822,7 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
       have_user_colour = false;
       break;
     default:
-      debug_error("unexpected number of stop componets (%i)", ncomp);
+      btrace("unexpected number of stop componets (%i)", ncomp);
       return GRD5_READ_PARSE;
     }
 
@@ -844,7 +839,7 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
     {
       if (! typename_matches(subtype, "UsrS"))
 	{
-	  debug_error("read a user colour, but type is %*s not UsrS\n",
+	  btrace("read a user colour, but type is %*s not UsrS",
 		      subtype->len, subtype->content);
 	  return GRD5_READ_PARSE;
 	}
@@ -861,7 +856,7 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
 	}
       else
 	{
-	  debug_error("read a non-user colour, but type is %*s not BckC/FrgC\n",
+	  btrace("read a non-user colour, but type is %*s not BckC/FrgC",
 		      subtype->len, subtype->content);
 	  return GRD5_READ_PARSE;
 	}
@@ -896,14 +891,14 @@ static int parse_transp_stop(FILE *stream, grd5_transp_stop_t *stop)
 
   if ((ncomp = objc->value) != 3)
     {
-      debug_error("can't handle %i component transparency stop\n", ncomp);
+      btrace("can't handle %i component transparency stop", ncomp);
       err = GRD5_READ_PARSE;
     }
   else
     {
       if (! typename_matches(objc->name.type, "TrnS"))
 	{
-	  debug_error("expected type TrnS, got %s\n", objc->name.type);
+	  btrace("expected type TrnS, got %s", objc->name.type);
 	  err = GRD5_READ_PARSE;
 	}
     }
@@ -938,13 +933,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   if (fread(cbuf, 1, 4, stream) != 4)
     {
-      debug_error("fread of magic number\n");
+      btrace("fread of magic number");
       return GRD5_READ_FREAD;
     }
 
   if (strncmp(cbuf, "8BGR", 4) != 0)
     {
-      debug_error("magic number %4s\n", cbuf);
+      btrace("magic number %4s", cbuf);
       return GRD5_READ_NOT_GRD;
     }
 
@@ -954,13 +949,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   if ((err = read_uint16(stream, &version)) != GRD5_READ_OK)
     {
-      debug_error("fread of version\n");
+      btrace("fread of version");
       return err;
     }
 
   if (version != 5)
     {
-      debug_error("magic number %i\n", version);
+      btrace("magic number %i", version);
       return GRD5_READ_NOT_GRD5;
     }
 
@@ -968,7 +963,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   if (fseek(stream, 22L, SEEK_CUR) != 0)
     {
-      debug_error("header seek\n");
+      btrace("header seek");
       return GRD5_READ_FREAD;
     }
 
@@ -976,13 +971,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   if ((err = parse_GrdL(stream, &(grd5->n)))  != GRD5_READ_OK)
     {
-      debug_error("GrdL\n");
+      btrace("GrdL");
       return err;
     }
   
   if ((grd5->gradients = malloc((grd5->n) * sizeof(grd5_grad_t))) == NULL)
     {
-      debug_error("malloc\n");
+      btrace("malloc");
       return GRD5_READ_MALLOC;
     }
 
@@ -1000,13 +995,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       if ((err = read_type(stream, &type)) != GRD5_READ_OK)
 	{
-	  debug_error("reading outer Objc\n");
+	  btrace("reading outer Objc");
 	  return err;
 	}
 
       if (type != TYPE_OBJECT)
 	{
-	  debug_error("outer Objc not found\n");
+	  btrace("outer Objc not found");
 	  return GRD5_READ_PARSE;
 	}
 
@@ -1014,7 +1009,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       if ((objc = parse_objc(stream, &err)) == NULL)
 	{
-	  debug_error("Objc\n");
+	  btrace("Objc");
 	  return err;
 	}
 
@@ -1024,7 +1019,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       if ((err = parse_Grad(stream)) != GRD5_READ_OK)
 	{
-	  debug_error("Grad\n");
+	  btrace("Grad");
 	  return err;
 	}
 
@@ -1032,7 +1027,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       if ((objc = parse_objc(stream, &err)) == NULL)
 	{
-	  debug_error("inner Objc\n");
+	  btrace("inner Objc");
 	  return err;
 	}
 
@@ -1044,7 +1039,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       if ((err = parse_Nm(stream, &grad->title)) != GRD5_READ_OK)
 	{
-	  debug_error("Nm\n");
+	  btrace("Nm");
 	  return err;
 	}
 
@@ -1054,7 +1049,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
       if ((err = parse_GrdF_GrdF(stream, &gradient_type)) != GRD5_READ_OK)
 	{
-	  debug_error("GrdF\n");
+	  btrace("GrdF");
 	  return err;
 	}
 
@@ -1062,7 +1057,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	{
 	  if (ncomp != 5)
 	    {
-	      debug_error("CstS with %i component\n", ncomp);
+	      btrace("CstS with %i component", ncomp);
 	      return GRD5_READ_PARSE;
 	    }
 
@@ -1073,7 +1068,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if ((err = parse_Intr(stream, &(gradc->interp))) != GRD5_READ_OK)
 	    {
-	      debug_error("Intr\n");
+	      btrace("Intr");
 	      return err;
 	    }
 
@@ -1083,7 +1078,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if ((err = parse_Clrs(stream, &nstop)) != GRD5_READ_OK)
 	    {
-	      debug_error("Clrs\n");
+	      btrace("Clrs");
 	      return err;
 	    }
 
@@ -1098,7 +1093,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 		{
 		  if ((err = parse_colour_stop(stream, stops+j)) != GRD5_READ_OK)
 		    {
-		      debug_error("parse of stop %i\n", j);
+		      btrace("parse of stop %i", j);
 		      return err;
 		    }
 		}
@@ -1107,13 +1102,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	      if ((gradc->colour.stops = malloc(stops_size)) == NULL) 
 		{
-		  debug_error("malloc\n");
+		  btrace("malloc");
 		  return GRD5_READ_MALLOC;
 		}
 
 	      if (memcpy(gradc->colour.stops, stops, stops_size) == NULL)
 		{
-		  debug_error("memcpy\n");
+		  btrace("memcpy");
 		  return GRD5_READ_MALLOC;
 		}
 
@@ -1124,7 +1119,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if ((err = parse_Trns(stream, &(gradc->transp.n))) != GRD5_READ_OK)
 	    {
-	      debug_error("Trns\n");
+	      btrace("Trns");
 	      return err;
 	    }
 
@@ -1139,7 +1134,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 		{
 		  if ((err = parse_transp_stop(stream, stops+j)) != GRD5_READ_OK)
 		    {
-		      debug_error("transparency stop\n");
+		      btrace("transparency stop");
 		      return err;
 		    }
 		}
@@ -1148,13 +1143,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	      if ((gradc->transp.stops = malloc(stops_size)) == NULL)
 		{
-		  debug_error("malloc\n");
+		  btrace("malloc");
 		  return GRD5_READ_MALLOC;
 		}
 
 	      if (memcpy(gradc->transp.stops, stops, stops_size) == NULL)
 		{
-		  debug_error("memcpy\n");
+		  btrace("memcpy");
 		  return GRD5_READ_MALLOC;
 		}
 	    }
@@ -1163,7 +1158,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	{
 	  if (ncomp != 9)
 	    {
-	      debug_error("ClNs with %i component\n", ncomp);
+	      btrace("ClNs with %i component", ncomp);
 	      return GRD5_READ_PARSE;
 	    }
 
@@ -1175,13 +1170,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	  err = parse_ShTr(stream, &(gradn->show_transparency));
 	  if (err != GRD5_READ_OK)
 	    {
-	      debug_error("ShTr\n");
+	      btrace("ShTr");
 	      return err;
 	    }
 
 	  if ((err = parse_VctC(stream, &(gradn->vector_colour))) != GRD5_READ_OK)
 	    {
-	      debug_error("VctC\n");
+	      btrace("VctC");
 	      return err;
 	    }
 
@@ -1189,13 +1184,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if ((err = parse_ClrS(stream, &model_name)) != GRD5_READ_OK)
 	    {
-	      debug_error("Clrs\n");
+	      btrace("Clrs");
 	      return err;
 	    }
 
 	  if ((gradn->model = grd5_model(model_name)) == GRD5_MODEL_UNKNOWN)
 	    {
-	      debug_error("model name %*s\n", 
+	      btrace("model name %*s", 
 			  model_name->len, model_name->content);
 	    }
 
@@ -1203,37 +1198,37 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  if (gradn->model == GRD5_MODEL_UNKNOWN)
 	    {
-	      debug_error("unknown model\n");
+	      btrace("unknown model");
 	      return GRD5_READ_PARSE;
 	    }
 
 	  if ((err = parse_RndS(stream, &(gradn->seed))) != GRD5_READ_OK)
 	    {
-	      debug_error("RndS\n");
+	      btrace("RndS");
 	      return err;
 	    }
 
 	  if ((err = parse_Smth(stream, &(gradn->smoothness))) != GRD5_READ_OK)
 	    {
-	      debug_error("Smth\n");
+	      btrace("Smth");
 	      return err;
 	    }
 
 	  if ((err = parse_Mnm(stream, &(gradn->min)))  != GRD5_READ_OK)
 	    {
-	      debug_error("Mnm\n");
+	      btrace("Mnm");
 	      return err;
 	    }
 
 	  if ((err = parse_Mxm(stream, &(gradn->max)))  != GRD5_READ_OK)
 	    {
-	      debug_error("Mxm\n");
+	      btrace("Mxm");
 	      return err;
 	    }
 	}
       else
 	{
-	  debug_error("unknown gradient format %*s\n", 
+	  btrace("unknown gradient format %*s", 
 		      gradient_type->len,
 		      gradient_type->content);
 	  return GRD5_READ_PARSE; 

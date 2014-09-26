@@ -6,7 +6,7 @@ NAME = cptinfo
 OBJ      = main.o options.o cptinfo.o
 RUBBISH += $(OBJ) cptinfo
 
-LDLIBS += -lcpt -lfill
+LDLIBS += -lcpt -lfill -lbt
 
 default : all
 

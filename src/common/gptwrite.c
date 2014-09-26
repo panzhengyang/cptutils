@@ -16,6 +16,7 @@
 #include <time.h>
 
 #include "gpt.h"
+#include "btrace.h"
 
 extern int gpt_write(const char* file,gpt_t* gpt)
 {
@@ -26,7 +27,7 @@ extern int gpt_write(const char* file,gpt_t* gpt)
 
   if ( n<2 )
     {
-      fprintf(stderr,"gnuplot does not support %i stops\n",n);
+      btrace("gnuplot does not support %i stops", n);
       return 1;
     }
 

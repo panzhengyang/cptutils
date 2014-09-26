@@ -26,15 +26,15 @@ extern int grd3_write(const char* file,grd3_t* grd3)
     {
       FILE* s;     
 
-      if ((s = fopen(file,"w")) == NULL)
+      if ((s = fopen(file, "w")) == NULL)
 	return 1;
 
-      err = grd3_write_stream(s,grd3);
+      err = grd3_write_stream(s, grd3);
 
       fclose(s);
     }
   else
-    err = grd3_write_stream(stderr,grd3);
+    err = grd3_write_stream(stdout, grd3);
 
   return err;
 }

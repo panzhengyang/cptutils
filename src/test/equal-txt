@@ -4,7 +4,7 @@
 #
 # J.J. Green 2014
 
-source equal-pre-compare.sh
+. equal-pre-compare.sh
 
 if [ `diff -w $1 $2 | wc -l` -eq '0' ]
 then

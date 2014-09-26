@@ -53,6 +53,7 @@
 #include <math.h>
 
 #include "ggr.h"
+#include "btrace.h"
 
 #define EPSILON 1e-10
 #define PI 3.141592653
@@ -100,7 +101,7 @@ extern void grad_free_gradient(gradient_t *grad)
 
 static void warn_truncated(const char* where)
 {
-  fprintf(stderr,"unexpected end of file %s\n",where);
+  btrace("unexpected end of file %s",where);
 }
 
 extern gradient_t* grad_load_gradient(const char* path)
@@ -119,7 +120,7 @@ extern gradient_t* grad_load_gradient(const char* path)
     }
   else if ((stream = fopen(path,"rb")) == NULL)
     {
-      fprintf(stderr,"file open (r) failed for %s\n",path);
+      btrace("file open (r) failed for %s",path);
       return NULL;
     }
 
@@ -131,7 +132,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
   if (strcmp(line, "GIMP Gradient\n") != 0)
     {
-      fprintf(stderr,"file does not seem to be a GIMP gradient\n");
+      btrace("file does not seem to be a GIMP gradient");
       return NULL;
     }
 
@@ -169,7 +170,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 	}
     }
   else
-    grad->name = (path ?  basename(path) : strdup("libgimpcpt-output"));
+    grad->name = (path ?  basename(path) : strdup("cptutils-output"));
 
   /* next line specifies number of segments */
 
@@ -177,9 +178,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
   if (num_segments < 1)
     {
-      fprintf(stderr,
-	      "invalid number of segments in %s\n",
-	      path);
+      btrace("invalid number of segments in %s", path);
       free(grad);
       return NULL;
     }
@@ -198,7 +197,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
       if (fgets(line, 1024, stream) == NULL)
 	{
-	  fprintf(stderr,"unexpected end of file at segment %i\n",i+1);
+	  btrace("unexpected end of file at segment %i",i+1);
 	  return NULL;
 	}
 
@@ -208,9 +207,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 		 &(seg->r1), &(seg->g1), &(seg->b1), &(seg->a1),
 		 &type, &color) != 13)
 	{
-	  fprintf(stderr,
-		  "badly formatted gradient segment %d in %s\n",
-		  i, path);
+	  btrace("badly formatted gradient segment %d in %s", i, path);
 	}
       else
 	{
@@ -248,7 +245,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	      if (err)
 		{
-		  fprintf(stderr,"error converting rgb->hsv !\n");
+		  btrace("error converting rgb->hsv !");
 		  return NULL;
 		}
 
@@ -258,7 +255,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	    default:
 
-	      fprintf(stderr,"unknown colour model (%i)\n",color);
+	      btrace("unknown colour model (%i)",color);
 	      return NULL;
 	    }
 	}      
@@ -334,9 +331,7 @@ extern int grad_save_gradient(const gradient_t *grad, const char* path)
     }
   else if ((stream = fopen(path, "wb")) == NULL)
     {
-      fprintf(stderr,
-	      "file open (w) failed for %s\n",
-	      path);
+      btrace("file open (w) failed for %s",path);
       return 1;
     }
   
@@ -351,8 +346,8 @@ extern int grad_save_gradient(const gradient_t *grad, const char* path)
      ...
   */
 
-  fprintf (stream,"GIMP Gradient\n");
-  fprintf (stream,"Name: %s\n",grad->name);
+  fprintf(stream,"GIMP Gradient\n");
+  fprintf(stream,"Name: %s\n",grad->name);
 
   /* Count number of segments */
 
@@ -366,10 +361,10 @@ extern int grad_save_gradient(const gradient_t *grad, const char* path)
 
   /* Write rest of file */
 
-  fprintf (stream, "%d\n", num_segments);
+  fprintf(stream, "%d\n", num_segments);
 
   for (seg = grad->segments; seg; seg = seg->next)
-    fprintf (stream, "%f %f %f %f %f %f %f %f %f %f %f %d %d\n",
+    fprintf(stream, "%f %f %f %f %f %f %f %f %f %f %f %d %d\n",
 	     seg->left, seg->middle, seg->right,
 	     seg->r0, seg->g0, seg->b0, seg->a0,
 	     seg->r1, seg->g1, seg->b1, seg->a1,
@@ -436,7 +431,7 @@ extern int grad_segment_rgba(double z,
       factor = calc_sphere_decreasing_factor(middle, z);
       break;
     default:
-      fprintf(stderr,"Corrupt gradient\n");
+      btrace("Corrupt gradient");
       return 1;
     }
 
@@ -503,7 +498,7 @@ extern int grad_segment_rgba(double z,
 	    }
 	  break;
 	default:
-	  fprintf(stderr,"unknown colour model %i\n",seg->color);
+	  btrace("unknown colour model %i",seg->color);
 	  return 1;
 	}
       
@@ -616,7 +611,7 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad, double z)
       }
   }
   
-  fprintf(stderr,"No matching segment for zition %0.15f", z);
+  btrace("No matching segment for zition %0.15f", z);
   
   return NULL;
 }

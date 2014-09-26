@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "fill.h"
+#include "btrace.h"
 
 extern int fill_eq(fill_t a, fill_t b)
 {
@@ -28,7 +29,7 @@ extern int fill_eq(fill_t a, fill_t b)
       return colour_rgb_dist(a.u.colour, b.u.colour, model_rgb) < 1e-8;
     }
 
-  fprintf(stderr,"no such fill type\n");
+  btrace("no such fill type");
 
   return 1;
 }
@@ -63,7 +64,7 @@ extern int fill_interpolate(double z, fill_t a, fill_t b,
       if (colour_interpolate(z, a.u.colour, b.u.colour, 
 			     model, &(f->u.colour)) != 0)
 	{
-	  fprintf(stderr,"failed to interpolate colour\n");
+	  btrace("failed to interpolate colour");
 	  return 1;
 	}
 
@@ -97,7 +98,7 @@ extern int fill_rgb(fill_t fill,model_t model,rgb_t *prgb)
 	  break;
 
 	default:
-	  fprintf(stderr,"bad colour model (%i)\n",model); 
+	  btrace("bad colour model (%i)",model); 
 	  return 1;
 	}
       break;
@@ -107,11 +108,11 @@ extern int fill_rgb(fill_t fill,model_t model,rgb_t *prgb)
     case fill_file:
     case fill_empty:
 
-      fprintf(stderr,"fill type not yet implemeted\n"); 
+      btrace("fill type not yet implemeted"); 
       return 1;
 
     default:
-      fprintf(stderr,"bad fill type (%i)\n",fill.type); 
+      btrace("bad fill type (%i)",fill.type); 
       return 1;
     }
 

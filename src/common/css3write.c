@@ -16,6 +16,7 @@
 #include <time.h>
 
 #include "css3.h"
+#include "btrace.h"
 
 extern int css3_write(const char* file,css3_t* css3)
 {
@@ -26,7 +27,7 @@ extern int css3_write(const char* file,css3_t* css3)
 
   if ( n<2 )
     {
-      fprintf(stderr,"CSS3 does not support %i stops\n",n);
+      btrace("CSS3 does not support %i stops\n", n);
       return 1;
     }
 

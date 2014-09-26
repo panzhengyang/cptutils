@@ -17,10 +17,11 @@
 #include "config.h"
 #endif
 
-#include "cptread.h"
-
 #include "gmtcol.h"
 #include "cptname.h"
+#include "btrace.h"
+
+#include "cptread.h"
 
 static int cpt_parse(FILE *stream, cpt_t *cpt);
 
@@ -35,7 +36,7 @@ extern int cpt_read(const char *path, cpt_t *cpt)
 
       if ((stream = fopen(path, "r")) == NULL)
 	{
-	  fprintf(stderr,"error reading %s : %s\n", path, strerror(errno));
+	  btrace("error reading %s : %s", path, strerror(errno));
 	  return 1;
 	}
       
@@ -45,11 +46,11 @@ extern int cpt_read(const char *path, cpt_t *cpt)
 	    {
 	      if (ferror(stream))
 		{
-		  fprintf(stderr,"error reading %s\n", path);
+		  btrace("error reading %s", path);
 		  err = 1;
 		}
 	      else
-		fprintf(stderr,"weird error reading %s\n", path);
+		btrace("weird error reading %s", path);
 	    }
 	}
     }
@@ -104,8 +105,7 @@ static int cpt_parse(FILE *stream, cpt_t *cpt)
 
       if (err)
 	{
-	  fprintf(stderr, "parse error at line %i\n", lineno);
-	  fprintf(stderr, "%s\n", line);
+	  btrace("parse error at line %i : %s", lineno, line);
 	  return 1;
 	}
     }
@@ -127,7 +127,7 @@ static int cpt_parse_comment(const char *line, model_t *model)
 	*model = model_hsvp;
       else
 	{
-	  fprintf(stderr, "colour model not handled: %s\n", mstr);
+	  btrace("colour model not handled: %s", mstr);
 	  return 1;
 	}
     }
@@ -171,7 +171,7 @@ static int cpt_parse_global(const char *line, model_t model, fill_t *fill)
       err += cpt_parse_3fill(tok[0], tok[1], tok[2], model, fill);
       break;
     default:
-      fprintf(stderr, "fill with %i tokens\n", ntok);
+      btrace("fill with %i tokens", ntok);
       err++;
     }
 
@@ -189,7 +189,7 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
 
   if (! (seg = cpt_seg_new()))
     {
-      fprintf(stderr, "failed to create new segment\n");
+      btrace("failed to create new segment");
       return 1;
     }
 
@@ -267,7 +267,7 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
       break;
 
     default :
-      fprintf(stderr, "segment with strange number of tokens (%i)\n", ntok);
+      btrace("segment with strange number of tokens (%i)", ntok);
       return 1;
     }
 
@@ -290,7 +290,7 @@ static int cpt_parse_annote(const char *str, annote_t *annote)
     case 'U' : *annote = upper; break;
     case 'B' : *annote = both;  break;
     default:
-      fprintf(stderr, "strange annotation: %s\n", str);
+      btrace("strange annotation: %s", str);
       return 1;
     }
 
@@ -318,7 +318,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
     {
       if (model != model_rgb)
 	{
-	  fprintf(stderr, "RGB colour %s with non-RGB colour model\n", str); 
+	  btrace("RGB colour %s with non-RGB colour model", str); 
 	  return 1;
 	}
 
@@ -381,7 +381,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
     {
       if ((val < 0) || (val > 255))
 	{
-	  fprintf(stderr, "integer %li outside range 0,...,255\n", val);
+	  btrace("integer %li outside range 0,...,255", val);
 	  return 1;
 	}
 
@@ -391,7 +391,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
       return 0;
     }
 
-  fprintf(stderr, "fill not recognised: %s\n", str);
+  btrace("fill not recognised: %s", str);
   return 1;
 }
 
@@ -425,19 +425,19 @@ static int set_rgb(int r, int g, int b, rgb_t *rgb)
 {
   if ((r < 0) || (r > 255))
     {
-      fprintf(stderr, "red %i out of range\n", r);
+      btrace("red %i out of range", r);
       return 1;
     }
 
   if ((g < 0) || (g > 255))
     {
-      fprintf(stderr, "green %i out of range\n", g);
+      btrace("green %i out of range", g);
       return 1;
     }
 
   if ((b < 0) || (b > 255))
     {
-      fprintf(stderr, "blue %i out of range\n", b);
+      btrace("blue %i out of range", b);
       return 1;
     }
 
@@ -452,19 +452,19 @@ static int set_hsv(double h, double s, double v, hsv_t *hsv)
 {
   if ((h < 0.0) || (h > 360.0))
     {
-      fprintf(stderr, "hue %.3f out of range\n", h);
+      btrace("hue %.3f out of range", h);
       return 1;
     }
 
   if ((s < 0.0) || (s > 1.0))
     {
-      fprintf(stderr, "saturation %.3f out of range\n", s);
+      btrace("saturation %.3f out of range", s);
       return 1;
     }
 
   if ((v < 0.0) || (v > 1.0))
     {
-      fprintf(stderr, "value %.3f out of range\n", v);
+      btrace("value %.3f out of range", v);
       return 1;
     }
 

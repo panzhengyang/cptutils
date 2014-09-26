@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "odb.h"
+#include "btrace.h"
 
 /* creation of odb record list - used in parser actions */  
 
@@ -134,7 +135,7 @@ extern int odb_serialise(odb_t* odb,identtab_t* tab)
 
   if (! odb->list)
     {
-      fprintf(stderr,"attempt to serialise ODB without list!\n");
+      btrace("attempt to serialise ODB without list!");
       return 0;
     }
 
@@ -142,13 +143,13 @@ extern int odb_serialise(odb_t* odb,identtab_t* tab)
 
   if (!n)
     {
-      fprintf(stderr,"ODB has no records\n");
+      btrace("ODB has no records");
       return 1;
     }
 
   if ((rec = malloc(n*sizeof(odb_record_t))) == NULL)
     {
-      fprintf(stderr,"out of memory\n");
+      btrace("out of memory");
       return 1;
     }
 
@@ -166,9 +167,9 @@ extern int odb_serialise(odb_t* odb,identtab_t* tab)
 	  class = recls->class; 
 	  
 	  if ((ident = identtab_id_lookup(tab,class)) == NULL)
-	    fprintf(stderr,"failed to serialise record %i (and class lookup failed)\n",id);
+	    btrace("failed to serialise record %i (and class lookup failed)",id);
 	  else
-	    fprintf(stderr,"failed to serialise record %s.%i\n",ident->name,id);
+	    btrace("failed to serialise record %s.%i",ident->name,id);
 
 	  return 1;
 	}
@@ -202,7 +203,7 @@ static int record_serialise(odb_record_list_t* recls,identtab_t* tab,odb_record_
 
       if ((f = malloc(n*sizeof(odb_field_t))) == NULL)
 	{
-	  fprintf(stderr,"out of memory\n");
+	  btrace("out of memory");
 	  return 1;
 	}
 
@@ -218,9 +219,9 @@ static int record_serialise(odb_record_list_t* recls,identtab_t* tab,odb_record_
 	      att = fl->attribute; 
 	  
 	      if ((ident = identtab_id_lookup(tab,att)) == NULL)
-		fprintf(stderr,"failed to serialise field %i (and attribute lookup failed)\n",i);
+		btrace("failed to serialise field %i (and attribute lookup failed)",i);
 	      else
-		fprintf(stderr,"failed to serialise field %i, attribute %s\n",i,ident->name);
+		btrace("failed to serialise field %i, attribute %s",i,ident->name);
 	      
 	      return 1;
 	    }
@@ -255,7 +256,7 @@ extern odb_record_t* odb_class_name_lookup(const char* class,identtab_t* tab,odb
 
   if ((ident = identtab_name_lookup(tab,class)) == NULL)
     {
-      fprintf(stderr,"failed lookup of class %s\n",class);
+      btrace("failed lookup of class %s",class);
       return NULL;
     }
 
@@ -306,7 +307,7 @@ extern odb_field_t* odb_attribute_name_lookup(const char* att,identtab_t* tab,od
 
   if ((ident = identtab_name_lookup(tab,att)) == NULL)
     {
-      fprintf(stderr,"failed lookup of attribute %s\n",att);
+      btrace("failed lookup of attribute %s",att);
       return NULL;
     }
 

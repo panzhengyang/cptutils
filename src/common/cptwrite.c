@@ -16,6 +16,7 @@
 #endif
 
 #include "cptwrite.h"
+#include "btrace.h"
 
 static int fprintf_cpt_aux(FILE*, char, fill_t, model_t);
 static int fprintf_cpt_sample(FILE*, cpt_sample_t, model_t, const char*);
@@ -33,7 +34,7 @@ extern int cpt_write(const char *outfile, cpt_t *cpt)
   
   if (common_format(cpt, zfmt) != 0)
     {
-      fprintf(stderr, "failed to build z-format string\n");
+      btrace("failed to build z-format string");
       return 1;
     }
 
@@ -51,7 +52,7 @@ extern int cpt_write(const char *outfile, cpt_t *cpt)
     case model_rgb : model = "RGB"; break;
     case model_hsv : model = "HSV"; break;
     default :
-      fprintf(stderr, "cpt file corrupt : bad model specified\n");
+      btrace("cpt file corrupt : bad model specified");
       return 1;
     }
   
@@ -128,7 +129,7 @@ static int common_format(cpt_t *cpt, char *fmt)
   
   if (nstop < 2)
     {
-      fprintf(stderr, "empty cpt file\n");
+      btrace("empty cpt file");
       return 1;
     }
 
@@ -190,7 +191,7 @@ static int common_format(cpt_t *cpt, char *fmt)
 
 	  if ( dpused(fmt, &dpu) != 0 )
 	    {
-	      fprintf(stderr, "dpused fail");
+	      btrace("dpused fail");
 	      return 1;
 	    }
 

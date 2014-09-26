@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "svg.h"
+#include "btrace.h"
 
 /*
   modified the first argument, replacing transparency
@@ -143,7 +144,7 @@ extern int svg_interpolate(const svg_t *svg, double z, rgb_t *rgb, double *op)
 
   if (!node)
     {
-      fprintf(stderr,"implicit initial stop\n");
+      btrace("implicit initial stop");
       return 1;
     }
 
@@ -173,7 +174,7 @@ extern int svg_interpolate(const svg_t *svg, double z, rgb_t *rgb, double *op)
 
   /* this will happen if the final stop is implicit */
 
-  fprintf(stderr, "implicit final stop\n");
+  btrace("implicit final stop");
 
   return 1;
 }

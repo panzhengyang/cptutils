@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include "colour.h"
+#include "btrace.h"
 
 static double colourD(int);
 static int colour8(double);
@@ -173,7 +174,7 @@ extern int parse_rgb(const char *string, rgb_t *col)
   
   if ((token = strtok(NULL, "/")) == NULL)
     {
-      fprintf(stderr,"ill-formed colour string \"%s\"\n",string);
+      btrace("ill-formed colour string : %s", string);
       free(dup);
       return 1;
     }

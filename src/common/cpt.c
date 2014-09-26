@@ -1,5 +1,5 @@
 /*
-  cpt.h
+  cpt.c
 
   A struct to hold a GMT cpt file, and some operations 
   on theml
@@ -13,6 +13,7 @@
 
 #include "colour.h"
 #include "cpt.h"
+#include "btrace.h"
 
 extern cpt_seg_t* cpt_segment(cpt_t* cpt, int n)
 {
@@ -76,25 +77,12 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
       if (! fill_eq(left->rsmp.fill,right->lsmp.fill))
 	{
 	  segos[n] = i;
-
-#ifdef DEBUG
-	  printf("%i\t(%f) -> %i\n",n,left->rsmp.val,i);
-#endif
-
 	  n++;
 	}
-
-#ifdef DEBUG
-      printf("\t(%f)\n",left->rsmp.val);
-#endif
 
       left  = right;
       right = left->rseg;
     }
-
-#ifdef DEBUG
-  printf("npc %i\n",n);
-#endif
 
   return n;
 }
@@ -167,7 +155,7 @@ extern int cpt_zfill(cpt_t* cpt, double z, fill_t* fill)
 			       model,
 			       fill) != 0)
 	    {
-	      fprintf(stderr,"fill interpolation failed\n");
+	      btrace("fill interpolation failed");
 	      return 1;
 	    }
 
@@ -185,7 +173,7 @@ extern int cpt_zfill(cpt_t* cpt, double z, fill_t* fill)
     }
   while ((seg = seg->rseg) != NULL);
 
-  fprintf(stderr,"odd error - attempt to sample empty z-slice?\n");
+  btrace("odd error - attempt to sample empty z-slice?");
 
   return 1;
 }

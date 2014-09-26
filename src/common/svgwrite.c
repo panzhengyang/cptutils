@@ -17,6 +17,7 @@
 #include <libxml/xmlwriter.h>
 
 #include "svgwrite.h"
+#include "btrace.h"
 
 #define ENCODING "utf-8"
 #define BUFSZ 128
@@ -70,13 +71,13 @@ extern int svg_write(const char *file,
 		      
 		      if (fclose(fp) != 0)
 			{
-			  fprintf(stderr, "error closing file %s\n", file);
+			  btrace("error closing file %s", file);
 			  err = 1;
 			}
 		    }
 		  else
 		    {
-		      fprintf(stderr, "error opening file %s\n", file);
+		      btrace("error opening file %s", file);
 		      err = 1;
 		    }
 		}
@@ -87,19 +88,19 @@ extern int svg_write(const char *file,
 	    {
 	      xmlFreeTextWriter(writer);
 	      
-	      fprintf(stderr, "failed memory write\n");
+	      btrace("failed memory write");
 	      err = 1;
 	    }
 	}
       else
 	{
-	  fprintf(stderr, "error creating the xml writer\n");
+	  btrace("error creating the xml writer");
 	  err = 1;
 	}
     }		
   else
     {
-      fprintf(stderr, "error creating xml writer buffer\n");
+      btrace("error creating xml writer buffer");
       err = 1;
     }
   
@@ -119,7 +120,7 @@ static int svg_attribute(xmlTextWriter *writer,
 				  BAD_CAST name, 
 				  BAD_CAST value) < 0)
     {
-      fprintf(stderr, "error setting %s %s attribute\n", element, name);
+      btrace("error setting %s %s attribute", element, name);
       return 1;
     }
    
@@ -142,7 +143,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 
   if (n < 1)
     {
-      fprintf(stderr, "no gradients to write\n");
+      btrace("no gradients to write");
       return 1;
     }
 
@@ -150,7 +151,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 
   if ((n > 1) && preview->use)
     {
-      fprintf(stderr, "no previews with multi-gradient output (yet)\n");
+      btrace("no previews with multi-gradient output (yet)");
       return 1;
     }
 
@@ -160,7 +161,7 @@ static int svg_write_mem(xmlTextWriter *writer,
     {
       if ( svg[i]->nodes == NULL )
 	{
-	  fprintf(stderr, "svg %zu has no segments\n", i);
+	  btrace("svg %zu has no segments", i);
 	  return 1;
 	}
     }
@@ -169,7 +170,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 
   if ( xmlTextWriterStartDocument(writer, NULL, ENCODING, NULL) < 0 )
     {
-      fprintf(stderr, "error from start document\n");
+      btrace("error from start document");
       return 1;
     }
 
@@ -177,7 +178,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 
   if ( xmlTextWriterStartElement(writer, BAD_CAST "svg") < 0 )
     {
-      fprintf(stderr, "error from open svg\n");
+      btrace("error from open svg");
       return 1;
     }
 
@@ -218,13 +219,13 @@ static int svg_write_mem(xmlTextWriter *writer,
 
       if ( xmlTextWriterStartElement(writer, BAD_CAST "g") < 0 )
 	{
-	  fprintf(stderr, "error from open g\n");
+	  btrace("error from open g");
 	  return 1;
 	}
 
       if ( xmlTextWriterStartElement(writer, BAD_CAST "defs") < 0 )
 	{
-	  fprintf(stderr, "error from open defs\n");
+	  btrace("error from open defs");
 	  return 1;
 	}
 
@@ -236,7 +237,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 
       if ( xmlTextWriterEndElement(writer) < 0 )
 	{
-	  fprintf(stderr, "error from close defs\n");
+	  btrace("error from close defs");
 	  return 1;
 	}
 
@@ -244,7 +245,7 @@ static int svg_write_mem(xmlTextWriter *writer,
 
       if ( xmlTextWriterStartElement(writer, BAD_CAST "rect") < 0 )
 	{
-	  fprintf(stderr, "error from open rect\n");
+	  btrace("error from open rect");
 	  return 1;
 	}
 
@@ -288,13 +289,13 @@ static int svg_write_mem(xmlTextWriter *writer,
 
       if ( xmlTextWriterEndElement(writer) < 0 )
 	{
-	  fprintf(stderr, "error from close rect\n");
+	  btrace("error from close rect");
 	  return 1;
 	}
 
       if ( xmlTextWriterEndElement(writer) < 0 )
 	{
-	  fprintf(stderr, "error from close g\n");
+	  btrace("error from close g");
 	  return 1;
 	}
 
@@ -315,13 +316,13 @@ static int svg_write_mem(xmlTextWriter *writer,
 
   if ( xmlTextWriterEndElement(writer) < 0 )
     {
-      fprintf(stderr, "error from close svg\n");
+      btrace("error from close svg");
       return 1;
     }
 
   if ( xmlTextWriterEndDocument(writer) < 0 )
     {
-      fprintf(stderr, "error from end document\n");
+      btrace("error from end document");
       return 1;
     }
 
@@ -346,13 +347,13 @@ static int svg_write_metadata(xmlTextWriter *writer)
 {
   if (xmlTextWriterStartElement(writer, BAD_CAST "metadata") < 0)
     {
-      fprintf(stderr, "error from open metadata\n");
+      btrace("error from open metadata");
       return 1;
     }
 
   if (xmlTextWriterStartElement(writer, BAD_CAST "creator") < 0)
     {
-      fprintf(stderr, "error from open creator\n");
+      btrace("error from open creator");
       return 1;
     }
 
@@ -364,13 +365,13 @@ static int svg_write_metadata(xmlTextWriter *writer)
 
   if (xmlTextWriterEndElement(writer) < 0)
     {
-      fprintf(stderr, "error from close creator\n");
+      btrace("error from close creator");
       return 1;
     }
 
   if (xmlTextWriterStartElement(writer, BAD_CAST "created") < 0)
     {
-      fprintf(stderr, "error from open created\n");
+      btrace("error from open created");
       return 1;
     }
 
@@ -379,13 +380,13 @@ static int svg_write_metadata(xmlTextWriter *writer)
 
   if (xmlTextWriterEndElement(writer) < 0)
     {
-      fprintf(stderr, "error from close created\n");
+      btrace("error from close created");
       return 1;
     }
 
   if (xmlTextWriterEndElement(writer) < 0)
     {
-      fprintf(stderr, "error from close metadata\n");
+      btrace("error from close metadata");
       return 1;
     }
 
@@ -400,7 +401,7 @@ static int svg_write_lineargradient(xmlTextWriter *writer, const svg_t *svg)
 
   if (xmlTextWriterStartElement(writer, BAD_CAST "linearGradient") < 0)
     {
-      fprintf(stderr, "error from open linearGradient\n");
+      btrace("error from open linearGradient");
       return 1;
     }
 
@@ -410,7 +411,7 @@ static int svg_write_lineargradient(xmlTextWriter *writer, const svg_t *svg)
 				  BAD_CAST "id", 
 				  svg->name) < 0)
     {
-      fprintf(stderr, "error writing linearGradient id attribute\n");
+      btrace("error writing linearGradient id attribute");
       return 1;
     }
 
@@ -434,7 +435,7 @@ static int svg_write_lineargradient(xmlTextWriter *writer, const svg_t *svg)
 
   if (xmlTextWriterEndElement(writer) < 0)
     {
-      fprintf(stderr, "error from close linearGradient\n");
+      btrace("error from close linearGradient");
       return 1;
     }
 
@@ -457,7 +458,7 @@ static int svg_write_stop(xmlTextWriter* writer, svg_stop_t stop)
 
   if (xmlTextWriterStartElement(writer, BAD_CAST "stop") < 0)
     {
-      fprintf(stderr, "error from open stop\n");
+      btrace("error from open stop");
       return 1;
     }
 
@@ -471,7 +472,7 @@ static int svg_write_stop(xmlTextWriter* writer, svg_stop_t stop)
   
   if (xmlTextWriterEndElement(writer) < 0)
     {
-      fprintf(stderr, "error from close stop\n");
+      btrace("error from close stop");
       return 1;
     }
   

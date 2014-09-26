@@ -6,15 +6,20 @@
   (c) J.J.Green 2004
 */
 
-%{
-#include "odb.h"
+%code requires {
 
 #define YYLEX_PARAM scanner 
 #define YYPARSE_PARAM scanner 
 
+ }
+
+%{
+#include "odb.h"
+
 #include "odbparse.h"
 #include "odbscan.h"
 #include "odbbridge.h"
+#include "btrace.h"
 
   static void odberror(char const*);
 
@@ -90,5 +95,5 @@ attribute : IDENT { $$ = $1.ident; }
 
 static void odberror(char const *s)
 {
-  fprintf(stderr, "%s\n",s);
+  btrace("%s", s);
 }

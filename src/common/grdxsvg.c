@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "grdxsvg.h"
+#include "btrace.h"
 
 /* convert intermediate types to svg values */
 
@@ -93,7 +94,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   if (err)
     {
-      fprintf(stderr, "%i errors rgb\n",err);
+      btrace("%i errors rgb", err);
       return NULL;
     }
 
@@ -104,15 +105,15 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   if (err)
     {
-      fprintf(stderr, "%i errors op\n",err);
+      btrace("%i errors op", err);
       return NULL;
     }
 
   if ((rs0.z != 0) || (os0.z != 0))
     {
-      fprintf(stderr,"nonzero initial stop\n");
-      fprintf(stderr,"RGB     %.3f\n", svg_it_z(rs0.z));
-      fprintf(stderr,"Opacity %.3f\n", svg_it_z(os0.z));
+      btrace("nonzero initial stop");
+      btrace("RGB     %.3f", svg_it_z(rs0.z));
+      btrace("Opacity %.3f", svg_it_z(os0.z));
       return NULL;
     }
 
@@ -135,7 +136,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
 	  if (gstack_pop(oss, &os1) != 0)
 	    {
-	      fprintf(stderr,"early termination of opacity channel\n");
+	      btrace("early termination of opacity channel");
 	      break;
 	    }
 	}
@@ -146,7 +147,7 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
 	  if (gstack_pop(rss, &rs1) != 0)
 	    {
-	      fprintf(stderr,"early termination of rgb channel\n");
+	      btrace("early termination of rgb channel");
 	      break;
 	    }
 	}
@@ -169,12 +170,12 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 	    }
 	  else if (odone && !rdone)
 	    {
-	      fprintf(stderr,"early termination of opacity channel\n");
+	      btrace("early termination of opacity channel");
 	      break;
 	    }
 	  else if (rdone && ! odone)
 	    {
-	      fprintf(stderr,"early termination of rgb channel\n");
+	      btrace("early termination of rgb channel");
 	      break;
 	    }
 	  else

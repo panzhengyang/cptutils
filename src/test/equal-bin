@@ -4,7 +4,7 @@
 #
 # J.J. Green 2014
 
-source equal-pre-compare.sh
+. equal-pre-compare.sh
 
 if [ `cmp $dump_src $dump_ref | wc -l` -eq '0' ]
 then

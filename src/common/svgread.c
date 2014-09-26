@@ -21,6 +21,7 @@
 
 #include "colour.h"
 #include "stdcol.h"
+#include "btrace.h"
 
 #include "svgread.h"
 
@@ -37,7 +38,7 @@ extern int svg_read(const char* file, svg_list_t* list)
 
   if ((doc = xmlParseFile(file)) == NULL)
     {
-      fprintf(stderr, "error: unable to parse file %s\n",file);
+      btrace("error: unable to parse file %s",file);
       err = 1;
     }
   else
@@ -48,7 +49,7 @@ extern int svg_read(const char* file, svg_list_t* list)
    
       if ((xpc = xmlXPathNewContext(doc)) == NULL) 
 	{
-	  fprintf(stderr,"error: unable to create new XPath context\n");
+	  btrace("error: unable to create new XPath context");
 	  err = 1;
 	}
       else
@@ -72,7 +73,7 @@ extern int svg_read(const char* file, svg_list_t* list)
 	  
 	  if (xmlXPathRegisterNs(xpc,prefix,href) != 0)
 	    {
-	      fprintf(stderr,"namespace error for %s:%s\n", prefix, href);
+	      btrace("namespace error for %s:%s", prefix, href);
 	      err = 1;
 	    }
 	  else
@@ -98,7 +99,7 @@ extern int svg_read(const char* file, svg_list_t* list)
 	  
 	      if ((xpo = xmlXPathEvalExpression(xpe, xpc)) == NULL) 
 		{
-		  fprintf(stderr,"unable to evaluate xpath expression %s\n",xpe);
+		  btrace("unable to evaluate xpath expression %s",xpe);
 		  err = 1;
 		}
 	      else
@@ -150,7 +151,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes, svg_list_t* list)
 	
       if (cur->type != XML_ELEMENT_NODE)
 	{
-	  fprintf(stderr,"bad svg: gradient is not a node!\n");
+	  btrace("bad svg: gradient is not a node!");
 	  return 1;
 	}
 
@@ -174,13 +175,13 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes, svg_list_t* list)
 
       if ((id = xmlGetProp(cur,(xmlChar *)"id")) == NULL)
 	{
-	  fprintf(stderr,"gradient has no id attribute, skipping\n");
+	  btrace("gradient has no id attribute, skipping");
 	  continue; 
 	}
 
       if ((svg = svg_list_svg(list)) == NULL)
 	{
-	  fprintf(stderr,"failed to get svg object from list\n");
+	  btrace("failed to get svg object from list");
 	  return 1;
 	}
 
@@ -192,7 +193,7 @@ static int svg_read_lingrads(xmlNodeSetPtr nodes, svg_list_t* list)
 		       SVG_NAME_LEN-1,
 		       (xmlChar *)"%s",id) >= SVG_NAME_LEN)
 	{
-	  fprintf(stderr,"long gradient name truncated!\n");
+	  btrace("long gradient name truncated!");
 	}
 
       xmlFree(id);
@@ -233,7 +234,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 	
       if (strcmp((const char*)node->name, "stop") != 0)
 	{
-	  fprintf(stderr,"unexpected %s node\n",node->name);
+	  btrace("unexpected %s node",node->name);
 	  continue;	  
 	}
 
@@ -247,7 +248,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
       if ((offset = xmlGetProp(stop,(const unsigned char*)"offset")) == NULL)
 	{
-	  fprintf(stderr,"stop has no offset attribute, skipping\n");
+	  btrace("stop has no offset attribute, skipping");
 	  err++;
 	}
       else
@@ -257,7 +258,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 
 	  if (parse_offset((char*)offset, &z) != 0)
 	    {
-	      fprintf(stderr,"failed to parse offset \"%s\"\n", offset);
+	      btrace("failed to parse offset \"%s\"", offset);
 	      err++;
 	    }      
 	  else
@@ -268,7 +269,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 		{
 		  if (parse_style((char*)style, &rgb, &op) != 0)
 		    {
-		      fprintf(stderr, "error parsing stop style \"%s\"\n", style);
+		      btrace("error parsing stop style \"%s\"", style);
 		      err++;
 		    }
 
@@ -279,7 +280,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 		{
 		  if (parse_colour((char*)colour, &rgb, &op) != 0)
 		    {
-		      fprintf(stderr, "failed on bad colour : %s\n", colour);
+		      btrace("failed on bad colour : %s", colour);
 		      err++;
 		    }
 		  
@@ -290,7 +291,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 		{
 		  if (parse_opacity((char*)opacity, &op) != 0)
 		    {
-		      fprintf(stderr,"problem parsing opacity \"%s\"\n", opacity);
+		      btrace("problem parsing opacity \"%s\"", opacity);
 		      err++;
 		    }
 		  
@@ -304,7 +305,7 @@ static int svg_read_lingrad(xmlNodePtr lgrad, svg_t* svg)
 					 .colour  = rgb };
 		  if (svg_append(svgstop, svg) != 0)
 		    {
-		      fprintf(stderr,"failed to insert stop\n");
+		      btrace("failed to insert stop");
 		      err++;
 		    }
 		}
@@ -363,7 +364,7 @@ static int parse_style(const char *style,rgb_t* rgb,double* opacity)
     {
       if (parse_style_statement(st,rgb,opacity) != 0)
 	{
-	  fprintf(stderr,"failed on clause %s\n",st);
+	  btrace("failed on clause %s",st);
 	  return 1;
 	}
 
@@ -371,7 +372,7 @@ static int parse_style(const char *style,rgb_t* rgb,double* opacity)
 	{
 	  if (parse_style_statement(st,rgb,opacity) != 0)
 	    {
-	      fprintf(stderr,"failed on clause %s\n",st);
+	      btrace("failed on clause %s",st);
 	      return 1;
 	    }
 	}
@@ -395,7 +396,7 @@ static int parse_style_statement(const char *stmnt, rgb_t* rgb, double* opacity)
 	    {
 	      if (parse_colour(val,rgb,opacity) != 0)
 		{
-		  fprintf(stderr,"stop-colour parse failed on %s [%s]\n",val,stmnt);
+		  btrace("stop-colour parse failed on %s [%s]",val,stmnt);
 		  return 1;
 		}
 	    }
@@ -403,7 +404,7 @@ static int parse_style_statement(const char *stmnt, rgb_t* rgb, double* opacity)
 	    {
 	      if (parse_opacity(val,opacity) != 0)
 		{
-		  fprintf(stderr,"opacity parse failed on %s\n",val);
+		  btrace("opacity parse failed on %s",val);
 		  return 1;
 		}
 	    }
@@ -454,14 +455,14 @@ static int parse_colour(char *st, rgb_t *rgb, double *opacity)
 
 	default:
 
-	  fprintf(stderr,"bad hex colour %s\n",st);
+	  btrace("bad hex colour %s",st);
 
 	  return 1;
 	}
 
       if (r<0 || b<0 || g<0)
 	{
-	  fprintf(stderr,"bad hex colour %s\n",st);
+	  btrace("bad hex colour %s",st);
 
 	  return 1;
 	}
