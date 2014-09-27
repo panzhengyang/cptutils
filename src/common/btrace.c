@@ -12,6 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_JANSSON_H
+#include <jansson.h>
+#endif
+
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
 
@@ -194,23 +198,28 @@ extern void btrace_add(const char* file, int line, const char* format, ...)
 
 /* print plain format */
 
-static void line_print_plain(FILE *stream, btrace_line_t *btl)
+static int line_print_plain(FILE *stream, btrace_line_t *btl)
 {
-  fprintf(stream, "%s (%s %i)\n", btl->message, btl->file, btl->line);
+  fprintf(stream, "%s (%s, %i)\n", btl->message, btl->file, btl->line);
+
+  return 0;
 }
 
-static void lines_print_plain(FILE *stream, btrace_line_t *btl)
+static int lines_print_plain(FILE *stream, btrace_line_t *btl)
 {
   if (btl)
     {
-      lines_print_plain(stream, btl->next);
-      line_print_plain(stream, btl);
+      return 
+	lines_print_plain(stream, btl->next) +
+	line_print_plain(stream, btl);
     }
+
+  return 0;
 }
 
-static void print_plain(FILE *stream, btrace_t *bt)
+static int print_plain(FILE *stream, btrace_t *bt)
 {
-  lines_print_plain(stream, bt->lines);
+  return lines_print_plain(stream, bt->lines);
 }
 
 /* print XML format */
@@ -325,10 +334,10 @@ static int print_xml_doc(xmlTextWriter* writer, btrace_t *bt)
   return 0;
 }
 
-static void print_xml(FILE *stream, btrace_t *bt)
+static int print_xml(FILE *stream, btrace_t *bt)
 {
   if (is_empty(bt))
-    return;
+    return 0;
 
   xmlBuffer* buffer;
   int err = 0;
@@ -339,33 +348,160 @@ static void print_xml(FILE *stream, btrace_t *bt)
       
       if ((writer = xmlNewTextWriterMemory(buffer, 0)) != NULL) 
 	{
-	  err = print_xml_doc(writer, bt);
-	  
+	  if (print_xml_doc(writer, bt) == 0)
+	    {
+	      fprintf(stream, "%s", buffer->content);
+	    }
+	  else
+	    {
+	      fprintf(stderr, "failed to print XML\n");
+	      err++;
+	    }
 	  xmlFreeTextWriter(writer);
-	  
-	  if (err == 0)
-	    fprintf(stream, "%s", buffer->content);
 	}
-      
+      else
+	{
+	  fprintf(stderr, "failed to create XML writer\n");
+	  err++;
+	}
       xmlBufferFree(buffer);
     }
+  else
+    {
+      fprintf(stderr, "failed to create XML buffer\n");
+      err++;
+    }
+
+  return err;
 }
+
+#ifdef HAVE_JANSSON_H
+
+/*
+  print JSON format
+*/
+
+static int line_print_json(json_t *msgs, btrace_line_t *btl)
+{
+  json_t *msg = json_object();
+
+  json_object_set_new(msg, "file", json_string(btl->file));
+  json_object_set_new(msg, "line", json_integer(btl->line));
+  json_object_set_new(msg, "message", json_string(btl->message));
+
+  json_array_append(msgs, msg); 
+
+  return 0;
+}
+
+static int lines_print_json(json_t* msgs, btrace_line_t *btl)
+{
+  if (btl)
+    {
+      return 
+	lines_print_json(msgs, btl->next) +
+	line_print_json(msgs, btl);
+    }  
+
+  return 0;
+}
+
+static int print_json(FILE *stream, btrace_t *bt)
+{
+  int err = 0;
+
+  if (is_empty(bt))
+    return 0;
+
+  json_t *messages;
+
+  if ((messages = json_array()) != NULL)
+    {
+      if (lines_print_json(messages, bt->lines) == 0)
+	{
+	  json_t *root;
+
+	  if ((root = json_object()) != NULL)
+	    {
+	      if (
+		  (json_object_set_new(root, "program", json_string(bt->program)) == 0) &&
+		  (json_object_set_new(root, "version", json_string(VERSION)) == 0) &&
+		  (json_object_set(root, "messages", messages) == 0)
+		  )
+		{
+		  if (json_dumpf(root, stream, JSON_INDENT(2)) == 0)
+		    {
+		      /* success */
+		    }
+		  else
+		    {
+		      fprintf(stderr, "failed to dump to stream\n");
+		      err++;
+		    }
+		}
+	      else
+		{
+		  fprintf(stderr, "error creating JSON message object\n");
+		  err++;
+		}
+
+	      json_decref(root);
+	    }
+	  else
+	    {
+	      fprintf(stderr, "failed to create JSON root object\n");
+	      err++;
+	    }
+	}
+      else
+	{
+	  fprintf(stderr, "failed to convert lines to JSON\n");
+	  err++;
+	}
+      json_decref(messages);
+    }
+  else
+    {
+      fprintf(stderr, "failed create JSOM message array\n");
+      err++;
+    }
+
+  return err;
+}
+
+#else
+
+static int print_json(FILE *stream, btrace_t *bt)
+{
+  fprintf(stderr, "compiled without jansson library support\n");
+  return 1;
+}
+
+#endif
+
+typedef int (*printer_t)(FILE*, btrace_t*);
 
 extern int btrace_print_stream(FILE* stream, int type)
 {
+  printer_t printer = NULL;
+
   switch (type)
     {
     case BTRACE_PLAIN: 
-      print_plain(stream, &btrace_global);
+      printer = print_plain;
       break;
     case BTRACE_XML:
-      print_xml(stream, &btrace_global);
+      printer = print_xml;
+      break;
+    case BTRACE_JSON:
+      printer = print_json;
       break;
     default:
+      fprintf(stderr, "no such trace format\n");
       return 1;
     }
 
-  return 0;
+  return printer(stream, &btrace_global);
 }
 
 extern int btrace_print(const char* path, int type)
