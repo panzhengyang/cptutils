@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #ifdef HAVE_JANSSON_H
 #include <jansson.h>
@@ -44,6 +45,23 @@ static btrace_t btrace_global =
     .program = NULL,
     .lines   = NULL
   };
+
+static const char* date_string(void)
+{
+  time_t t = time(NULL);
+  struct tm* bdt = gmtime(&t); 
+  static char buffer[32];
+
+  snprintf(buffer, 32, 
+	   "%04d-%02d-%02dT%02d:%02d",
+	   bdt->tm_year + 1900,
+	   bdt->tm_mon + 1,
+	   bdt->tm_mday,
+	   bdt->tm_hour,
+	   bdt->tm_min);
+
+  return buffer;
+}
 
 /* string to format */
 
@@ -298,6 +316,14 @@ static int print_xml_doc(xmlTextWriter* writer, btrace_t *bt)
     }
 
   if (xmlTextWriterWriteAttribute(writer, 
+				  BAD_CAST "program", 
+				  BAD_CAST bt->program) < 0)
+    {
+      fprintf(stderr, "error setting program attribute\n");
+      return 1;
+    }
+
+  if (xmlTextWriterWriteAttribute(writer, 
 				  BAD_CAST "version", 
 				  BAD_CAST VERSION) < 0)
     {
@@ -306,10 +332,10 @@ static int print_xml_doc(xmlTextWriter* writer, btrace_t *bt)
     }
 
   if (xmlTextWriterWriteAttribute(writer, 
-				  BAD_CAST "program", 
-				  BAD_CAST bt->program) < 0)
+				  BAD_CAST "created", 
+				  BAD_CAST date_string()) < 0)
     {
-      fprintf(stderr, "error setting program attribute\n");
+      fprintf(stderr, "error setting created attribute\n");
       return 1;
     }
 
@@ -426,6 +452,7 @@ static int print_json(FILE *stream, btrace_t *bt)
 	      if (
 		  (json_object_set_new(root, "program", json_string(bt->program)) == 0) &&
 		  (json_object_set_new(root, "version", json_string(VERSION)) == 0) &&
+		  (json_object_set_new(root, "created", json_string(date_string())) == 0) &&
 		  (json_object_set(root, "messages", messages) == 0)
 		  )
 		{

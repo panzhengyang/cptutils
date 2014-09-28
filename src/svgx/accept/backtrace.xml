@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<backtrace version="1.55" program="svgx"><message file="svgread.c" line="41">error: unable to parse file ../fixtures/svg/malformed.svg</message><message file="svgx.c" line="39">error reading svg</message><message file="main.c" line="291">failed (error 1)</message></backtrace>

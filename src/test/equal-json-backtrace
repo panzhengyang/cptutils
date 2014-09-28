@@ -1,0 +1,12 @@
+#!/bin/sh
+# test whether files are the same (excluding #-comments)
+
+. equal-pre-compare.sh
+
+if [ `diff -I created -I version $1 $2 | wc -l` -eq '0' ]
+then
+    echo 'true'
+else
+    echo 'false'
+fi
+
