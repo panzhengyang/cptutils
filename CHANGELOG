@@ -1,17 +1,18 @@
 Changes
 
-1.56 (pending)
+1.56 (1 Oct 2014)
   - introduced a soft dependancy on the jansson JSON library
   - added --backtrace-file and --backtrace-format options
     to all conversion programs
   - gradient-convert -z does not make empty zipfiles
   - gradient-convert -z returns correct error-code
+  - removed cpttext, cptcss (unused and cheesy)
   - configure checks that compiler flags are handled
 
 1.55 (10 Aug 2014)
   - added -z (zip) option to gradient-convert
 
-1.54 (4 June 2014)
+1.54 (4 Jun 2014)
   - fixed error parsing geometry strings
   - fixed null-deference in grd5read (when given a grd3 file)
   - removed ggr searching (unused and crufty)
