@@ -1,0 +1,22 @@
+{
+  "program": "svgx",
+  "version": "1.55",
+  "messages": [
+    {
+      "file": "svgread.c",
+      "line": 41,
+      "message": "error: unable to parse file ../fixtures/svg/malformed.svg"
+    },
+    {
+      "file": "svgx.c",
+      "line": 39,
+      "message": "error reading svg"
+    },
+    {
+      "file": "main.c",
+      "line": 291,
+      "message": "failed (error 1)"
+    }
+  ],
+  "created": "2014-09-28T14:24"
+}
