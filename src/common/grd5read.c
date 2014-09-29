@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <ctype.h>
 
 /* FIXME : this is linux-specific : handle *BSD too */
 
@@ -47,7 +48,7 @@ extern int grd5_read(const char* file, grd5_t** pgrd5)
 
       fclose(stream);
     }
-  else
+ else
     err = grd5_stream(stdin, grd5);
 
   if (err == GRD5_READ_OK)
@@ -933,13 +934,20 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   if (fread(cbuf, 1, 4, stream) != 4)
     {
-      btrace("fread of magic number");
+      btrace("failed read of magic number");
       return GRD5_READ_FREAD;
     }
 
   if (strncmp(cbuf, "8BGR", 4) != 0)
     {
-      btrace("magic number %4s", cbuf);
+      int i;
+      char mbuf[5] = {0};
+
+      for (i=0 ; i<4 ; i++)
+	mbuf[i] = (isalnum(cbuf[i]) ? cbuf[i] : '.');
+
+      btrace("expected magic number 8BGR, but found %s", mbuf);
+
       return GRD5_READ_NOT_GRD;
     }
 

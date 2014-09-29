@@ -6,6 +6,8 @@
 */
 
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
 
 #if defined HAVE_ENDIAN_H
 #include <endian.h>
@@ -51,24 +53,27 @@ static int grd3_read_stream(FILE* s, grd3_t* grad)
 {
   unsigned char b[6];
   unsigned short u[2];
-  int i, n;
+  int n;
 
   /* first 4 are the grd3 magic number */
 
   if (fread(b, 1, 4, s) != 4)
     {
-      btrace("failed to read magic");
+      btrace("failed read of magic number");
       return 1;
     }
 
-  for (i=0 ; i<4 ; i++)
+  if (strncmp((const char*)b, "8BGR", 4) != 0)
     {
-      if (b[i] != grd3magic[i])
-	{
-	  btrace("unexpected magic : %d %d %d %d", 
-		 b[0], b[1], b[2], b[3]);
-	  return 1;
-	}
+      int i;
+      char mbuf[5] = {0};
+
+      for (i=0 ; i<4 ; i++)
+	mbuf[i] = (isalnum(b[i]) ? b[i] : '.');
+
+      btrace("expected magic number 8BGR, but found %s", mbuf);
+
+      return 1;
     }
 
   /* next 2 shorts, a format version (usually 3 1) */
