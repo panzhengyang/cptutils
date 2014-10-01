@@ -946,7 +946,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
       for (i=0 ; i<4 ; i++)
 	mbuf[i] = (isalnum(cbuf[i]) ? cbuf[i] : '.');
 
-      btrace("expected magic number 8BGR, but found %s", mbuf);
+      btrace("expected magic number '8BGR', but found '%s'", mbuf);
 
       return GRD5_READ_NOT_GRD;
     }
@@ -957,13 +957,13 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   if ((err = read_uint16(stream, &version)) != GRD5_READ_OK)
     {
-      btrace("fread of version");
+      btrace("failed read of format version");
       return err;
     }
 
   if (version != 5)
     {
-      btrace("magic number %i", version);
+      btrace("bad version of GRD format: expected 5, got %i", version);
       return GRD5_READ_NOT_GRD5;
     }
 

@@ -71,7 +71,7 @@ static int grd3_read_stream(FILE* s, grd3_t* grad)
       for (i=0 ; i<4 ; i++)
 	mbuf[i] = (isalnum(b[i]) ? b[i] : '.');
 
-      btrace("expected magic number 8BGR, but found %s", mbuf);
+      btrace("expected magic number '8BGR', but found '%s'", mbuf);
 
       return 1;
     }
@@ -86,6 +86,13 @@ static int grd3_read_stream(FILE* s, grd3_t* grad)
 
   grad->ver[0] = be16toh(u[0]);
   grad->ver[1] = be16toh(u[1]);
+
+  if (grad->ver[0] != 3)
+    {
+      btrace("bad version of GRD format: expected 3, got %i",
+	     grad->ver[0]);
+      return 1;
+    }
 
   /* then a single unsigned char, the title length */
 
