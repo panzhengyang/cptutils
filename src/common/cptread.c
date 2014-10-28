@@ -105,7 +105,7 @@ static int cpt_parse(FILE *stream, cpt_t *cpt)
 
       if (err)
 	{
-	  btrace("parse error at line %i : %s", lineno, line);
+	  btrace("parse error at line %i", lineno);
 	  return 1;
 	}
     }
