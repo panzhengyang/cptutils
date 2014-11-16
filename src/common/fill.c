@@ -108,11 +108,11 @@ extern int fill_rgb(fill_t fill,model_t model,rgb_t *prgb)
     case fill_file:
     case fill_empty:
 
-      btrace("fill type not yet implemeted"); 
+      btrace("fill type not yet implemented"); 
       return 1;
 
     default:
-      btrace("bad fill type (%i)",fill.type); 
+      btrace("bad fill type (%i)", fill.type); 
       return 1;
     }
 

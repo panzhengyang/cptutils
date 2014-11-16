@@ -392,6 +392,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
     }
 
   btrace("fill not recognised: %s", str);
+
   return 1;
 }
 

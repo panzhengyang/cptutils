@@ -2,7 +2,7 @@
   cpt.c
 
   A struct to hold a GMT cpt file, and some operations 
-  on theml
+  on them
 
   (c) J.J.Green 2001
 */
@@ -24,7 +24,10 @@ extern cpt_seg_t* cpt_segment(cpt_t* cpt, int n)
   while (n--)
     {
       if ((seg = seg->rseg) == NULL) 
-	return NULL; 
+	{
+	  btrace("no right-link for segment %i", n);
+	  return NULL;
+	} 
     }
 
   return seg;
@@ -72,7 +75,7 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
 
   if (! right) return 1;
 
-  for (n = 1,i = 1 ; right ; i++)
+  for (n = 1, i = 1 ; right ; i++)
     {    
       if (! fill_eq(left->rsmp.fill,right->lsmp.fill))
 	{
@@ -115,7 +118,7 @@ extern int cpt_increasing(cpt_t* cpt)
 {
   double z[2] = {0};
 
-  cpt_zrange(cpt,z);
+  cpt_zrange(cpt, z);
 
   return z[0] < z[1];
 }
@@ -340,6 +343,7 @@ extern void cpt_seg_destroy(cpt_seg_t* seg)
   if (seg->label) free(seg->label);
   free(seg);
 }
+
 
 
 

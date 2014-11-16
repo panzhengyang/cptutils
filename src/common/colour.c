@@ -39,6 +39,8 @@ extern double colour_rgb_dist(colour_t a, colour_t b, model_t model)
 
     default:
 
+      btrace("no such colour model");
+
       return -1.0;
     }
 
@@ -156,8 +158,17 @@ extern int parse_rgb(const char *string, rgb_t *col)
 {
   char *dup, *token;
   
-  if (string == NULL) return 1;
-  if ((dup = strdup(string)) == NULL) return 1;
+  if (string == NULL)
+    {
+      btrace("cannot parse NULL string");
+      return 1;
+    }
+
+  if ((dup = strdup(string)) == NULL)
+    {
+      btrace("failed strdup()");
+      return 1;
+    }
   
   token = strtok(dup, "/");
   
@@ -379,6 +390,7 @@ extern int colour_interpolate(double z, colour_t a, colour_t b,
       break;
 
     default:
+      btrace("no such colour model");
       return 1;
     }
 

@@ -13,7 +13,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
+#include <errno.h>
 
 #include "css3.h"
 #include "btrace.h"
@@ -34,7 +36,11 @@ extern int css3_write(const char* file,css3_t* css3)
   if ( file )
     {
       st = fopen(file,"w");
-      if (!st) return 1;
+      if (!st)
+	{
+	  btrace("failed to open %s : %s", strerror(errno));
+	  return 1;
+	}
     }
   else st = stdout;
 

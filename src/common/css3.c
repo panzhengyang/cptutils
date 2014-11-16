@@ -12,12 +12,17 @@
 #include <ctype.h>
 
 #include "css3.h"
+#include "btrace.h"
 
 extern css3_t* css3_new(void)
 {
   css3_t* css3;
 
-  if ((css3 = malloc(sizeof(css3_t))) == NULL) return NULL;
+  if ((css3 = malloc(sizeof(css3_t))) == NULL)
+    {
+      btrace("failed memory allocation");
+      return NULL;
+    }
 
   css3->angle = 0.0;
   css3->n     = 0;
@@ -37,7 +42,10 @@ extern int css3_stops_alloc(css3_t* css3,int n)
   if (css3->n > 0) return 1;
 
   if ((stop = malloc(n*sizeof(css3_stop_t))) == NULL) 
-    return 1;
+    {
+      btrace("failed memory allocation");
+      return 1;
+    }
       
   css3->n     = n;
   css3->stop  = stop;

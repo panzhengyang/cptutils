@@ -10,6 +10,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <errno.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -41,9 +42,14 @@ extern int cpt_write(const char *outfile, cpt_t *cpt)
   if (outfile)
     {
       stream = fopen(outfile, "wb");
-      if (!stream) return 1;
+      if (!stream)
+	{
+	  btrace("failed to open %s : %s", strerror(errno));
+	  return 1;
+	}
     }
-  else stream = stdout;
+  else 
+    stream = stdout;
   
   t = time(NULL);
   

@@ -51,6 +51,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <errno.h>
 
 #include "ggr.h"
 #include "btrace.h"
@@ -101,7 +102,7 @@ extern void grad_free_gradient(gradient_t *grad)
 
 static void warn_truncated(const char* where)
 {
-  btrace("unexpected end of file %s",where);
+  btrace("unexpected end of file %s", where);
 }
 
 extern gradient_t* grad_load_gradient(const char* path)
@@ -120,7 +121,7 @@ extern gradient_t* grad_load_gradient(const char* path)
     }
   else if ((stream = fopen(path,"rb")) == NULL)
     {
-      btrace("file open (r) failed for %s",path);
+      btrace("failed to open %s : %s", path, strerror(errno));
       return NULL;
     }
 
@@ -197,7 +198,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
       if (fgets(line, 1024, stream) == NULL)
 	{
-	  btrace("unexpected end of file at segment %i",i+1);
+	  btrace("unexpected end of file at segment %i", i+1);
 	  return NULL;
 	}
 
@@ -255,7 +256,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	    default:
 
-	      btrace("unknown colour model (%i)",color);
+	      btrace("unknown colour model (%i)", color);
 	      return NULL;
 	    }
 	}      
@@ -312,8 +313,6 @@ static grad_color_t grad_hsv_type(grad_color_t color,double x,double y)
       result = color;
     }
 
-  /*  printf("(%f,%f)  %i -> %i\n",x,y,color,result); */
-
   return result;
 }
 
@@ -331,7 +330,7 @@ extern int grad_save_gradient(const gradient_t *grad, const char* path)
     }
   else if ((stream = fopen(path, "wb")) == NULL)
     {
-      btrace("file open (w) failed for %s",path);
+      btrace("failed to open %s : %s", path, strerror(errno));
       return 1;
     }
   
@@ -583,35 +582,31 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad, double z)
 {
   grad_segment_t *seg;
 
-  z = MIN(z,1.0);
-  z = MAX(z,0.0);
+  z = MIN(z, 1.0);
+  z = MAX(z, 0.0);
 
   if (grad->last_visited)
-      seg = grad->last_visited;
+    seg = grad->last_visited;
   else
-      seg = grad->segments;
+    seg = grad->segments;
 
   while (seg)
-  {
+    {
       if (z >= seg->left)
-      {
+	{
 	  if (z <= seg->right)
-	  {
+	    {
 	      grad->last_visited = seg; /* for speed */
 	      return seg;
-	  }
+	    }
 	  else
-	  {
-	      seg = seg->next;
-	  }
-      }
+	    seg = seg->next;
+	}
       else
-      {
-	  seg = seg->prev;
-      }
-  }
+	seg = seg->prev;
+    }
   
-  btrace("No matching segment for zition %0.15f", z);
+  btrace("No matching segment for z %0.15f", z);
   
   return NULL;
 }
@@ -692,34 +687,3 @@ static char* basename(const char* name)
 
    return base;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
