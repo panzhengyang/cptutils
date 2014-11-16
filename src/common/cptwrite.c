@@ -44,7 +44,7 @@ extern int cpt_write(const char *outfile, cpt_t *cpt)
       stream = fopen(outfile, "wb");
       if (!stream)
 	{
-	  btrace("failed to open %s : %s", strerror(errno));
+	  btrace("failed to open %s : %s", outfile, strerror(errno));
 	  return 1;
 	}
     }
