@@ -1,5 +1,9 @@
 Changes
 
+1.57 (pending)
+  - man-page sources converted to UTF-8 encoding
+  - improved backtraces
+
 1.56 (1 Oct 2014)
   - introduced a soft dependancy on the jansson JSON library
   - added --backtrace-file and --backtrace-format options
