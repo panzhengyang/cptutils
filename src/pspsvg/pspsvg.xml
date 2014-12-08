@@ -79,7 +79,7 @@
 </para>
 
 <programlisting>
-  pspsvg -v -o new.svg old.jgd
+pspsvg -v -o new.svg old.jgd
 </programlisting>
 
 <para>
@@ -87,7 +87,7 @@
 </para>
 
 <programlisting>
-  pspsvg old.jgd | tidy -xml -indent -o new.svg
+pspsvg old.jgd | tidy -xml -indent -o new.svg
 </programlisting>
 </refsect1>
 

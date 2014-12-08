@@ -112,7 +112,7 @@
 </para>
 
 <programlisting>
-  cptcont -v -p 66 -o new.cpt old.cpt
+cptcont -v -p 66 -o new.cpt old.cpt
 </programlisting>
 
 </refsect1>

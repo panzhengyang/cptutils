@@ -113,7 +113,7 @@ is included in recent versions of the GMT program
 </para>
 
 <programlisting>
-  cptclip -v -o new.cpt -R 2.5/5 old.cpt
+cptclip -v -o new.cpt -R 2.5/5 old.cpt
 </programlisting>
 
 <para>
@@ -121,7 +121,7 @@ is included in recent versions of the GMT program
 </para>
 
 <programlisting>
-  cptclip -v -s -o new.cpt -R 1/5 old.cpt
+cptclip -v -s -o new.cpt -R 1/5 old.cpt
 </programlisting>
 
 </refsect1>

@@ -122,7 +122,7 @@
 </para>
 
 <programlisting>
-  cpthsv -v -T s80,v110 -o new.cpt old.cpt
+cpthsv -v -T s80,v110 -o new.cpt old.cpt
 </programlisting>
 
 </refsect1>

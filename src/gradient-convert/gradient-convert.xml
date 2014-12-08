@@ -186,7 +186,7 @@
 </para>
 
 <programlisting>
-  gradient-convert -v -g 200x20 legend.avl legend.png 
+gradient-convert -v -g 200x20 legend.avl legend.png 
 </programlisting>
 
 <para>
@@ -195,7 +195,7 @@
 </para>
 
 <programlisting>
-  gradient-convert -v -i grd -o cpt -z froob.grd froob.zip 
+gradient-convert -v -i grd -o cpt -z froob.grd froob.zip 
 </programlisting>
 
 </refsect1>

@@ -82,7 +82,7 @@
 </para>
 
 <programlisting>
-  cptsvg -v -o new.svg old.cpt
+cptsvg -v -o new.svg old.cpt
 </programlisting>
 
 <para>
@@ -90,7 +90,7 @@
 </para>
 
 <programlisting>
-  cptsvg -p old.cpt | tidy -xml -indent -o new.svg
+cptsvg -p old.cpt | tidy -xml -indent -o new.svg
 </programlisting>
 </refsect1>
 

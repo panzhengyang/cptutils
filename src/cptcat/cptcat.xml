@@ -88,7 +88,7 @@
 </para>
 
 <programlisting>
-  cptcat -v -o topobath.cpt topo.cpt bath.cpt
+cptcat -v -o topobath.cpt topo.cpt bath.cpt
 </programlisting>
 
 </refsect1>

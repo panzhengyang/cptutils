@@ -135,8 +135,8 @@
 </para>
 
 <programlisting>
-  pssvg -v -t "foo-%03i" -o tmp.svg foo.grd
-  svggimp -v -a tmp.svg  
+pssvg -v -t "foo-%03i" -o tmp.svg foo.grd
+svggimp -v -a tmp.svg  
 </programlisting>
 
 </refsect1>

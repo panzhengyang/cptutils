@@ -230,7 +230,7 @@
 </para>
 
 <programlisting>
-  svgx -v -l old.svg 
+svgx -v -l old.svg 
 </programlisting>
 
 <para>
@@ -240,7 +240,7 @@
 </para>
 
 <programlisting>
-  svgx -v -t cpt -s "Sunny Road" -o sunny_road.cpt old.svg 
+svgx -v -t cpt -s "Sunny Road" -o sunny_road.cpt old.svg 
 </programlisting>
 
 <para>
@@ -250,7 +250,7 @@
 </para>
 
 <programlisting>
-  svgx -v -t svg -a -p kittens.svg  
+svgx -v -t svg -a -p kittens.svg  
 </programlisting>
 
 </refsect1>
