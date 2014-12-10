@@ -60,10 +60,12 @@ extern int cpt_read(const char *path, cpt_t *cpt)
   return err;
 }
 
-static void chomp(char *str) 
+static void chomp(char *s)
 {
-  char *p = strrchr(str, '\n');
-  if (p) *p = '\0';
+  while (*s && *s != '\n' && *s != '\r') 
+    s++;
+
+  *s = 0;
 }
 
 static int cpt_parse_comment(const char *line, model_t *model);
@@ -416,6 +418,7 @@ static int cpt_parse_3fill(const char *s1,
       err += set_hsv(atof(s1), atof(s2), atof(s3), &(fill->u.colour.hsv));
       break;
     default:
+      btrace("bad fill type");
       err++;
     }
 
