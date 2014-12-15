@@ -16,7 +16,7 @@
 #include "btrace.h"
 
 /*
-  modified the first argument, replacing transparency
+  modifies the first argument, replacing transparency
   with the specified rgb value
 */
 
@@ -27,7 +27,10 @@ static int svg_flatten_stop(svg_stop_t* stop, rgb_t* rgb)
   if (op < 1.0)
     {
       if (rgb_interpolate(op, *rgb, stop->colour, &(stop->colour)) != 0)
-	return 1;
+	{
+	  btrace("failed RGB interpolate");
+	  return 1;
+	}
       stop->opacity = 1.0;
     }
 
@@ -36,9 +39,8 @@ static int svg_flatten_stop(svg_stop_t* stop, rgb_t* rgb)
 
 extern int svg_flatten(svg_t *svg, rgb_t rgb)
 {
-  return svg_each_stop(svg,
-		       (int (*)(svg_stop_t*, void*))svg_flatten_stop,
-		       &rgb);
+  return 
+    svg_each_stop(svg, (int (*)(svg_stop_t*, void*))svg_flatten_stop, &rgb);
 }
 
 /*
@@ -114,7 +116,11 @@ static int svg_interpolate_stops(svg_stop_t ls,
 				 rgb_t *rgb,
 				 double *op)
 {
-  if ((rs.value - ls.value) <= 0) return 1;
+  if ((rs.value - ls.value) <= 0)
+    {
+      btrace("non-increasing stops");
+      return 1;
+    }
 
   double t = (z - ls.value)/(rs.value - ls.value);
   
@@ -128,7 +134,10 @@ static int svg_interpolate_stops(svg_stop_t ls,
 extern int svg_interpolate(const svg_t *svg, double z, rgb_t *rgb, double *op)
 {
   if ((z < 0.0) || (z > 100.0))
-    return 1;
+    {
+      btrace("z out of range: %f", z);
+      return 1;
+    }
 
   svg_node_t *node;
 
@@ -290,7 +299,8 @@ extern int svg_num_stops(const svg_t* svg)
 {
   int n = 0;
 
-  if (svg_each_stop(svg,(int (*)(svg_stop_t*,void*))inc,&n) != 0) return -1;
+  if (svg_each_stop(svg, (int (*)(svg_stop_t*,void*))inc, &n) != 0)
+    return -1;
 
   return n;
 }
