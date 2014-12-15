@@ -11,6 +11,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "btrace.h"
 #include "gpt.h"
 
 extern gpt_t* gpt_new(void)
@@ -31,9 +32,17 @@ extern int gpt_stops_alloc(gpt_t* gpt,int n)
 {
   gpt_stop_t* stop;
 
-  if ( n<1 ) return 1;
+  if ( n<1 )
+    {
+      btrace("bad number of gpt stops (%i)", n);
+      return 1;
+    }
 
-  if ( gpt->n > 0) return 1;
+  if ( gpt->n > 0)
+    {
+      btrace("stops already allocated");
+      return 1;
+    }
 
   if ((stop = malloc(n*sizeof(gpt_stop_t))) == NULL) 
     return 1;
