@@ -20,7 +20,6 @@
 
 extern int gpt_write(const char* file,gpt_t* gpt)
 {
-  FILE *st;
   int n,i;
 
   n = gpt->n;
@@ -31,17 +30,22 @@ extern int gpt_write(const char* file,gpt_t* gpt)
       return 1;
     }
 
+  FILE *st = NULL;
+
   if (file)
     {
-      st = fopen(file,"w");
-      if (!st) return 1;
+      if ( ! ( st = fopen(file, "w") ))
+	{
+	  btrace("failed to open file '%s' for write", file);
+	  return 1;
+	}
     }
   else st = stdout;
 
   time_t t = time(NULL);
 
-  fprintf(st,"# Gnuplot colour map\n");
-  fprintf(st,"# cptutils %s, %s",VERSION,ctime(&t));
+  fprintf(st, "# Gnuplot colour map\n");
+  fprintf(st, "# cptutils %s, %s", VERSION, ctime(&t));
   
   for (i=0 ; i<n ; i++)
     {

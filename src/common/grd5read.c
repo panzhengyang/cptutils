@@ -113,9 +113,9 @@ static int read_double(FILE *stream, double *pval)
   val = be64toh(val);
   
   /*
-    the following #pragmas supresses the warning "dereferencing 
-    type-punned pointer will break strict-aliasing rules" since
-    that is exactly what we want to do
+    the following #pragmas supresses the gcc warning "dereferencing 
+    type-punned pointer will break strict-aliasing rules" since that
+    is exactly what we want to do
   */
 
 #pragma GCC diagnostic push
@@ -169,6 +169,7 @@ static grd5_string_t* parse_grd5_string(FILE *stream,
       len *= 2;
       break;
     default:
+      btrace("bad string type");
       *perr = GRD5_READ_BUG;
       return NULL;
     }
@@ -230,10 +231,14 @@ static int parse_named_type(FILE *stream,
   int err;
 
   if ((typename = parse_typename(stream, &err)) == NULL)
-    return err;
+    {
+      btrace("failed parse of typename");
+      return err;
+    }
   else
     {
       bool matches = typename_matches(typename, expected_name);
+
       if (!matches)
 	{
 	  btrace("expected type '%s', read '%*s'",
@@ -246,13 +251,22 @@ static int parse_named_type(FILE *stream,
   int type;
 
   if ((err = read_type(stream, &type)) != GRD5_READ_OK)
-    return err;
+    {
+      btrace("failed to read type");
+      return err;
+    }
 
   if (type == TYPE_UNKNOWN)
-    btrace("unknown type");
+    {
+      btrace("read type is unknown");
+      return GRD5_READ_PARSE;
+    }
 
   if (type != expected_type)
-    return GRD5_READ_PARSE;
+    {
+      btrace("unexpected type");
+      return GRD5_READ_PARSE;
+    }
 
   return GRD5_READ_OK;
 }
@@ -260,7 +274,7 @@ static int parse_named_type(FILE *stream,
 /*
   parsing particular tokens, typically of the form [size] [name] [value]
   or similar.  Depending on the application we may pass [name] in as
-  an expected value, somteimes we return it (by reference) instead
+  an expected value, sometimes we return it (by reference) instead
 */
 
 static int parse_untf(FILE *stream, 
@@ -964,6 +978,8 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
   if (version != 5)
     {
       btrace("bad version of GRD format: expected 5, got %i", version);
+      if (version == 3)
+	btrace("this is a PaintShop Pro gradient");
       return GRD5_READ_NOT_GRD5;
     }
 
