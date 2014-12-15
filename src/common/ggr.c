@@ -119,7 +119,7 @@ extern gradient_t* grad_load_gradient(const char* path)
     {
        stream = stdin;
     }
-  else if ((stream = fopen(path,"rb")) == NULL)
+  else if ((stream = fopen(path, "rb")) == NULL)
     {
       btrace("failed to open %s : %s", path, strerror(errno));
       return NULL;
@@ -209,6 +209,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 		 &type, &color) != 13)
 	{
 	  btrace("badly formatted gradient segment %d in %s", i, path);
+	  return NULL;
 	}
       else
 	{
@@ -220,7 +221,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	  switch (color)
 	    {
-	      double rgb0[3],rgb1[3],hsv0[3],hsv1[3];
+	      double rgb0[3], rgb1[3], hsv0[3], hsv1[3];
 
 	    case GRAD_RGB:
 	    case GRAD_HSV_CW:
@@ -515,8 +516,6 @@ extern int grad_segment_rgba(double z,
 extern int gradient_colour(double z, gradient_t *gradient,
 			   double *bg, double *rgbD)
 {
-  grad_segment_t *seg;
-
   /* if there is no gradient return the background colour */
   
   if (gradient == NULL) 
@@ -527,15 +526,18 @@ extern int gradient_colour(double z, gradient_t *gradient,
       return 0;
     }
   
-  
-  if (z < 0.0) z = 0.0;
-  else if (z > 1.0) z = 1.0;
-  
-  seg = seg_get_segment_at(gradient, z);
-  
-  return grad_segment_colour(z,seg,bg,rgbD);
-}
+  if (z < 0.0) 
+    z = 0.0;
+  else if (z > 1.0) 
+    z = 1.0;
 
+  grad_segment_t *seg;
+  
+  if ((seg = seg_get_segment_at(gradient, z)) == NULL)
+    return 1;
+
+  return grad_segment_colour(z, seg, bg, rgbD);
+}
 
 extern grad_segment_t* seg_new_segment(void)
 {
@@ -606,7 +608,7 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad, double z)
 	seg = seg->prev;
     }
   
-  btrace("No matching segment for z %0.15f", z);
+  btrace("no matching segment for z %0.15f", z);
   
   return NULL;
 }

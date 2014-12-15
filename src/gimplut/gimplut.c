@@ -64,7 +64,7 @@ extern int gimplut(char* infile, char* outfile, glopt_t opt)
 
 static int gimplut_st(FILE* st, gradient_t* g, glopt_t opt)
 {
-  size_t i, n=opt.numsamp, err = 0;
+  size_t i, n = opt.numsamp;
   double bg[3] = {0.0, 0.0, 0.0}, c[3];
   rgb_t rgb;
   char lut[n*3];
@@ -73,16 +73,24 @@ static int gimplut_st(FILE* st, gradient_t* g, glopt_t opt)
     {
       double pos = ((double)i)/((double)(n-1));
 
-      err += gradient_colour(pos, g, bg, c);
-      err += rgbD_to_rgb(c, &rgb);
+      if (gradient_colour(pos, g, bg, c) != 0)
+	{
+	  btrace("could not get colour at z = %f", pos);
+	  return 1;
+	}
+
+      if (rgbD_to_rgb(c, &rgb) != 0)
+	{
+	  btrace("failed convert to rgb for rgb %f/%f/%f",
+		 c[0], c[1], c[2]);
+	  return 1;
+	}
 
       lut[i]     = rgb.red;
       lut[n+i]   = rgb.green;
       lut[2*n+i] = rgb.blue;
     }
 
-  if (fwrite(lut, 1, 3*n, st) != 3*n) err++;
-
-  return err != 0;
+  return fwrite(lut, 1, 3*n, st) != 3*n;
 }
 
