@@ -189,6 +189,8 @@ static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 
   gstack_destroy(ross);
 
+  btrace("merge failed");
+
   return NULL;
 }
 
@@ -205,19 +207,6 @@ static int merged_svg(gstack_t *ross, svg_t *svg)
       ss.colour.blue  = svg_it_rgb(ros.b);
       ss.opacity      = svg_it_op(ros.op);
       ss.value        = svg_it_z(ros.z);
-
-#ifdef DEBUG
-      
-      printf("%7.3f %3i %3i %3i %f\n",
-	     ss.value,
-	     ss.colour.red,
-	     ss.colour.green,
-	     ss.colour.blue,
-	     ss.opacity
-	     );
-
-#endif
-
       svg_append(ss,svg);
     }
 
@@ -230,12 +219,17 @@ extern int grdxsvg(gstack_t *rgb_stops,
 		   svg_t *svg)
 {
   gstack_t *merged_stops;
-  int err;
 
   if ((merged_stops = merge(rgb_stops, op_stops)) == NULL)
-    return 1;
+    {
+      btrace("no merged stops");
+      return 1;
+    }
 
-  err = (merged_svg(merged_stops, svg) != 0);
+  int err = (merged_svg(merged_stops, svg) != 0);
+
+  if (err)
+    btrace("failed conversion of merged stops to svg");
 
   gstack_destroy(merged_stops);
   
