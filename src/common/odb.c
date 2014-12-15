@@ -89,8 +89,6 @@ extern void odb_destroy(odb_t* odb)
     }
 
   free(odb);
-
-  return;
 }
 
 /* recursively destroy an odb record-list  */
