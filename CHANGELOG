@@ -1,6 +1,8 @@
 Changes
 
 1.57 (pending)
+  - test-fixures & fixes for crashes found with AFL
+  - scripts for AFL fuzzing
   - man-page sources converted to UTF-8 encoding
   - improved backtraces
 
