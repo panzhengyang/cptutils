@@ -1119,6 +1119,16 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  gradc->colour.stops = NULL;
 
+#ifdef GRD5_MAX_STOPS
+
+	  if (nstop > GRD5_MAX_STOPS)
+	    {
+	      btrace("maximum stops exceeded (%lu)", nstop);
+	      return GRD5_READ_PARSE;
+	    }
+
+#endif
+
 	  if (nstop > 0)
 	    {
 	      int j;
