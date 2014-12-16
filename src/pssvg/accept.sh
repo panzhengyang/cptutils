@@ -27,4 +27,12 @@ done
 
 assert_raises "./pssvg -o not_exist.svg $fixtures/ES_Coffe.grd" 1
 
+# segfaults from hostile input files (found with AFL)
+
+for id in `seq -w 0 12`
+do
+    grd="afl-2014-12-15-$id"
+    assert_raises "./pssvg $fixtures/$grd" 1
+done
+
 source accept-teardown.sh
