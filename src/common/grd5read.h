@@ -10,6 +10,9 @@
 #ifndef GRD5READ_H
 #define GRD5READ_H
 
+#define GRD5_MAX_GRADIENTS 65536
+#define GRD5_MAX_STOPS     65536
+
 #include "grd5.h"
 
 #define GRD5_READ_OK       0

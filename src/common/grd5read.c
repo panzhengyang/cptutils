@@ -895,7 +895,7 @@ static int parse_transp_stop(FILE *stream, grd5_transp_stop_t *stop)
 
   if ((err = read_type(stream, &type)) != GRD5_READ_OK)
     return err;
-  
+
   if (type != TYPE_OBJECT) return GRD5_READ_PARSE;
   
   if ((objc = parse_objc(stream, &err)) == NULL)
@@ -1150,9 +1150,11 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 	      gradc->colour.n = nstop;
 	    }
 
-	  /* number of transparency samples */
+	  /* number of transparency stops */
 
-	  if ((err = parse_Trns(stream, &(gradc->transp.n))) != GRD5_READ_OK)
+	  uint32_t ntstop;
+
+	  if ((err = parse_Trns(stream, &ntstop)) != GRD5_READ_OK)
 	    {
 	      btrace("Trns");
 	      return err;
@@ -1160,12 +1162,22 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
 	  gradc->transp.stops = NULL;
 
-	  if (gradc->transp.n > 0)
+#ifdef GRD5_MAX_STOPS
+
+	  if (ntstop > GRD5_MAX_STOPS)
+	    {
+	      btrace("maximum stops exceeded (%lu)", ntstop);
+	      return GRD5_READ_PARSE;
+	    }
+
+#endif
+
+	  if (ntstop > 0)
 	    {
 	      int j;
-	      grd5_transp_stop_t stops[gradc->transp.n];
+	      grd5_transp_stop_t stops[ntstop];
 
-	      for (j=0 ; j < gradc->transp.n ; j++)
+	      for (j=0 ; j < ntstop ; j++)
 		{
 		  if ((err = parse_transp_stop(stream, stops+j)) != GRD5_READ_OK)
 		    {
@@ -1174,7 +1186,7 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 		    }
 		}
 
-	      size_t stops_size = gradc->transp.n * sizeof(grd5_transp_stop_t);
+	      size_t stops_size = ntstop * sizeof(grd5_transp_stop_t);
 
 	      if ((gradc->transp.stops = malloc(stops_size)) == NULL)
 		{
@@ -1188,6 +1200,8 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 		  return GRD5_READ_MALLOC;
 		}
 	    }
+
+	  gradc->transp.n = ntstop;
 	}
       else if (typename_matches(gradient_type, "ClNs"))
 	{

@@ -120,10 +120,6 @@ typedef struct
   } u;
 } grd5_grad_t;
 
-/* this somewhat arbitrary, useful to limit malloc attacks */
-
-#define GRD5_MAX_GRADIENTS 65536
-
 typedef struct
 {
   uint32_t n;
