@@ -54,7 +54,7 @@ extern void grd5_grad_destroy(grd5_grad_t *grad)
     case GRD5_GRAD_NOISE:
       grd5_grad_noise_destroy(&(grad->u.noise));
       break;
-     }
+    }
 }
 
 extern void grd5_destroy(grd5_t *grd5)

@@ -61,5 +61,6 @@ extern int grd5_type(const char* str)
     default:
       return TYPE_UNKNOWN;
     }
+
   return TYPE_UNKNOWN;
 }

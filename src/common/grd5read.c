@@ -577,7 +577,7 @@ static int parse_Type_Clry(FILE *stream, grd5_string_t **pctype)
   else
     {
       grd5_string_destroy(subname);
-      return GRD5_READ_OK;
+      return GRD5_READ_PARSE;
     }
 }
 
@@ -816,9 +816,9 @@ static int parse_colour_stop(FILE *stream, grd5_colour_stop_t *stop)
 
   if ((err = read_type(stream, &type)) != GRD5_READ_OK)
     return err;
-  
+
   if (type != TYPE_OBJECT) return GRD5_READ_PARSE;
-  
+
   if ((objc = parse_objc(stream, &err)) == NULL)
     return err;
   
@@ -993,27 +993,38 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
 
   /* gradient list header */
 
-  if ((err = parse_GrdL(stream, &(grd5->n)))  != GRD5_READ_OK)
+  uint32_t n;
+
+  if ((err = parse_GrdL(stream, &n))  != GRD5_READ_OK)
     {
       btrace("GrdL");
       return err;
     }
-  
-  if ((grd5->gradients = malloc((grd5->n) * sizeof(grd5_grad_t))) == NULL)
+
+#ifdef GRD5_MAX_GRADIENTS
+
+  if (n > GRD5_MAX_GRADIENTS)
     {
-      btrace("malloc");
+      btrace("maximum gradients exceeded (%lu)", n);
+      return GRD5_READ_PARSE;
+    }
+
+#endif
+
+  grd5_grad_t *grads;
+
+  if ((grads = calloc(n, sizeof(grd5_grad_t))) == NULL)
+    {
+      btrace("calloc");
       return GRD5_READ_MALLOC;
     }
 
   int i;
-  
-  for (i = 0 ; i < grd5->n ; i++)
-    grd5->gradients[i].title = NULL;
 
-  for (i = 0 ; i < grd5->n ; i++)
+  for (i = 0 ; i < n ; i++)
     {
       int type;
-      grd5_grad_t *grad = grd5->gradients + i;
+      grd5_grad_t *grad = grads + i;
 
       /* outer objc */
 
@@ -1261,6 +1272,9 @@ static int grd5_stream(FILE* stream, grd5_t* grd5)
       grd5_string_destroy(gradient_type);
 
     }
+
+  grd5->n = n;
+  grd5->gradients = grads;
 
   return GRD5_READ_OK;
 }
