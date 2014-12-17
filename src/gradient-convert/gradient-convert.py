@@ -326,6 +326,13 @@ def convert(ipath, opath, opt) :
 
     basename = os.path.splitext( os.path.split( opath )[1] )[0]
 
+    # trap non-conversions, note that this does not affect 'bursting'
+    # svg to svg (that is handled above)
+
+    if opt['ifmt'] == opt['ofmt'] :
+        print "converting %s to %s seems, pointless?" % (opt['ifmt'], opt['ofmt'])
+        return False
+
     # create the system-call sequence, first we create
     # a list of dictionaries of call data
 
@@ -343,7 +350,7 @@ def convert(ipath, opath, opt) :
     if callpath is None :
         print "cannot convert %s to %s yet, sorry" % (opt['ifmt'], opt['ofmt'])
         formats_supported(gajmat, gnames)
-        return None
+        return False
 
     for t0, t1 in pairs( callpath ) :
         cd = {
