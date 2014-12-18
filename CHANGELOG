@@ -1,6 +1,20 @@
 Changes
 
-1.57 (pending)
+  Package maintainers: please note the change of address for
+  the cptutils homepage
+
+    http://soliton.vm.bytemark.co.uk/pub/jjg/en/code/cptutils/
+
+  and for source packages
+
+    http://soliton.vm.bytemark.co.uk/pub/jjg/src/cptutils-<ver>.tar.gz
+  
+  Redirects (301) from the old addresses of source packages
+  up to an including version 1.57 will be in-place for the 
+  forseeable future; for versions after 1.57 only the new
+  address will be usable.
+
+1.57 (18 Dec 2014)
   - test-fixures & fixes for crashes found with AFL
   - scripts for AFL fuzzing
   - man-page sources converted to UTF-8 encoding
