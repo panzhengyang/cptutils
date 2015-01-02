@@ -91,7 +91,7 @@ extern int grd5_model(grd5_string_t *str)
 	if it should be interpreted as HSB
       */
       if (grd5_string_matches(str, "HSBC") || grd5_string_matches(str, "HSBl"))
-      model = GRD5_MODEL_HSB;
+	model = GRD5_MODEL_HSB;
       break;
     case 'L':
       if (grd5_string_matches(str, "LbCl"))
@@ -114,6 +114,10 @@ extern int grd5_model(grd5_string_t *str)
 	model = GRD5_MODEL_BCKC;
       else if (grd5_string_matches(str, "BkCl"))
 	model = GRD5_MODEL_BOOK;
+      break;
+    case 'U':
+      if (grd5_string_matches(str, "UnsC"))
+	model = GRD5_MODEL_UNSC;
       break;
     }
 

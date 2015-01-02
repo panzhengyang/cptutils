@@ -22,6 +22,7 @@
 #define GRD5_MODEL_FRGC    6
 #define GRD5_MODEL_BCKC    7
 #define GRD5_MODEL_BOOK    8
+#define GRD5_MODEL_UNSC    9
 
 typedef struct
 {

@@ -796,7 +796,28 @@ static int parse_user_colour(FILE *stream, grd5_colour_stop_t *stop)
 	}
       break;
       
+    case 0:
+
+      switch(model)
+	{
+	  /*
+	    UnsC - unspecified colour-model, this case found in 
+	    the wild but not mentioned in the various documents 
+	    on the format on the web. Since there are no colour
+	    components it kind-of makes sense to have this, but
+	    that still leaves the WTF of the gradient with no 
+	    colour components
+	   */
+	case GRD5_MODEL_UNSC:
+	  stop->type = GRD5_MODEL_UNSC;
+	  break;
+	default:
+	  err = GRD5_READ_PARSE;
+	}
+      break;
+
     default:
+      btrace("bad number of colour components (%i)", ncomp);
       err = GRD5_READ_PARSE;
     }
   

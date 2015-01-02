@@ -14,6 +14,10 @@ Changes
   forseeable future; for versions after 1.57 only the new
   address will be usable.
 
+1.58 (pending)
+  - handle puzzling 0-component channels with colour model 
+    "UnsC" (unspecified) 
+
 1.57 (18 Dec 2014)
   - test-fixures & fixes for crashes found with AFL
   - scripts for AFL fuzzing
