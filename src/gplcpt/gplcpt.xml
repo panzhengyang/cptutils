@@ -38,9 +38,7 @@
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para>
-  The 
-  <command>gplcpt</command>
-  converts 
+  The <command>gplcpt</command> program converts 
   <citerefentry>
     <refentrytitle>GIMP</refentrytitle>
     <manvolnum>1</manvolnum>
