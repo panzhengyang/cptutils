@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $2/accept-setup.sh
+source "$2/accept-setup.sh"
 
 for base in subtle bad-whitespace
 do

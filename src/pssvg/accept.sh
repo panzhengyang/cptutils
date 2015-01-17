@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $2/accept-setup.sh
+source "$2/accept-setup.sh"
 
 fixtures="$TESTFIX/grd5"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $2/accept-setup.sh
+source "$2/accept-setup.sh"
 
 base="RdBu_10"
 cpt_cont="$base-cont.cpt"
