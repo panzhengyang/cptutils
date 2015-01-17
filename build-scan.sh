@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # run scan-build (clang) static analysis and dump the
-# results in the parent-directory
+# results in the $SCAN_RESULTS directory
 
 SCAN_RESULTS="/tmp/scan-build"
 
