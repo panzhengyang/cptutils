@@ -18,7 +18,7 @@ do
     svg="$base.svg"
     assert_raises "./pssvg -o $svg $fixtures/$grd" 0
     assert "equal-svg $svg accept/$svg" true
-    rm -f $svg
+    rm -f "$svg"
 done
 
 # pssgv 1.53 segfaulted when passed this file (which is
@@ -29,7 +29,7 @@ assert_raises "./pssvg -o not_exist.svg $fixtures/ES_Coffe.grd" 1
 
 # segfaults from hostile input files (found with AFL)
 
-for id in `seq -w 0 12`
+for id in $(seq -w 0 12)
 do
     grd="afl-2014-12-15-$id"
     assert_raises "./pssvg $fixtures/$grd" 1
