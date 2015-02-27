@@ -101,7 +101,7 @@
     Multiple transforms can be applied by separating transforms
     with commas. This is to be preferred over multiple calls to 
     the program since the conversion between colour-spaces is  
-    necessarily lossy. Multiple trnsformations are applied in 
+    necessarily lossy. Multiple transformations are applied in 
     the order given in the argument.
   </para>
 
