@@ -5,7 +5,7 @@
   returned (since a single svg file may contain several 
   svg gradients)
 
-  J.J. Green 2005
+  J.J. Green 2005, 2015
 */
 
 #include <stdlib.h>
@@ -13,6 +13,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -25,6 +26,25 @@
 
 #include "svgread.h"
 
+/* pass libxml error messages to btrace */
+
+static void error_handler(void *user_data, xmlErrorPtr error)
+{
+  size_t n = strlen(error->message);
+  if (n>0)
+    {
+      char copy[n+1], *end;
+      end = memcpy(copy, error->message, n+1) + n - 1;
+      while (end > copy && isspace(*end)) end--;
+      *(end+1) = '\0';
+      btrace("libxml2: %s", copy);
+    }
+  else
+    {
+      btrace("libxml2: empty error message");
+    }
+}
+
 static int svg_read_lingrads(xmlNodeSetPtr,svg_list_t*);
 
 extern int svg_read(const char* file, svg_list_t* list)
@@ -33,12 +53,13 @@ extern int svg_read(const char* file, svg_list_t* list)
   xmlDocPtr doc;
 
   xmlInitParser();
+  xmlSetStructuredErrorFunc(NULL, error_handler); 
 
   /* Load XML document */
 
   if ((doc = xmlParseFile(file)) == NULL)
     {
-      btrace("error: unable to parse file %s",file);
+      btrace("error: unable to parse file %s", file);
       err = 1;
     }
   else
