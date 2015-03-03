@@ -1,10 +1,25 @@
 {
   "program": "svgx",
-  "version": "1.55",
+  "version": "1.57",
   "messages": [
     {
       "file": "svgread.c",
-      "line": 41,
+      "line": 40,
+      "message": "libxml2: Opening and ending tag mismatch: linearGradient line 2 and svg"
+    },
+    {
+      "file": "svgread.c",
+      "line": 40,
+      "message": "libxml2: Premature end of data in tag linearGradient line 2"
+    },
+    {
+      "file": "svgread.c",
+      "line": 40,
+      "message": "libxml2: Premature end of data in tag svg line 2"
+    },
+    {
+      "file": "svgread.c",
+      "line": 62,
       "message": "error: unable to parse file ../fixtures/svg/malformed.svg"
     },
     {
@@ -18,5 +33,5 @@
       "message": "failed (error 1)"
     }
   ],
-  "created": "2014-09-28T14:24"
+  "created": "2015-03-03T21:48"
 }
