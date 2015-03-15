@@ -89,9 +89,8 @@
 	By default, the program will extract only the first gradient from
 	such files; but when the <option>--burst</option> option is 
 	selected then all gradients will be extracted. In this case the 
-	argument of the <replaceable>outfile</replaceable> 
-	argument must be a directory (and that directory should
-	already exist).
+	<replaceable>outfile</replaceable> argument must be a directory 
+	(and that directory should already exist).
       </para>
     </listitem>
   </varlistentry>
