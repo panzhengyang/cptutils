@@ -25,6 +25,8 @@
 
 typedef enum {model_rgb, model_hsv, model_hsvp} model_t;
 
+extern const char* model_name(model_t);
+
 typedef struct rgb_t
 {
   int red, green, blue;

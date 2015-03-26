@@ -17,6 +17,22 @@
 #include "colour.h"
 #include "btrace.h"
 
+extern const char* model_name(model_t model)
+{
+  const char* name;
+
+  switch (model)
+    {
+    case model_rgb:  name = "RGB" ; break;
+    case model_hsv:  name = "HSV" ; break;
+    case model_hsvp: name = "+HSV"; break;
+    default:
+      name = "unknown";
+    }
+
+  return name;
+}
+
 static double colourD(int);
 static int colour8(double);
 

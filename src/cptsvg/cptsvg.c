@@ -118,7 +118,10 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
     case model_rgb: 
       break;
     case model_hsv: 
-      break;
+    case model_hsvp:
+      btrace("conversion of colour model %s not implemented", 
+	     model_name(cpt->model));
+      return 1;
     default:
       btrace("unknown colour model");
       return 1;
@@ -154,8 +157,9 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
               rcol = rsmp.fill.u.colour.rgb;
               break;
             case model_hsv:
-	      /* fixme */
-	      btrace("conversion of hsv not yet implemeted");
+            case model_hsvp:
+	      /* not reached (see above) */
+	      btrace("conversion not implemented");
               return 1;
             default:
               return 1;
