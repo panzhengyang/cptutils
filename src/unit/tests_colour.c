@@ -23,6 +23,7 @@ CU_TestInfo tests_colour[] =
     {"parse RGB string", test_colour_parse_rgb},
     {"rgb interpolate",  test_colour_rgb_interpolate},
     {"hsv interpolate",  test_colour_hsv_interpolate},
+    {"model name",       test_colour_model_name},
     CU_TEST_INFO_NULL,
   };
 
@@ -46,8 +47,7 @@ extern void test_colour_hsvD_to_rgbD(void)
   }
 }
 
-extern void test_colour_rgbD_to_hsvD(void)
-{
+extern void test_colour_rgbD_to_hsvD(void){
   double eps = 1e-10, hsv[3];
 
   {
@@ -154,3 +154,10 @@ extern void test_colour_hsv_interpolate(void)
   CU_ASSERT(hsv_equal(hsv, hsv3, eps));
 }
 
+extern void test_colour_model_name(void)
+{
+  CU_ASSERT(strcmp("RGB",     model_name(model_rgb))    == 0);
+  CU_ASSERT(strcmp("HSV",     model_name(model_hsv))    == 0);
+  CU_ASSERT(strcmp("+HSV",    model_name(model_hsvp))   == 0);
+  CU_ASSERT(strcmp("unknown", model_name((model_t)666)) == 0);
+}

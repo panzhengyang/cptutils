@@ -29,5 +29,7 @@ extern void test_colour_hsv_interpolate(void);
 
 extern void test_colour_parse_rgb(void);
 
+extern void test_colour_model_name(void);
+
 
 #endif
