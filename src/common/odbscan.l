@@ -39,7 +39,7 @@
 %option yylineno
 
 %option reentrant 
-%option 7bit
+%option 8bit
 
 %option noyywrap
 %option noinput
