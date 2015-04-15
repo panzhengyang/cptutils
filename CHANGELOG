@@ -15,6 +15,7 @@ Changes
   address will be usable.
 
 1.58 (pending)
+  - odb flex scanner (avlcpt) is now 8-bit
   - svgx writes libxml2 errors to the backtrace
   - handle puzzling 0-component channels with colour model 
     "UnsC" (unspecified) 
