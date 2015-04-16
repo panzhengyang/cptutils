@@ -18,7 +18,9 @@
 <refnamediv id='purpose'>
 <refname>avlcpt</refname>
 <refpurpose>
-convert ArcView Legend gradients to GMT colour palette tables
+convert 
+<trademark class='registered'>ArcView</trademark> 
+Legend gradients to GMT colour palette tables
 </refpurpose>
 </refnamediv>
 
@@ -116,6 +118,15 @@ convert ArcView Legend gradients to GMT colour palette tables
   <xi:include href="../docbook/varlistentry-version.xml"/>
 
 </variablelist>
+</refsect1>
+
+<refsect1 id='notes'><title>NOTES</title>
+
+<para>
+  <trademark class='registered'>ArcView</trademark> 
+  is a trademark of Environmental Systems Research Institute, Inc.
+</para>
+
 </refsect1>
 
 <xi:include href="../docbook/refsect1-author.xml"/>
