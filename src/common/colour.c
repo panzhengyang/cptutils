@@ -36,6 +36,13 @@ extern const char* model_name(model_t model)
 static double colourD(int);
 static int colour8(double);
 
+extern int hsv_to_rgb(hsv_t hsv, rgb_t* rgb)
+{
+  double rgbD[3];
+
+  return hsv_to_rgbD(hsv, rgbD) || rgbD_to_rgb(rgbD, rgb);
+}
+
 extern double colour_rgb_dist(colour_t a, colour_t b, model_t model)
 {
   double da[3] = {0}, db[3] = {0}, sum;

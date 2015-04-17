@@ -59,6 +59,8 @@ extern int hsv_to_rgbD(hsv_t, double*);
 
 extern int grey_to_rgbD(int, double*);
 
+extern int hsv_to_rgb(hsv_t, rgb_t*);
+
 extern int parse_rgb(const char*, rgb_t*);
 extern double colour_rgb_dist(colour_t, colour_t, model_t);
 
