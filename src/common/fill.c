@@ -10,7 +10,7 @@
 #include "fill.h"
 #include "btrace.h"
 
-extern int fill_eq(fill_t a, fill_t b)
+extern int fill_eq(fill_t a, fill_t b, model_t model)
 {
   if (a.type != b.type) return 0;
 
@@ -26,7 +26,7 @@ extern int fill_eq(fill_t a, fill_t b)
     case fill_file : /* fixme */
       return 0;
     case fill_colour :
-      return colour_rgb_dist(a.u.colour, b.u.colour, model_rgb) < 1e-8;
+      return colour_rgb_dist(a.u.colour, b.u.colour, model) < 1e-8;
     }
 
   btrace("no such fill type");

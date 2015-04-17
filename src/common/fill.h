@@ -36,9 +36,9 @@ typedef struct
   } u;
 } fill_t;
 
-extern int fill_eq(fill_t,fill_t);
-extern int fill_interpolate(double,fill_t,fill_t,model_t,fill_t*);
-extern int fill_rgb(fill_t,model_t,rgb_t*);
+extern int fill_eq(fill_t, fill_t, model_t);
+extern int fill_interpolate(double, fill_t, fill_t, model_t, fill_t*);
+extern int fill_rgb(fill_t, model_t, rgb_t*);
 
 #endif
 

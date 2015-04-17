@@ -77,7 +77,7 @@ extern int cpt_npc(cpt_t* cpt,int *segos)
 
   for (n = 1, i = 1 ; right ; i++)
     {    
-      if (! fill_eq(left->rsmp.fill,right->lsmp.fill))
+      if (! fill_eq(left->rsmp.fill, right->lsmp.fill, cpt->model))
 	{
 	  segos[n] = i;
 	  n++;

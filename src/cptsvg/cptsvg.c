@@ -205,7 +205,8 @@ static int cptsvg_convert(cpt_t* cpt, svg_t* svg, cptsvg_opt_t opt)
 	then dont insert it. Otherwise do.
       */
 
-      if ( ! ((seg->rseg) && fill_eq(rsmp.fill, seg->rseg->lsmp.fill)))
+      if ( ! ((seg->rseg) && 
+	      fill_eq(rsmp.fill, seg->rseg->lsmp.fill, cpt->model)))
 	{
 	  rstop.value   = 100*(rsmp.val-min)/(max-min);
 	  rstop.colour  = rcol;

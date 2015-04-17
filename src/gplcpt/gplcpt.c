@@ -218,7 +218,7 @@ static int cpt_step_optimise(cpt_t* cpt)
 
   while (right)
     {
-      if (fill_eq(left->rsmp.fill, right->lsmp.fill))
+      if (fill_eq(left->rsmp.fill, right->lsmp.fill, cpt->model))
 	{
 	  cpt_seg_t* dead = right;
 

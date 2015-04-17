@@ -41,10 +41,10 @@ typedef struct
 
 #define NNSTR(x) ((x) ? (x) : NULL)
 
-static int cptinfo_analyse(cpt_t*,info_t*);
+static int cptinfo_analyse(cpt_t*, info_t*);
 
-static int output_plain(info_t,FILE*);
-static int output_csv(info_t,FILE*);
+static int output_plain(info_t, FILE*);
+static int output_csv(info_t, FILE*);
 
 extern int cptinfo(cptinfo_opt_t opt)
 {
@@ -130,9 +130,9 @@ extern int cptinfo(cptinfo_opt_t opt)
   return 0;
 }
 
-static int analyse_segment(cpt_seg_t*,info_t*);
+static int analyse_segment(cpt_seg_t*, info_t*);
 
-static int cptinfo_analyse(cpt_t* cpt,info_t* info)
+static int cptinfo_analyse(cpt_t* cpt, info_t* info)
 {
   cpt_seg_t *s;
 
@@ -161,7 +161,7 @@ static int cptinfo_analyse(cpt_t* cpt,info_t* info)
 
   while (s)
     {
-      if (analyse_segment(s,info) != 0)
+      if (analyse_segment(s, info) != 0)
 	{
 	  fprintf(stderr,"failed to analyse segment\n");
 	  return 1;
@@ -173,7 +173,7 @@ static int cptinfo_analyse(cpt_t* cpt,info_t* info)
   return 0;
 }
 
-static int analyse_segment(cpt_seg_t* seg,info_t* info)
+static int analyse_segment(cpt_seg_t* seg, info_t* info)
 {
   cpt_seg_t *right;
 
@@ -198,7 +198,7 @@ static int analyse_segment(cpt_seg_t* seg,info_t* info)
 
   if (right)
     {
-      switch (fill_eq(seg->rsmp.fill,right->lsmp.fill))
+      switch (fill_eq(seg->rsmp.fill, right->lsmp.fill, info->model))
 	{
 	case 0 :
 	  info->type.continuous = 0;
@@ -209,7 +209,7 @@ static int analyse_segment(cpt_seg_t* seg,info_t* info)
 	}
     }
 
-  switch (fill_eq(seg->rsmp.fill,seg->lsmp.fill))
+  switch (fill_eq(seg->rsmp.fill, seg->lsmp.fill, info->model))
     {
     case 0 :       
       info->type.discrete = 0;

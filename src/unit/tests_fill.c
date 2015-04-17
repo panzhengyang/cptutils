@@ -23,16 +23,16 @@ extern void test_fill_eq(void)
     rgb1 = build_fill_rgb(1, 1, 1),
     rgb2 = build_fill_rgb(2, 2, 2);
 
-  CU_ASSERT_EQUAL(fill_eq(g1, g1), 1);
-  CU_ASSERT_EQUAL(fill_eq(g1, g2), 0);
-  CU_ASSERT_EQUAL(fill_eq(g2, g1), 0);
+  CU_ASSERT_EQUAL(fill_eq(g1, g1, model_rgb), 1);
+  CU_ASSERT_EQUAL(fill_eq(g1, g2, model_rgb), 0);
+  CU_ASSERT_EQUAL(fill_eq(g2, g1, model_rgb), 0);
 
-  CU_ASSERT_EQUAL(fill_eq(g1, rgb1), 0);
-  CU_ASSERT_EQUAL(fill_eq(rgb1, g1), 0);
+  CU_ASSERT_EQUAL(fill_eq(g1, rgb1, model_rgb), 0);
+  CU_ASSERT_EQUAL(fill_eq(rgb1, g1, model_rgb), 0);
 
-  CU_ASSERT_EQUAL(fill_eq(rgb1, rgb1), 1);
-  CU_ASSERT_EQUAL(fill_eq(rgb2, rgb1), 0);
-  CU_ASSERT_EQUAL(fill_eq(rgb1, rgb2), 0);
+  CU_ASSERT_EQUAL(fill_eq(rgb1, rgb1, model_rgb), 1);
+  CU_ASSERT_EQUAL(fill_eq(rgb2, rgb1, model_rgb), 0);
+  CU_ASSERT_EQUAL(fill_eq(rgb1, rgb2, model_rgb), 0);
 }
 
 static void test_fill_rgb_rgb(void)
@@ -83,11 +83,11 @@ static void test_fill_interp_grey(void)
     g3 = build_fill_grey(3);
     
   CU_ASSERT_EQUAL(fill_interpolate(0.0, g1, g3, model_rgb, &g), 0);
-  CU_ASSERT_EQUAL(fill_eq(g, g1), 1);
+  CU_ASSERT_EQUAL(fill_eq(g, g1, model_rgb), 1);
   CU_ASSERT_EQUAL(fill_interpolate(0.5, g1, g3, model_rgb, &g), 0);
-  CU_ASSERT_EQUAL(fill_eq(g, g2), 1);
+  CU_ASSERT_EQUAL(fill_eq(g, g2, model_rgb), 1);
   CU_ASSERT_EQUAL(fill_interpolate(1.0, g1, g3, model_rgb, &g), 0);
-  CU_ASSERT_EQUAL(fill_eq(g, g3), 1);
+  CU_ASSERT_EQUAL(fill_eq(g, g3, model_rgb), 1);
 }
 
 static void test_fill_interp_rgb(void)
@@ -98,11 +98,11 @@ static void test_fill_interp_rgb(void)
     rgb3 = build_fill_rgb(3, 3, 3);
     
   CU_ASSERT_EQUAL(fill_interpolate(0.0, rgb1, rgb3, model_rgb, &rgb), 0);
-  CU_ASSERT_EQUAL(fill_eq(rgb, rgb1), 1);
+  CU_ASSERT_EQUAL(fill_eq(rgb, rgb1, model_rgb), 1);
   CU_ASSERT_EQUAL(fill_interpolate(0.5, rgb1, rgb3, model_rgb, &rgb), 0);
-  CU_ASSERT_EQUAL(fill_eq(rgb, rgb2), 1);
+  CU_ASSERT_EQUAL(fill_eq(rgb, rgb2, model_rgb), 1);
   CU_ASSERT_EQUAL(fill_interpolate(1.0, rgb1, rgb3, model_rgb, &rgb), 0);
-  CU_ASSERT_EQUAL(fill_eq(rgb, rgb3), 1);
+  CU_ASSERT_EQUAL(fill_eq(rgb, rgb3, model_rgb), 1);
 }
 
 extern void test_fill_interp(void)

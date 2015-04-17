@@ -108,7 +108,7 @@ static int cptcont_convert(cpt_t* cpt,cptcont_opt_t opt)
           return 1;
         }
 
-      if (! fill_eq(s1->rsmp.fill,s2->lsmp.fill))
+      if (! fill_eq(s1->rsmp.fill,s2->lsmp.fill, cpt->model))
 	{
 	  fill_t F1,F2;
 	  int err = 0;
