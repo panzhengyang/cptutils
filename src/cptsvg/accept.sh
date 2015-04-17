@@ -2,7 +2,7 @@
 
 source "$2/accept-setup.sh"
 
-for base in subtle bad-whitespace
+for base in subtle bad-whitespace GMT_sealand
 do
     svg="$base.svg"
     fixture="$TESTFIX/cpt/$base.cpt"
