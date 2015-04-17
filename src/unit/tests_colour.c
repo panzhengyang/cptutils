@@ -19,6 +19,7 @@ CU_TestInfo tests_colour[] =
     {"rgbD to rgb",      test_colour_rgbD_to_rgb},
     {"hsv to rgbD",      test_colour_hsv_to_rgbD},
     {"rgbD to hsv",      test_colour_rgbD_to_hsv},
+    {"rgb to hsv",       test_colour_hsv_to_rgb},
     {"grey to rgbD",     test_colour_grey_to_rgbD},
     {"parse RGB string", test_colour_parse_rgb},
     {"rgb interpolate",  test_colour_rgb_interpolate},
@@ -27,6 +28,34 @@ CU_TestInfo tests_colour[] =
     CU_TEST_INFO_NULL,
   };
 
+extern void test_colour_hsv_to_rgb(void)
+{
+  size_t i;
+  struct 
+  {
+    hsv_t hsv;
+    rgb_t rgb;
+  } data[9] = {
+    {{  0, 0.0, 0.0}, {  0,  0,    0}},
+    {{  0, 0.0, 1.0}, {255, 255, 255}},
+    {{  0, 1.0, 1.0}, {255,   0,   0}},
+    {{120, 1.0, 1.0}, {  0, 255,   0}},
+    {{240, 1.0, 1.0}, {  0,   0, 255}},
+    {{ 60, 1.0, 1.0}, {255, 255,   0}},
+    {{180, 1.0, 1.0}, {  0, 255, 255}},
+    {{300, 1.0, 1.0}, {255,   0, 255}},
+    {{  0, 0.0, 0.5}, {128, 128, 128}},
+  };
+
+  for (i=0 ; i<9 ; i++)
+    {
+      rgb_t rgb_found;
+
+      CU_ASSERT(hsv_to_rgb(data[i].hsv, &rgb_found) == 0);
+      printf("%i %i %i\n", rgb_found.red, rgb_found.green, rgb_found.blue);
+      CU_ASSERT(rgb_equal(data[i].rgb, rgb_found));
+    }
+}
 
 extern void test_colour_hsvD_to_rgbD(void)
 {
