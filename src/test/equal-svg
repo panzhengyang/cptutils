@@ -1,4 +1,34 @@
 #!/bin/sh
-# need to write a proper program for this, fannying 
-# around with diff does not make a working prototype
-echo "true"
+#
+# compare two svg files excluding 'created' 'creator' tags
+# requires the xml2 program
+#
+#   http://www.ofb.net/~egnor/xml2/
+#
+# debian package xml2
+
+set -e
+
+CSV1='/tmp/equal-svg-1.csv'
+CSV2='/tmp/equal-svg-2.csv'
+
+create_filtered_csv()
+{
+    xml2 < $1 | \
+	grep -v created | \
+	grep -v creator | \
+	grep -v '\@id' | \
+	grep -v '\@fill' > $2
+}
+
+create_filtered_csv $1 $CSV1
+create_filtered_csv $2 $CSV2
+
+if [ $(diff $CSV1 $CSV2 | wc -l) -eq '0' ]  
+then
+    echo "true"
+else
+    echo "false"
+fi
+
+rm -f $CSV1 $CSV2
