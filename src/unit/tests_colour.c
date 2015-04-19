@@ -52,7 +52,6 @@ extern void test_colour_hsv_to_rgb(void)
       rgb_t rgb_found;
 
       CU_ASSERT(hsv_to_rgb(data[i].hsv, &rgb_found) == 0);
-      printf("%i %i %i\n", rgb_found.red, rgb_found.green, rgb_found.blue);
       CU_ASSERT(rgb_equal(data[i].rgb, rgb_found));
     }
 }
