@@ -9,6 +9,7 @@
 #include <math.h>
 #include <search.h>
 #include <errno.h>
+#include <inttypes.h>
 
 #include <grd5read.h>
 #include <grd5.h>
@@ -560,11 +561,16 @@ static int pssvg_title(grd5_grad_t *grd5_grad,
 	    in this case the entry e was already in the hash 
 	    table and so not inserted, hence we can free the 
 	    storage allocated for the putative key
+
+	    the odd PRIuPTR is printf specifier for uintptr_t,
+	    defined in inttypes.h
+
+	    http://stackoverflow.com/questions/5795978/
 	  */
 
 	  free(e.key);
 	  len = snprintf((char*)svg->name, SVG_NAME_LEN, 
-			 "%s_%lu", (char*)utf8_title, title_count);
+			 "%s_%" PRIuPTR, (char*)utf8_title, title_count);
 	}
       else
 	{
