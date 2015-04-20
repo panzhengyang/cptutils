@@ -314,7 +314,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
 
   /* standard GMT colour */
 
-  struct gmtcol_t *gc;
+  const struct gmtcol_t *gc;
 
   if ((gc = gmtcol(str)) != NULL)
     {

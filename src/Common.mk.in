@@ -50,11 +50,14 @@ accept :
 ifneq (no,$(GPERF))
 
 %.c : %.gperf
-	$(GPERF) --delimiters "," \
+	$(GPERF) \
+	  --delimiters "," \
 	  --struct-type \
 	  --language ANSI-C \
 	  --lookup-function-name $*_lookup \
 	  --ignore-case \
+	  --readonly-tables \
+          --enum \
 	  --output-file $@ $< 
 
 endif

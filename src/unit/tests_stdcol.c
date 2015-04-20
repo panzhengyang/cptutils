@@ -17,9 +17,7 @@ CU_TestInfo tests_stdcol[] =
 
 extern void test_stdcol_lookup(void)
 {
-  struct stdcol_t* col;
-
-  col = stdcol(COLOUR);
+  const struct stdcol_t* col = stdcol(COLOUR);
 
   if (col == NULL)
     {

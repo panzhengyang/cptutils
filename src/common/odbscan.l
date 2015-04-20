@@ -28,7 +28,7 @@
 #include "odbbridge.h"
 #include "btrace.h"
 
-  static int identifier_insert(char*,identtab_t*);
+  static int identifier_insert(char*, identtab_t*);
 
 %}
 
@@ -38,6 +38,8 @@
 %option bison-bridge
 %option yylineno
 
+%option ecs
+%option meta-ecs
 %option reentrant 
 %option 8bit
 
@@ -61,41 +63,40 @@ STRING \"(.*)\"
 %%
 
 "/"                BEGIN(head); return '/';
-<head>{UINT}       yylval->u  = (odb_uint_t)atoi(yytext);  return UINT;
+<head>{UINT}       yylval->u  = (odb_uint_t)atoi(yytext); return UINT;
 <head>"."          return '.';
 <head>[ \t]+
 <head>[\r\n]+      BEGIN(INITIAL); 
 [ \t\r\n]+
 \"                 BEGIN(str);
-<str>[^\"]*        yylval->s = identifier_insert(yytext,stringtab); return STRING;
+<str>[^\"]*        yylval->s = identifier_insert(yytext, stringtab); return STRING;
 <str>\"            BEGIN(INITIAL);
 "("                return '(';
 ")"                return ')';
 "."                return '.';
 ":"                return ':';
-{UINT}             yylval->u     = (odb_uint_t)atoi(yytext);  return UINT;
-{INT}              yylval->i     = (odb_int_t)atoi(yytext);   return INT;
-{HEX}              yylval->h     = (odb_hex_t)strtol(yytext,NULL,16);  return HEX;
+{UINT}             yylval->u     = (odb_uint_t)atoi(yytext); return UINT;
+{INT}              yylval->i     = (odb_int_t)atoi(yytext); return INT;
+{HEX}              yylval->h     = (odb_hex_t)strtol(yytext, NULL, 16); return HEX;
 {FLOAT}            yylval->f     = (odb_float_t)atof(yytext); return FLOAT;
-{IDENT}            yylval->ident = identifier_insert(yytext,identtab); return IDENT;
-{BITBLK}           yylval->b     = identifier_insert(yytext,stringtab); return BITBLK;
+{IDENT}            yylval->ident = identifier_insert(yytext, identtab); return IDENT;
+{BITBLK}           yylval->b     = identifier_insert(yytext, stringtab); return BITBLK;
 <<EOF>>            yyterminate();  
 .                  btrace("didn't expect (%s)", yytext);
 
 %%
-
 
 /*
   this returns the (unique) id of the name inserted, 
   or -1 on error 
 */
 
-static int identifier_insert(char* name,identtab_t* tab)
+static int identifier_insert(char* name, identtab_t* tab)
 {
   int id;
   ident_t* ident;
 
-  ident = identtab_name_lookup(tab,name); 
+  ident = identtab_name_lookup(tab, name); 
 
   if (ident)
     {
@@ -105,13 +106,13 @@ static int identifier_insert(char* name,identtab_t* tab)
     {
       static int sid = 1;
       
-      if ((ident = ident_new(name,sid)) == NULL)
+      if ((ident = ident_new(name, sid)) == NULL)
 	{
 	  btrace("failed to create identifier wrapper");
 	  return -1;
 	}
 
-      if (identtab_insert(tab,ident) != 0)
+      if (identtab_insert(tab, ident) != 0)
 	{
 	  btrace("failed to insert identifier");
 	  return -1;

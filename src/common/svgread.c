@@ -444,7 +444,7 @@ static char* whitespace_trim(char*,int*);
 
 static int parse_colour(char *st, rgb_t *rgb, double *opacity)
 {
-  struct stdcol_t *p;
+  const struct stdcol_t *p;
   int r,g,b;
   int n = 0;
 

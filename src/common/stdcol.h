@@ -10,10 +10,10 @@
 struct stdcol_t 
 {
   char* name; 
-  int r,g,b; 
+  int r, g, b; 
   double t;
 };
 
-extern struct stdcol_t* stdcol(char*);
+extern const struct stdcol_t* stdcol(char*);
 
 #endif 

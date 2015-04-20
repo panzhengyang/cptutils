@@ -17,7 +17,7 @@ CU_TestInfo tests_gmtcol[] =
 
 extern void test_gmtcol_lookup(void)
 {
-  struct gmtcol_t* col;
+  const struct gmtcol_t* col;
 
   col = gmtcol(COLOUR);
 

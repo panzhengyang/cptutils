@@ -9,10 +9,10 @@
 
 struct gmtcol_t 
 {
-  char* name; 
-  unsigned char r,g,b; 
+  char *name; 
+  unsigned char r, g, b; 
 };
 
-extern struct gmtcol_t* gmtcol(const char*);
+extern const struct gmtcol_t* gmtcol(const char*);
 
 #endif
