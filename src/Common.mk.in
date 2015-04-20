@@ -57,7 +57,7 @@ ifneq (no,$(GPERF))
 	  --lookup-function-name $*_lookup \
 	  --ignore-case \
 	  --readonly-tables \
-          --enum \
+	  --enum \
 	  --output-file $@ $< 
 
 endif
