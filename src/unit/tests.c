@@ -28,7 +28,6 @@
 #include "tests_grd5string.h"
 #include "tests_grd5type.h"
 #include "tests_grdxsvg.h"
-#include "tests_gstack.h"
 #include "tests_ident.h"
 #include "tests_identtab.h"
 #include "tests_pov.h"
@@ -66,7 +65,6 @@ static CU_SuiteInfo suites[] =
     { "grd5string", NULL, NULL, tests_grd5string },
     { "grd5type",   NULL, NULL, tests_grd5type },
     { "grdxsvg",    NULL, NULL, tests_grdxsvg },
-    { "gstack",     NULL, NULL, tests_gstack },
     { "ident",      NULL, NULL, tests_ident },
     { "identtab",   NULL, NULL, tests_identtab },
     { "pov",        NULL, NULL, tests_pov },
