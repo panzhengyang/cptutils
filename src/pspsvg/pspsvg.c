@@ -103,7 +103,7 @@ static unsigned int grd3_zmid_it(unsigned short z0,
 
 static int trim_rgb(gstack_t* stack)
 {
-  int n = gstack_size(stack);
+  size_t n = gstack_size(stack);
   rgb_stop_t stop;
   gstack_t *stack0;
 
@@ -124,8 +124,8 @@ static int trim_rgb(gstack_t* stack)
 
   while (! gstack_empty(stack0))
     {
-      gstack_pop(stack0,&stop);
-      gstack_push(stack,&stop);
+      gstack_pop(stack0, &stop);
+      gstack_push(stack, &stop);
     }
 
   return 0;
@@ -133,7 +133,7 @@ static int trim_rgb(gstack_t* stack)
 
 static int trim_op(gstack_t* stack)
 {
-  int n = gstack_size(stack);
+  size_t n = gstack_size(stack);
   op_stop_t stop;
   gstack_t *stack0;
 
@@ -170,7 +170,7 @@ static int trim_op(gstack_t* stack)
 static gstack_t* rectify_rgb(grd3_t* grd3)
 {
   grd3_rgbseg_t *pseg = grd3->rgb.seg;
-  int i,n = grd3->rgb.n;
+  int i, n = grd3->rgb.n;
 
   if (n<2)
     {
@@ -237,11 +237,11 @@ static gstack_t* rectify_rgb(grd3_t* grd3)
 static gstack_t* rectify_op(grd3_t* grd3)
 {
   grd3_opseg_t *pseg = grd3->op.seg;
-  int i,n = grd3->op.n;
+  int i, n = grd3->op.n;
 
   if (n<2)
     {
-      btrace("input (grd) has %i opacity stop(s)",n);
+      btrace("input (grd) has %i opacity stop(s)", n);
       return NULL;
     }
 
@@ -362,7 +362,7 @@ static int pspsvg_convert(grd3_t *grd3, svg_t *svg, pspsvg_opt_t opt)
     return 1;
 
   if (opt.verbose)
-    printf("stops: rgb %i/%i, opacity %i/%i\n",
+    printf("stops: rgb %i/%zi, opacity %i/%zi\n",
 	   grd3->rgb.n,
 	   gstack_size(rgbrec),
 	   grd3->op.n,

@@ -80,7 +80,7 @@ static unsigned int grd5_zmid_it(uint32_t z0,
 
 static int trim_rgb(gstack_t* stack)
 {
-  int n = gstack_size(stack);
+  size_t n = gstack_size(stack);
   rgb_stop_t stop;
   gstack_t *stack0;
 
@@ -112,7 +112,7 @@ static int trim_rgb(gstack_t* stack)
 
 static int trim_op(gstack_t* stack)
 {
-  int n = gstack_size(stack);
+  size_t n = gstack_size(stack);
   op_stop_t stop;
   gstack_t *stack0;
 
@@ -713,7 +713,7 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
 
   if (! err)
     {
-      int m = gstack_size(gstack);
+      size_t m = gstack_size(gstack);
 
       if (m == 0)
 	{
@@ -723,7 +723,7 @@ static int pssvg_convert(grd5_t *grd5, svgset_t *svgset, pssvg_opt_t opt)
       else
 	{
 	  if (m < n)
-	    btrace("only %d/%d gradient converted", m, n); 
+	    btrace("only %zd/%d gradient converted", m, n); 
 
 	  if (gstack_reverse(gstack) != 0)
 	    return 1;

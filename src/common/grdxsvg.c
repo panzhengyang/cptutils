@@ -83,7 +83,8 @@ static op_stop_t op_stop_interp(op_stop_t os0,
 static gstack_t* merge(gstack_t *rss, gstack_t *oss)
 {
   gstack_t *ross;
-  int err = 0, n = gstack_size(rss) + gstack_size(oss);
+  int err = 0;
+  size_t n = gstack_size(rss) + gstack_size(oss);
 
   /* get the first two of each type of stop */
 
