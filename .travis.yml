@@ -4,21 +4,24 @@ compiler:
   - clang
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq 
+  - sudo apt-get install -qq
       bc gengetopt gperf xml2
       libxml2-dev
-      libpng12-dev 
+      libpng12-dev
       libjansson-dev
-      libcunit1-dev 
-      xsltproc 
+      libcunit1-dev
+      xsltproc
       docbook-xsl
+  - sudo pip install cpp-coveralls
   - autoconf
   - autoheader
 install:
-  - ./configure --enable-tests
+  - ./configure --enable-tests --enable-gcov
   - make version
   - make
   - sudo make install
 script :
   - make --quiet unit
   - make --quiet test
+after_success:
+  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
