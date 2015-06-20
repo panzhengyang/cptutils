@@ -7,9 +7,9 @@
 #include "fixture.h"
 #include "tests_cptread.h"
 
-CU_TestInfo tests_cptread[] = 
+CU_TestInfo tests_cptread[] =
   {
-    {"fixtures", test_cptread_fixtures},
+    {"fixtures",            test_cptread_fixtures},
     {"file does not exist", test_cptread_nofile},
     CU_TEST_INFO_NULL,
   };
@@ -23,6 +23,7 @@ extern void test_cptread_fixtures(void)
     "Exxon88.cpt",
     "GMT_gebco.cpt",
     "GMT_haxby.cpt",
+    "GMT_cyclic.cpt",
     "Onion_Rings.cpt",
     "pakistan.cpt",
     "RdBu_10.cpt",
@@ -36,7 +37,7 @@ extern void test_cptread_fixtures(void)
     {
       cpt_t* cpt;
 
-      CU_ASSERT((cpt = cpt_new()) != NULL); 
+      CU_ASSERT((cpt = cpt_new()) != NULL);
       CU_ASSERT(fixture(buf, n, "cpt", files[i]) < n);
       CU_ASSERT(cpt_read(buf, cpt) == 0);
       cpt_destroy(cpt);
@@ -47,8 +48,7 @@ extern void test_cptread_nofile(void)
 {
   cpt_t* cpt;
 
-  CU_ASSERT((cpt = cpt_new()) != NULL); 
+  CU_ASSERT((cpt = cpt_new()) != NULL);
   CU_ASSERT(cpt_read("/tmp/no-such-file", cpt) != 0);
   cpt_destroy(cpt);
 }
-

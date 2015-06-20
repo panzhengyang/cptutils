@@ -8,7 +8,7 @@
 
 #include <CUnit/CUnit.h>
 
-extern CU_TestInfo tests_cptread[]; 
+extern CU_TestInfo tests_cptread[];
 extern void test_cptread_fixtures(void);
 extern void test_cptread_nofile(void);
 
