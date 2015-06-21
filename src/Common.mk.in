@@ -4,13 +4,13 @@
 VERSION   = @PACKAGE_VERSION@
 
 CC        = @CC@
-CFLAGS   += @CFEXTRA@ @CFLAGS@ @DEFS@ 
+CFLAGS   += @CFEXTRA@ @CFLAGS@ @DEFS@
 CFNUBS    = @CFNUBS@
-LDFLAGS  += 
+LDFLAGS  += @LDFLAGS@
 LDLIBS   += @LIBS@
 
 CFLAGS   += -I../common/
-LDFLAGS  += -L../common/  
+LDFLAGS  += -L../common/
 
 TESTD     = ../fixtures
 TESTX     = ../test
@@ -18,9 +18,9 @@ TESTX     = ../test
 PYTHON    = @PYTHON@
 
 INSTALL         = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ 
-INSTALL_DATA    = @INSTALL_DATA@ 
-INSTALL_DIR     = @INSTALL@ -d 
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA    = @INSTALL_DATA@
+INSTALL_DIR     = @INSTALL@ -d
 GGO             = @GGO@
 XML2C		= @XML2C@
 GPERF		= @GPERF@
@@ -37,7 +37,7 @@ localedir   = @localedir@
 
 RUBBISH += *~
 
-# acceptance tests, pass the program name and relative 
+# acceptance tests, pass the program name and relative
 # testexec path (where test scripts are kept)
 
 accept :
@@ -58,7 +58,7 @@ ifneq (no,$(GPERF))
 	  --ignore-case \
 	  --readonly-tables \
 	  --enum \
-	  --output-file $@ $< 
+	  --output-file $@ $<
 
 endif
 
@@ -76,7 +76,7 @@ endif
 .SECONDARY : options.c options.h
 
 options.o : options.c options.h
-	$(CC) $(CFLAGS) $(CFNUBS) -c -o $@ $< 
+	$(CC) $(CFLAGS) $(CFNUBS) -c -o $@ $<
 
 # generate manpages from docbook source, the location
 # of the xsl is as used by Debian/Ubuntu
