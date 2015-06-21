@@ -7,7 +7,7 @@
 #include "tests_grd5.h"
 #include "tests_grd5_helper.h"
 
-CU_TestInfo tests_grd5[] = 
+CU_TestInfo tests_grd5[] =
   {
     {"model lookup", test_grd5_model},
     CU_TEST_INFO_NULL,
@@ -49,6 +49,8 @@ extern void test_grd5_model(void)
   CU_TEST_FATAL( (str = build_grd5string("BkCl")) != NULL);
   CU_ASSERT( grd5_model(str) == GRD5_MODEL_BOOK );
   grd5_string_destroy(str);
+
+  CU_TEST_FATAL( (str = build_grd5string("UnsC")) != NULL);
+  CU_ASSERT( grd5_model(str) == GRD5_MODEL_UNSC );
+  grd5_string_destroy(str);
 }
-
-
