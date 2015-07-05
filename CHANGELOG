@@ -8,18 +8,23 @@ Changes
   and for source packages
 
     http://soliton.vm.bytemark.co.uk/pub/jjg/src/cptutils-<ver>.tar.gz
-  
+
   Redirects (301) from the old addresses of source packages
-  up to an including version 1.57 will be in-place for the 
+  up to an including version 1.57 will be in-place for the
   forseeable future; for versions after 1.57 only the new
   address will be usable.
+
+1.59 (05 Jul 2015)
+  GIMP gradients which are DOS encoded, and/or which have
+  'endpoint colour types' can now be read by the gimpsvg and
+  gimplut programs
 
 1.58 (20 Apr 2015)
   - cpthsv handles HSV model cpt input
   - odb flex scanner (avlcpt) is now 8-bit
   - svgx writes libxml2 errors to the backtrace
-  - handle puzzling 0-component channels with colour model 
-    "UnsC" (unspecified) 
+  - handle puzzling 0-component channels with colour model
+    "UnsC" (unspecified)
 
 1.57 (18 Dec 2014)
   - test-fixures & fixes for crashes found with AFL
@@ -49,11 +54,11 @@ Changes
 1.53 (25 Apr 2014)
   - fixed a null-deference when writing a cpt with a NULL name
     (typically when the cpt is read from stdin)
-  - svgx -a now sanitises the filenames derived from the svg ids, 
-    replacing forward-slashes and leading dots by underscores. 
+  - svgx -a now sanitises the filenames derived from the svg ids,
+    replacing forward-slashes and leading dots by underscores.
 
 1.52 (13 Mar 2014)
-  - pssvg gives unique SVG ids for input with repeated titles 
+  - pssvg gives unique SVG ids for input with repeated titles
   - gradient-convert detecting psp type from extension
   - fixed pssgv parse error on HSBl noise gradients
 
@@ -77,16 +82,16 @@ Changes
   - added support for cpt segment labels
   - replaced ageing lex/yacc cpt parser by hand-written version
   - fixed missing ids in svg files for programs writing svg when
-    reading from stdin 
+    reading from stdin
 
 1.47 (8 July 2013)
   - new program cptcat
-  - added setup.sh and makefile fixes for full build from 
+  - added setup.sh and makefile fixes for full build from
     github checkout
 
 1.46 (14 Dec 2012)
-  - fixed intermediate filenames for output not in current 
-    directory 
+  - fixed intermediate filenames for output not in current
+    directory
   - added --capabilities option to gradient-convert
   - rationalised and simplified libraries to cope with stricter
     rules in recent versions of gcc (4.6.3)
@@ -105,8 +110,8 @@ Changes
 
 1.44 (13 March 2012)
   - improved human-readable z-values in cpt output
-  - fixed incorrect xycpt behaviour when input had 
-    leading zeros 
+  - fixed incorrect xycpt behaviour when input had
+    leading zeros
   - reinstated (now local) bottom level test target
   - renamed several files in src/common, for consistency
   - added the gradient-convert wrapper script (python
@@ -115,11 +120,11 @@ Changes
 1.43 (28 Feb 2012)
   Code cleanup
   - manual pages are now generated from DocBook
-  - several unimplemented options removed 
+  - several unimplemented options removed
   - all tests now use data in the package itself
 
 1.42 (23 Jan 2012)
-  Several fixes suggested by Volker Froehlich of Fedora 
+  Several fixes suggested by Volker Froehlich of Fedora
   - applied patches adding DESTDIR and fixing size_t printing
   - Updated FSF address in numerous files
   - Bottom-level dist target now creates versioned tarballs
@@ -130,14 +135,14 @@ Changes
   - pspsvg replaces pspcpt
   - new program svgpng
   - fixed some UTF8 issues in common/svgread
-  - fixed opacity conversion in svgpsp (svgx) 
+  - fixed opacity conversion in svgpsp (svgx)
   - improved character-set handling in svgx
-  - fixed conversion of implicit initial and final stops 
-    in svgx  
+  - fixed conversion of implicit initial and final stops
+    in svgx
 
 1.40 (1 Nov 2011)
   - added svgx now writes the astronomical SAO format for DS9
-  - fixed accidental RBG colours in cpttext (some kind of mental 
+  - fixed accidental RBG colours in cpttext (some kind of mental
     block there)
 
 1.39 (6 May 2011)
@@ -152,7 +157,7 @@ Changes
   added -u option to xycpt which allows input colours to
   to be specified a doubles in 0-1
 
-1.36 (20 April 2010) 
+1.36 (20 April 2010)
   - midpoint option added to cptcont
   - fixed cptinfo output on cpt-files with decreasing z
   - new program cptclip
@@ -173,7 +178,7 @@ Changes
   svgx special : several fixes in svgread.c and svglist.c
   - fixed allocation bug for > 20 gradients in a svg file
   - added parsing of whitespace in svg style tags
-  - set default unit opacity when no opacity-stop is given 
+  - set default unit opacity when no opacity-stop is given
 
 1.30 (13 Apr 2008)
   added gimplut
@@ -191,18 +196,18 @@ Changes
 1.27 (28 Sep 2006)
   - added the default version to psp structure, fixing a bug
     whereby svgpsp produced psp files with no version (these
-    could not be read by pspx) 
+    could not be read by pspx)
   - fixed command-line bug in svgx
 
 1.26 (1 Sep 2006)
   PaintShop Pro special, the psp format is now completely
   reverse engineered: see src/common/README.psp
-  - pspread.c now also parses the opacity gradient and 
+  - pspread.c now also parses the opacity gradient and
     midpoints of the segments.
-  - new pspwrite.c writes psp gradients  
+  - new pspwrite.c writes psp gradients
   - pspcpt(1) now prints out the opacity gradient and gives
-    warnings if there are uncentred midpoints or any 
-    tranparency. 
+    warnings if there are uncentred midpoints or any
+    tranparency.
   - svgx now also outputs the psp format, and the wrapper
     script svgpsp(1) is provided.
 
@@ -212,8 +217,8 @@ Changes
     errors.
 
 1.24 (04 Dec 2005)
-  - all cpt writing  programs now have -b -f and -n flags, so 
-    svgx -n (name) argument is now -N 
+  - all cpt writing  programs now have -b -f and -n flags, so
+    svgx -n (name) argument is now -N
 
 1.23 (03 Dec 2005)
   - xycpt cleanup
@@ -222,7 +227,7 @@ Changes
   - added new program avlcpt, converting the ArcView legend
     format (if it contains a gradient).
   - above uses libodb which parses ODB format files and serialises
-    them into a convenient array structure. this might be of 
+    them into a convenient array structure. this might be of
     independent interest -- see src/common/README.libodb
 
 1.21 (11 Nov 2005)
@@ -230,11 +235,11 @@ Changes
     in cptcss
 
 1.20 (21 Sep 2005)
-  - svgx povray output now works when extraction of all  
+  - svgx povray output now works when extraction of all
     gradients (-a) is specified
   - svgx povray output now has abitrarily many stops (even
     though 20 is the max in the specification) if the
-    new -p (permissive) flag is given 
+    new -p (permissive) flag is given
 
 1.19 (29 Aug 2005)
   - added a povray colour-map output format for svgx,
@@ -246,13 +251,13 @@ Changes
     colouring the cells in a table). The original plan
     was to put this functionality into cpttext, but the
     output is a bit different in that there is no idea
-    of a z-value in the css, just an order.     
+    of a z-value in the css, just an order.
 
 1.17 (3 June 2005)
   - removed redundant (but harmless) stops in cptsvg,
-    which is now finshed apart from support for hsv & 
+    which is now finshed apart from support for hsv &
     non-colour fill types
-     
+
 1.16 : (1 June 2005)
   - new program cptsvg
 
@@ -262,7 +267,7 @@ Changes
   - enabled debug output for cpt parser
 
 1.14 : (unreleased)
-  - fixed bug in pspcpt which gave zero-length 
+  - fixed bug in pspcpt which gave zero-length
     z-slices for some files
 
 1.13 : (unreleased)
@@ -279,34 +284,34 @@ Changes
 
 1.12 :
   - new program cpttext, prints text in the colours of
-    a specified cpt-file (just html the moment)  
+    a specified cpt-file (just html the moment)
 
 1.11 : (unreleased)
   - new program xycpr, converts column data to cpr format
- 
+
 1.10 : (unreleased)
   - split libgimpcpt to libfill, libcpt and libggr
 
 1.9 : (unreleased)
   - replaced the cpt read function in cpt.c by the custom
-    bison/flex parser, which now seems to be able to 
-    completely capture the contents of a cpt file. 
+    bison/flex parser, which now seems to be able to
+    completely capture the contents of a cpt file.
     New files cptparse.y cptscan.l cptio.c cptio.h
   - the cpt type in cpt.h has been extended to hold
-    the extra data (annotations, hatchures etc). New 
-    file fill.h defines a fill type, which could be 
-    colour, greyscale, hatchure or file. 
-  - all programs now compile with the new cpt type, 
+    the extra data (annotations, hatchures etc). New
+    file fill.h defines a fill type, which could be
+    colour, greyscale, hatchure or file.
+  - all programs now compile with the new cpt type,
     all cpt files in cpt-city are parsed by the new
-    parser.    
+    parser.
 
 1.8 : (unreleased)
-  - corrected minor glitch in common/cpt.c, now whitespace   
+  - corrected minor glitch in common/cpt.c, now whitespace
     at the start of the line does not cause a scan failure.
   - cptinfo now reads the file size.
 
 1.7 : (unreleased)
-  - added cptinfo program for the "cpt city" website  
+  - added cptinfo program for the "cpt city" website
 
 1.6 : (unreleased)
   - added cpt simplification to gimpcpt, with some extra
@@ -318,12 +323,12 @@ Changes
 
 1.4 : (unreleased)
   cptgimp implemented
-  - extended colour.h to handle the hsv & rgb colour types in 
+  - extended colour.h to handle the hsv & rgb colour types in
     cpt files
   - cptgimp is lossless since the ggr format can easily capture
-    any cpt rgb/hsv linear spline, natively. 
-  - got confused by the myriad colour types in colour.c, so 
-    reorganised the naming convertions, and standardised the 
+    any cpt rgb/hsv linear spline, natively.
+  - got confused by the myriad colour types in colour.c, so
+    reorganised the naming convertions, and standardised the
     interface.
   - all the GMT standard palettes now seem to be converted
     correctly, sent a tarball to some hungry alpha testers
@@ -331,7 +336,7 @@ Changes
 
 1.3 :
   converted gimpcpt to use gengetopt, which lead
-  to tidying up of the makefile/configure setup. 
+  to tidying up of the makefile/configure setup.
   Redid the test targets in gimpcpt
 
 1.02 :
@@ -343,25 +348,25 @@ Changes
 1.01 :
   minor modification to handle the change to the
   gimp's gradient file format: an additional line
-	
+
      Name: <name>
 
   has been added to the files, and they are given
-  the .grd extension. 
+  the .grd extension.
   - we now check the second line of the file to see
     if it a name line, and if so save that to print
     in the output cpt file
-  - we search for gradients (still with typeglobs) 
+  - we search for gradients (still with typeglobs)
     with names <name> and <name>.grd
   - header in output cpt file tidied a little
 
 1.00 :
-  minor documentation changes 
+  minor documentation changes
 
 0.94 :
-  src/gradient.c now handles gradients which lie 
-  about the number of segments they contain (but 
-  issues a warning if the declared number differs 
+  src/gradient.c now handles gradients which lie
+  about the number of segments they contain (but
+  issues a warning if the declared number differs
   from th number found). All of the AG gradients
   can now be converted.
 
@@ -375,9 +380,9 @@ Changes
   src/Makefile.in extra target *.gif added, makes
     a gif animation of the gradient in RGB space, mmm.
 
-0.91 : 
+0.91 :
   src/Makefile corrections
-  INSTALL corrections     
+  INSTALL corrections
 
-0.90 : 
+0.90 :
   initial public release

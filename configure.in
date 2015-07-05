@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(cptutils, 1.58, j.j.green@gmx.fr)
+AC_INIT(cptutils, 1.59, j.j.green@gmx.fr)
 
 m4_include([m4/ax_check_define.m4])
 m4_include([m4/ax_check_compile_flag.m4])
