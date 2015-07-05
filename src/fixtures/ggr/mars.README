@@ -1,0 +1,3 @@
+This file seems to have two extra zeros in the last
+row, and the ggrread() function balks on that, yet gimp
+has no problem reading them; a new ggr feature?
