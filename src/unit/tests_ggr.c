@@ -23,13 +23,19 @@ CU_TestInfo tests_ggr[] =
 
 extern void test_ggr_load(void)
 {
-  size_t n = 1024;
+  size_t i, n = 1024;
   char path[n];
-  CU_TEST_FATAL( fixture(path, n, "ggr", "Sunrise.ggr") < n );
 
-  gradient_t *ggr;
-  CU_TEST_FATAL( (ggr = grad_load_gradient(path)) != NULL );
-  grad_free_gradient(ggr);
+  const char *ggrs[] = {"Sunrise.ggr", "mars.ggr"};
+
+  for (i = 0 ; i < 2  ; i++)
+    {
+      CU_TEST_FATAL( fixture(path, n, "ggr", ggrs[i]) < n );
+
+      gradient_t *grad;
+      CU_TEST_FATAL( (grad = grad_load_gradient(path)) != NULL );
+      grad_free_gradient(grad);
+    }
 }
 
 extern void test_ggr_save(void)
@@ -46,5 +52,5 @@ extern void test_ggr_save(void)
 
 extern void test_ggr_sample(void)
 {
-
+  /* FIXME */
 }
