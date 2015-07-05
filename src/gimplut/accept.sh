@@ -2,15 +2,17 @@
 
 source "$2/accept-setup.sh"
 
-base="Sunrise"
-lut="$base.lut"
-ggr="$base.ggr"
-
 fixtures="$TESTFIX/ggr"
 
-assert_raises "./gimplut -o $lut $fixtures/$ggr" 0
-assert "equal-lut $lut accept/$lut" true
+for base in "Sunrise" "mars"
+do
+    lut="$base.lut"
+    ggr="$base.ggr"
 
-rm -f $lut
+    assert_raises "./gimplut -o $lut $fixtures/$ggr" 0
+    assert "equal-lut $lut accept/$lut" true
+
+    rm -f $lut
+done
 
 source accept-teardown.sh
