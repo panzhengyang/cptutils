@@ -43,7 +43,7 @@
 
   You should have received a copy of the GNU General Public
   License along with this program; if not, write to the
-  Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, 
+  Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor,
   Boston, MA 02110-1301 USA
 */
 
@@ -85,7 +85,7 @@ extern gradient_t *grad_new_gradient(void)
   grad->filename     = NULL;
   grad->segments     = NULL;
   grad->last_visited = NULL;
-  	
+
   return grad;
 }
 
@@ -112,7 +112,6 @@ extern gradient_t* grad_load_gradient(const char* path)
   grad_segment_t *seg, *prev;
   int             num_segments;
   int             i;
-  int             type, color;
   char            line[1024];
 
   if (path == NULL)
@@ -131,7 +130,7 @@ extern gradient_t* grad_load_gradient(const char* path)
       return NULL;
     }
 
-  if (strcmp(line, "GIMP Gradient\n") != 0)
+  if (strncmp(line, "GIMP Gradient", 13) != 0)
     {
       btrace("file does not seem to be a GIMP gradient");
       return NULL;
@@ -141,7 +140,7 @@ extern gradient_t* grad_load_gradient(const char* path)
     return NULL;
 
   grad->filename = (path ? strdup(path) : strdup("<stdin>"));
- 
+
   if (fgets(line, 1024, stream) == NULL)
     {
       warn_truncated("after header");
@@ -149,7 +148,7 @@ extern gradient_t* grad_load_gradient(const char* path)
     }
 
   /*
-    In 1.3 gradients there is a line with the name of the 
+    In 1.3 gradients there is a line with the name of the
     gradient : if we find it then we use that name and read
     another line, otherwise we use the path (or the <stdin>
     string>)
@@ -161,7 +160,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
       for (s = line+5 ; *s && (*s == ' ') ; s++);
       if ((e = strchr(s,'\n')) != NULL) *e = '\0';
-      
+
       grad->name = strdup(s);
 
       if (fgets(line, 1024, stream) == NULL)
@@ -188,6 +187,8 @@ extern gradient_t* grad_load_gradient(const char* path)
 
   for (i = 0 ; i < num_segments ; i++)
     {
+      int type, color, ect_left, ect_right;
+
       seg = seg_new_segment();
       seg->prev = prev;
 
@@ -202,18 +203,21 @@ extern gradient_t* grad_load_gradient(const char* path)
 	  return NULL;
 	}
 
-      if (sscanf(line, "%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%d%d",
-		 &(seg->left), &(seg->middle), &(seg->right),
-		 &(seg->r0), &(seg->g0), &(seg->b0), &(seg->a0),
-		 &(seg->r1), &(seg->g1), &(seg->b1), &(seg->a1),
-		 &type, &color) != 13)
+      switch (sscanf(line, "%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%lf%d%d%d%d",
+		     &(seg->left), &(seg->middle), &(seg->right),
+		     &(seg->r0), &(seg->g0), &(seg->b0), &(seg->a0),
+		     &(seg->r1), &(seg->g1), &(seg->b1), &(seg->a1),
+		     &type, &color,
+		     &ect_left, &ect_right))
 	{
-	  btrace("badly formatted gradient segment %d in %s", i, path);
-	  return NULL;
-	}
-      else
-	{
-	  int err = 0;
+	case 13:
+
+	  ect_left = ect_right = GRAD_FIXED;
+
+	case 15:
+
+	  seg->ect_left  = ect_left;
+	  seg->ect_right = ect_right;
 
           seg->type  = (grad_type_t)type;
 
@@ -221,6 +225,7 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	  switch (color)
 	    {
+	      int err = 0;
 	      double rgb0[3], rgb1[3], hsv0[3], hsv1[3];
 
 	    case GRAD_RGB:
@@ -260,7 +265,13 @@ extern gradient_t* grad_load_gradient(const char* path)
 	      btrace("unknown colour model (%i)", color);
 	      return NULL;
 	    }
-	}      
+
+	  break;
+
+	default:
+	  btrace("badly formatted gradient segment %d in %s", i, path);
+	  return NULL;
+	}
       prev = seg;
     }
 
@@ -272,15 +283,15 @@ extern gradient_t* grad_load_gradient(const char* path)
 /*
   this function handles an extension to the gimp gradient colour-arc
   type: the GRAD_HSV_CW and GRAD_HSV_CW are joined by GRAD_HSV_SHORT
-  which is an HSV path, either CW or CCW depending on which is 
+  which is an HSV path, either CW or CCW depending on which is
   shorter. Similarly GRAD_HSV_LONG.
 
   This has been proposed by Neota, who provided the following function
   for its implementation. It should make it into the gimp in 2004.
 
-  If the argument color is GRAD_HSV_SHORT then this function 
+  If the argument color is GRAD_HSV_SHORT then this function
   returns GRAD_HSV_CW or GRAD_HSV_CCW depending on which hue path
-  from x to y is shorter. If the argument is GRAD_HSV_LONG the 
+  from x to y is shorter. If the argument is GRAD_HSV_LONG the
   behaviour is reversed.
 */
 
@@ -288,20 +299,20 @@ static grad_color_t grad_hsv_type(grad_color_t color,double x,double y)
 {
   double midlen,rndlen,min,max;
   int shorter,result;
-  
+
   min = MIN(x,y);
   max = MAX(x,y);
-  
+
   midlen = max - min;
   rndlen = min + (1.0 - max);
 
   /* find shorter path */
-  
+
   if (rndlen < midlen)
     shorter = (max==y ? GRAD_HSV_CW : GRAD_HSV_CCW);
   else
     shorter = (max==y ? GRAD_HSV_CCW : GRAD_HSV_CW);
-  
+
   switch (color)
     {
     case GRAD_HSV_SHORT:
@@ -334,10 +345,10 @@ extern int grad_save_gradient(const gradient_t *grad, const char* path)
       btrace("failed to open %s : %s", path, strerror(errno));
       return 1;
     }
-  
-  /* 
+
+  /*
      File format is:
-   
+
      GIMP Gradient
      Name: <name>
      number_of_segments
@@ -364,11 +375,27 @@ extern int grad_save_gradient(const gradient_t *grad, const char* path)
   fprintf(stream, "%d\n", num_segments);
 
   for (seg = grad->segments; seg; seg = seg->next)
-    fprintf(stream, "%f %f %f %f %f %f %f %f %f %f %f %d %d\n",
-	     seg->left, seg->middle, seg->right,
-	     seg->r0, seg->g0, seg->b0, seg->a0,
-	     seg->r1, seg->g1, seg->b1, seg->a1,
-	     (int) seg->type, (int) seg->color);
+    {
+      if ( ( seg->ect_left == GRAD_FIXED) &&
+	   ( seg->ect_right == GRAD_FIXED) )
+	{
+	  fprintf(stream, "%f %f %f %f %f %f %f %f %f %f %f %d %d\n",
+		  seg->left, seg->middle, seg->right,
+		  seg->r0, seg->g0, seg->b0, seg->a0,
+		  seg->r1, seg->g1, seg->b1, seg->a1,
+		  (int) seg->type, (int) seg->color);
+	}
+      else
+	{
+	  fprintf(stream, "%f %f %f %f %f %f %f %f %f %f %f %d %d %d %d\n",
+		  seg->left, seg->middle, seg->right,
+		  seg->r0, seg->g0, seg->b0, seg->a0,
+		  seg->r1, seg->g1, seg->b1, seg->a1,
+		  (int) seg->type, (int) seg->color,
+		  (int) seg->ect_left, (int) seg->ect_right);
+	}
+    }
+
 
   if (stream != stdout) fclose(stream);
 
@@ -386,22 +413,22 @@ extern int grad_segment_colour(double z, const grad_segment_t* seg,
 
   int i;
 
-  for (i=0 ; i<3 ; i++) 
+  for (i=0 ; i<3 ; i++)
     rgbD[i] = alpha*rgbD[i] + (1-alpha)*bgD[i];
 
   return 0;
 }
 
-extern int grad_segment_rgba(double z, 
-			     const grad_segment_t *seg, 
-			     double *rgbD, 
+extern int grad_segment_rgba(double z,
+			     const grad_segment_t *seg,
+			     double *rgbD,
 			     double *alpha)
 {
   double factor = 0;
   double seg_len, middle;
 
   seg_len = seg->right - seg->left;
-  
+
   if (seg_len < EPSILON)
     {
       middle = 0.5;
@@ -412,7 +439,7 @@ extern int grad_segment_rgba(double z,
       middle = (seg->middle - seg->left) / seg_len;
       z = (z - seg->left) / seg_len;
     }
-  
+
   switch (seg->type)
     {
     case GRAD_LINEAR:
@@ -436,12 +463,12 @@ extern int grad_segment_rgba(double z,
     }
 
   /* alpha channel is easy */
-  
+
   *alpha = seg->a0 + (seg->a1 - seg->a0)*factor;
-  
+
   /* Calculate color components */
-  
-  if (seg->color == GRAD_RGB)    
+
+  if (seg->color == GRAD_RGB)
     {
       rgbD[0] = seg->r0 + (seg->r1 - seg->r0)*factor;
       rgbD[1] = seg->g0 + (seg->g1 - seg->g0)*factor;
@@ -451,30 +478,30 @@ extern int grad_segment_rgba(double z,
     {
       double  h0,s0,v0,h1,s1,v1;
       double hsvD[3];
-      
+
       rgbD[0] = seg->r0;
       rgbD[1] = seg->g0;
       rgbD[2] = seg->b0;
-      
+
       rgbD_to_hsvD(rgbD,hsvD);
-      
+
       h0 = hsvD[0];
       s0 = hsvD[1];
       v0 = hsvD[2];
-      
+
       rgbD[0] = seg->r1;
       rgbD[1] = seg->g1;
       rgbD[2] = seg->b1;
-      
+
       rgbD_to_hsvD(rgbD,hsvD);
-      
+
       h1 = hsvD[0];
       s1 = hsvD[1];
       v1 = hsvD[2];
-      
+
       s0 = s0 + (s1 - s0)*factor;
       v0 = v0 + (v1 - v0)*factor;
-      
+
       switch (seg->color)
 	{
 	case GRAD_HSV_CCW:
@@ -501,7 +528,7 @@ extern int grad_segment_rgba(double z,
 	  btrace("unknown colour model %i",seg->color);
 	  return 1;
 	}
-      
+
       hsvD[0] = h0;
       hsvD[1] = s0;
       hsvD[2] = v0;
@@ -517,22 +544,22 @@ extern int gradient_colour(double z, gradient_t *gradient,
 			   double *bg, double *rgbD)
 {
   /* if there is no gradient return the background colour */
-  
-  if (gradient == NULL) 
+
+  if (gradient == NULL)
     {
       int i;
-      
+
       for (i=0 ; i<3 ; i++) rgbD[i] = bg[i];
       return 0;
     }
-  
-  if (z < 0.0) 
+
+  if (z < 0.0)
     z = 0.0;
-  else if (z > 1.0) 
+  else if (z > 1.0)
     z = 1.0;
 
   grad_segment_t *seg;
-  
+
   if ((seg = seg_get_segment_at(gradient, z)) == NULL)
     return 1;
 
@@ -544,7 +571,7 @@ extern grad_segment_t* seg_new_segment(void)
   grad_segment_t *seg;
 
   if ((seg = malloc(sizeof(grad_segment_t))) == NULL)
-    return NULL;         	
+    return NULL;
 
   seg->left   = 0.0;
   seg->middle = 0.5;
@@ -607,14 +634,14 @@ static grad_segment_t* seg_get_segment_at(gradient_t *grad, double z)
       else
 	seg = seg->prev;
     }
-  
+
   btrace("no matching segment for z %0.15f", z);
-  
+
   return NULL;
 }
 
 /*
-  calculation functions 
+  calculation functions
 */
 
 static double calc_linear_factor(double middle, double z)
@@ -659,7 +686,7 @@ static double calc_sphere_increasing_factor(double middle, double z)
 {
   z = calc_linear_factor(middle, z) - 1.0;
 
-  return sqrt(1.0 - z*z); 
+  return sqrt(1.0 - z*z);
 }
 
 /* Works for convex decreasing and concave increasing */

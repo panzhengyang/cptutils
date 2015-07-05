@@ -2,15 +2,17 @@
 
 source "$2/accept-setup.sh"
 
-base="Sunrise"
-svg="$base.svg"
-ggr="$base.ggr"
-
 fixtures="$TESTFIX/ggr"
 
-assert_raises "./gimpsvg -p -o $svg $fixtures/$ggr" 0
-assert "equal-svg $svg accept/$svg" true
+for base in "Sunrise" "mars"
+do
+    svg="$base.svg"
+    ggr="$base.ggr"
 
-rm -f $svg
+    assert_raises "./gimpsvg -p -o $svg $fixtures/$ggr" 0
+    assert "equal-svg $svg accept/$svg" true
+
+    rm -f $svg
+done
 
 source accept-teardown.sh

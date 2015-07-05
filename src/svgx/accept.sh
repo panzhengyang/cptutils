@@ -4,9 +4,9 @@ source "$2/accept-setup.sh"
 
 fixtures="$TESTFIX/svg"
 
-# default 
+# default
 
-for base in Gradients_01 
+for base in Gradients_01
 do
     svg="$base.svg"
     cpt="$base.cpt"
@@ -17,7 +17,7 @@ done
 
 # list
 
-for base in eyes 
+for base in eyes
 do
     svg="$base.svg"
     txt="$base.txt"
@@ -28,7 +28,7 @@ done
 
 # named
 
-for base in eyes 
+for base in eyes
 do
     svgsrc="$base.svg"
     for name in $(./svgx -l "$fixtures/$svgsrc")
@@ -52,7 +52,7 @@ do
 	assert_raises "./svgx -t gnuplot -s $name -o $gpf $fixtures/$svgsrc" 0
 	assert "equal-gpf $gpf accept/$gpf" 'true'
 	rm -f "$gpf"
-       
+
 	c3g="$base-$name.c3g"
 	assert_raises "./svgx -t css3 -s $name -o $c3g $fixtures/$svgsrc" 0
 	assert "equal-c3g $c3g accept/$c3g" 'true'
@@ -91,7 +91,7 @@ assert "equal-txt $txt accept/$txt" 'true'
 rm -f $txt $testdir/*
 rmdir $testdir
 
-    
+
 # create a backtrace file
 bt="backtrace.json"
 malformed="$fixtures/malformed.svg"
@@ -104,5 +104,5 @@ assert_raises "./svgx $btargs -a -o nope.svg $malformed" 1
 # assert "equal-json-backtrace $bt accept/$bt" 'true'
 
 rm -f $bt
-    
+
 source accept-teardown.sh
