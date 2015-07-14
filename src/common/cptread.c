@@ -39,7 +39,7 @@ extern int cpt_read(const char *path, cpt_t *cpt)
 	  btrace("error reading %s : %s", path, strerror(errno));
 	  return 1;
 	}
-      
+
       if ( !(err = cpt_parse(stream, cpt)) )
 	{
 	  if (! feof(stream) )
@@ -62,7 +62,7 @@ extern int cpt_read(const char *path, cpt_t *cpt)
 
 static void chomp(char *s)
 {
-  while (*s && *s != '\n' && *s != '\r') 
+  while (*s && *s != '\n' && *s != '\r')
     s++;
 
   *s = 0;
@@ -82,10 +82,10 @@ static int cpt_parse(FILE *stream, cpt_t *cpt)
   for (lineno=1 ; fgets(line, LINELEN, stream) != NULL ; lineno++)
     {
       int err = 0;
-      
+
       chomp(line);
 
-      switch (line[0]) 
+      switch (line[0])
 	{
 	case '\0' :
 	  break;
@@ -156,8 +156,8 @@ static int cpt_parse_global(const char *line, model_t model, fill_t *fill)
   char *tok[3];
 
   if ((tok[ntok] = strtok(buf, " \t")) != NULL)
-    { 
-      for (ntok=1 ; 
+    {
+      for (ntok=1 ;
 	   (ntok < 3) && ((tok[ntok] = strtok(NULL, " \t")) != NULL) ;
 	   ntok++);
     }
@@ -222,12 +222,12 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
 	    break;
 
 	  if (!isspace(c))
-	    { 
+	    {
 	      /* copy the label into the segment */
 	      seg->label = strdup(label);
 	      break;
 	    }
-	} 
+	}
     }
 
   /* chop up the buffer */
@@ -236,8 +236,8 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
   char *tok[9];
 
   if ((tok[ntok] = strtok(buf, " \t")) != NULL)
-    { 
-      for (ntok = 1 ; 
+    {
+      for (ntok = 1 ;
 	   (ntok < 9) && ((tok[ntok] = strtok(NULL, " \t")) != NULL) ;
 	   ntok++);
     }
@@ -248,23 +248,23 @@ static int cpt_parse_segment(const char *line, cpt_t *cpt)
 
   switch (ntok)
     {
-    case 9 :      
+    case 9 :
       err += cpt_parse_annote(tok[8], &(seg->annote));
     case 8 :
-      err += cpt_parse_value(tok[0], &(seg->lsmp.val)); 
-      err += cpt_parse_3fill(tok[1], tok[2], tok[3], 
+      err += cpt_parse_value(tok[0], &(seg->lsmp.val));
+      err += cpt_parse_3fill(tok[1], tok[2], tok[3],
 			     cpt->model, &(seg->lsmp.fill));
       err += cpt_parse_value(tok[4], &(seg->rsmp.val));
-      err += cpt_parse_3fill(tok[5], tok[6], tok[7], 
+      err += cpt_parse_3fill(tok[5], tok[6], tok[7],
 			     cpt->model, &(seg->rsmp.fill));
       break;
 
     case 5 :
       err += cpt_parse_annote(tok[4], &(seg->annote));
     case 4 :
-      err += cpt_parse_value(tok[0], &(seg->lsmp.val)); 
+      err += cpt_parse_value(tok[0], &(seg->lsmp.val));
       err += cpt_parse_1fill(tok[1], cpt->model, &(seg->lsmp.fill));
-      err += cpt_parse_value(tok[2], &(seg->rsmp.val)); 
+      err += cpt_parse_value(tok[2], &(seg->rsmp.val));
       err += cpt_parse_1fill(tok[3], cpt->model, &(seg->rsmp.fill));
       break;
 
@@ -320,7 +320,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
     {
       if (model != model_rgb)
 	{
-	  btrace("RGB colour %s with non-RGB colour model", str); 
+	  btrace("RGB colour %s with non-RGB colour model", str);
 	  return 1;
 	}
 
@@ -356,18 +356,25 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
 
   switch (model)
     {
-      int r, g, b;
-      double h, s, v;
-
     case model_rgb:
-      if (sscanf(str, "%d/%d/%d", &r, &g, &b) == 3)
-	return set_rgb(r, g, b, &(fill->u.colour.rgb));
+      {
+	int r, g, b;
+
+	if (sscanf(str, "%d/%d/%d", &r, &g, &b) == 3)
+	  return set_rgb(r, g, b, &(fill->u.colour.rgb));
+      }
       break;
+
     case model_hsv:
     case model_hsvp:
-      if (sscanf(str, "%lf/%lf/%lf", &h, &s, &v) == 3)
-	return set_hsv(h, s, v, &(fill->u.colour.hsv));
+      {
+	double h, s, v;
+
+	if (sscanf(str, "%lf/%lf/%lf", &h, &s, &v) == 3)
+	  return set_hsv(h, s, v, &(fill->u.colour.hsv));
+      }
       break;
+
     default:
       return 1;
     }
@@ -376,7 +383,7 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
 
   char *endptr;
   long val;
-  
+
   val = strtol(str, &endptr, 10);
 
   if (endptr != str)
@@ -398,8 +405,8 @@ static int cpt_parse_1fill(const char *str, model_t model, fill_t *fill)
   return 1;
 }
 
-static int cpt_parse_3fill(const char *s1, 
-			   const char *s2, 
+static int cpt_parse_3fill(const char *s1,
+			   const char *s2,
 			   const char *s3,
 			   model_t model,
 			   fill_t *fill)
