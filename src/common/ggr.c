@@ -225,9 +225,6 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	  switch (color)
 	    {
-	      int err = 0;
-	      double rgb0[3], rgb1[3], hsv0[3], hsv1[3];
-
 	    case GRAD_RGB:
 	    case GRAD_HSV_CW:
 	    case GRAD_HSV_CCW:
@@ -237,27 +234,32 @@ extern gradient_t* grad_load_gradient(const char* path)
 
 	    case GRAD_HSV_SHORT:
 	    case GRAD_HSV_LONG:
-
-	      rgb0[0] = seg->r0;
-	      rgb0[1] = seg->g0;
-	      rgb0[2] = seg->b0;
-
-	      err |= rgbD_to_hsvD(rgb0,hsv0);
-
-	      rgb1[0] = seg->r1;
-	      rgb1[1] = seg->g1;
-	      rgb1[2] = seg->b1;
-
-	      err |= rgbD_to_hsvD(rgb1,hsv1);
-
-	      if (err)
-		{
-		  btrace("error converting rgb->hsv !");
-		  return NULL;
-		}
-
-	      seg->color = grad_hsv_type(color,hsv0[0],hsv1[0]);
-
+	      
+	      {
+		int err = 0;
+		double rgb0[3], rgb1[3], hsv0[3], hsv1[3];
+	      
+		rgb0[0] = seg->r0;
+		rgb0[1] = seg->g0;
+		rgb0[2] = seg->b0;
+		
+		err |= rgbD_to_hsvD(rgb0, hsv0);
+		
+		rgb1[0] = seg->r1;
+		rgb1[1] = seg->g1;
+		rgb1[2] = seg->b1;
+		
+		err |= rgbD_to_hsvD(rgb1, hsv1);
+		
+		if (err)
+		  {
+		    btrace("error converting rgb->hsv !");
+		    return NULL;
+		  }
+		
+		seg->color = grad_hsv_type(color, hsv0[0], hsv1[0]);
+	      }
+	      
 	      break;
 
 	    default:

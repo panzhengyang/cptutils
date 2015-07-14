@@ -14,6 +14,10 @@ Changes
   forseeable future; for versions after 1.57 only the new
   address will be usable.
 
+1.60 (pending)
+  - use of uninitialised value bug in ggr.c fixed, many thanks to
+    David Binderman for spotting this.
+
 1.59 (05 Jul 2015)
   GIMP gradients which are DOS encoded, and/or which have
   'endpoint colour types' can now be read by the gimpsvg and
