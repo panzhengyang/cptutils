@@ -105,4 +105,13 @@ assert_raises "./svgx $btargs -a -o nope.svg $malformed" 1
 
 rm -f $bt
 
+# handle rgba colours
+
+base="bad-colour"
+svg="$fixtures/$base.svg"
+cpt="$base.cpt"
+assert_raises "./svgx -t cpt -o $cpt $svg" 0
+assert_raises "[ -e $cpt ]" 0
+rm -f $cpt
+
 source accept-teardown.sh
