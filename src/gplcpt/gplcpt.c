@@ -51,7 +51,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 
   /* get first line */
 
-  if (fgets(buf, BUFSIZE, st) == NULL) 
+  if (fgets(buf, BUFSIZE, st) == NULL)
     {
       btrace("no first data line");
       return 1;
@@ -62,7 +62,6 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
   if (strncmp(buf, "GIMP Palette", 12) != 0)
     {
       btrace("file does not seem to be a GIMP palette");
-      btrace("%s", buf);
       return 1;
     }
 
@@ -75,7 +74,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
   cpt->model = model_rgb;
 
   /* set bg/fg/nan values */
-  
+
   cpt->fg.type = cpt->bg.type = cpt->nan.type = fill_colour;
 
   cpt->bg.u.colour.rgb  = opt.bg;
@@ -89,7 +88,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
   while (skipline(buf));
 
   /* see if it is a name line */
-  
+
   char name[BUFSIZE];
 
   if (sscanf(buf, "Name: %s", name) == 1)
@@ -141,7 +140,7 @@ extern int gplcpt_st(gplcpt_opt_t opt, FILE *st)
 	{
 	  btrace("bad line %s", buf);
 	  return 1;
-	} 
+	}
 
       fill.u.colour.rgb.red   = r;
       fill.u.colour.rgb.green = g;
@@ -204,9 +203,9 @@ static int gplcpt_write(gplcpt_opt_t opt, cpt_t *cpt)
 }
 
 /*
-  aggregates segments which have the same fill, 
+  aggregates segments which have the same fill,
   assuming that the input consists of piecewise
-  constant segments (as here) 
+  constant segments (as here)
 */
 
 static int cpt_step_optimise(cpt_t* cpt)
@@ -214,7 +213,7 @@ static int cpt_step_optimise(cpt_t* cpt)
   cpt_seg_t *left, *right;
 
   left  = cpt->segment;
-  right = left->rseg; 
+  right = left->rseg;
 
   while (right)
     {
@@ -229,7 +228,7 @@ static int cpt_step_optimise(cpt_t* cpt)
 
 	  left->rsmp.val = dead->rsmp.val;
 	  left->rseg = right;
-	  
+
 	  cpt_seg_destroy(dead);
 	}
       else
@@ -242,8 +241,8 @@ static int cpt_step_optimise(cpt_t* cpt)
   return 0;
 }
 
-/* 
-   returns whether the line is a comment line or not, 
+/*
+   returns whether the line is a comment line or not,
    it must not be null
 */
 
@@ -252,8 +251,8 @@ static int skipline(const char* line)
   const char *s;
 
   if (line == NULL) return 1;
-  
-  s = line; 
+
+  s = line;
 
   do {
     switch (*s)
@@ -273,4 +272,3 @@ static int skipline(const char* line)
 
   return 0;
 }
-
