@@ -1,5 +1,5 @@
 DTD retrieved from
 
-  https://github.com/qgis/QGIS/blob/master/qgis.dtd
+  https://raw.githubusercontent.com/qgis/QGIS/master/qgis.dtd
 
 21/10/2015
