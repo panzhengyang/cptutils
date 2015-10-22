@@ -32,6 +32,7 @@
 #include "tests_identtab.h"
 #include "tests_pov.h"
 #include "tests_povwrite.h"
+#include "tests_qml.h"
 #include "tests_sao.h"
 #include "tests_saowrite.h"
 #include "tests_stdcol.h"
@@ -43,7 +44,7 @@
 
 #include <CUnit/CUnit.h>
 
-static CU_SuiteInfo suites[] = 
+static CU_SuiteInfo suites[] =
   {
     { "btrace",     NULL, NULL, tests_btrace },
     { "colour",     NULL, NULL, tests_colour },
@@ -51,7 +52,7 @@ static CU_SuiteInfo suites[] =
     { "cptread",    NULL, NULL, tests_cptread },
     { "cptwrite",   NULL, NULL, tests_cptwrite },
     { "cptname",    NULL, NULL, tests_cptname },
-    { "css3write",  NULL, NULL, tests_css3write }, 
+    { "css3write",  NULL, NULL, tests_css3write },
     { "fill",       NULL, NULL, tests_fill },
     { "ggr",        NULL, NULL, tests_ggr },
     { "gmtcol",     NULL, NULL, tests_gmtcol },
@@ -69,6 +70,7 @@ static CU_SuiteInfo suites[] =
     { "identtab",   NULL, NULL, tests_identtab },
     { "pov",        NULL, NULL, tests_pov },
     { "povwrite",   NULL, NULL, tests_povwrite },
+    { "qml",        NULL, NULL, tests_qml },
     { "sao",        NULL, NULL, tests_sao },
     { "saowrite",   NULL, NULL, tests_saowrite },
     { "stdcol",     NULL, NULL, tests_stdcol },
@@ -85,7 +87,7 @@ void tests_load(void)
   assert(NULL != CU_get_registry());
   assert(!CU_is_test_running());
 
-  if (CU_register_suites(suites) != CUE_SUCCESS) 
+  if (CU_register_suites(suites) != CUE_SUCCESS)
     {
       fprintf(stderr, "suite registration failed - %s\n",
 	      CU_get_error_msg());

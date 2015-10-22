@@ -8,38 +8,40 @@
 
 #include "qml.h"
 
-extern qml_ramp_t* qml_ramp_new(int type, size_t n)
+extern qml_t* qml_new(int type, size_t n)
 {
-  qml_ramp_t *ramp;
+  qml_t *qml;
 
-  if ((ramp = malloc(sizeof(qml_ramp_t))) != NULL)
+  if ((qml = malloc(sizeof(qml_t))) != NULL)
     {
-      ramp->type = type;
+      qml->type = type;
 
-      if ((ramp->entries = calloc(n, sizeof(qml_entry_t))) != NULL)
+      if ((qml->entries = calloc(n, sizeof(qml_entry_t))) != NULL)
 	{
-	  ramp->n = n;
-	  return ramp;
+	  qml->n = n;
+	  return qml;
 	}
 
-      free(ramp);
+      free(qml);
     }
 
   return NULL;
 }
 
-extern void qml_ramp_destroy(qml_ramp_t* ramp)
+extern void qml_destroy(qml_t* qml)
 {
-  for (size_t i = 0 ; i < ramp->n ; i++)
-    free(ramp->entries[i].label);
+  for (size_t i = 0 ; i < qml->n ; i++)
+    free(qml->entries[i].label);
 
-  free(ramp->entries);
-  free(ramp);
+  free(qml->entries);
+  free(qml);
 }
 
-extern int qml_set_entry(qml_ramp_t* ramp, size_t i, qml_entry_t *entry)
+extern int qml_set_entry(qml_t* qml, size_t i, qml_entry_t *entry)
 {
-  qml_entry_t *dest = ramp->entries + i;
+  if (i >= qml->n) return 1;
+
+  qml_entry_t *dest = qml->entries + i;
 
   memcpy(dest, entry, sizeof(qml_entry_t));
 

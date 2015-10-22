@@ -1,7 +1,8 @@
 # Makefile for cunit test-suite
 
 LDLIBS  += -lcpt -lfill -lcss3 -lggr -lgpt -lgrd3 -lgrd5 \
-           -lgstk -lgrdx -lident -lpov -lsao -lsvg -lutf8 -lbt
+           -lgstk -lgrdx -lident -lpov -lsao -lsvg -lutf8 \
+	   -lqml -lbt
 
 LDFLAGS += -L../lib/
 CFLAGS  += -I../common/
@@ -32,6 +33,7 @@ OBJ = options.o main.o tests.o \
   tests_identtab.o tests_identtab_helper.o \
   tests_pov.o \
   tests_povwrite.o \
+  tests_qml.o \
   tests_sao.o tests_sao_helper.o \
   tests_saowrite.o \
   tests_stdcol.o \
