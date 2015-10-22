@@ -1,7 +1,7 @@
 # Makefile for cptutils common libraries
 # (c) J.J.Green 2001
 
-OBJFILL = colour.o fill.o 
+OBJFILL = colour.o fill.o
 OBJCPT  = cpt.o cptread.o cptwrite.o gmtcol.o cptname.o
 OBJGGR  = ggr.o
 OBJGRD3 = grd3read.o grd3write.o grd3.o
@@ -13,22 +13,23 @@ OBJPOV  = pov.o povwrite.o
 OBJGPT  = gpt.o gptwrite.o
 OBJCSS3 = css3.o css3write.o
 OBJID   = ident.o identtab.o
-OBJODB  = odbbridge.o odb.o odbscan.o odbparse.o 
+OBJODB  = odbbridge.o odb.o odbscan.o odbparse.o
 OBJSAO  = sao.o saowrite.o
+OBJQML  = qml.o
 OBJUTF8 = utf8.o
 OBJBT   = btrace.o
 
-CFLAGS += 
+CFLAGS +=
 LDLIBS +=
 
 CPTULIBS = libfill.a libcpt.a libggr.a libgrd3.a libgrd5.a libgrdx.a \
 	libgstk.a libsvg.a libpov.a libident.a libodb.a libgpt.a \
-	libcss3.a libsao.a libutf8.a libbt.a
+	libcss3.a libsao.a libqml.a libutf8.a libbt.a
 
-RUBBISH +=  $(CPTULIBS) $(OBJFILL) $(OBJCPT) $(OBJGGR) \
+RUBBISH += $(CPTULIBS) $(OBJFILL) $(OBJCPT) $(OBJGGR) \
 	   $(OBJGRD3) $(OBJGRD5) $(OBJGRDX) \
 	   $(OBJSVG) $(OBJPOV) $(OBJID) $(OBJODB) $(OBJGPT) $(OBJCSS3) \
-	   $(OBJSAO) $(OBJGSTK) $(OBJUTF8) $(OBJBT)
+	   $(OBJSAO) $(OBJQML) $(OBJGSTK) $(OBJUTF8) $(OBJBT)
 
 default : all
 
@@ -41,14 +42,14 @@ test check :
 clean :
 	$(RM) $(RUBBISH)
 
-veryclean : 
+veryclean :
 
 .PHONEY : all test doc
 
-odbscan.c odbscan.h : odbscan.l 
-	flex odbscan.l 
+odbscan.c odbscan.h : odbscan.l
+	flex odbscan.l
 
-odbparse.c odbparse.h : odbparse.y 
+odbparse.c odbparse.h : odbparse.y
 	bison odbparse.y
 
 odbparse.o : odbparse.c odbscan.h
@@ -96,6 +97,9 @@ libodb.a : $(OBJODB)
 libsao.a : $(OBJSAO)
 	ar r libsao.a $(OBJSAO)
 
+libqml.a : $(OBJQML)
+	ar r libqml.a $(OBJQML)
+
 libutf8.a : $(OBJUTF8)
 	ar r libutf8.a $(OBJUTF8)
 
@@ -103,6 +107,3 @@ libbt.a : $(OBJBT)
 	ar r libbt.a $(OBJBT)
 
 include ../Common.mk
-
-
-
